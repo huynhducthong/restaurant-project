@@ -1,0 +1,513 @@
+/* --- BIẾN CHUNG --- */
+:root {
+  --primary-color: #cda45e;
+  --bg-dark: #0c0b09;
+  --font-main: 'Poppins', sans-serif;
+}
+
+body {
+  background: var(--bg-dark);
+  color: #fff;
+  font-family: 'Open Sans', sans-serif;
+  margin: 0;
+}
+
+/* --- TOPBAR --- */
+#topbar {
+  height: 40px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 996;
+  border-bottom: 1px solid #37332a;
+}
+
+/* --- HEADER --- */
+#header {
+  background: rgba(12, 11, 9, 0.6);
+  height: 80px;
+  top: 40px;
+  position: fixed;
+  width: 100%;
+  z-index: 997;
+  display: flex;
+  align-items: center;
+  transition: all 0.5s;
+}
+
+/* --- LOGO --- */
+.logo a {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary-color) !important;
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+
+/* --- NAVBAR (PHẦN QUAN TRỌNG NHẤT) --- */
+.navbar ul {
+  display: flex !important;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 25px; /* Tăng khoảng cách giữa các chữ */
+}
+
+.navbar a {
+  color: #fff !important;
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: 0.3s;
+  padding: 5px 0;
+  position: relative;
+}
+
+/* Hiệu ứng gạch chân khi hover giống mẫu */
+.navbar a::before {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--primary-color);
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.navbar a:hover::before, 
+.navbar .active::before {
+  visibility: visible;
+  width: 100%;
+}
+
+.navbar a:hover, 
+.navbar .active {
+  color: var(--primary-color) !important;
+}
+
+/* --- CỤM ĐĂNG NHẬP / ĐĂNG KÝ --- */
+.auth-group {
+  display: flex;
+  align-items: center;
+  margin-left: 30px;
+  padding-left: 25px;
+  border-left: 1px solid #37332a;
+  gap: 20px;
+}
+
+.btn-login {
+  color: var(--primary-color) !important;
+  font-weight: 600 !important;
+}
+
+/* --- NÚT ĐẶT BÀN --- */
+.book-a-table-btn {
+  background: transparent;
+  color: #fff !important;
+  border: 2px solid var(--primary-color);
+  border-radius: 50px;
+  padding: 10px 28px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  margin-left: 25px;
+  transition: 0.3s;
+}
+
+.book-a-table-btn:hover {
+  background: var(--primary-color);
+}
+
+#hero {
+  width: 100%;
+  height: 100vh;
+  /* Lùi 2 cấp: thoát css/, thoát client/ để vào assets/ rồi mới vào img/ */
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+              url('../../img/hero-bg.jpg') center center no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  position: relative;
+}
+
+/* --- HERO CAROUSEL SETTINGS --- */
+#hero .carousel-item {
+  width: 100%;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  transition: transform 0.6s ease-in-out;
+}
+
+/* Lớp phủ đen mờ để làm nổi chữ */
+#hero .carousel-item::before {
+  content: "";
+  background-color: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+}
+
+#hero .carousel-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding-top: 120px; /* Chừa chỗ cho Header */
+}
+
+#hero .carousel-content {
+  text-align: center;
+  color: #fff;
+}
+
+#hero h2 {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  font-family: "Playfair Display", serif;
+}
+
+#hero h2 span {
+  color: var(--primary-color);
+}
+
+#hero p {
+  font-size: 18px;
+  color: #eee;
+}
+
+
+
+/* --- LAYOUT HEADER (3 PHẦN) --- */
+#header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  min-width: 200px; /* Đối trọng để navbar nằm chính giữa */
+}
+
+/* Navbar nằm giữa */
+#navbar {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+}
+
+#navbar ul {
+  gap: 30px;
+}
+
+/* Cụm bên phải */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 200px;
+  justify-content: flex-end;
+}
+
+/* --- NÚT 3 GẠCH --- */
+.auth-menu {
+  position: relative;
+}
+
+.menu-icon-bars {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 25px;
+  height: 18px;
+  cursor: pointer;
+  margin-left: 15px;
+}
+
+.menu-icon-bars span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background-color: var(--primary-color);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* --- MENU CON (HIỆN NGANG KHI HOVER) --- */
+.dropdown-horizontal {
+  display: flex !important;
+  flex-direction: row !important; /* Ép nằm ngang */
+  position: absolute;
+  top: 50px; 
+  right: 0;
+  background: rgba(26, 24, 20, 0.95);
+  padding: 10px 15px;
+  gap: 15px;
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s;
+  border: 1px solid #37332a;
+  border-radius: 4px;
+  z-index: 999;
+  min-width: max-content;
+}
+
+/* Hiệu ứng hover hiện menu */
+.auth-menu:hover .dropdown-horizontal {
+  opacity: 1;
+  visibility: visible;
+  top: 40px; /* Đẩy lên một chút khi hiện */
+}
+
+.dropdown-horizontal a {
+  font-size: 13px !important;
+  color: #fff !important;
+  text-transform: none !important;
+  white-space: nowrap;
+  padding: 5px 10px !important;
+}
+
+.dropdown-horizontal a:hover {
+  color: var(--primary-color) !important;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* --- CÁC THÀNH PHẦN KHÁC --- */
+.order-last.order-lg-0 {
+    display: flex;
+    align-items: center;
+}
+
+.auth-group {
+  display: none; 
+}
+
+.dropdown-horizontal li {
+    list-style-type: none !important;
+    padding: 0 10px;
+}
+
+/* --- GIAO DIỆN FORM ĐĂNG NHẬP / ĐĂNG KÝ --- */
+.auth-section {
+  padding: 120px 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  background: url('../../img/hero-bg.jpg') center center no-repeat;
+  background-size: cover;
+  position: relative;
+}
+
+.auth-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8); /* Làm tối nền để nổi form */
+}
+
+.auth-container {
+  position: relative;
+  z-index: 2;
+  background: rgba(26, 24, 20, 0.9);
+  padding: 40px;
+  border: 1px solid #37332a;
+  border-radius: 10px;
+  max-width: 450px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.auth-container h2 {
+  color: var(--primary-color);
+  font-family: "Playfair Display", serif;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.auth-form .form-control {
+  background: transparent;
+  border: 1px solid #37332a;
+  color: #fff;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+}
+
+.auth-form .form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-auth {
+  background: var(--primary-color);
+  color: #fff;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btn-auth:hover {
+  background: #d3af71;
+  color: #000;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.auth-footer a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.about-section {
+    padding: 80px 0;
+}
+
+.about-section .content h3 {
+    font-weight: 700;
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.about-section .content ul li {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-learn-more:hover {
+    background: #d9ba85;
+    color: #1a1814 !important;
+}
+
+/* Hiệu ứng đổ bóng cho khung Video */
+.about-video {
+    box-shadow: 0px 0px 20px rgba(217, 186, 133, 0.2);
+}
+
+/* Khung bao ngoài mỗi cột danh mục */
+.category-column-box {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(205, 164, 94, 0.1);
+    padding: 30px 20px;
+    border-radius: 10px;
+    height: 100%;
+    transition: 0.3s;
+}
+
+.category-column-box:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(205, 164, 94, 0.5);
+}
+
+/* Tiêu đề danh mục (Khai vị, Món chính...) */
+.category-title {
+    color: #cda45e;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.category-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 2px;
+    background: #cda45e;
+}
+
+/* Ảnh món ăn hình tròn */
+.item-img {
+    width: 70px;
+    height: 70px;
+    min-width: 70px;
+    margin-right: 15px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid rgba(205, 164, 94, 0.3);
+}
+
+.item-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Chi tiết món ăn */
+.food-name {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+.food-price {
+    color: #cda45e;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-left: 10px;
+}
+
+.food-desc {
+    color: #888;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+/* Loại bỏ gạch chân menu item cuối cùng */
+.menu-item-horizontal:last-child {
+    margin-bottom: 0 !important;
+}
+
+/* Trạng thái mặc định của Header */
+#header {
+    background: rgba(12, 11, 9, 0.6); /* Trong suốt một chút */
+    height: 80px;
+    transition: all 0.5s; /* Tạo hiệu ứng biến đổi mượt mà */
+    z-index: 997;
+}
+
+/* Trạng thái khi cuộn xuống - Class này sẽ được JS thêm vào */
+#header.header-scrolled {
+    top: 0; /* Đẩy lên sát mép trên cùng */
+    background: #0c0b09; /* Đổi màu nền đặc để lấp đầy khoảng trống */
+    height: 70px; /* Có thể làm header gọn lại một chút cho đẹp */
+    box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.5); /* Thêm đổ bóng cho chuyên nghiệp */
+}
+
+/* Nếu bạn có Topbar, khi cuộn xuống ta thường ẩn nó đi để Header lấp đầy chỗ trống */
+#topbar.topbar-scrolled {
+    top: -40px; /* Đẩy topbar ra khỏi màn hình */
+}
+

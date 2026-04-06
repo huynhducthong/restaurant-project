@@ -1,0 +1,50 @@
+/*manage_services.php*/
+   body { font-family: 'Poppins', sans-serif; background: #fdfcf9; }
+    .main-content { padding: 30px; }
+    .card-custom { border-radius: 20px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.05); background: #fff; margin-bottom: 30px; }
+    
+    .admin-map-container { padding: 20px; }
+    .admin-grid-layout { display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; }
+    .admin-seat { 
+        border-radius: 8px; padding: 12px 5px; text-align: center; font-weight: 600; color: #fff; 
+        transition: transform 0.2s; font-size: 13px; min-height: 75px; display: flex; flex-direction: column; 
+        justify-content: center; position: relative;
+    }
+    .seat-available { background-color: #28a745 !important; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2); }
+    .seat-booked { background-color: #dc3545 !important; box-shadow: 0 4px 10px rgba(220, 53, 69, 0.2); }
+    .grid-4-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .grid-2-cols { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    
+    .btn-reset-table {
+        position: absolute; top: -5px; right: -5px; width: 22px; height: 22px;
+        background: #fff; color: #dc3545; border-radius: 50%; display: none;
+        align-items: center; justify-content: center; font-size: 11px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: 1px solid #dc3545; z-index: 10;
+        text-decoration: none;
+    }
+    .admin-seat:hover .btn-reset-table { display: flex; }
+    .countdown-timer { font-size: 10px; margin-top: 5px; background: rgba(0,0,0,0.25); border-radius: 4px; padding: 2px 0; font-weight: 400; }
+
+    .badge-status { padding: 6px 12px; border-radius: 50px; font-weight: 500; font-size: 11px; }
+    .avatar-circle { width: 45px; height: 45px; background: #f0e6d2; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #cda45e; font-weight: 700; border: 2px solid #fff; }
+    
+    /* Style cho Modal giống ảnh */
+    .modal-content { border-radius: 20px; border: none; }
+    .info-label { font-size: 11px; text-transform: uppercase; color: #bbb; letter-spacing: 1px; margin-bottom: 5px; }
+    .info-value { font-weight: 600; color: #333; }
+    .note-area { background: #fffcf5; border-left: 4px solid #cda45e; padding: 15px; border-radius: 8px; font-style: italic; }
+/*manage_inventory.php*/
+    .card-custom {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+.form-control:focus, .form-select:focus {
+    border-color: #cda45e;
+    box-shadow: 0 0 0 0.2rem rgba(205, 164, 94, 0.25);
+}
+.table thead th {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #888;
+}
