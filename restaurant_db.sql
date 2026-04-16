@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 06, 2026 at 01:19 PM
+-- Generation Time: Apr 13, 2026 at 05:01 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -30,44 +30,9 @@ SET time_zone = "+00:00";
 DROP TABLE IF EXISTS `admins`;
 CREATE TABLE `admins` (
   `id` int(11) NOT NULL,
-  `username` varchar(50) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL
+  `username` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `bookings`
---
-
-DROP TABLE IF EXISTS `bookings`;
-CREATE TABLE `bookings` (
-  `id` int(11) NOT NULL,
-  `customer_name` varchar(100) DEFAULT NULL,
-  `booking_date` datetime DEFAULT NULL,
-  `status` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `booking_details`
---
-
-DROP TABLE IF EXISTS `booking_details`;
-CREATE TABLE `booking_details` (
-  `id` int(11) NOT NULL,
-  `booking_id` int(11) DEFAULT NULL,
-  `menu_id` int(11) DEFAULT NULL,
-  `quantity` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `booking_details`
---
-
-INSERT INTO `booking_details` (`id`, `booking_id`, `menu_id`, `quantity`) VALUES
-(4, 5, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -79,18 +44,18 @@ DROP TABLE IF EXISTS `categories`;
 CREATE TABLE `categories` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `categories`
 --
 
 INSERT INTO `categories` (`id`, `name`) VALUES
-(4, 'Đồ uống'),
 (1, 'Khai vị'),
 (5, 'Món ăn kèm'),
 (2, 'Món chính'),
-(3, 'Tráng miệng');
+(3, 'Tráng miệng'),
+(4, 'Đồ uống');
 
 -- --------------------------------------------------------
 
@@ -104,7 +69,7 @@ CREATE TABLE `chefs` (
   `name` varchar(100) DEFAULT NULL,
   `position` varchar(100) DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -117,18 +82,17 @@ CREATE TABLE `combos` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `description` text DEFAULT NULL,
-  `price` decimal(10,2) NOT NULL,
+  `price` decimal(15,2) NOT NULL,
   `image` varchar(255) DEFAULT NULL,
-  `status` tinyint(1) DEFAULT 1,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `status` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `combos`
 --
 
-INSERT INTO `combos` (`id`, `name`, `description`, `price`, `image`, `status`, `created_at`) VALUES
-(1, 'combo gia đình', 'btrdn', 1000000.00, '1775395639_Screenshot 2026-04-05 200746.png', 1, '2026-04-05 12:36:24');
+INSERT INTO `combos` (`id`, `name`, `description`, `price`, `image`, `status`) VALUES
+(1, 'combo gia đình', 'btrdn', 1000000.00, '1775395639_Screenshot 2026-04-05 200746.png', 1);
 
 -- --------------------------------------------------------
 
@@ -165,14 +129,14 @@ CREATE TABLE `foods` (
   `price` decimal(15,2) NOT NULL,
   `image` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
-  `is_active` tinyint(1) DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `status` tinyint(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `foods`
 --
 
-INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `is_active`) VALUES
+INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`) VALUES
 (1, 4, 'rựu vang', 500000.00, '1775141620_Screenshot 2026-04-02 213852.png', 'dfb', 1),
 (2, 2, 'Bò bít tết', 800000.00, '1775392540_Screenshot 2026-04-03 121754.png', 'vgfnbwd', 1);
 
@@ -185,19 +149,19 @@ INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description
 DROP TABLE IF EXISTS `food_recipes`;
 CREATE TABLE `food_recipes` (
   `id` int(11) NOT NULL,
-  `food_id` int(11) DEFAULT NULL,
-  `ingredient_id` int(11) DEFAULT NULL,
-  `quantity_required` decimal(10,2) NOT NULL,
+  `food_id` int(11) NOT NULL,
+  `ingredient_id` int(11) NOT NULL,
+  `quantity_required` decimal(10,3) NOT NULL,
   `unit` varchar(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `food_recipes`
 --
 
 INSERT INTO `food_recipes` (`id`, `food_id`, `ingredient_id`, `quantity_required`, `unit`) VALUES
-(1, 1, 1, 1.00, 'chai'),
-(2, 2, 2, 0.50, 'kg');
+(1, 1, 1, 1.000, 'chai'),
+(2, 2, 2, 0.500, 'kg');
 
 -- --------------------------------------------------------
 
@@ -213,17 +177,20 @@ CREATE TABLE `inventory` (
   `unit_name` varchar(50) DEFAULT NULL,
   `stock_quantity` decimal(10,2) DEFAULT 0.00,
   `cost_price` decimal(15,2) DEFAULT 0.00,
+  `supplier_id` int(11) DEFAULT NULL,
+  `entry_date` date DEFAULT NULL,
+  `expiry_date` date DEFAULT NULL,
   `revenue` decimal(15,2) DEFAULT 0.00,
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `inventory`
 --
 
-INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `stock_quantity`, `cost_price`, `revenue`, `updated_at`) VALUES
-(1, 'rựu', 'Đồ uống', 'chai', 99.00, 1200000.00, 0.00, '2026-04-02 15:27:06'),
-(2, 'thịt bò', 'Thịt', 'kg', 10.00, 10000000.00, 0.00, '2026-04-05 12:31:10');
+INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `stock_quantity`, `cost_price`, `supplier_id`, `entry_date`, `expiry_date`, `revenue`, `updated_at`) VALUES
+(1, 'rựu', 'Đồ uống', 'chai', 99.00, 1200000.00, NULL, NULL, NULL, 0.00, '2026-04-02 08:27:06'),
+(2, 'thịt bò', 'Thịt', 'kg', 10.00, 10000000.00, NULL, NULL, NULL, 0.00, '2026-04-05 05:31:10');
 
 -- --------------------------------------------------------
 
@@ -235,18 +202,18 @@ DROP TABLE IF EXISTS `inventory_categories`;
 CREATE TABLE `inventory_categories` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `inventory_categories`
 --
 
 INSERT INTO `inventory_categories` (`id`, `name`) VALUES
-(4, 'Đồ uống'),
 (3, 'Gia vị'),
 (5, 'rau'),
 (2, 'Rau củ'),
-(1, 'Thịt');
+(1, 'Thịt'),
+(4, 'Đồ uống');
 
 -- --------------------------------------------------------
 
@@ -261,16 +228,34 @@ CREATE TABLE `inventory_history` (
   `type` enum('import','export','loss') NOT NULL,
   `quantity` decimal(10,2) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `inventory_history`
 --
 
 INSERT INTO `inventory_history` (`id`, `ingredient_id`, `type`, `quantity`, `created_at`) VALUES
-(1, 1, 'import', 100.00, '2026-04-02 14:53:10'),
-(2, 1, 'export', 1.00, '2026-04-02 15:27:06'),
-(3, 2, 'import', 10.00, '2026-04-05 12:31:10');
+(1, 1, 'import', 100.00, '2026-04-02 07:53:10'),
+(2, 1, 'export', 1.00, '2026-04-02 08:27:06'),
+(3, 2, 'import', 10.00, '2026-04-05 05:31:10');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventory_receipts`
+--
+
+DROP TABLE IF EXISTS `inventory_receipts`;
+CREATE TABLE `inventory_receipts` (
+  `id` int(11) NOT NULL,
+  `ingredient_id` int(11) NOT NULL,
+  `supplier_id` int(11) DEFAULT NULL,
+  `quantity` decimal(10,2) NOT NULL,
+  `import_price` decimal(15,2) NOT NULL,
+  `entry_date` date NOT NULL,
+  `expiry_date` date DEFAULT NULL,
+  `note` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -282,7 +267,7 @@ DROP TABLE IF EXISTS `inventory_units`;
 CREATE TABLE `inventory_units` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `inventory_units`
@@ -298,60 +283,49 @@ INSERT INTO `inventory_units` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `orders`
---
-
-DROP TABLE IF EXISTS `orders`;
-CREATE TABLE `orders` (
-  `id` int(11) NOT NULL,
-  `total_price` decimal(15,2) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `restaurant_tables`
 --
 
 DROP TABLE IF EXISTS `restaurant_tables`;
 CREATE TABLE `restaurant_tables` (
   `id` int(11) NOT NULL,
+  `table_code` varchar(20) NOT NULL,
   `table_number` varchar(10) DEFAULT NULL,
-  `status` varchar(20) DEFAULT 'available',
+  `room_type` varchar(50) DEFAULT NULL,
   `category` enum('open','room') DEFAULT 'open',
-  `is_available` tinyint(1) DEFAULT 1,
-  `table_code` varchar(20) DEFAULT NULL,
-  `price` decimal(15,2) DEFAULT 0.00
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `capacity` int(11) DEFAULT 16,
+  `price` decimal(15,2) DEFAULT 0.00,
+  `status` varchar(20) DEFAULT 'available',
+  `is_available` tinyint(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `restaurant_tables`
 --
 
-INSERT INTO `restaurant_tables` (`id`, `table_number`, `status`, `category`, `is_available`, `table_code`, `price`) VALUES
-(1, '1', 'available', 'open', 1, 'T1', 0.00),
-(2, '2', 'available', 'open', 1, 'T2', 0.00),
-(3, '3', 'available', 'open', 1, 'T3', 0.00),
-(4, '4', 'available', 'open', 1, 'T4', 0.00),
-(5, '5', 'available', 'open', 1, 'T5', 0.00),
-(6, '6', 'available', 'open', 1, 'T6', 0.00),
-(7, '7', 'available', 'open', 1, 'T7', 0.00),
-(8, '8', 'available', 'open', 1, 'T8', 0.00),
-(9, '9', 'available', 'open', 1, 'T9', 0.00),
-(10, '10', 'available', 'open', 1, 'T10', 0.00),
-(11, '11', 'available', 'open', 1, 'T11', 0.00),
-(12, '12', 'available', 'open', 1, 'T12', 0.00),
-(13, '13', 'available', 'open', 1, 'T13', 0.00),
-(14, '14', 'available', 'open', 1, 'T14', 0.00),
-(15, '15', 'available', 'open', 1, 'T15', 0.00),
-(16, '16', 'available', 'open', 1, 'T16', 0.00),
-(17, '101', 'available', 'room', 1, 'VIP1', 0.00),
-(18, '102', 'available', 'room', 1, 'VIP2', 0.00),
-(19, '103', 'available', 'room', 1, 'VIP3', 0.00),
-(20, '104', 'available', 'room', 1, 'VIP4', 0.00),
-(21, '105', 'available', 'room', 1, 'VIP5', 0.00),
-(22, '106', 'available', 'room', 1, 'VIP6', 0.00);
+INSERT INTO `restaurant_tables` (`id`, `table_code`, `table_number`, `room_type`, `category`, `capacity`, `price`, `status`, `is_available`) VALUES
+(1, 'T1', '1', NULL, 'open', 6, 0.00, 'available', 1),
+(2, 'T2', '2', NULL, 'open', 6, 0.00, 'available', 1),
+(3, 'T3', '3', NULL, 'open', 6, 0.00, 'available', 1),
+(4, 'T4', '4', NULL, 'open', 6, 0.00, 'available', 1),
+(5, 'T5', '5', NULL, 'open', 6, 0.00, 'available', 1),
+(6, 'T6', '6', NULL, 'open', 6, 0.00, 'available', 1),
+(7, 'T7', '7', NULL, 'open', 6, 0.00, 'available', 1),
+(8, 'T8', '8', NULL, 'open', 6, 0.00, 'available', 1),
+(9, 'T9', '9', NULL, 'open', 6, 0.00, 'available', 1),
+(10, 'T10', '10', NULL, 'open', 6, 0.00, 'available', 1),
+(11, 'T11', '11', NULL, 'open', 6, 0.00, 'available', 1),
+(12, 'T12', '12', NULL, 'open', 6, 0.00, 'available', 1),
+(13, 'T13', '13', NULL, 'open', 6, 0.00, 'available', 1),
+(14, 'T14', '14', NULL, 'open', 6, 0.00, 'available', 1),
+(15, 'T15', '15', NULL, 'open', 6, 0.00, 'available', 1),
+(16, 'T16', '16', NULL, 'open', 6, 0.00, 'available', 1),
+(17, 'VIP1', '101', NULL, 'room', 16, 0.00, 'available', 1),
+(18, 'VIP2', '102', NULL, 'room', 16, 0.00, 'available', 1),
+(19, 'VIP3', '103', NULL, 'room', 16, 0.00, 'available', 1),
+(20, 'VIP4', '104', NULL, 'room', 16, 0.00, 'available', 1),
+(21, 'VIP5', '105', NULL, 'room', 16, 0.00, 'available', 1),
+(22, 'VIP6', '106', NULL, 'room', 16, 0.00, 'available', 1);
 
 -- --------------------------------------------------------
 
@@ -364,7 +338,7 @@ CREATE TABLE `services` (
   `id` int(11) NOT NULL,
   `service_name` varchar(255) DEFAULT NULL,
   `price` decimal(15,2) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -375,25 +349,43 @@ CREATE TABLE `services` (
 DROP TABLE IF EXISTS `service_bookings`;
 CREATE TABLE `service_bookings` (
   `id` int(11) NOT NULL,
-  `customer_name` varchar(100) DEFAULT NULL,
-  `customer_phone` varchar(20) DEFAULT NULL,
+  `customer_name` varchar(100) NOT NULL,
+  `customer_phone` varchar(20) NOT NULL,
+  `booking_date` datetime NOT NULL,
   `service_type` enum('table','birthday','chef') DEFAULT 'table',
-  `booking_date` datetime DEFAULT NULL,
-  `guests` int(11) DEFAULT NULL,
-  `message` text DEFAULT NULL,
   `table_id` int(11) DEFAULT NULL,
+  `combo_id` int(11) DEFAULT NULL,
+  `guests` int(11) DEFAULT 1,
+  `message` text DEFAULT NULL,
   `total_amount` decimal(15,2) DEFAULT 0.00,
   `deposit_amount` decimal(15,2) DEFAULT 0.00,
-  `status` enum('Pending','Confirmed') DEFAULT 'Pending',
+  `status` enum('Pending','Confirmed','Completed','Cancelled') DEFAULT 'Pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `service_bookings`
 --
 
-INSERT INTO `service_bookings` (`id`, `customer_name`, `customer_phone`, `service_type`, `booking_date`, `guests`, `message`, `table_id`, `total_amount`, `deposit_amount`, `status`, `created_at`) VALUES
-(5, 'Huỳnh đức thông', '109876512345', 'table', '2026-04-04 22:25:00', 2, '', 1, 500000.00, 150000.00, 'Confirmed', '2026-04-02 15:25:35');
+INSERT INTO `service_bookings` (`id`, `customer_name`, `customer_phone`, `booking_date`, `service_type`, `table_id`, `combo_id`, `guests`, `message`, `total_amount`, `deposit_amount`, `status`, `created_at`) VALUES
+(5, 'Huỳnh đức thông', '109876512345', '2026-04-04 22:25:00', 'table', NULL, NULL, 2, '', 500000.00, 150000.00, 'Confirmed', '2026-04-02 08:25:35');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `suppliers`
+--
+
+DROP TABLE IF EXISTS `suppliers`;
+CREATE TABLE `suppliers` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `email` varchar(100) DEFAULT NULL,
+  `contact_person` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -416,7 +408,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`, `created_at`) VALUES
-(1, 'Huỳnh đức thông', 'thong@gmail.com', '$2y$10$f7cOFOOX2paiJ8e4J2OnneWhZZ87.3CioY3mCximsFWmC7wbAyzni', 'admin', '2026-04-02 14:19:22');
+(1, 'Huỳnh đức thông', 'thong@gmail.com', '$2y$10$f7cOFOOX2paiJ8e4J2OnneWhZZ87.3CioY3mCximsFWmC7wbAyzni', 'admin', '2026-04-02 07:19:22');
 
 -- --------------------------------------------------------
 
@@ -431,14 +423,14 @@ CREATE TABLE `videos` (
   `video_url` varchar(255) DEFAULT NULL,
   `file_path` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `videos`
 --
 
 INSERT INTO `videos` (`id`, `video_type`, `video_url`, `file_path`, `created_at`) VALUES
-(1, 'youtube', 'dQw4w9WgXcQ', NULL, '2026-04-02 14:36:16');
+(1, 'youtube', 'dQw4w9WgXcQ', NULL, '2026-04-02 07:36:16');
 
 --
 -- Indexes for dumped tables
@@ -449,19 +441,6 @@ INSERT INTO `videos` (`id`, `video_type`, `video_url`, `file_path`, `created_at`
 --
 ALTER TABLE `admins`
   ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `bookings`
---
-ALTER TABLE `bookings`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `booking_details`
---
-ALTER TABLE `booking_details`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_service_booking` (`booking_id`);
 
 --
 -- Indexes for table `categories`
@@ -488,28 +467,29 @@ ALTER TABLE `combos`
 ALTER TABLE `combo_items`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_combo` (`combo_id`),
-  ADD KEY `fk_food` (`food_id`);
+  ADD KEY `fk_food_in_combo` (`food_id`);
 
 --
 -- Indexes for table `foods`
 --
 ALTER TABLE `foods`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `category_id` (`category_id`);
+  ADD KEY `fk_food_category` (`category_id`);
 
 --
 -- Indexes for table `food_recipes`
 --
 ALTER TABLE `food_recipes`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `food_id` (`food_id`),
-  ADD KEY `ingredient_id` (`ingredient_id`);
+  ADD KEY `fk_recipe_food` (`food_id`),
+  ADD KEY `fk_recipe_ing` (`ingredient_id`);
 
 --
 -- Indexes for table `inventory`
 --
 ALTER TABLE `inventory`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_inv_supplier` (`supplier_id`);
 
 --
 -- Indexes for table `inventory_categories`
@@ -523,7 +503,15 @@ ALTER TABLE `inventory_categories`
 --
 ALTER TABLE `inventory_history`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `ingredient_id` (`ingredient_id`);
+  ADD KEY `inventory_history_ibfk_1` (`ingredient_id`);
+
+--
+-- Indexes for table `inventory_receipts`
+--
+ALTER TABLE `inventory_receipts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_receipt_inv` (`ingredient_id`),
+  ADD KEY `fk_receipt_supplier` (`supplier_id`);
 
 --
 -- Indexes for table `inventory_units`
@@ -531,12 +519,6 @@ ALTER TABLE `inventory_history`
 ALTER TABLE `inventory_units`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `name` (`name`);
-
---
--- Indexes for table `orders`
---
-ALTER TABLE `orders`
-  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `restaurant_tables`
@@ -554,6 +536,14 @@ ALTER TABLE `services`
 -- Indexes for table `service_bookings`
 --
 ALTER TABLE `service_bookings`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_book_table` (`table_id`),
+  ADD KEY `fk_book_combo` (`combo_id`);
+
+--
+-- Indexes for table `suppliers`
+--
+ALTER TABLE `suppliers`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -579,18 +569,6 @@ ALTER TABLE `videos`
 --
 ALTER TABLE `admins`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `bookings`
---
-ALTER TABLE `bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `booking_details`
---
-ALTER TABLE `booking_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -647,16 +625,16 @@ ALTER TABLE `inventory_history`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `inventory_receipts`
+--
+ALTER TABLE `inventory_receipts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `inventory_units`
 --
 ALTER TABLE `inventory_units`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `orders`
---
-ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `restaurant_tables`
@@ -677,10 +655,16 @@ ALTER TABLE `service_bookings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- AUTO_INCREMENT for table `suppliers`
+--
+ALTER TABLE `suppliers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `videos`
@@ -693,36 +677,50 @@ ALTER TABLE `videos`
 --
 
 --
--- Constraints for table `booking_details`
---
-ALTER TABLE `booking_details`
-  ADD CONSTRAINT `fk_service_booking` FOREIGN KEY (`booking_id`) REFERENCES `service_bookings` (`id`) ON DELETE CASCADE;
-
---
 -- Constraints for table `combo_items`
 --
 ALTER TABLE `combo_items`
   ADD CONSTRAINT `fk_combo` FOREIGN KEY (`combo_id`) REFERENCES `combos` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_food` FOREIGN KEY (`food_id`) REFERENCES `foods` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_food_in_combo` FOREIGN KEY (`food_id`) REFERENCES `foods` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `foods`
 --
 ALTER TABLE `foods`
-  ADD CONSTRAINT `foods_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `fk_food_category` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `food_recipes`
 --
 ALTER TABLE `food_recipes`
-  ADD CONSTRAINT `food_recipes_ibfk_1` FOREIGN KEY (`food_id`) REFERENCES `foods` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `food_recipes_ibfk_2` FOREIGN KEY (`ingredient_id`) REFERENCES `inventory` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_recipe_food` FOREIGN KEY (`food_id`) REFERENCES `foods` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_recipe_ing` FOREIGN KEY (`ingredient_id`) REFERENCES `inventory` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `inventory`
+--
+ALTER TABLE `inventory`
+  ADD CONSTRAINT `fk_inv_supplier` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `inventory_history`
 --
 ALTER TABLE `inventory_history`
   ADD CONSTRAINT `inventory_history_ibfk_1` FOREIGN KEY (`ingredient_id`) REFERENCES `inventory` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `inventory_receipts`
+--
+ALTER TABLE `inventory_receipts`
+  ADD CONSTRAINT `fk_receipt_inv` FOREIGN KEY (`ingredient_id`) REFERENCES `inventory` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_receipt_supplier` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `service_bookings`
+--
+ALTER TABLE `service_bookings`
+  ADD CONSTRAINT `fk_book_combo` FOREIGN KEY (`combo_id`) REFERENCES `combos` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_book_table` FOREIGN KEY (`table_id`) REFERENCES `restaurant_tables` (`id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

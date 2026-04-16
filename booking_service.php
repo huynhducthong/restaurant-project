@@ -160,7 +160,7 @@ $combos = $stmt_combos->fetchAll(PDO::FETCH_ASSOC);
                         <div class="p-3 rounded" style="background: #121212; border: 1px solid var(--border-color);">
                             <div class="menu-selection-container" style="max-height: 200px; overflow-y: auto;">
                                 <?php
-                                $menu_stmt = $db->query("SELECT * FROM foods WHERE is_active = 1");
+                                $menu_stmt = $db->query("SELECT * FROM foods WHERE status = 1");
                                 while ($item = $menu_stmt->fetch(PDO::FETCH_ASSOC)): 
                                 ?>
                                 <div class="d-flex align-items-center justify-content-between mb-2 p-2 rounded menu-item-row" style="border-bottom: 1px solid #2a2a2a;">

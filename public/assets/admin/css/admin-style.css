@@ -30,9 +30,6 @@
     
     /* Style cho Modal giống ảnh */
     .modal-content { border-radius: 20px; border: none; }
-    .info-label { font-size: 11px; text-transform: uppercase; color: #bbb; letter-spacing: 1px; margin-bottom: 5px; }
-    .info-value { font-weight: 600; color: #333; }
-    .note-area { background: #fffcf5; border-left: 4px solid #cda45e; padding: 15px; border-radius: 8px; font-style: italic; }
 /*manage_inventory.php*/
     .card-custom {
     border-radius: 15px;

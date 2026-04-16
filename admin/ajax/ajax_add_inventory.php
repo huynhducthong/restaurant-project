@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '../../config/database.php';
 
 // Thiết lập phản hồi JSON để AJAX nhận diện được
 header('Content-Type: application/json');

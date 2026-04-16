@@ -9,7 +9,7 @@ $db = $database->getConnection();
     <div class="card shadow p-4 border-0" style="border-radius: 15px;">
         <h3 class="mb-4 text-primary"><i class="fas fa-plus-circle"></i> Tạo Combo Mới</h3>
         
-        <form action="process_combo.php" method="POST" enctype="multipart/form-data">
+        <form action="processes/process_combo.php" method="POST" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-md-7 border-end">
                     <div class="mb-3">
