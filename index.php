@@ -54,39 +54,58 @@ $stmt_combos->execute();
 include __DIR__ . '/views/client/layouts/header.php'; 
 ?>
 
-<section id="hero" class="p-0">
-  <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="3000">
+<section id="hero" class="p-0" style="margin-top: -120px;"> <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="3000">
+    
     <div class="carousel-indicators">
       <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
       <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
       <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
     </div>
+
     <div class="carousel-inner">
-      <div class="carousel-item active" style="background-image: url('public/assets/img/hero-bg.jpg');">
-        <div class="carousel-container">
-          <div class="carousel-content container text-center">
-            <h2>Chào mừng đến với <span>Restaurantly</span></h2>
-            <p>Trải nghiệm ẩm thực tinh tế trong không gian sang trọng.</p>
+      <?php
+        // Cấu hình nội dung các Slide tại đây
+        $slides = [
+          [
+            'img' => 'public/assets/img/hero-bg.jpg', 
+            'title' => 'Chào mừng đến với <span>Restaurantly</span>', 
+            'desc' => 'Trải nghiệm ẩm thực tinh tế trong không gian sang trọng.'
+          ],
+          [
+            'img' => 'public/assets/img/hero-bg-2.jpg', 
+            'title' => 'Hương vị khó quên', 
+            'desc' => 'Nguyên liệu tươi sạch được chế biến bởi những đầu bếp hàng đầu.'
+          ],
+          [
+            'img' => 'public/assets/img/hero-bg-3.jpg', 
+            'title' => 'Không gian ấm cúng', 
+            'desc' => 'Nơi lý tưởng cho những buổi tiệc gia đình.'
+          ]
+        ];
+
+        foreach ($slides as $index => $slide):
+      ?>
+      <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>" 
+           style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('<?= $slide['img'] ?>') center center; 
+                  background-size: cover; 
+                  height: 100vh; /* Ép banner cao toàn màn hình */
+                  min-height: 600px;">
+        
+        <div class="carousel-container d-flex justify-content-center align-items-center" style="height: 100vh;">
+          <div class="carousel-content container text-center animated fadeInUp">
+            <h2 style="color: #fff; font-size: 48px; font-weight: 700; font-family: 'Playfair Display', serif;"><?= $slide['title'] ?></h2>
+            <p style="color: #eee; font-style: italic; font-size: 20px; margin-bottom: 30px;"><?= $slide['desc'] ?></p>
+            
+            <div class="btns">
+              <a href="menu.php" class="btn-menu" style="font-weight: 600; font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; display: inline-block; padding: 12px 30px; border-radius: 50px; transition: 0.3s; color: white; border: 2px solid #cda45e; text-decoration: none;">Thực đơn của chúng tôi</a>
+              <a href="booking_service.php?type=table" class="btn-book ms-3" style="font-weight: 600; font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; display: inline-block; padding: 12px 30px; border-radius: 50px; transition: 0.3s; color: white; border: 2px solid #cda45e; text-decoration: none; background: #cda45e;">Đặt bàn ngay</a>
+            </div>
           </div>
         </div>
       </div>
-      <div class="carousel-item" style="background-image: url('public/assets/img/hero-bg-2.jpg');">
-        <div class="carousel-container">
-          <div class="carousel-content container text-center">
-            <h2>Hương vị khó quên</h2>
-            <p>Nguyên liệu tươi sạch được chế biến bởi những đầu bếp hàng đầu.</p>
-          </div>
-        </div>
-      </div>
-      <div class="carousel-item" style="background-image: url('public/assets/img/hero-bg-3.jpg');">
-        <div class="carousel-container">
-          <div class="carousel-content container text-center">
-            <h2>Không gian ấm cúng</h2>
-            <p>Nơi lý tưởng cho những buổi tiệc gia đình.</p>
-          </div>
-        </div>
-      </div>
+      <?php endforeach; ?>
     </div>
+
     <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
       <span class="carousel-control-prev-icon"></span>
     </button>

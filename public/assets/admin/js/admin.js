@@ -5,7 +5,7 @@ $(document).ready(function() {
         addIngredientRow(); 
     });
     
-    // --- PHẦN 2: ĐỊNH MỨC MÓN ĂN (Recipes) ---
+    // --- PHẦN 1: ĐỊNH MỨC MÓN ĂN (Recipes) ---
     function addIngredientRow(data = null) {
         const rowId = Date.now();
         
@@ -17,14 +17,13 @@ $(document).ready(function() {
             });
         }
 
-        // 2. TẠO DANH SÁCH ĐƠN VỊ TỪ DATABASE (Sửa lỗi thiếu đơn vị 'chai')
+        // 2. Tạo danh sách đơn vị từ Database
         let unitOptions = '';
         if (window.allUnits && window.allUnits.length > 0) {
             window.allUnits.forEach(unit => {
                 unitOptions += `<option value="${unit}">${unit}</option>`;
             });
         } else {
-            // Phòng hờ trường hợp biến allUnits không tồn tại
             unitOptions = '<option value="kg">kg</option><option value="g">g</option><option value="L">L</option><option value="ml">ml</option>';
         }
 
@@ -54,7 +53,6 @@ $(document).ready(function() {
 
         $('#recipe-items-list').append(html);
 
-        // 4. Nếu là load dữ liệu cũ để sửa
         if(data) {
             const row = $(`#row-${rowId}`);
             row.find('select[name="ingredients[]"]').val(data.ingredient_id);
@@ -63,13 +61,15 @@ $(document).ready(function() {
         }
     }
 
-    // Các phần confirm booking, view detail và save recipe giữ nguyên như cũ...
+    // Cập nhật đường dẫn lấy danh sách định mức (AJAX)
     $(document).on('click', '.btn-add-recipe', function() {
         const foodId = $(this).data('id');
         $('#recipe-food-id').val(foodId);
         $('#recipe-food-name').text($(this).data('name'));
         $('#recipe-items-list').empty();
-        $.getJSON('ajax_get_recipes.php?food_id=' + foodId, function(data) {
+        
+        // ĐƯỜNG DẪN MỚI: ajax/
+        $.getJSON('ajax/ajax_get_recipes.php?food_id=' + foodId, function(data) {
             if(data && data.length > 0) {
                 data.forEach(item => addIngredientRow(item));
             } else {
@@ -79,10 +79,11 @@ $(document).ready(function() {
         new bootstrap.Modal(document.getElementById('modalRecipe')).show();
     });
 
+    // Cập nhật đường dẫn lưu định mức (AJAX)
     $('#form-save-recipe').on('submit', function(e) {
         e.preventDefault();
         $.ajax({
-            url: 'ajax_save_recipe.php',
+            url: 'ajax/ajax_save_recipe.php', // ĐƯỜNG DẪN MỚI: ajax/
             type: 'POST',
             data: $(this).serialize(),
             success: function() { location.reload(); },
@@ -90,46 +91,48 @@ $(document).ready(function() {
         });
     });
 
-    // Phần nhập kho giữ nguyên...
+    // --- PHẦN 2: QUẢN LÝ DỊCH VỤ & CHI TIẾT ĐẶT BÀN ---
+    $(document).on('click', '.btn-view-detail', function() {
+        const id = $(this).data('id');
+        const name = $(this).data('name');
+        const status = $(this).data('status');
+
+        $('#m-name').text(name);
+        $('#m-avatar').text(name.charAt(0).toUpperCase());
+        $('#m-status').html(status === 'Pending' 
+            ? '<span class="badge bg-warning text-dark">Chờ duyệt</span>' 
+            : '<span class="badge bg-success">Đã xác nhận</span>');
+        
+        // Cập nhật link xuất PDF (vào thư mục reports nếu bạn đã di chuyển file này)
+        $('#btn-export-pdf').attr('href', 'reports/export_pdf.php?id=' + id);
+
+        // ĐƯỜNG DẪN MỚI: ajax/
+        $.getJSON('ajax/ajax_get_booking_detail.php?id=' + id, function(data) {
+            if(data) {
+                $('#m-phone').text(data.customer_phone);
+                $('#m-type').text(data.service_type.toUpperCase());
+                $('#m-date').text(data.booking_date);
+                $('#m-guests').text(data.guests + ' người');
+                $('#m-msg').text(data.message || 'Không có ghi chú.');
+            }
+        });
+
+        new bootstrap.Modal(document.getElementById('modalDetail')).show();
+    });
+
+    $(document).on('click', '.btn-confirm-booking', function() {
+        const id = $(this).data('id');
+        if (confirm('Bạn có chắc chắn muốn xác nhận yêu cầu này?')) {
+            // Nếu bạn di chuyển logic confirm vào processes, hãy cập nhật đường dẫn ở đây
+            window.location.href = 'manage_services.php?action=confirm&id=' + id;
+        }
+    });
+
+    // --- PHẦN 3: NHẬP KHO ---
     $(document).on('click', '.btn-import', function() {
         $('#import-item-id').val($(this).data('id'));
         $('#import-item-name').text($(this).data('name'));
         $('#import-unit').text($(this).data('unit'));
         new bootstrap.Modal(document.getElementById('modalImport')).show();
     });
-    $(document).on('click', '.btn-view-detail', function() {
-    const id = $(this).data('id');
-    const name = $(this).data('name');
-    const status = $(this).data('status');
-
-    // Gán dữ liệu cơ bản vào Modal
-    $('#m-name').text(name);
-    $('#m-avatar').text(name.charAt(0).toUpperCase());
-    $('#m-status').html(status === 'Pending' 
-        ? '<span class="badge bg-warning text-dark">Chờ duyệt</span>' 
-        : '<span class="badge bg-success">Đã xác nhận</span>');
-    
-    // Cập nhật link xuất PDF
-    $('#btn-export-pdf').attr('href', 'export_pdf.php?id=' + id);
-
-    // Gọi AJAX để lấy thông tin chi tiết (ngày, khách, ghi chú)
-    $.getJSON('ajax_get_booking_detail.php?id=' + id, function(data) {
-        if(data) {
-            $('#m-phone').text(data.customer_phone);
-            $('#m-type').text(data.service_type.toUpperCase());
-            $('#m-date').text(data.booking_date);
-            $('#m-guests').text(data.guests + ' người');
-            $('#m-msg').text(data.message || 'Không có ghi chú.');
-        }
-    });
-
-    new bootstrap.Modal(document.getElementById('modalDetail')).show();
-});
-$(document).on('click', '.btn-confirm-booking', function() {
-    const id = $(this).data('id');
-    if (confirm('Bạn có chắc chắn muốn xác nhận yêu cầu này?')) {
-        // Chuyển hướng đến xử lý PHP đã có sẵn trong manage_services.php
-        window.location.href = 'manage_services.php?action=confirm&id=' + id;
-    }
-});
 });

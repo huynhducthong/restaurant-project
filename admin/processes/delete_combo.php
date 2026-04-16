@@ -1,5 +1,5 @@
 <?php
-require_once '../config/database.php'; // Đường dẫn tới file database.php của bạn
+require_once '../../config/database.php'; // Đường dẫn tới file database.php của bạn
 $database = new Database();
 $db = $database->getConnection();
 
