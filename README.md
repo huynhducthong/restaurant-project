@@ -1,2 +1,3 @@
 Tên database restaurant_db
-Tài khoản đăng nhập admin thong@gmail.com mk mk Admin@1234 
+tạo lại .env và vendor
+Tài khoản đăng nhập admin 28huynhducthong@gmail.com mk mk Admin@1234 
