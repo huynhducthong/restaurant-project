@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 21, 2026 at 09:52 AM
+-- Generation Time: Apr 21, 2026 at 05:19 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -484,8 +484,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`, `created_at`, `google_id`, `reset_token`, `reset_token_expire`, `remember_token`) VALUES
-(1, 'Huỳnh đức thông', '28huynhducthong@gmail.com', '$2y$10$f7cOFOOX2paiJ8e4J2OnneWhZZ87.3CioY3mCximsFWmC7wbAyzni', 'admin', '2026-04-02 07:19:22', '107664704264935131673', NULL, NULL, NULL),
-(2, 'Thong Duc', 'thongd342@gmail.com', '', '', '2026-04-20 14:17:41', '100631379832642815829', NULL, NULL, NULL);
+(1, 'Huỳnh đức thông', '28huynhducthong@gmail.com', '$2y$10$f7cOFOOX2paiJ8e4J2OnneWhZZ87.3CioY3mCximsFWmC7wbAyzni', 'admin', '2026-04-02 07:19:22', '107664704264935131673', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -771,7 +770,7 @@ ALTER TABLE `suppliers`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `videos`
