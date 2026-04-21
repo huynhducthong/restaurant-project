@@ -1,2 +1,10 @@
-.env
+# Chặn các thư viện nặng (đã có composer.json quản lý)
 /vendor/
+
+# Chặn file chứa mật khẩu thật
+.env
+
+# Chặn các file tạm của hệ thống hoặc trình soạn thảo
+.DS_Store
+/node_modules/
+.vscode/
