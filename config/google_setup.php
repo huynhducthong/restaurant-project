@@ -2,12 +2,19 @@
 // config/google_setup.php
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// Thay thế thông tin của bạn vào đây
-$clientID = '1053282487934-shr625av7ndeuvba5kp9vahet59qd2vd.apps.googleusercontent.com';
-$clientSecret = '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';
-$redirectUri = 'http://localhost/restaurant-project/public/google_callback.php';
+use Dotenv\Dotenv;
 
-// Khởi tạo Google Client
+// 1. Khởi tạo và tải các biến từ file .env
+// __DIR__ . '/../' có nghĩa là lùi lại 1 thư mục để tìm file .env ở thư mục gốc
+$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->load();
+
+// 2. Lấy thông tin từ file .env thông qua biến siêu toàn cục $_ENV
+$clientID     = $_ENV['GOOGLE_CLIENT_ID'];
+$clientSecret = $_ENV['GOOGLE_CLIENT_SECRET'];
+$redirectUri  = $_ENV['GOOGLE_REDIRECT_URL'];
+
+// 3. Khởi tạo Google Client
 $client = new Google_Client();
 $client->setClientId($clientID);
 $client->setClientSecret($clientSecret);
