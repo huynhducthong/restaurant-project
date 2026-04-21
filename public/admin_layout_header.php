@@ -60,6 +60,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <a href="../admin/manage_foods.php"><i class="fas fa-utensils"></i> Quản lý món ăn</a>
             </li>
 
+            <li class="<?= ($current_page == 'settings.php') ? 'active' : '' ?>">
+                <a href="../admin/settings.php"><i class="fas fa-concierge-bell"></i> Cài Đặt Chung</a>
+            </li>
+
+            <li class="<?= ($current_page == 'manage_banners.php') ? 'active' : '' ?>">
+                <a href="../admin/manage_banners.php"><i class="fas fa-concierge-bell"></i> Quản lý Banner</a>
+            </li>
+
             <li class="<?= ($current_page == 'list_combos.php' || $current_page == 'add_combo.php' || $current_page == 'edit_combo.php') ? 'active' : '' ?>">
                 <a href="../admin/list_combos.php"><i class="fas fa-layer-group"></i> Quản lý Combo</a>
             </li>

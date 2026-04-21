@@ -1,5 +1,8 @@
 <?php
-// 1. Import các cấu hình cần thiết
+// 1. Khởi tạo Session và Import các cấu hình
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/app/models/Booking.php';
 
@@ -7,7 +10,23 @@ require_once __DIR__ . '/app/models/Booking.php';
 $database = new Database();
 $db = $database->getConnection();
 
-// 3. Xử lý logic đặt bàn
+/** * 3. LẤY CẤU HÌNH HỆ THỐNG (Đồng bộ với Settings Admin)
+ * Bổ sung để hiển thị Tên nhà hàng và Căn lề Banner linh hoạt
+ */
+$settings = [];
+try {
+    $stmt_settings = $db->prepare("SELECT * FROM settings");
+    $stmt_settings->execute();
+    while ($row = $stmt_settings->fetch(PDO::FETCH_ASSOC)) {
+        $settings[$row['key_name']] = $row['key_value'];
+    }
+} catch (Exception $e) {}
+
+// Thiết lập căn lề chữ dựa trên settings (left, center, right)
+$pos = $settings['name_position'] ?? 'center';
+$align_class = ($pos == 'left') ? 'text-start' : (($pos == 'right') ? 'text-end' : 'text-center');
+
+// 4. Xử lý logic đặt bàn
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_GET['action']) && $_GET['action'] == 'book') {
     $name = $_POST['name'] ?? '';
     $email = $_POST['email'] ?? '';
@@ -17,7 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_GET['action']) && $_GET['act
     $people = $_POST['people'] ?? 1;
 
     $booking = new Booking($db);
-
     if ($booking->create($name, $email, $phone, $date, $time, $people)) {
         echo "<script>alert('Đặt bàn thành công! Chúng tôi sẽ sớm liên hệ.'); window.location.href='index.php';</script>";
     } else {
@@ -25,85 +43,101 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_GET['action']) && $_GET['act
     }
 }
 
-// 4. Lấy dữ liệu Video (Hỗ trợ cả YouTube và Local File)
+// 5. Lấy dữ liệu Banner, Video và Combo
+$banners_db = [];
+$video_data = null;
+$video_type = 'youtube';
+$video_url  = '';
+$file_path  = '';
+$stmt_combos = null;
+
 try {
-    $query = "SELECT * FROM videos WHERE is_active = 1 LIMIT 1";
-    $stmt = $db->prepare($query);
-    $stmt->execute();
-    $video = $stmt->fetch(PDO::FETCH_ASSOC);
-} catch (Exception $e) {
-    $video = null;
-}
+    // 5.1 Lấy Banner - Ưu tiên lấy từ Database
+    $stmt_banners = $db->prepare("SELECT * FROM banners ORDER BY display_order ASC");
+    $stmt_banners->execute();
+    $banners_db = $stmt_banners->fetchAll(PDO::FETCH_ASSOC);
 
-$video_type = $video ? $video['video_type'] : 'youtube';
-$video_url = $video ? $video['video_url'] : 'dQw4w9WgXcQ';
-$file_path = $video ? $video['file_path'] : '';
+    // 5.2 Lấy Video - Kiểm tra kỹ is_active
+    $stmt_video = $db->prepare("SELECT * FROM videos WHERE id = 1 LIMIT 1");
+    $stmt_video->execute();
+    $video_data = $stmt_video->fetch(PDO::FETCH_ASSOC);
 
-// --- MỚI: TRUY VẤN DỮ LIỆU COMBO ---
-$sql_combos = "SELECT c.*, GROUP_CONCAT(f.name SEPARATOR ', ') as list_foods 
-               FROM combos c
-               LEFT JOIN combo_items ci ON c.id = ci.combo_id
-               LEFT JOIN foods f ON ci.food_id = f.id
-               WHERE c.status = 1 
-               GROUP BY c.id 
-               ORDER BY c.id DESC";
-$stmt_combos = $db->prepare($sql_combos);
-$stmt_combos->execute();
+    // Nếu tìm thấy video, gán giá trị vào các biến
+    if ($video_data) {
+        $video_type = $video_data['video_type'] ?? 'youtube';
+        $video_url  = $video_data['video_url'] ?? '';
+        $file_path  = $video_data['file_path'] ?? '';
+    }
 
-// 5. BẮT ĐẦU HIỂN THỊ GIAO DIỆN
+    // 5.3 Truy vấn Combo
+    $sql_combos = "SELECT c.*, GROUP_CONCAT(f.name SEPARATOR ', ') as list_foods 
+                   FROM combos c
+                   LEFT JOIN combo_items ci ON c.id = ci.combo_id
+                   LEFT JOIN foods f ON ci.food_id = f.id
+                   WHERE c.status = 1 
+                   GROUP BY c.id 
+                   ORDER BY c.id DESC";
+    $stmt_combos = $db->prepare($sql_combos);
+    $stmt_combos->execute();
+
+} catch (Exception $e) {}
+
+// 6. Nhúng Header
 include __DIR__ . '/views/client/layouts/header.php'; 
 ?>
 
-<section id="hero" class="p-0" style="margin-top: -120px;"> <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="3000">
+<section id="hero" class="d-flex align-items-center">
+  <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" style="width: 100%; height: 100vh;">
     
-    <div class="carousel-indicators">
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
-    </div>
-
     <div class="carousel-inner">
-      <?php
-        // Cấu hình nội dung các Slide tại đây
-        $slides = [
-          [
-            'img' => 'public/assets/img/hero-bg.jpg', 
-            'title' => 'Chào mừng đến với <span>Restaurantly</span>', 
-            'desc' => 'Trải nghiệm ẩm thực tinh tế trong không gian sang trọng.'
-          ],
-          [
-            'img' => 'public/assets/img/hero-bg-2.jpg', 
-            'title' => 'Hương vị khó quên', 
-            'desc' => 'Nguyên liệu tươi sạch được chế biến bởi những đầu bếp hàng đầu.'
-          ],
-          [
-            'img' => 'public/assets/img/hero-bg-3.jpg', 
-            'title' => 'Không gian ấm cúng', 
-            'desc' => 'Nơi lý tưởng cho những buổi tiệc gia đình.'
-          ]
-        ];
-
-        foreach ($slides as $index => $slide):
+      <?php 
+      // Lấy banner từ DB sắp xếp theo thứ tự
+      $stmt_hero = $db->query("SELECT * FROM banners ORDER BY display_order ASC");
+      $first = true;
+      while($row = $stmt_hero->fetch(PDO::FETCH_ASSOC)): 
+          // Xử lý logic Font Style cho Tiêu đề
+          $title_weight = ($row['font_style'] == 'bold') ? 'bold' : 'normal';
+          $title_style  = ($row['font_style'] == 'italic') ? 'italic' : 'normal';
+          
+          // Xử lý logic Font Style cho Mô tả
+          $desc_weight = ($row['desc_font_style'] ?? 'normal' == 'bold') ? 'bold' : 'normal';
+          $desc_style  = ($row['desc_font_style'] ?? 'normal' == 'italic') ? 'italic' : 'normal';
       ?>
-      <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>" 
-           style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('<?= $slide['img'] ?>') center center; 
-                  background-size: cover; 
-                  height: 100vh; /* Ép banner cao toàn màn hình */
-                  min-height: 600px;">
-        
-        <div class="carousel-container d-flex justify-content-center align-items-center" style="height: 100vh;">
-          <div class="carousel-content container text-center animated fadeInUp">
-            <h2 style="color: #fff; font-size: 48px; font-weight: 700; font-family: 'Playfair Display', serif;"><?= $slide['title'] ?></h2>
-            <p style="color: #eee; font-style: italic; font-size: 20px; margin-bottom: 30px;"><?= $slide['desc'] ?></p>
+        <div class="carousel-item <?= $first ? 'active' : '' ?>" 
+             style="background-image: url('public/assets/img/hero/<?= $row['image_url'] ?>'); background-size: cover; height: 100vh; background-position: center; position: relative;">
+          
+          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5);"></div>
+
+          <div class="container position-relative d-flex flex-column justify-content-center h-100" 
+               style="text-align: <?= $row['text_align'] ?>; z-index: 2;">
             
-            <div class="btns">
-              <a href="menu.php" class="btn-menu" style="font-weight: 600; font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; display: inline-block; padding: 12px 30px; border-radius: 50px; transition: 0.3s; color: white; border: 2px solid #cda45e; text-decoration: none;">Thực đơn của chúng tôi</a>
-              <a href="booking_service.php?type=table" class="btn-book ms-3" style="font-weight: 600; font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; display: inline-block; padding: 12px 30px; border-radius: 50px; transition: 0.3s; color: white; border: 2px solid #cda45e; text-decoration: none; background: #cda45e;">Đặt bàn ngay</a>
+            <div class="row">
+              <div class="col-lg-12">
+                <h1 style="
+                    color: <?= $row['text_color'] ?>; 
+                    font-family: <?= $row['font_family'] ?>; 
+                    font-size: <?= $row['title_font_size'] ?? 48 ?>px; 
+                    font-weight: <?= $title_weight ?>; 
+                    font-style: <?= $title_style ?>;
+                    text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+                    margin-bottom: 15px;">
+                    <?= htmlspecialchars($row['title']) ?>
+                </h1>
+                
+                <p style="
+                    color: <?= $row['desc_color'] ?? '#eeeeee' ?>; 
+                    font-family: <?= $row['desc_font_family'] ?? "'Poppins', sans-serif" ?>; 
+                    font-size: <?= $row['desc_font_size'] ?? 24 ?>px; 
+                    font-weight: <?= $desc_weight ?>; 
+                    font-style: <?= $desc_style ?>;
+                    text-shadow: 1px 1px 4px rgba(0,0,0,0.7);">
+                    <?= htmlspecialchars($row['description']) ?>
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <?php endforeach; ?>
+      <?php $first = false; endwhile; ?>
     </div>
 
     <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
@@ -115,139 +149,186 @@ include __DIR__ . '/views/client/layouts/header.php';
   </div>
 </section>
 
+<main id="main">
 <section id="about" class="about-section" style="background: #0c0b09; color: #fff; padding: 100px 0; overflow: hidden;">
   <div class="container-fluid px-0"> 
     <div class="row g-0 align-items-center">
       <div class="col-lg-7" style="padding-left: 5%; padding-right: 30px;"> 
         <div class="video-wrapper" style="position: relative; width: 100%; border-radius: 5px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); background: #000;">
-          <?php if ($video_type == 'youtube'): ?>
-            <iframe width="100%" height="500" src="https://www.youtube.com/embed/<?php echo $video_url; ?>" frameborder="0" allowfullscreen style="display: block; border: none;"></iframe>
-          <?php else: ?>
+          
+          <?php if ($video_type == 'youtube' && !empty($video_url)): ?>
+            <iframe width="100%" height="500" 
+                    src="https://www.youtube.com/embed/<?php echo htmlspecialchars($video_url); ?>" 
+                    frameborder="0" allowfullscreen style="display: block; border: none;">
+            </iframe>
+          <?php elseif ($video_type == 'local' && !empty($file_path)): ?>
             <video controls style="width: 100%; height: 500px; display: block; object-fit: cover;">
-                <source src="/restaurant-project/<?php echo $file_path; ?>" type="video/mp4">
+                <source src="admin/<?php echo htmlspecialchars($file_path); ?>" type="video/mp4">
+                Trình duyệt của bạn không hỗ trợ xem video.
             </video>
+          <?php else: ?>
+            <img src="public/assets/img/about.jpg" class="img-fluid" alt="About Us" style="width: 100%; height: 500px; object-fit: cover;">
           <?php endif; ?>
+
         </div>
       </div>
+      
       <div class="col-lg-5 p-4 p-md-5">
         <div class="about-content" style="padding-right: 5%;"> 
-          <h2 style="font-family: 'Playfair Display', serif; color: #d9ba85; font-size: 3rem; margin-bottom: 25px; font-weight: 700; line-height: 1.2;">Câu Chuyện <br> Về Restaurantly</h2>
+          <h2 style="font-family: 'Playfair Display', serif; color: #d9ba85; font-size: 3rem; margin-bottom: 25px; font-weight: 700; line-height: 1.2;">
+              Câu Chuyện <br> Về <?= htmlspecialchars($settings['restaurant_name'] ?? 'Restaurantly') ?>
+          </h2>
           <p style="font-family: 'Poppins', sans-serif; font-weight: 300; line-height: 2; color: #ced4da; font-size: 1.15rem; margin-bottom: 25px;">
-            Nằm giữa lòng Biên Hòa, chúng tôi mang đến một không gian ẩm thực tinh tế, nơi mỗi nguyên liệu đều được kể thành một câu chuyện riêng biệt. 
+            Nằm giữa lòng <?= htmlspecialchars($settings['address'] ?? 'Biên Hòa') ?>, chúng tôi mang đến một không gian ẩm thực tinh tế.
           </p>
-          <div class="mt-5">
-            <a href="#menu" style="font-family: 'Poppins', sans-serif; font-size: 0.9rem; letter-spacing: 3px; color: #d9ba85; text-decoration: none; text-transform: uppercase; border-bottom: 2px solid #d9ba85; padding-bottom: 8px; transition: 0.3s; font-weight: 600;">Khám phá thực đơn →</a>
-          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<section id="menu" class="menu section-bg" style="background: #0c0b09; padding: 80px 0;">
-  <div class="container">
-    <div class="section-title text-center mb-5">
-      <h2 style="color: #cda45e; font-family: 'Playfair Display', serif;">Thực Đơn</h2>
-      <p style="color: white; font-size: 24px;">Khám phá hương vị Restaurantly</p>
-    </div>
+  <section id="menu" class="menu section-bg" style="background: #0c0b09; padding: 80px 0;">
+    <div class="container">
+      <div class="section-title text-center mb-5">
+        <h2 style="color: #cda45e; font-family: 'Playfair Display', serif;">Thực Đơn</h2>
+        <p style="color: white; font-size: 24px;">Khám phá hương vị <?= htmlspecialchars($settings['restaurant_name'] ?? 'Restaurantly') ?></p>
+      </div>
 
-    <?php 
-    $categories = $db->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSOC);
-    $chunks = array_chunk($categories, 3);
-    foreach ($chunks as $chunk): 
-    ?>
-    <div class="row mb-5">
-      <?php foreach ($chunk as $cat): 
-        $cat_id = $cat['id'];
-        $foods = $db->query("SELECT * FROM foods WHERE category_id = $cat_id LIMIT 3")->fetchAll(PDO::FETCH_ASSOC);
+      <?php 
+      $categories = $db->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSOC);
+      foreach (array_chunk($categories, 3) as $chunk): 
       ?>
-      <div class="col-lg-4 col-md-6 mb-4">
-        <div class="category-column-box">
-          <h3 class="category-title text-center" style="color: #cda45e; margin-bottom: 30px;"><?php echo mb_convert_case($cat['name'], MB_CASE_UPPER, "UTF-8"); ?></h3>
-          <div class="menu-list">
-            <?php foreach ($foods as $f): ?>
-            <div class="menu-item-horizontal d-flex align-items-center mb-4">
-              <div class="item-img" style="width: 70px; height: 70px; margin-right: 15px;">
-                <img src="public/assets/img/menu/<?php echo $f['image']; ?>" alt="<?php echo $f['name']; ?>" style="width: 100%; border-radius: 50%; border: 3px solid #37332a;">
-              </div>
-              <div class="item-details flex-grow-1">
-                <div class="d-flex justify-content-between align-items-baseline">
-                  <h5 class="food-name" style="color: #fff; font-size: 18px; margin: 0;"><?php echo $f['name']; ?></h5>
-                  <span class="food-price" style="color: #cda45e; font-weight: 600;"><?php echo number_format($f['price'], 0, ',', '.'); ?>đ</span>
+      <div class="row mb-5">
+        <?php foreach ($chunk as $cat): 
+          $cat_id = $cat['id'];
+          $foods = $db->query("SELECT * FROM foods WHERE category_id = $cat_id LIMIT 3")->fetchAll(PDO::FETCH_ASSOC);
+        ?>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="category-column-box">
+            <h3 class="category-title text-center" style="color: #cda45e; margin-bottom: 30px;"><?= mb_convert_case($cat['name'], MB_CASE_UPPER, "UTF-8") ?></h3>
+            <div class="menu-list">
+              <?php foreach ($foods as $f): ?>
+              <div class="menu-item-horizontal d-flex align-items-center mb-4">
+                <div class="item-img" style="width: 70px; height: 70px; margin-right: 15px;">
+                  <img src="public/assets/img/menu/<?= $f['image'] ?>" alt="<?= $f['name'] ?>" style="width: 100%; border-radius: 50%; border: 3px solid #37332a;">
                 </div>
-                <p class="food-desc" style="color: #aaaaaa; font-size: 14px; font-style: italic; margin: 0;"><?php echo $f['description']; ?></p>
+                <div class="item-details flex-grow-1">
+                  <div class="d-flex justify-content-between align-items-baseline">
+                    <h5 class="food-name" style="color: #fff; font-size: 18px; margin: 0;"><?= $f['name'] ?></h5>
+                    <span class="food-price" style="color: #cda45e; font-weight: 600;"><?= number_format($f['price'], 0, ',', '.') ?>đ</span>
+                  </div>
+                  <p class="food-desc" style="color: #aaaaaa; font-size: 14px; font-style: italic; margin: 0;"><?= $f['description'] ?></p>
+                </div>
               </div>
+              <?php endforeach; ?>
             </div>
-            <?php endforeach; ?>
           </div>
         </div>
+        <?php endforeach; ?>
       </div>
       <?php endforeach; ?>
-    </div>
-    <?php endforeach; ?>
-  </div>
-  <div class="text-center mt-4">
-    <a href="menu.php" class="btn-view-all" style="color: #cda45e; text-decoration: none; border: 2px solid #cda45e; padding: 10px 30px; border-radius: 50px; transition: 0.3s;">Xem toàn bộ thực đơn</a>
-  </div>
-</section>
-
-<section id="combos" style="background: #1a1814; padding: 80px 0; border-top: 1px solid #37332a; border-bottom: 1px solid #37332a;">
-  <div class="container">
-    <div class="section-title text-center mb-5">
-      <h2 style="color: #cda45e; font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700;">Combo Đặc Biệt</h2>
-      <p style="color: #fff; font-size: 18px; font-style: italic;">Lựa chọn hoàn hảo để chia sẻ niềm vui</p>
-    </div>
-
-    <div class="row g-4 justify-content-center">
-      <?php while ($row = $stmt_combos->fetch(PDO::FETCH_ASSOC)): ?>
-      <div class="col-lg-4 col-md-6">
-        <div class="combo-card" style="background: #0c0b09; border: 1px solid #37332a; padding: 25px; height: 100%; display: flex; flex-direction: column; transition: 0.4s; border-radius: 10px;">
-          <div class="combo-img mb-3" style="height: 220px; overflow: hidden; border-radius: 5px;">
-            <img src="public/assets/img/combos/<?= $row['image'] ?: 'default-combo.jpg' ?>" style="width: 100%; height: 100%; object-fit: cover; transition: 0.5s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-          </div>
-          
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <h4 style="color: #fff; margin: 0; font-size: 22px; font-family: 'Poppins', sans-serif;"><?= htmlspecialchars($row['name']) ?></h4>
-            <span style="color: #cda45e; font-weight: 700; font-size: 18px;"><?= number_format($row['price'], 0, ',', '.') ?>đ</span>
-          </div>
-          
-          <p style="color: #aaaaaa; font-size: 14px; font-style: italic; flex-grow: 1;"><?= htmlspecialchars($row['description']) ?></p>
-          
-          <div style="border-top: 1px dashed #37332a; padding-top: 15px; margin-bottom: 20px;">
-              <small style="color: #cda45e; text-transform: uppercase; letter-spacing: 1px; font-size: 11px; font-weight: 600;">Gồm các món:</small>
-              <p style="color: #ced4da; font-size: 13px; margin: 5px 0 0 0;"><?= htmlspecialchars($row['list_foods']) ?></p>
-          </div>
-          
-          <button onclick="addToCart('combo', <?= $row['id'] ?>)" style="background: transparent; color: #fff; border: 2px solid #cda45e; width: 100%; padding: 12px; border-radius: 50px; font-weight: 600; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;">Đặt ngay</button>
-        </div>
-      </div>
-      <?php endwhile; ?>
-    </div>
-  </div>
-</section>
-<section id="chefs" class="chefs" style="background: #0c0b09; padding: 80px 0;">
-  <div class="container">
-    <div class="section-title text-center" style="margin-bottom: 40px;">
-      <h2 style="font-size: 14px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: #aaaaaa; font-family: 'Poppins', sans-serif;">Đội ngũ đầu bếp</h2>
-      <p style="margin: 15px 0 0 0; font-size: 36px; font-weight: 700; font-family: 'Playfair Display', serif; color: #cda45e;">Những nghệ nhân ẩm thực hàng đầu</p>
-    </div>
-    <div class="row justify-content-center">
-      <div class="col-lg-4 col-md-6">
-        <div class="member" style="background: #1a1814; padding: 30px; border: 1px solid #37332a; text-align: center; transition: 0.3s; border-radius: 5px;">
-          <img src="public/assets/img/chefs/chefs-1.jpg" class="img-fluid" alt="Chef 1" style="border-radius: 5px; margin-bottom: 15px;">
-          <div class="member-info">
-            <h4 style="font-weight: 700; margin-bottom: 5px; font-size: 18px; color: #fff;">Walter White</h4>
-            <span style="display: block; font-size: 15px; font-style: italic; color: #cda45e;">Bếp trưởng</span>
-          </div>
-        </div>
+      <div class="text-center mt-4">
+        <a href="menu.php" class="btn-view-all-custom">Xem toàn bộ thực đơn</a>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+
+  <section id="combos" style="background: #1a1814; padding: 80px 0; border-top: 1px solid #37332a; border-bottom: 1px solid #37332a;">
+    <div class="container">
+      <div class="section-title text-center mb-5">
+        <h2 style="color: #cda45e; font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700;">Combo Đặc Biệt</h2>
+        <p style="color: #fff; font-size: 18px; font-style: italic;">Lựa chọn hoàn hảo để chia sẻ niềm vui</p>
+      </div>
+
+      <div class="row g-4 justify-content-center">
+        <?php if ($stmt_combos): ?>
+          <?php while ($row = $stmt_combos->fetch(PDO::FETCH_ASSOC)): ?>
+          <div class="col-lg-4 col-md-6">
+            <div class="combo-card-custom">
+              <div class="combo-img mb-3">
+                <img src="public/assets/img/combos/<?= $row['image'] ?: 'default-combo.jpg' ?>" alt="<?= htmlspecialchars($row['name']) ?>">
+              </div>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h4 class="combo-name-custom"><?= htmlspecialchars($row['name']) ?></h4>
+                <span class="combo-price-custom"><?= number_format($row['price'], 0, ',', '.') ?>đ</span>
+              </div>
+              <p class="combo-desc-custom"><?= htmlspecialchars($row['description']) ?></p>
+              <div class="combo-items-list">
+                  <small>Gồm các món:</small>
+                  <p><?= htmlspecialchars($row['list_foods']) ?></p>
+              </div>
+              <button onclick="addToCart('combo', <?= $row['id'] ?>)" class="btn-combo-order">Đặt ngay</button>
+            </div>
+          </div>
+          <?php endwhile; ?>
+        <?php endif; ?>
+      </div>
+    </div>
+  </section>
+
+  <section id="chefs" class="chefs" style="background: #0c0b09; padding: 80px 0;">
+    <div class="container">
+      <div class="section-title text-center mb-5">
+        <h2 class="chefs-subtitle">Đội ngũ đầu bếp</h2>
+        <p class="chefs-title">Những nghệ nhân ẩm thực hàng đầu</p>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-4 col-md-6">
+          <div class="chef-member-card">
+            <img src="public/assets/img/chefs/chefs-1.jpg" class="img-fluid" alt="Chef 1">
+            <div class="member-info">
+              <h4>Walter White</h4>
+              <span>Bếp trưởng</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
 
 <?php include __DIR__ . '/views/client/layouts/footer.php'; ?>
 
 <style>
-  .combo-card:hover { transform: translateY(-10px); border-color: #cda45e !important; box-shadow: 0 5px 20px rgba(205, 164, 94, 0.2); }
-  .combo-card button:hover { background: #cda45e !important; color: #000 !important; }
+    .btn-menu-custom, .btn-book-custom, .btn-view-all-custom {
+        font-weight: 600; font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; 
+        display: inline-block; padding: 12px 30px; border-radius: 50px; transition: 0.3s; 
+        color: white; border: 2px solid #cda45e; text-decoration: none;
+    }
+    .btn-book-custom { background: #cda45e; }
+    .btn-book-custom:hover, .btn-menu-custom:hover, .btn-view-all-custom:hover { background: #cda45e; color: #fff; }
+
+    .explore-menu-link {
+        font-family: 'Poppins', sans-serif; font-size: 0.9rem; letter-spacing: 3px; 
+        color: #d9ba85; text-decoration: none; text-transform: uppercase; 
+        border-bottom: 2px solid #d9ba85; padding-bottom: 8px; transition: 0.3s; font-weight: 600;
+    }
+
+    .combo-card-custom {
+        background: #0c0b09; border: 1px solid #37332a; padding: 25px; height: 100%; 
+        display: flex; flex-direction: column; transition: 0.4s; border-radius: 10px;
+    }
+    .combo-card-custom:hover { transform: translateY(-10px); border-color: #cda45e; box-shadow: 0 5px 20px rgba(205, 164, 94, 0.2); }
+    
+    .combo-img img { width: 100%; height: 220px; object-fit: cover; border-radius: 5px; transition: 0.5s; }
+    .combo-img:hover img { transform: scale(1.1); }
+    
+    .combo-name-custom { color: #fff; margin: 0; font-size: 22px; font-family: 'Poppins', sans-serif; }
+    .combo-price-custom { color: #cda45e; font-weight: 700; font-size: 18px; }
+    .combo-desc-custom { color: #aaaaaa; font-size: 14px; font-style: italic; flex-grow: 1; margin: 10px 0; }
+    
+    .combo-items-list { border-top: 1px dashed #37332a; padding-top: 15px; margin-bottom: 20px; }
+    .combo-items-list small { color: #cda45e; text-transform: uppercase; letter-spacing: 1px; font-size: 11px; font-weight: 600; }
+    .combo-items-list p { color: #ced4da; font-size: 13px; margin: 5px 0 0 0; }
+
+    .btn-combo-order { background: transparent; color: #fff; border: 2px solid #cda45e; width: 100%; padding: 12px; border-radius: 50px; font-weight: 600; transition: 0.3s; text-transform: uppercase; }
+    .btn-combo-order:hover { background: #cda45e !important; color: #000 !important; }
+
+    .chefs-subtitle { font-size: 14px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: #aaaaaa; font-family: 'Poppins', sans-serif; }
+    .chefs-title { margin: 15px 0 0 0; font-size: 36px; font-weight: 700; font-family: 'Playfair Display', serif; color: #cda45e; }
+    
+    .chef-member-card { background: #1a1814; padding: 30px; border: 1px solid #37332a; text-align: center; transition: 0.3s; border-radius: 5px; }
+    .chef-member-card img { border-radius: 5px; margin-bottom: 15px; }
+    .chef-member-card h4 { font-weight: 700; margin-bottom: 5px; font-size: 18px; color: #fff; }
+    .chef-member-card span { display: block; font-size: 15px; font-style: italic; color: #cda45e; }
 </style>

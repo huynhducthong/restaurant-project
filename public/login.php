@@ -1,3 +1,9 @@
+<?php
+// Gọi file cấu hình ở đầu trang
+require_once '../config/google_setup.php';
+// Tạo đường dẫn động để chuyển hướng sang Google
+$login_url = $client->createAuthUrl(); 
+?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -5,6 +11,7 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Đăng nhập - Restaurantly</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   
   <style>
@@ -132,6 +139,12 @@
     </div>
     <button type="submit" class="btn-auth">Đăng nhập</button>
 </form>
+<div class="text-center mt-3">
+    <p>Hoặc đăng nhập bằng</p>
+    <a href="<?= htmlspecialchars($login_url) ?>" class="btn btn-outline-danger w-100 fw-bold">
+        <i class="bi bi-google me-2"></i> Đăng nhập bằng Google
+    </a>
+</div>
       <div class="auth-link">
         <p>Chưa có tài khoản? <a href="register.php">Đăng ký ngay</a></p>
         <p><a href="../index.php">← Quay lại trang chủ</a></p>
