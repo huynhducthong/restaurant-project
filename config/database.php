@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../vendor/autoload.php';
 class Database {
     private $host = "localhost";
     private $db_name = "restaurant_db";

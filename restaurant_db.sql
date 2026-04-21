@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 13, 2026 at 05:01 PM
+-- Generation Time: Apr 21, 2026 at 09:52 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -33,6 +33,39 @@ CREATE TABLE `admins` (
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `banners`
+--
+
+DROP TABLE IF EXISTS `banners`;
+CREATE TABLE `banners` (
+  `id` int(11) NOT NULL,
+  `image_url` varchar(255) NOT NULL,
+  `title` text DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `font_family` varchar(50) DEFAULT 'Poppins',
+  `text_color` varchar(20) DEFAULT '#ffffff',
+  `text_align` varchar(20) DEFAULT 'center',
+  `font_style` varchar(50) DEFAULT 'normal',
+  `display_order` int(11) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `desc_color` varchar(20) DEFAULT '#eeeeee',
+  `desc_font_family` varchar(100) DEFAULT '''Poppins'', sans-serif',
+  `desc_font_style` varchar(50) DEFAULT 'normal',
+  `title_font_size` int(11) DEFAULT 48,
+  `desc_font_size` int(11) DEFAULT 24
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `banners`
+--
+
+INSERT INTO `banners` (`id`, `image_url`, `title`, `description`, `font_family`, `text_color`, `text_align`, `font_style`, `display_order`, `created_at`, `desc_color`, `desc_font_family`, `desc_font_style`, `title_font_size`, `desc_font_size`) VALUES
+(2, '1776687242_hero-bg.jpg', 'retauranlly ', 'ăn ngon', '\'Playfair Display\', serif', '#240a0a', 'center', 'bold', 1, '2026-04-20 12:14:02', '#c18b8b', '\'Poppins\', sans-serif', 'normal', 48, 24),
+(7, '1776687610_hero-bg-2.jpg', 'huhf', 'nbzbn', '\'Playfair Display\', serif', '#d71d1d', 'left', 'normal', 2, '2026-04-20 12:20:10', '#eeeeee', '\'Poppins\', sans-serif', 'normal', 48, 24);
 
 -- --------------------------------------------------------
 
@@ -283,6 +316,20 @@ INSERT INTO `inventory_units` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `navigation_menu`
+--
+
+DROP TABLE IF EXISTS `navigation_menu`;
+CREATE TABLE `navigation_menu` (
+  `id` int(11) NOT NULL,
+  `title` varchar(100) DEFAULT NULL,
+  `url` varchar(255) DEFAULT NULL,
+  `position` int(11) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `restaurant_tables`
 --
 
@@ -373,6 +420,31 @@ INSERT INTO `service_bookings` (`id`, `customer_name`, `customer_phone`, `bookin
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `settings`
+--
+
+DROP TABLE IF EXISTS `settings`;
+CREATE TABLE `settings` (
+  `key_name` varchar(50) NOT NULL,
+  `key_value` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `settings`
+--
+
+INSERT INTO `settings` (`key_name`, `key_value`) VALUES
+('address', 'biên hòa '),
+('hotline', '0456789124'),
+('logo_url', 'public/assets/img/logo.png'),
+('name_position', 'left'),
+('open_days', 'Thứ 3 - Chủ Nhật'),
+('open_time', '09:00 AM - 11:00 PM'),
+('restaurant_name', 'Restaurantly');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `suppliers`
 --
 
@@ -400,15 +472,20 @@ CREATE TABLE `users` (
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
   `role` enum('admin','staff') DEFAULT 'staff',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `google_id` varchar(100) DEFAULT NULL COMMENT 'Lưu ID từ Google',
+  `reset_token` varchar(255) DEFAULT NULL COMMENT 'Mã token để đổi mật khẩu',
+  `reset_token_expire` datetime DEFAULT NULL COMMENT 'Thời gian hết hạn của mã token',
+  `remember_token` varchar(255) DEFAULT NULL COMMENT 'Mã token cho tính năng Ghi nhớ đăng nhập'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`, `created_at`) VALUES
-(1, 'Huỳnh đức thông', 'thong@gmail.com', '$2y$10$f7cOFOOX2paiJ8e4J2OnneWhZZ87.3CioY3mCximsFWmC7wbAyzni', 'admin', '2026-04-02 07:19:22');
+INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`, `created_at`, `google_id`, `reset_token`, `reset_token_expire`, `remember_token`) VALUES
+(1, 'Huỳnh đức thông', '28huynhducthong@gmail.com', '$2y$10$f7cOFOOX2paiJ8e4J2OnneWhZZ87.3CioY3mCximsFWmC7wbAyzni', 'admin', '2026-04-02 07:19:22', '107664704264935131673', NULL, NULL, NULL),
+(2, 'Thong Duc', 'thongd342@gmail.com', '', '', '2026-04-20 14:17:41', '100631379832642815829', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -440,6 +517,12 @@ INSERT INTO `videos` (`id`, `video_type`, `video_url`, `file_path`, `created_at`
 -- Indexes for table `admins`
 --
 ALTER TABLE `admins`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `banners`
+--
+ALTER TABLE `banners`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -521,6 +604,12 @@ ALTER TABLE `inventory_units`
   ADD UNIQUE KEY `name` (`name`);
 
 --
+-- Indexes for table `navigation_menu`
+--
+ALTER TABLE `navigation_menu`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `restaurant_tables`
 --
 ALTER TABLE `restaurant_tables`
@@ -539,6 +628,12 @@ ALTER TABLE `service_bookings`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_book_table` (`table_id`),
   ADD KEY `fk_book_combo` (`combo_id`);
+
+--
+-- Indexes for table `settings`
+--
+ALTER TABLE `settings`
+  ADD PRIMARY KEY (`key_name`);
 
 --
 -- Indexes for table `suppliers`
@@ -569,6 +664,12 @@ ALTER TABLE `videos`
 --
 ALTER TABLE `admins`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `banners`
+--
+ALTER TABLE `banners`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -616,7 +717,7 @@ ALTER TABLE `inventory`
 -- AUTO_INCREMENT for table `inventory_categories`
 --
 ALTER TABLE `inventory_categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `inventory_history`
@@ -635,6 +736,12 @@ ALTER TABLE `inventory_receipts`
 --
 ALTER TABLE `inventory_units`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `navigation_menu`
+--
+ALTER TABLE `navigation_menu`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `restaurant_tables`
@@ -664,7 +771,7 @@ ALTER TABLE `suppliers`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `videos`
