@@ -77,7 +77,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </li>
             
             <li class="<?= ($current_page == 'manage_inventory.php') ? 'active' : '' ?>">
-                <a href="../admin/manage_inventory.php"><i class="fas fa-warehouse"></i> Quản lý Kho</a>
+                <a href="../admin/InventoryController.php"><i class="fas fa-warehouse"></i> Quản lý Kho</a>
             </li>
             
             <li class="<?= ($current_page == 'manage_services.php') ? 'active' : '' ?>">
