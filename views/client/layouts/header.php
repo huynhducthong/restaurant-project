@@ -26,6 +26,10 @@ $settings['open_time']       = $settings['open_time'] ?? '11:00 AM - 23:00 PM';
 $settings['logo_position']   = $settings['logo_position'] ?? 'left'; // Trái hoặc Phải
 
 $current_page = basename($_SERVER['PHP_SELF']); 
+
+// 2. Kiểm tra quyền để quyết định xem có hiển thị nút "Vào trang Quản trị" không
+$user_role = $_SESSION['role'] ?? '';
+$is_backend_access = in_array($user_role, ['admin', 'staff', 1, 2]);
 ?>
 
 <!DOCTYPE html>
@@ -63,10 +67,39 @@ $current_page = basename($_SERVER['PHP_SELF']);
     .navbar a:hover, .navbar a.active { color: var(--primary-color); }
 
     /* Tài khoản & Nút bấm */
-    .user-dropdown-custom { display: none; position: absolute; right: 15px; top: 100%; background: rgba(0, 0, 0, 0.9); border: 1px solid var(--primary-color); border-radius: 50px; padding: 8px 25px; gap: 15px; align-items: center; z-index: 1000; }
-    .user-dropdown-custom.active { display: flex; }
+    .header-actions { display: flex; align-items: center; gap: 15px; }
+    .auth-btn {
+      font-family: "Open Sans", sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border-radius: 50px;
+      transition: 0.3s;
+      text-decoration: none;
+    }
+    .login-btn {
+      color: #fff;
+      background: transparent;
+    }
+    .login-btn:hover {
+      color: #cda45e;
+    }
+    .register-btn {
+      color: #fff;
+      border: 2px solid #cda45e;
+      background: rgba(205, 164, 94, 0.1);
+    }
+    .register-btn:hover {
+      background: #cda45e;
+      color: #1a1814;
+    }
     .book-a-table-btn { background: transparent; color: #fff; padding: 10px 25px; border-radius: 50px; border: 2px solid var(--primary-color); text-decoration: none; font-size: 13px; font-weight: 600; text-transform: uppercase; }
     .book-a-table-btn:hover { background: var(--primary-color); color: #000; }
+    
+    /* Canh chỉnh icon trong dropdown */
+    .dropdown-item i { width: 22px; text-align: center; }
   </style>
 </head>
 
@@ -96,28 +129,46 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
-          <li><a class="nav-link <?= ($current_page == 'index.php') ? 'active' : '' ?>" href="index.php">Trang chủ</a></li>
-          <li><a class="nav-link" href="#about">Về chúng tôi</a></li>
-          <li><a class="nav-link <?= ($current_page == 'menu.php') ? 'active' : '' ?>" href="menu.php">Thực đơn</a></li>
-          <li><a class="nav-link" href="#contact">Liên hệ</a></li>
+          <li><a class="nav-link scrollto active" href="index.php">Trang chủ</a></li>
+          <li><a class="nav-link scrollto" href="about.php">Về chúng tôi</a></li>
+          <li><a class="nav-link scrollto" href="menu.php">Thực đơn</a></li>
+          <li><a class="nav-link scrollto" href="contact.php">Liên hệ</a></li>
         </ul>
       </nav>
 
-      <div class="header-right d-flex align-items-center position-relative">
-        <i class="bi bi-list mobile-nav-toggle" id="user-menu-btn" style="color:#fff; cursor:pointer; font-size:24px;"></i>
-        <ul class="user-dropdown-custom shadow" id="user-content">
-            <?php if(isset($_SESSION['user_id'])): ?>
-                <li><span style="font-weight:700; color:var(--primary-color); font-size:12px;">Chào, <?= htmlspecialchars($_SESSION['user_name']) ?></span></li>
-                <?php if($_SESSION['role'] == 'admin' || $_SESSION['role'] == 1): ?>
-                  <li><a href="admin/admin_dashboard.php">Quản lý</a></li>
+      <div class="d-flex align-items-center">
+        <i class="bi bi-list mobile-nav-toggle" style="color:#fff; cursor:pointer; font-size:24px;"></i>
+        <div class="header-actions ms-3">
+          <a href="booking_service.php?type=table" class="book-a-table-btn">ĐẶT BÀN</a>
+          
+          <?php if(isset($_SESSION['user_id'])): ?>
+            <div class="dropdown">
+              <a href="#" class="auth-btn register-btn dropdown-toggle text-white d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false" style="gap: 8px;">
+                <i class="bi bi-person-circle fs-5"></i>
+                <?= htmlspecialchars($_SESSION['user_name'] ?? 'Tài khoản') ?>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-dark shadow" style="background: #1a1814; border: 1px solid #cda45e; border-radius: 8px;">
+                
+                <?php if($is_backend_access): ?>
+                    <li><a class="dropdown-item fw-bold" style="color: #cda45e;" href="admin/admin_dashboard.php">
+                        <i class="bi bi-speedometer2 me-2"></i>Vào trang Quản trị
+                    </a></li>
+                    <li><hr class="dropdown-divider" style="border-color: rgba(205,164,94,0.3);"></li>
                 <?php endif; ?>
-                <li><a href="public/logout.php" style="color:#ff4d4d;">Thoát</a></li>
-            <?php else: ?>
-                <li><a href="public/login.php">Đăng nhập</a></li>
-                <li><a href="public/register.php">Đăng ký</a></li>
-            <?php endif; ?>
-        </ul>
-        <a href="booking_service.php?type=table" class="book-a-table-btn ms-3">ĐẶT BÀN</a>
+
+                <li><a class="dropdown-item text-white hover-gold" href="profile.php"><i class="bi bi-person me-2" style="color: #cda45e;"></i>Thông tin cá nhân</a></li>
+                <li><a class="dropdown-item text-white hover-gold" href="my_orders.php"><i class="bi bi-receipt me-2" style="color: #cda45e;"></i>Lịch sử đặt bàn</a></li>
+                <li><hr class="dropdown-divider" style="border-color: rgba(205,164,94,0.3);"></li>
+                <li><a class="dropdown-item text-danger fw-bold" href="public/logout.php"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
+              </ul>
+            </div>
+          <?php else: ?>
+            <div class="d-flex align-items-center gap-2">
+              <a href="public/login.php" class="auth-btn login-btn">Đăng nhập</a>
+              <a href="public/register.php" class="auth-btn register-btn">Đăng ký</a>
+            </div>
+          <?php endif; ?>
+        </div>
       </div>
     </div>
   </header>
@@ -129,12 +180,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
       if (window.scrollY > 50) { header.classList.add('header-scrolled'); topbar.classList.add('topbar-scrolled'); } 
       else { header.classList.remove('header-scrolled'); topbar.classList.remove('topbar-scrolled'); }
     });
-
-    document.getElementById('user-menu-btn').onclick = function(e) {
-      e.stopPropagation();
-      document.getElementById('user-content').classList.toggle('active');
-    };
-    window.onclick = function() { document.getElementById('user-content').classList.remove('active'); };
   </script>
 </body>
 </html>
