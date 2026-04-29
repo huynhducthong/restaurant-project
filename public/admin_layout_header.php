@@ -84,6 +84,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <a href="../admin/manage_services.php"><i class="fas fa-concierge-bell"></i> Quản lý Dịch vụ</a>
             </li>
 
+            <li class="<?= ($current_page == 'manage_about.php') ? 'active' : '' ?>">
+                <a href="../admin/manage_about.php"><i class="fas fa-concierge-bell"></i> Quản lý bài viết</a>
+            </li>
+
             <li class="logout-item">
                 <a href="logout.php" style="color: #e74c3c;"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
             </li>

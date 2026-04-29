@@ -97,7 +97,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
           <li><a class="nav-link <?= ($current_page == 'index.php') ? 'active' : '' ?>" href="index.php">Trang chủ</a></li>
-          <li><a class="nav-link" href="#about">Về chúng tôi</a></li>
+          <li><a class="nav-link"<?= ($current_page == 'Aboutus.php') ? 'active' : '' ?> href="aboutus.php">Về chúng tôi</a></li>
           <li><a class="nav-link <?= ($current_page == 'menu.php') ? 'active' : '' ?>" href="menu.php">Thực đơn</a></li>
           <li><a class="nav-link" href="#contact">Liên hệ</a></li>
         </ul>
