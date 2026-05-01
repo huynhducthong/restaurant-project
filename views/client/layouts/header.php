@@ -23,7 +23,7 @@ $settings['restaurant_name'] = $settings['restaurant_name'] ?? 'Restaurantly';
 $settings['hotline']         = $settings['hotline'] ?? '0123 456 789';
 $settings['open_days']       = $settings['open_days'] ?? 'Thứ 2 - Chủ Nhật';
 $settings['open_time']       = $settings['open_time'] ?? '11:00 AM - 23:00 PM';
-$settings['logo_position']   = $settings['logo_position'] ?? 'left'; // Trái hoặc Phải
+$settings['logo_position']   = $settings['name_position'] ?? 'left'; // Đọc đúng key name_position từ settings
 
 $current_page = basename($_SERVER['PHP_SELF']); 
 ?>
@@ -73,11 +73,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <body>
   <div id="topbar">
     <div class="container d-flex justify-content-center justify-content-md-between">
-      <div class="contact-info d-flex align-items-center">
+      <div class="contact-info d-flex align-items-center flex-wrap">
         <i class="bi bi-phone me-1" style="color: var(--primary-color);"></i>
         <span><?= htmlspecialchars($settings['hotline']) ?></span>
         <i class="bi bi-clock ms-4 me-1" style="color: var(--primary-color);"></i>
         <span><?= htmlspecialchars($settings['open_days']) ?>: <strong><?= htmlspecialchars($settings['open_time']) ?></strong></span>
+        <?php if (!empty($settings['address'])): ?>
+        <i class="bi bi-geo-alt ms-4 me-1" style="color: var(--primary-color);"></i>
+        <span><?= htmlspecialchars($settings['address']) ?></span>
+        <?php endif; ?>
       </div>
     </div>
   </div>
@@ -88,7 +92,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
       <h1 class="logo">
         <a href="index.php" class="<?= ($settings['logo_position'] == 'right') ? 'logo-container-right' : '' ?>">
           <?php if (!empty($settings['logo_url'])): ?>
-            <img src="<?= htmlspecialchars($settings['logo_url']) ?>" alt="Logo">
+            <img src="<?= htmlspecialchars($settings['logo_url']) ?>?v=<?= htmlspecialchars($settings['logo_ver'] ?? '1') ?>" alt="Logo">
           <?php endif; ?>
           <span><?= htmlspecialchars($settings['restaurant_name']) ?></span>
         </a>

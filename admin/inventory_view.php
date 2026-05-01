@@ -90,6 +90,12 @@ include '../public/admin_layout_header.php';
                 <i class="fas fa-check-circle me-2"></i> Hoàn tất kiểm kê và cập nhật số liệu thành công!
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
+            <?php elseif ($msg === 'error'): ?>
+            <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <strong>Kiểm kê thất bại!</strong> Có lỗi xảy ra khi cập nhật số liệu. Vui lòng thử lại.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
             <?php endif; ?>
 
             <div class="tab-pane fade show active" id="tab-stock">

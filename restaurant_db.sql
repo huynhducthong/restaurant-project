@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 27, 2026 at 03:04 PM
+-- Generation Time: May 01, 2026 at 03:31 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -66,6 +66,43 @@ CREATE TABLE `banners` (
 INSERT INTO `banners` (`id`, `image_url`, `title`, `description`, `font_family`, `text_color`, `text_align`, `font_style`, `display_order`, `created_at`, `desc_color`, `desc_font_family`, `desc_font_style`, `title_font_size`, `desc_font_size`) VALUES
 (2, '1776687242_hero-bg.jpg', 'retauranlly ', 'ăn ngon', '\'Playfair Display\', serif', '#240a0a', 'center', 'bold', 1, '2026-04-20 12:14:02', '#c18b8b', '\'Poppins\', sans-serif', 'normal', 48, 24),
 (7, '1776687610_hero-bg-2.jpg', 'huhf', 'nbzbn', '\'Playfair Display\', serif', '#d71d1d', 'left', 'normal', 2, '2026-04-20 12:20:10', '#eeeeee', '\'Poppins\', sans-serif', 'normal', 48, 24);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bookings`
+--
+
+DROP TABLE IF EXISTS `bookings`;
+CREATE TABLE `bookings` (
+  `id` int(11) NOT NULL,
+  `customer_name` varchar(100) NOT NULL,
+  `customer_phone` varchar(20) NOT NULL,
+  `customer_email` varchar(100) DEFAULT NULL,
+  `booking_date` datetime NOT NULL,
+  `number_of_guests` int(11) NOT NULL DEFAULT 1,
+  `table_id` int(11) DEFAULT NULL,
+  `status` enum('pending','confirmed','completed','cancelled') DEFAULT 'pending',
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `booking_details`
+--
+
+DROP TABLE IF EXISTS `booking_details`;
+CREATE TABLE `booking_details` (
+  `id` int(11) NOT NULL,
+  `booking_id` int(11) NOT NULL,
+  `menu_id` int(11) NOT NULL,
+  `item_type` enum('food','combo','service') NOT NULL DEFAULT 'food',
+  `quantity` int(11) NOT NULL DEFAULT 1,
+  `price` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -165,16 +202,17 @@ CREATE TABLE `foods` (
   `image` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `status` tinyint(1) DEFAULT 1,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `menu_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `foods`
 --
 
-INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`, `is_active`) VALUES
-(1, 4, 'rựu vang', 500000.00, '1775141620_Screenshot 2026-04-02 213852.png', 'dfb', 1, 1),
-(2, 2, 'Bò bít tết', 800000.00, '1775392540_Screenshot 2026-04-03 121754.png', 'vgfnbwd', 1, 1);
+INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`, `is_active`, `menu_id`) VALUES
+(1, 4, 'rựu vang', 500000.00, '1775141620_Screenshot 2026-04-02 213852.png', 'dfb', 1, 1, NULL),
+(2, 2, 'Bò bít tết', 800000.00, '1775392540_Screenshot 2026-04-03 121754.png', 'vgfnbwd', 1, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -226,8 +264,8 @@ CREATE TABLE `inventory` (
 --
 
 INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `stock_quantity`, `cost_price`, `supplier_id`, `entry_date`, `expiry_date`, `revenue`, `updated_at`, `min_stock`) VALUES
-(1, 'rựu', 'Đồ uống', 'chai', 200.00, 20000000.00, 1, NULL, '2027-06-26', 0.00, '2026-04-26 13:38:24', 0),
-(2, 'thịt bò', 'Thịt', 'kg', 29.00, 10000000.00, 1, NULL, '2027-12-26', 0.00, '2026-04-26 13:51:31', 0);
+(1, 'rựu', 'Đồ uống', 'chai', 191.00, 20000000.00, 1, NULL, '2027-06-26', 0.00, '2026-05-01 13:28:30', 0),
+(2, 'thịt bò', 'Thịt', 'kg', 28.50, 10000000.00, 1, NULL, '2027-12-26', 0.00, '2026-05-01 13:28:30', 0);
 
 -- --------------------------------------------------------
 
@@ -242,6 +280,14 @@ CREATE TABLE `inventory_audits` (
   `performed_by` varchar(100) DEFAULT NULL,
   `notes` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `inventory_audits`
+--
+
+INSERT INTO `inventory_audits` (`id`, `audit_date`, `performed_by`, `notes`) VALUES
+(1, '2026-04-29 20:12:52', 'Admin', ''),
+(2, '2026-04-29 20:13:38', 'Admin', '');
 
 -- --------------------------------------------------------
 
@@ -258,6 +304,16 @@ CREATE TABLE `inventory_audit_details` (
   `physical_qty` float DEFAULT NULL,
   `variance` float DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `inventory_audit_details`
+--
+
+INSERT INTO `inventory_audit_details` (`id`, `audit_id`, `ingredient_id`, `system_qty`, `physical_qty`, `variance`) VALUES
+(1, 1, 1, 200, 200, 0),
+(2, 1, 2, 29, 29, 0),
+(3, 2, 1, 192, 192, 0),
+(4, 2, 2, 29, 29, 0);
 
 -- --------------------------------------------------------
 
@@ -311,7 +367,10 @@ INSERT INTO `inventory_history` (`id`, `ingredient_id`, `type`, `quantity`, `cre
 (6, 1, 'import', 100.00, '2026-04-26 13:38:03', 'Admin'),
 (7, 1, 'export', 99.00, '2026-04-26 13:38:24', 'Admin'),
 (8, 2, 'import', 10.00, '2026-04-26 13:51:09', 'Admin'),
-(9, 2, 'import', 10.00, '2026-04-26 13:51:31', 'Admin');
+(9, 2, 'import', 10.00, '2026-04-26 13:51:31', 'Admin'),
+(10, 1, 'export', 8.00, '2026-04-29 13:13:35', 'Admin'),
+(11, 1, 'export', 1.00, '2026-05-01 13:28:30', NULL),
+(12, 2, 'export', 0.50, '2026-05-01 13:28:30', NULL);
 
 -- --------------------------------------------------------
 
@@ -451,13 +510,6 @@ CREATE TABLE `service_bookings` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `service_bookings`
---
-
-INSERT INTO `service_bookings` (`id`, `customer_name`, `customer_phone`, `booking_date`, `service_type`, `table_id`, `combo_id`, `guests`, `message`, `total_amount`, `deposit_amount`, `status`, `created_at`) VALUES
-(5, 'Huỳnh đức thông', '109876512345', '2026-04-04 22:25:00', 'table', NULL, NULL, 2, '', 500000.00, 150000.00, 'Confirmed', '2026-04-02 08:25:35');
-
 -- --------------------------------------------------------
 
 --
@@ -475,13 +527,19 @@ CREATE TABLE `settings` (
 --
 
 INSERT INTO `settings` (`key_name`, `key_value`) VALUES
-('address', 'biên hòa '),
+('address', 'biên hòa'),
+('email', ''),
+('facebook_url', ''),
+('footer_text', '© 2024 Restaurantly. All Rights Reserved.'),
 ('hotline', '0456789124'),
 ('logo_url', 'public/assets/img/logo.png'),
+('maps_embed', ''),
+('meta_desc', ''),
 ('name_position', 'left'),
 ('open_days', 'Thứ 3 - Chủ Nhật'),
 ('open_time', '09:00 AM - 11:00 PM'),
-('restaurant_name', 'Restaurantly');
+('restaurant_name', 'Restaurantly'),
+('zalo_url', '');
 
 -- --------------------------------------------------------
 
@@ -572,6 +630,19 @@ ALTER TABLE `admins`
 --
 ALTER TABLE `banners`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `bookings`
+--
+ALTER TABLE `bookings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `booking_details`
+--
+ALTER TABLE `booking_details`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_booking_service` (`booking_id`);
 
 --
 -- Indexes for table `categories`
@@ -733,6 +804,18 @@ ALTER TABLE `banners`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
+-- AUTO_INCREMENT for table `bookings`
+--
+ALTER TABLE `bookings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `booking_details`
+--
+ALTER TABLE `booking_details`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
@@ -778,13 +861,13 @@ ALTER TABLE `inventory`
 -- AUTO_INCREMENT for table `inventory_audits`
 --
 ALTER TABLE `inventory_audits`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `inventory_audit_details`
 --
 ALTER TABLE `inventory_audit_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `inventory_categories`
@@ -796,7 +879,7 @@ ALTER TABLE `inventory_categories`
 -- AUTO_INCREMENT for table `inventory_history`
 --
 ALTER TABLE `inventory_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `inventory_receipts`
@@ -832,7 +915,7 @@ ALTER TABLE `services`
 -- AUTO_INCREMENT for table `service_bookings`
 --
 ALTER TABLE `service_bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `suppliers`
@@ -855,6 +938,12 @@ ALTER TABLE `videos`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `booking_details`
+--
+ALTER TABLE `booking_details`
+  ADD CONSTRAINT `fk_booking_service` FOREIGN KEY (`booking_id`) REFERENCES `service_bookings` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `combo_items`
