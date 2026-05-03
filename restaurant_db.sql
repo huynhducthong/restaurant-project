@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Apr 27, 2026 at 03:04 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th5 02, 2026 lúc 02:30 PM
+-- Phiên bản máy phục vụ: 10.4.32-MariaDB
+-- Phiên bản PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,16 +18,15 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `restaurant_db`
+-- Cơ sở dữ liệu: `restaurant_db`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `admins`
+-- Cấu trúc bảng cho bảng `admins`
 --
 
-DROP TABLE IF EXISTS `admins`;
 CREATE TABLE `admins` (
   `id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
@@ -37,10 +36,9 @@ CREATE TABLE `admins` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `banners`
+-- Cấu trúc bảng cho bảng `banners`
 --
 
-DROP TABLE IF EXISTS `banners`;
 CREATE TABLE `banners` (
   `id` int(11) NOT NULL,
   `image_url` varchar(255) NOT NULL,
@@ -60,7 +58,7 @@ CREATE TABLE `banners` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `banners`
+-- Đang đổ dữ liệu cho bảng `banners`
 --
 
 INSERT INTO `banners` (`id`, `image_url`, `title`, `description`, `font_family`, `text_color`, `text_align`, `font_style`, `display_order`, `created_at`, `desc_color`, `desc_font_family`, `desc_font_style`, `title_font_size`, `desc_font_size`) VALUES
@@ -70,17 +68,16 @@ INSERT INTO `banners` (`id`, `image_url`, `title`, `description`, `font_family`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `categories`
+-- Cấu trúc bảng cho bảng `categories`
 --
 
-DROP TABLE IF EXISTS `categories`;
 CREATE TABLE `categories` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `categories`
+-- Đang đổ dữ liệu cho bảng `categories`
 --
 
 INSERT INTO `categories` (`id`, `name`) VALUES
@@ -93,10 +90,9 @@ INSERT INTO `categories` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chefs`
+-- Cấu trúc bảng cho bảng `chefs`
 --
 
-DROP TABLE IF EXISTS `chefs`;
 CREATE TABLE `chefs` (
   `id` int(11) NOT NULL,
   `name` varchar(100) DEFAULT NULL,
@@ -107,10 +103,9 @@ CREATE TABLE `chefs` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `combos`
+-- Cấu trúc bảng cho bảng `combos`
 --
 
-DROP TABLE IF EXISTS `combos`;
 CREATE TABLE `combos` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -118,24 +113,22 @@ CREATE TABLE `combos` (
   `price` decimal(15,2) NOT NULL,
   `image` varchar(255) DEFAULT NULL,
   `status` tinyint(1) DEFAULT 1,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `is_active` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `combos`
+-- Đang đổ dữ liệu cho bảng `combos`
 --
 
-INSERT INTO `combos` (`id`, `name`, `description`, `price`, `image`, `status`, `is_active`, `created_at`) VALUES
-(1, 'combo gia đình', 'btrdn', 1000000.00, '1775395639_Screenshot 2026-04-05 200746.png', 1, 1, '2026-04-26 13:31:30');
+INSERT INTO `combos` (`id`, `name`, `description`, `price`, `image`, `status`, `is_active`) VALUES
+(1, 'combo gia đình', 'btrdn', 1000000.00, '1775395639_Screenshot 2026-04-05 200746.png', 1, 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `combo_items`
+-- Cấu trúc bảng cho bảng `combo_items`
 --
 
-DROP TABLE IF EXISTS `combo_items`;
 CREATE TABLE `combo_items` (
   `id` int(11) NOT NULL,
   `combo_id` int(11) NOT NULL,
@@ -143,7 +136,7 @@ CREATE TABLE `combo_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `combo_items`
+-- Đang đổ dữ liệu cho bảng `combo_items`
 --
 
 INSERT INTO `combo_items` (`id`, `combo_id`, `food_id`) VALUES
@@ -153,10 +146,9 @@ INSERT INTO `combo_items` (`id`, `combo_id`, `food_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `foods`
+-- Cấu trúc bảng cho bảng `foods`
 --
 
-DROP TABLE IF EXISTS `foods`;
 CREATE TABLE `foods` (
   `id` int(11) NOT NULL,
   `category_id` int(11) DEFAULT NULL,
@@ -165,11 +157,11 @@ CREATE TABLE `foods` (
   `image` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `status` tinyint(1) DEFAULT 1,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1
+  `is_active` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `foods`
+-- Đang đổ dữ liệu cho bảng `foods`
 --
 
 INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`, `is_active`) VALUES
@@ -179,10 +171,9 @@ INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description
 -- --------------------------------------------------------
 
 --
--- Table structure for table `food_recipes`
+-- Cấu trúc bảng cho bảng `food_recipes`
 --
 
-DROP TABLE IF EXISTS `food_recipes`;
 CREATE TABLE `food_recipes` (
   `id` int(11) NOT NULL,
   `food_id` int(11) NOT NULL,
@@ -192,7 +183,7 @@ CREATE TABLE `food_recipes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `food_recipes`
+-- Đang đổ dữ liệu cho bảng `food_recipes`
 --
 
 INSERT INTO `food_recipes` (`id`, `food_id`, `ingredient_id`, `quantity_required`, `unit`) VALUES
@@ -202,10 +193,57 @@ INSERT INTO `food_recipes` (`id`, `food_id`, `ingredient_id`, `quantity_required
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory`
+-- Cấu trúc bảng cho bảng `footer_links`
 --
 
-DROP TABLE IF EXISTS `inventory`;
+CREATE TABLE `footer_links` (
+  `id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `priority` int(11) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `footer_settings`
+--
+
+CREATE TABLE `footer_settings` (
+  `setting_key` varchar(50) NOT NULL,
+  `setting_value` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `footer_settings`
+--
+
+INSERT INTO `footer_settings` (`setting_key`, `setting_value`) VALUES
+('address', '123 Đường ABC, Quận 1, TP. HCM'),
+('copyright_text', '© 2026 Restaurantly. All Rights Reserved.'),
+('email', 'contact@restaurantly.com'),
+('facebook_url', '#'),
+('footer_bg_color', '#43413d'),
+('footer_bg_image', ''),
+('footer_description', 'Trải nghiệm ẩm thực đẳng cấp giữa lòng thành phố.'),
+('footer_logo', ''),
+('footer_text_color', '#ffffff'),
+('google_map_iframe', '<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15668.013649197086!2d106.94819840000001!3d10.96311425!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3174e74704fe730b%3A0xe983a7428fb01ae8!2zTmjDoCB0aOG7nSBHacOhbyB44bupIFRow6FpIEjDsmE!5e0!3m2!1svi!2s!4v1777337782502!5m2!1svi!2s\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>'),
+('instagram_url', '#'),
+('opening_hours', '08:00 AM - 10:00 PM'),
+('phone', '0901 234 567'),
+('restaurant_name', 'Restaurantly'),
+('show_map', '1'),
+('show_newsletter', '0'),
+('show_social', '0'),
+('tiktok_url', '#');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `inventory`
+--
+
 CREATE TABLE `inventory` (
   `id` int(11) NOT NULL,
   `item_name` varchar(255) NOT NULL,
@@ -218,61 +256,30 @@ CREATE TABLE `inventory` (
   `expiry_date` date DEFAULT NULL,
   `revenue` decimal(15,2) DEFAULT 0.00,
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `min_stock` float DEFAULT 0
+  `min_stock` float DEFAULT 5
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `inventory`
+-- Đang đổ dữ liệu cho bảng `inventory`
 --
 
 INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `stock_quantity`, `cost_price`, `supplier_id`, `entry_date`, `expiry_date`, `revenue`, `updated_at`, `min_stock`) VALUES
-(1, 'rựu', 'Đồ uống', 'chai', 200.00, 20000000.00, 1, NULL, '2027-06-26', 0.00, '2026-04-26 13:38:24', 0),
-(2, 'thịt bò', 'Thịt', 'kg', 29.00, 10000000.00, 1, NULL, '2027-12-26', 0.00, '2026-04-26 13:51:31', 0);
+(1, 'rựu', 'Đồ uống', 'chai', 99.00, 1200000.00, NULL, NULL, NULL, 0.00, '2026-04-02 08:27:06', 5),
+(2, 'thịt bò', 'Thịt', 'kg', 10.00, 10000000.00, NULL, NULL, NULL, 0.00, '2026-04-05 05:31:10', 5);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory_audits`
+-- Cấu trúc bảng cho bảng `inventory_categories`
 --
 
-DROP TABLE IF EXISTS `inventory_audits`;
-CREATE TABLE `inventory_audits` (
-  `id` int(11) NOT NULL,
-  `audit_date` datetime DEFAULT current_timestamp(),
-  `performed_by` varchar(100) DEFAULT NULL,
-  `notes` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `inventory_audit_details`
---
-
-DROP TABLE IF EXISTS `inventory_audit_details`;
-CREATE TABLE `inventory_audit_details` (
-  `id` int(11) NOT NULL,
-  `audit_id` int(11) DEFAULT NULL,
-  `ingredient_id` int(11) DEFAULT NULL,
-  `system_qty` float DEFAULT NULL,
-  `physical_qty` float DEFAULT NULL,
-  `variance` float DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `inventory_categories`
---
-
-DROP TABLE IF EXISTS `inventory_categories`;
 CREATE TABLE `inventory_categories` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `inventory_categories`
+-- Đang đổ dữ liệu cho bảng `inventory_categories`
 --
 
 INSERT INTO `inventory_categories` (`id`, `name`) VALUES
@@ -285,41 +292,32 @@ INSERT INTO `inventory_categories` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory_history`
+-- Cấu trúc bảng cho bảng `inventory_history`
 --
 
-DROP TABLE IF EXISTS `inventory_history`;
 CREATE TABLE `inventory_history` (
   `id` int(11) NOT NULL,
   `ingredient_id` int(11) DEFAULT NULL,
   `type` enum('import','export','loss') NOT NULL,
   `quantity` decimal(10,2) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `performed_by` varchar(100) DEFAULT NULL
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `inventory_history`
+-- Đang đổ dữ liệu cho bảng `inventory_history`
 --
 
-INSERT INTO `inventory_history` (`id`, `ingredient_id`, `type`, `quantity`, `created_at`, `performed_by`) VALUES
-(1, 1, 'import', 100.00, '2026-04-02 07:53:10', NULL),
-(2, 1, 'export', 1.00, '2026-04-02 08:27:06', NULL),
-(3, 2, 'import', 10.00, '2026-04-05 05:31:10', NULL),
-(4, 2, 'export', 1.00, '2026-04-25 12:47:48', NULL),
-(5, 1, 'import', 100.00, '2026-04-26 13:37:33', 'Admin'),
-(6, 1, 'import', 100.00, '2026-04-26 13:38:03', 'Admin'),
-(7, 1, 'export', 99.00, '2026-04-26 13:38:24', 'Admin'),
-(8, 2, 'import', 10.00, '2026-04-26 13:51:09', 'Admin'),
-(9, 2, 'import', 10.00, '2026-04-26 13:51:31', 'Admin');
+INSERT INTO `inventory_history` (`id`, `ingredient_id`, `type`, `quantity`, `created_at`) VALUES
+(1, 1, 'import', 100.00, '2026-04-02 07:53:10'),
+(2, 1, 'export', 1.00, '2026-04-02 08:27:06'),
+(3, 2, 'import', 10.00, '2026-04-05 05:31:10');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory_receipts`
+-- Cấu trúc bảng cho bảng `inventory_receipts`
 --
 
-DROP TABLE IF EXISTS `inventory_receipts`;
 CREATE TABLE `inventory_receipts` (
   `id` int(11) NOT NULL,
   `ingredient_id` int(11) NOT NULL,
@@ -334,17 +332,16 @@ CREATE TABLE `inventory_receipts` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory_units`
+-- Cấu trúc bảng cho bảng `inventory_units`
 --
 
-DROP TABLE IF EXISTS `inventory_units`;
 CREATE TABLE `inventory_units` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `inventory_units`
+-- Đang đổ dữ liệu cho bảng `inventory_units`
 --
 
 INSERT INTO `inventory_units` (`id`, `name`) VALUES
@@ -357,10 +354,9 @@ INSERT INTO `inventory_units` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `navigation_menu`
+-- Cấu trúc bảng cho bảng `navigation_menu`
 --
 
-DROP TABLE IF EXISTS `navigation_menu`;
 CREATE TABLE `navigation_menu` (
   `id` int(11) NOT NULL,
   `title` varchar(100) DEFAULT NULL,
@@ -371,10 +367,21 @@ CREATE TABLE `navigation_menu` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `restaurant_tables`
+-- Cấu trúc bảng cho bảng `newsletters`
 --
 
-DROP TABLE IF EXISTS `restaurant_tables`;
+CREATE TABLE `newsletters` (
+  `id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `restaurant_tables`
+--
+
 CREATE TABLE `restaurant_tables` (
   `id` int(11) NOT NULL,
   `table_code` varchar(20) NOT NULL,
@@ -388,7 +395,7 @@ CREATE TABLE `restaurant_tables` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `restaurant_tables`
+-- Đang đổ dữ liệu cho bảng `restaurant_tables`
 --
 
 INSERT INTO `restaurant_tables` (`id`, `table_code`, `table_number`, `room_type`, `category`, `capacity`, `price`, `status`, `is_available`) VALUES
@@ -418,10 +425,9 @@ INSERT INTO `restaurant_tables` (`id`, `table_code`, `table_number`, `room_type`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `services`
+-- Cấu trúc bảng cho bảng `services`
 --
 
-DROP TABLE IF EXISTS `services`;
 CREATE TABLE `services` (
   `id` int(11) NOT NULL,
   `service_name` varchar(255) DEFAULT NULL,
@@ -431,10 +437,9 @@ CREATE TABLE `services` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `service_bookings`
+-- Cấu trúc bảng cho bảng `service_bookings`
 --
 
-DROP TABLE IF EXISTS `service_bookings`;
 CREATE TABLE `service_bookings` (
   `id` int(11) NOT NULL,
   `customer_name` varchar(100) NOT NULL,
@@ -452,7 +457,7 @@ CREATE TABLE `service_bookings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `service_bookings`
+-- Đang đổ dữ liệu cho bảng `service_bookings`
 --
 
 INSERT INTO `service_bookings` (`id`, `customer_name`, `customer_phone`, `booking_date`, `service_type`, `table_id`, `combo_id`, `guests`, `message`, `total_amount`, `deposit_amount`, `status`, `created_at`) VALUES
@@ -461,17 +466,16 @@ INSERT INTO `service_bookings` (`id`, `customer_name`, `customer_phone`, `bookin
 -- --------------------------------------------------------
 
 --
--- Table structure for table `settings`
+-- Cấu trúc bảng cho bảng `settings`
 --
 
-DROP TABLE IF EXISTS `settings`;
 CREATE TABLE `settings` (
   `key_name` varchar(50) NOT NULL,
   `key_value` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `settings`
+-- Đang đổ dữ liệu cho bảng `settings`
 --
 
 INSERT INTO `settings` (`key_name`, `key_value`) VALUES
@@ -486,10 +490,9 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `suppliers`
+-- Cấu trúc bảng cho bảng `suppliers`
 --
 
-DROP TABLE IF EXISTS `suppliers`;
 CREATE TABLE `suppliers` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -500,20 +503,12 @@ CREATE TABLE `suppliers` (
   `contact_person` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `suppliers`
---
-
-INSERT INTO `suppliers` (`id`, `name`, `phone`, `address`, `created_at`, `email`, `contact_person`) VALUES
-(1, 'công ty fpt', '012345678', 'bvhb', '2026-04-26 13:37:03', 'long@gmail.com', 'long');
-
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Cấu trúc bảng cho bảng `users`
 --
 
-DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
@@ -528,20 +523,19 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `users`
+-- Đang đổ dữ liệu cho bảng `users`
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`, `created_at`, `google_id`, `reset_token`, `reset_token_expire`, `remember_token`) VALUES
 (1, 'Huỳnh đức thông', '28huynhducthong@gmail.com', '$2y$10$f7cOFOOX2paiJ8e4J2OnneWhZZ87.3CioY3mCximsFWmC7wbAyzni', 'admin', '2026-04-02 07:19:22', '107664704264935131673', NULL, NULL, NULL),
-(8, 'Thong Duc', 'thongd342@gmail.com', '', '', '2026-04-22 05:39:26', '100631379832642815829', NULL, NULL, NULL);
+(8, 'Long Hoang', 'hoanglongduongle@gmail.com', '', '', '2026-04-25 15:18:13', '109729244014013210980', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `videos`
+-- Cấu trúc bảng cho bảng `videos`
 --
 
-DROP TABLE IF EXISTS `videos`;
 CREATE TABLE `videos` (
   `id` int(11) NOT NULL,
   `video_type` enum('youtube','local') DEFAULT 'youtube',
@@ -551,49 +545,49 @@ CREATE TABLE `videos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `videos`
+-- Đang đổ dữ liệu cho bảng `videos`
 --
 
 INSERT INTO `videos` (`id`, `video_type`, `video_url`, `file_path`, `created_at`) VALUES
-(1, 'youtube', 'tYdL0dEWqaQ', NULL, '2026-04-02 07:36:16');
+(1, 'youtube', 'dQw4w9WgXcQ', NULL, '2026-04-02 07:36:16');
 
 --
--- Indexes for dumped tables
+-- Chỉ mục cho các bảng đã đổ
 --
 
 --
--- Indexes for table `admins`
+-- Chỉ mục cho bảng `admins`
 --
 ALTER TABLE `admins`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `banners`
+-- Chỉ mục cho bảng `banners`
 --
 ALTER TABLE `banners`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `categories`
+-- Chỉ mục cho bảng `categories`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `name` (`name`);
 
 --
--- Indexes for table `chefs`
+-- Chỉ mục cho bảng `chefs`
 --
 ALTER TABLE `chefs`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `combos`
+-- Chỉ mục cho bảng `combos`
 --
 ALTER TABLE `combos`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `combo_items`
+-- Chỉ mục cho bảng `combo_items`
 --
 ALTER TABLE `combo_items`
   ADD PRIMARY KEY (`id`),
@@ -601,14 +595,14 @@ ALTER TABLE `combo_items`
   ADD KEY `fk_food_in_combo` (`food_id`);
 
 --
--- Indexes for table `foods`
+-- Chỉ mục cho bảng `foods`
 --
 ALTER TABLE `foods`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_food_category` (`category_id`);
 
 --
--- Indexes for table `food_recipes`
+-- Chỉ mục cho bảng `food_recipes`
 --
 ALTER TABLE `food_recipes`
   ADD PRIMARY KEY (`id`),
@@ -616,41 +610,40 @@ ALTER TABLE `food_recipes`
   ADD KEY `fk_recipe_ing` (`ingredient_id`);
 
 --
--- Indexes for table `inventory`
+-- Chỉ mục cho bảng `footer_links`
+--
+ALTER TABLE `footer_links`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `footer_settings`
+--
+ALTER TABLE `footer_settings`
+  ADD PRIMARY KEY (`setting_key`);
+
+--
+-- Chỉ mục cho bảng `inventory`
 --
 ALTER TABLE `inventory`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_inv_supplier` (`supplier_id`);
 
 --
--- Indexes for table `inventory_audits`
---
-ALTER TABLE `inventory_audits`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `inventory_audit_details`
---
-ALTER TABLE `inventory_audit_details`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `audit_id` (`audit_id`);
-
---
--- Indexes for table `inventory_categories`
+-- Chỉ mục cho bảng `inventory_categories`
 --
 ALTER TABLE `inventory_categories`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `name` (`name`);
 
 --
--- Indexes for table `inventory_history`
+-- Chỉ mục cho bảng `inventory_history`
 --
 ALTER TABLE `inventory_history`
   ADD PRIMARY KEY (`id`),
   ADD KEY `inventory_history_ibfk_1` (`ingredient_id`);
 
 --
--- Indexes for table `inventory_receipts`
+-- Chỉ mục cho bảng `inventory_receipts`
 --
 ALTER TABLE `inventory_receipts`
   ADD PRIMARY KEY (`id`),
@@ -658,32 +651,39 @@ ALTER TABLE `inventory_receipts`
   ADD KEY `fk_receipt_supplier` (`supplier_id`);
 
 --
--- Indexes for table `inventory_units`
+-- Chỉ mục cho bảng `inventory_units`
 --
 ALTER TABLE `inventory_units`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `name` (`name`);
 
 --
--- Indexes for table `navigation_menu`
+-- Chỉ mục cho bảng `navigation_menu`
 --
 ALTER TABLE `navigation_menu`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `restaurant_tables`
+-- Chỉ mục cho bảng `newsletters`
+--
+ALTER TABLE `newsletters`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Chỉ mục cho bảng `restaurant_tables`
 --
 ALTER TABLE `restaurant_tables`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `services`
+-- Chỉ mục cho bảng `services`
 --
 ALTER TABLE `services`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `service_bookings`
+-- Chỉ mục cho bảng `service_bookings`
 --
 ALTER TABLE `service_bookings`
   ADD PRIMARY KEY (`id`),
@@ -691,19 +691,19 @@ ALTER TABLE `service_bookings`
   ADD KEY `fk_book_combo` (`combo_id`);
 
 --
--- Indexes for table `settings`
+-- Chỉ mục cho bảng `settings`
 --
 ALTER TABLE `settings`
   ADD PRIMARY KEY (`key_name`);
 
 --
--- Indexes for table `suppliers`
+-- Chỉ mục cho bảng `suppliers`
 --
 ALTER TABLE `suppliers`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `users`
+-- Chỉ mục cho bảng `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
@@ -711,198 +711,192 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Indexes for table `videos`
+-- Chỉ mục cho bảng `videos`
 --
 ALTER TABLE `videos`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT cho các bảng đã đổ
 --
 
 --
--- AUTO_INCREMENT for table `admins`
+-- AUTO_INCREMENT cho bảng `admins`
 --
 ALTER TABLE `admins`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `banners`
+-- AUTO_INCREMENT cho bảng `banners`
 --
 ALTER TABLE `banners`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `categories`
+-- AUTO_INCREMENT cho bảng `categories`
 --
 ALTER TABLE `categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `chefs`
+-- AUTO_INCREMENT cho bảng `chefs`
 --
 ALTER TABLE `chefs`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `combos`
+-- AUTO_INCREMENT cho bảng `combos`
 --
 ALTER TABLE `combos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `combo_items`
+-- AUTO_INCREMENT cho bảng `combo_items`
 --
 ALTER TABLE `combo_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT for table `foods`
+-- AUTO_INCREMENT cho bảng `foods`
 --
 ALTER TABLE `foods`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `food_recipes`
+-- AUTO_INCREMENT cho bảng `food_recipes`
 --
 ALTER TABLE `food_recipes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `inventory`
+-- AUTO_INCREMENT cho bảng `footer_links`
+--
+ALTER TABLE `footer_links`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `inventory`
 --
 ALTER TABLE `inventory`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `inventory_audits`
---
-ALTER TABLE `inventory_audits`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `inventory_audit_details`
---
-ALTER TABLE `inventory_audit_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `inventory_categories`
+-- AUTO_INCREMENT cho bảng `inventory_categories`
 --
 ALTER TABLE `inventory_categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `inventory_history`
+-- AUTO_INCREMENT cho bảng `inventory_history`
 --
 ALTER TABLE `inventory_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `inventory_receipts`
+-- AUTO_INCREMENT cho bảng `inventory_receipts`
 --
 ALTER TABLE `inventory_receipts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `inventory_units`
+-- AUTO_INCREMENT cho bảng `inventory_units`
 --
 ALTER TABLE `inventory_units`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `navigation_menu`
+-- AUTO_INCREMENT cho bảng `navigation_menu`
 --
 ALTER TABLE `navigation_menu`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `restaurant_tables`
+-- AUTO_INCREMENT cho bảng `newsletters`
+--
+ALTER TABLE `newsletters`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `restaurant_tables`
 --
 ALTER TABLE `restaurant_tables`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT for table `services`
+-- AUTO_INCREMENT cho bảng `services`
 --
 ALTER TABLE `services`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `service_bookings`
+-- AUTO_INCREMENT cho bảng `service_bookings`
 --
 ALTER TABLE `service_bookings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `suppliers`
+-- AUTO_INCREMENT cho bảng `suppliers`
 --
 ALTER TABLE `suppliers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT for table `videos`
+-- AUTO_INCREMENT cho bảng `videos`
 --
 ALTER TABLE `videos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- Constraints for dumped tables
+-- Các ràng buộc cho các bảng đã đổ
 --
 
 --
--- Constraints for table `combo_items`
+-- Các ràng buộc cho bảng `combo_items`
 --
 ALTER TABLE `combo_items`
   ADD CONSTRAINT `fk_combo` FOREIGN KEY (`combo_id`) REFERENCES `combos` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_food_in_combo` FOREIGN KEY (`food_id`) REFERENCES `foods` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `foods`
+-- Các ràng buộc cho bảng `foods`
 --
 ALTER TABLE `foods`
   ADD CONSTRAINT `fk_food_category` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `food_recipes`
+-- Các ràng buộc cho bảng `food_recipes`
 --
 ALTER TABLE `food_recipes`
   ADD CONSTRAINT `fk_recipe_food` FOREIGN KEY (`food_id`) REFERENCES `foods` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_recipe_ing` FOREIGN KEY (`ingredient_id`) REFERENCES `inventory` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `inventory`
+-- Các ràng buộc cho bảng `inventory`
 --
 ALTER TABLE `inventory`
   ADD CONSTRAINT `fk_inv_supplier` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `inventory_audit_details`
---
-ALTER TABLE `inventory_audit_details`
-  ADD CONSTRAINT `inventory_audit_details_ibfk_1` FOREIGN KEY (`audit_id`) REFERENCES `inventory_audits` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `inventory_history`
+-- Các ràng buộc cho bảng `inventory_history`
 --
 ALTER TABLE `inventory_history`
   ADD CONSTRAINT `inventory_history_ibfk_1` FOREIGN KEY (`ingredient_id`) REFERENCES `inventory` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `inventory_receipts`
+-- Các ràng buộc cho bảng `inventory_receipts`
 --
 ALTER TABLE `inventory_receipts`
   ADD CONSTRAINT `fk_receipt_inv` FOREIGN KEY (`ingredient_id`) REFERENCES `inventory` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_receipt_supplier` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `service_bookings`
+-- Các ràng buộc cho bảng `service_bookings`
 --
 ALTER TABLE `service_bookings`
   ADD CONSTRAINT `fk_book_combo` FOREIGN KEY (`combo_id`) REFERENCES `combos` (`id`) ON DELETE SET NULL,
