@@ -1,6 +1,6 @@
 <?php
-include '../public/admin_layout_header.php';
-require_once '../config/database.php';
+include '../../public/admin_layout_header.php';
+require_once '../../config/database.php';
 
 $database = new Database();
 $db = $database->getConnection();
@@ -23,8 +23,8 @@ if (isset($_GET['delete'])) {
         $stmt_get->execute([':id' => $id]);
         $old_image = $stmt_get->fetchColumn();
         
-        if ($old_image && file_exists("../public/assets/img/hero/" . $old_image)) {
-            unlink("../public/assets/img/hero/" . $old_image);
+        if ($old_image && file_exists("../../public/assets/img/hero/" . $old_image)) {
+            unlink("../../public/assets/img/hero/" . $old_image);
         }
 
         $stmt_del = $db->prepare("DELETE FROM banners WHERE id = :id");
@@ -59,7 +59,7 @@ if (isset($_POST['btn_save'])) {
 
     // Xử lý upload ảnh
     if (!empty($_FILES['banner_image']['name'])) {
-        $target_dir = "../public/assets/img/hero/";
+        $target_dir = "../../public/assets/img/hero/";
         if (!is_dir($target_dir)) { mkdir($target_dir, 0777, true); }
 
         $new_file_name = time() . '_' . basename($_FILES['banner_image']['name']);
@@ -256,7 +256,7 @@ $font_sizes = [12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 56, 64, 72];
                 </div>
                 <div class="card-body p-0">
                     <div id="preview-box" class="d-flex flex-column justify-content-center" 
-                         style="width: 100%; height: 500px; background-color: #222; background-image: url('../public/assets/img/hero/<?= $edit_data['image_url'] ?? '' ?>'); background-size: cover; background-position: center; position: relative; transition: all 0.3s;">
+                         style="width: 100%; height: 500px; background-color: #222; background-image: url('../../public/assets/img/hero/<?= $edit_data['image_url'] ?? '' ?>'); background-size: cover; background-position: center; position: relative; transition: all 0.3s;">
                         
                         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5);"></div>
                         
@@ -314,7 +314,7 @@ $font_sizes = [12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 56, 64, 72];
                         <tr>
                             <td class="text-center fw-bold text-primary fs-5"><?= htmlspecialchars($b['display_order']) ?></td>
                             <td>
-                                <img src="../public/assets/img/hero/<?= htmlspecialchars($b['image_url']) ?>" 
+                                <img src="../../public/assets/img/hero/<?= htmlspecialchars($b['image_url']) ?>" 
                                      class="img-thumbnail" style="max-height: 100px;">
                             </td>
                             <td>

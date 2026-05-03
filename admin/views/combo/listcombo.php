@@ -1,132 +1,3 @@
-<?php
-// =====================================================================
-// MIGRATION SQL CẦN CHẠY TRƯỚC:
-// ALTER TABLE combos ADD COLUMN IF NOT EXISTS is_active TINYINT(1) NOT NULL DEFAULT 1;
-// ALTER TABLE combos ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
-// =====================================================================
-
-session_start();
-
-// ✅ FIX: Xác thực session admin
-if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login.php'); exit;
-}
-
-// ✅ FIX: Include đúng thứ tự (header trước, DB sau)
-include '../public/admin_layout_header.php';
-require_once __DIR__ . '/../config/database.php';
-
-$db = (new Database())->getConnection();
-
-// ============================================================
-// AJAX: Toggle Bật / Tắt combo
-// ============================================================
-if (isset($_POST['toggle_active'])) {
-    header('Content-Type: application/json');
-    $cid = (int)$_POST['combo_id'];
-    $db->prepare("UPDATE combos SET is_active = NOT is_active WHERE id = ?")->execute([$cid]);
-    $s = $db->prepare("SELECT is_active FROM combos WHERE id = ?");
-    $s->execute([$cid]);
-    echo json_encode(['status' => 'success', 'is_active' => (int)$s->fetchColumn()]);
-    exit;
-}
-
-// ============================================================
-// XÓA COMBO qua POST (không dùng GET link nữa)
-// ============================================================
-$delete_error = '';
-if (isset($_POST['delete_combo_id'])) {
-    $del_id = (int)$_POST['delete_combo_id'];
-
-    // Lấy tên ảnh để xóa file
-    $img_s = $db->prepare("SELECT image FROM combos WHERE id = ?");
-    $img_s->execute([$del_id]);
-    $del_img = $img_s->fetchColumn();
-
-    $db->beginTransaction();
-    try {
-        $db->prepare("DELETE FROM combo_items WHERE combo_id = ?")->execute([$del_id]);
-        $db->prepare("DELETE FROM combos WHERE id = ?")         ->execute([$del_id]);
-        $db->commit();
-
-        // Xóa file ảnh nếu có
-        if ($del_img) {
-            $img_path = "../public/assets/img/combos/" . $del_img;
-            if (file_exists($img_path)) @unlink($img_path);
-        }
-
-        header("Location: list_combos.php?msg=deleted"); exit;
-    } catch (Exception $e) {
-        $db->rollBack();
-        $delete_error = "Lỗi khi xóa: " . htmlspecialchars($e->getMessage());
-    }
-}
-
-// ============================================================
-// FILTER / SEARCH / PHÂN TRANG
-// ============================================================
-$search      = trim($_GET['q']    ?? '');
-$show_hidden = isset($_GET['show_hidden']);
-$page        = max(1, (int)($_GET['page'] ?? 1));
-$per_page    = 10;
-
-$where_parts = [];
-$params      = [];
-
-if ($search !== '') {
-    $where_parts[] = "c.name LIKE ?";
-    $params[]      = '%' . $search . '%';
-}
-if (!$show_hidden) {
-    $where_parts[] = "c.is_active = 1";
-}
-
-$where_sql = $where_parts ? 'WHERE ' . implode(' AND ', $where_parts) : '';
-
-// Đếm tổng
-$cnt_stmt = $db->prepare(
-    "SELECT COUNT(*) FROM combos c $where_sql"
-);
-$cnt_stmt->execute($params);
-$total       = (int)$cnt_stmt->fetchColumn();
-$total_pages = max(1, (int)ceil($total / $per_page));
-$page        = min($page, $total_pages);
-$offset      = ($page - 1) * $per_page;
-
-// ✅ FIX: Dùng fetchAll() + count() thay rowCount()
-// Thêm: food_count, total_food_price để tính % tiết kiệm
-$sql = "SELECT c.*,
-            GROUP_CONCAT(f.name ORDER BY f.name SEPARATOR '||') as list_foods,
-            COUNT(ci.food_id)  as food_count,
-            SUM(f.price)       as total_food_price
-        FROM combos c
-        LEFT JOIN combo_items ci ON c.id = ci.combo_id
-        LEFT JOIN foods f        ON ci.food_id = f.id
-        $where_sql
-        GROUP BY c.id
-        ORDER BY c.id DESC
-        LIMIT $per_page OFFSET $offset";
-
-$stmt = $db->prepare($sql);
-$stmt->execute($params);
-$rows = $stmt->fetchAll(PDO::FETCH_ASSOC); // ✅ fetchAll thay rowCount
-
-// Đếm combo ẩn để hiển thị badge
-$hidden_count = (int)$db->query("SELECT COUNT(*) FROM combos WHERE is_active = 0")->fetchColumn();
-
-// Hàm build URL giữ nguyên params
-function buildUrl(array $override = []): string {
-    $base = array_merge([
-        'q'    => $_GET['q']    ?? '',
-        'page' => 1,
-    ], $override);
-    foreach ($base as $k => $v) {
-        if ($v === '' || $v === null) unset($base[$k]);
-    }
-    return 'list_combos.php?' . http_build_query($base);
-}
-?>
-
 <link rel="stylesheet" href="../public/assets/admin/css/admin-style.css">
 
 <style>
@@ -152,7 +23,7 @@ tr.inactive-row { opacity: .5; }
             <i class="fas fa-boxes me-2 text-primary"></i>Quản lý Combo Món Ăn
         </h3>
         <div class="d-flex gap-2">
-            <a href="list_combos.php<?= $show_hidden ? '' : '?show_hidden=1' ?>"
+            <a href="ComboController.php?action=list<?= $show_hidden ? '' : '&show_hidden=1' ?>"
                class="btn btn-sm <?= $show_hidden ? 'btn-secondary' : 'btn-outline-secondary' ?>">
                 <i class="fas fa-eye-slash me-1"></i>
                 Combo ẩn
@@ -160,7 +31,7 @@ tr.inactive-row { opacity: .5; }
                     <span class="badge bg-danger ms-1"><?= $hidden_count ?></span>
                 <?php endif; ?>
             </a>
-            <a href="add_combo.php" class="btn btn-primary shadow-sm">
+            <a href="ComboController.php?action=add" class="btn btn-primary shadow-sm">
                 <i class="fas fa-plus-circle me-1"></i>Thêm Combo Mới
             </a>
         </div>
@@ -190,7 +61,7 @@ tr.inactive-row { opacity: .5; }
                        value="<?= htmlspecialchars($search) ?>">
                 <button type="submit" class="btn btn-sm btn-dark px-3">Tìm</button>
                 <?php if ($search): ?>
-                <a href="list_combos.php<?= $show_hidden ? '?show_hidden=1' : '' ?>"
+                <a href="ComboController.php?action=list<?= $show_hidden ? '&show_hidden=1' : '' ?>"
                    class="btn btn-sm btn-outline-secondary">✕</a>
                 <?php endif; ?>
             </form>
@@ -253,9 +124,9 @@ tr.inactive-row { opacity: .5; }
                     <!-- Ảnh -->
                     <td>
                         <?php if (!empty($row['image'])): ?>
-                        <img src="../public/assets/img/combos/<?= htmlspecialchars($row['image']) ?>"
+                        <img src="../../public/assets/img/combos/<?= htmlspecialchars($row['image']) ?>"
                              class="combo-img"
-                             onerror="this.onerror=null;this.src='../public/assets/img/combos/default.jpg'"
+                             onerror="this.onerror=null;this.src='../../public/assets/img/combos/default.jpg'"
                              alt="<?= htmlspecialchars($row['name']) ?>">
                         <?php else: ?>
                         <div class="combo-img bg-light text-muted d-flex align-items-center
@@ -323,7 +194,7 @@ tr.inactive-row { opacity: .5; }
                         <div class="d-flex gap-1 justify-content-center">
 
                             <!-- Sửa -->
-                            <a href="edit_combo.php?id=<?= $row['id'] ?>"
+                            <a href="ComboController.php?action=edit&id=<?= $row['id'] ?>"
                                class="btn btn-sm btn-outline-warning"
                                title="Chỉnh sửa combo">
                                 <i class="fas fa-edit"></i>
@@ -410,7 +281,7 @@ tr.inactive-row { opacity: .5; }
                     Hủy bỏ
                 </button>
                 <!-- ✅ FIX: Xóa qua POST thay vì GET link -->
-                <form method="POST" class="flex-fill" id="form-delete-combo">
+                <form method="POST" action="ComboController.php?action=delete" class="flex-fill" id="form-delete-combo">
                     <input type="hidden" name="delete_combo_id" id="delete-combo-id">
                     <button type="submit" class="btn btn-danger w-100 fw-bold">
                         Xóa
@@ -447,7 +318,7 @@ $(function () {
         const id     = btn.data('id');
         const row    = btn.closest('tr');
 
-        $.post('list_combos.php', { toggle_active: 1, combo_id: id }, function (r) {
+        $.post('ComboController.php?action=toggle', { combo_id: id }, function (r) {
             if (r.status !== 'success') return;
 
             const active = r.is_active;

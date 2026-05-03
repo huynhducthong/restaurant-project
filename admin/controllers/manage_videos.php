@@ -1,6 +1,6 @@
 <?php
-include '../public/admin_layout_header.php';
-require_once __DIR__ . '/../config/database.php';
+include '../../public/admin_layout_header.php';
+require_once __DIR__ . '/../../config/database.php';
 
 $database = new Database();
 $db = $database->getConnection();
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['btn_update'])) {
     } else {
         // Xử lý Upload File
         if (isset($_FILES['video_file']) && $_FILES['video_file']['error'] == 0) {
-            $target_dir = "uploads/videos/";
+            $target_dir = "../uploads/videos/";
             if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
             
             $file_name = time() . '_' . basename($_FILES["video_file"]["name"]);

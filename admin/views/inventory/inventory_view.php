@@ -2,7 +2,7 @@
 // Tên file: admin/inventory_view.php (hoặc thư mục views tùy bạn sắp xếp)
 // File này KHÔNG CHỨA LOGIC KẾT NỐI DATABASE. Mọi dữ liệu đã được Controller chuẩn bị sẵn.
 
-include '../public/admin_layout_header.php';
+include '../../public/admin_layout_header.php';
 ?>
 
 <div class="container-fluid py-4 bg-light min-vh-100">
