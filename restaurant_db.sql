@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 02, 2026 lúc 02:30 PM
+-- Thời gian đã tạo: Th5 03, 2026 lúc 03:50 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -27,6 +27,7 @@ SET time_zone = "+00:00";
 -- Cấu trúc bảng cho bảng `admins`
 --
 
+DROP TABLE IF EXISTS `admins`;
 CREATE TABLE `admins` (
   `id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
@@ -39,6 +40,7 @@ CREATE TABLE `admins` (
 -- Cấu trúc bảng cho bảng `banners`
 --
 
+DROP TABLE IF EXISTS `banners`;
 CREATE TABLE `banners` (
   `id` int(11) NOT NULL,
   `image_url` varchar(255) NOT NULL,
@@ -71,6 +73,7 @@ INSERT INTO `banners` (`id`, `image_url`, `title`, `description`, `font_family`,
 -- Cấu trúc bảng cho bảng `categories`
 --
 
+DROP TABLE IF EXISTS `categories`;
 CREATE TABLE `categories` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL
@@ -93,6 +96,7 @@ INSERT INTO `categories` (`id`, `name`) VALUES
 -- Cấu trúc bảng cho bảng `chefs`
 --
 
+DROP TABLE IF EXISTS `chefs`;
 CREATE TABLE `chefs` (
   `id` int(11) NOT NULL,
   `name` varchar(100) DEFAULT NULL,
@@ -106,6 +110,7 @@ CREATE TABLE `chefs` (
 -- Cấu trúc bảng cho bảng `combos`
 --
 
+DROP TABLE IF EXISTS `combos`;
 CREATE TABLE `combos` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -129,6 +134,7 @@ INSERT INTO `combos` (`id`, `name`, `description`, `price`, `image`, `status`, `
 -- Cấu trúc bảng cho bảng `combo_items`
 --
 
+DROP TABLE IF EXISTS `combo_items`;
 CREATE TABLE `combo_items` (
   `id` int(11) NOT NULL,
   `combo_id` int(11) NOT NULL,
@@ -149,6 +155,7 @@ INSERT INTO `combo_items` (`id`, `combo_id`, `food_id`) VALUES
 -- Cấu trúc bảng cho bảng `foods`
 --
 
+DROP TABLE IF EXISTS `foods`;
 CREATE TABLE `foods` (
   `id` int(11) NOT NULL,
   `category_id` int(11) DEFAULT NULL,
@@ -174,6 +181,7 @@ INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description
 -- Cấu trúc bảng cho bảng `food_recipes`
 --
 
+DROP TABLE IF EXISTS `food_recipes`;
 CREATE TABLE `food_recipes` (
   `id` int(11) NOT NULL,
   `food_id` int(11) NOT NULL,
@@ -196,6 +204,7 @@ INSERT INTO `food_recipes` (`id`, `food_id`, `ingredient_id`, `quantity_required
 -- Cấu trúc bảng cho bảng `footer_links`
 --
 
+DROP TABLE IF EXISTS `footer_links`;
 CREATE TABLE `footer_links` (
   `id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
@@ -209,6 +218,7 @@ CREATE TABLE `footer_links` (
 -- Cấu trúc bảng cho bảng `footer_settings`
 --
 
+DROP TABLE IF EXISTS `footer_settings`;
 CREATE TABLE `footer_settings` (
   `setting_key` varchar(50) NOT NULL,
   `setting_value` text DEFAULT NULL
@@ -223,19 +233,18 @@ INSERT INTO `footer_settings` (`setting_key`, `setting_value`) VALUES
 ('copyright_text', '© 2026 Restaurantly. All Rights Reserved.'),
 ('email', 'contact@restaurantly.com'),
 ('facebook_url', '#'),
-('footer_bg_color', '#43413d'),
-('footer_bg_image', ''),
+('footer_bg_color', '#0c0b09'),
 ('footer_description', 'Trải nghiệm ẩm thực đẳng cấp giữa lòng thành phố.'),
 ('footer_logo', ''),
 ('footer_text_color', '#ffffff'),
-('google_map_iframe', '<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15668.013649197086!2d106.94819840000001!3d10.96311425!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3174e74704fe730b%3A0xe983a7428fb01ae8!2zTmjDoCB0aOG7nSBHacOhbyB44bupIFRow6FpIEjDsmE!5e0!3m2!1svi!2s!4v1777337782502!5m2!1svi!2s\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>'),
+('google_map_iframe', ''),
 ('instagram_url', '#'),
 ('opening_hours', '08:00 AM - 10:00 PM'),
 ('phone', '0901 234 567'),
 ('restaurant_name', 'Restaurantly'),
 ('show_map', '1'),
-('show_newsletter', '0'),
-('show_social', '0'),
+('show_newsletter', '1'),
+('show_social', '1'),
 ('tiktok_url', '#');
 
 -- --------------------------------------------------------
@@ -244,6 +253,7 @@ INSERT INTO `footer_settings` (`setting_key`, `setting_value`) VALUES
 -- Cấu trúc bảng cho bảng `inventory`
 --
 
+DROP TABLE IF EXISTS `inventory`;
 CREATE TABLE `inventory` (
   `id` int(11) NOT NULL,
   `item_name` varchar(255) NOT NULL,
@@ -273,6 +283,7 @@ INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `stock_quan
 -- Cấu trúc bảng cho bảng `inventory_categories`
 --
 
+DROP TABLE IF EXISTS `inventory_categories`;
 CREATE TABLE `inventory_categories` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL
@@ -295,6 +306,7 @@ INSERT INTO `inventory_categories` (`id`, `name`) VALUES
 -- Cấu trúc bảng cho bảng `inventory_history`
 --
 
+DROP TABLE IF EXISTS `inventory_history`;
 CREATE TABLE `inventory_history` (
   `id` int(11) NOT NULL,
   `ingredient_id` int(11) DEFAULT NULL,
@@ -318,6 +330,7 @@ INSERT INTO `inventory_history` (`id`, `ingredient_id`, `type`, `quantity`, `cre
 -- Cấu trúc bảng cho bảng `inventory_receipts`
 --
 
+DROP TABLE IF EXISTS `inventory_receipts`;
 CREATE TABLE `inventory_receipts` (
   `id` int(11) NOT NULL,
   `ingredient_id` int(11) NOT NULL,
@@ -335,6 +348,7 @@ CREATE TABLE `inventory_receipts` (
 -- Cấu trúc bảng cho bảng `inventory_units`
 --
 
+DROP TABLE IF EXISTS `inventory_units`;
 CREATE TABLE `inventory_units` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL
@@ -357,6 +371,7 @@ INSERT INTO `inventory_units` (`id`, `name`) VALUES
 -- Cấu trúc bảng cho bảng `navigation_menu`
 --
 
+DROP TABLE IF EXISTS `navigation_menu`;
 CREATE TABLE `navigation_menu` (
   `id` int(11) NOT NULL,
   `title` varchar(100) DEFAULT NULL,
@@ -370,6 +385,7 @@ CREATE TABLE `navigation_menu` (
 -- Cấu trúc bảng cho bảng `newsletters`
 --
 
+DROP TABLE IF EXISTS `newsletters`;
 CREATE TABLE `newsletters` (
   `id` int(11) NOT NULL,
   `email` varchar(255) NOT NULL,
@@ -382,6 +398,7 @@ CREATE TABLE `newsletters` (
 -- Cấu trúc bảng cho bảng `restaurant_tables`
 --
 
+DROP TABLE IF EXISTS `restaurant_tables`;
 CREATE TABLE `restaurant_tables` (
   `id` int(11) NOT NULL,
   `table_code` varchar(20) NOT NULL,
@@ -428,6 +445,7 @@ INSERT INTO `restaurant_tables` (`id`, `table_code`, `table_number`, `room_type`
 -- Cấu trúc bảng cho bảng `services`
 --
 
+DROP TABLE IF EXISTS `services`;
 CREATE TABLE `services` (
   `id` int(11) NOT NULL,
   `service_name` varchar(255) DEFAULT NULL,
@@ -440,6 +458,7 @@ CREATE TABLE `services` (
 -- Cấu trúc bảng cho bảng `service_bookings`
 --
 
+DROP TABLE IF EXISTS `service_bookings`;
 CREATE TABLE `service_bookings` (
   `id` int(11) NOT NULL,
   `customer_name` varchar(100) NOT NULL,
@@ -469,6 +488,7 @@ INSERT INTO `service_bookings` (`id`, `customer_name`, `customer_phone`, `bookin
 -- Cấu trúc bảng cho bảng `settings`
 --
 
+DROP TABLE IF EXISTS `settings`;
 CREATE TABLE `settings` (
   `key_name` varchar(50) NOT NULL,
   `key_value` text DEFAULT NULL
@@ -493,6 +513,7 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 -- Cấu trúc bảng cho bảng `suppliers`
 --
 
+DROP TABLE IF EXISTS `suppliers`;
 CREATE TABLE `suppliers` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -509,6 +530,7 @@ CREATE TABLE `suppliers` (
 -- Cấu trúc bảng cho bảng `users`
 --
 
+DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
@@ -536,6 +558,7 @@ INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`, `created_at`
 -- Cấu trúc bảng cho bảng `videos`
 --
 
+DROP TABLE IF EXISTS `videos`;
 CREATE TABLE `videos` (
   `id` int(11) NOT NULL,
   `video_type` enum('youtube','local') DEFAULT 'youtube',
