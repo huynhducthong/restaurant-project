@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 $current_user = $_SESSION['username'] ?? 'Admin';
 
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 $db = (new Database())->getConnection();
 
 // ============================================================
@@ -364,4 +364,4 @@ $msg = $_GET['msg'] ?? '';
 // ============================================================
 // 3. NẠP VIEW
 // ============================================================
-require_once __DIR__ . '/inventory_view.php';
+require_once __DIR__ . '/../../admin/views/inventory/inventory_view.php';

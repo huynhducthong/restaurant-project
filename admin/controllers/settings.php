@@ -2,11 +2,11 @@
 // ✅ FIX 1: Xác thực session admin
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login.php'); exit;
+    header('Location: ../../login.php'); exit;
 }
 
-include '../public/admin_layout_header.php';
-require_once '../config/database.php';
+include '../../public/admin_layout_header.php';
+require_once '../../config/database.php';
 $db = (new Database())->getConnection();
 
 // Flash message từ session
@@ -61,9 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $file_name   = 'logo.' . $ext;
-        $target_file = '../public/assets/img/' . $file_name;
+        $target_file = '../../public/assets/img/' . $file_name;
         if (move_uploaded_file($tmp_path, $target_file)) {
-            $stmt->execute(['logo_url', 'public/assets/img/' . $file_name]);
+            $stmt->execute(['logo_url', '../../public/assets/img/' . $file_name]);
             // ✅ FIX 6: Version chống cache browser
             $stmt->execute(['logo_ver', (string)time()]);
         } else {
@@ -89,7 +89,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 $logo_src = '';
 if (!empty($settings['logo_url'])) {
     $ver      = $settings['logo_ver'] ?? '1';
-    $logo_src = '../' . htmlspecialchars($settings['logo_url']) . '?v=' . $ver;
+    $logo_src = '../../' . htmlspecialchars($settings['logo_url']) . '?v=' . $ver;
 }
 ?>
 

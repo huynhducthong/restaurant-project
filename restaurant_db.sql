@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 01, 2026 at 03:31 PM
+-- Generation Time: May 03, 2026 at 03:18 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -104,6 +104,13 @@ CREATE TABLE `booking_details` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `booking_details`
+--
+
+INSERT INTO `booking_details` (`id`, `booking_id`, `menu_id`, `item_type`, `quantity`, `price`, `created_at`) VALUES
+(3, 13, 1, 'food', 1, 0.00, '2026-05-02 10:25:55');
+
 -- --------------------------------------------------------
 
 --
@@ -184,7 +191,6 @@ CREATE TABLE `combo_items` (
 --
 
 INSERT INTO `combo_items` (`id`, `combo_id`, `food_id`) VALUES
-(7, 1, 2),
 (8, 1, 1);
 
 -- --------------------------------------------------------
@@ -202,17 +208,15 @@ CREATE TABLE `foods` (
   `image` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `status` tinyint(1) DEFAULT 1,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `menu_id` int(11) DEFAULT NULL
+  `is_active` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `foods`
 --
 
-INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`, `is_active`, `menu_id`) VALUES
-(1, 4, 'rựu vang', 500000.00, '1775141620_Screenshot 2026-04-02 213852.png', 'dfb', 1, 1, NULL),
-(2, 2, 'Bò bít tết', 800000.00, '1775392540_Screenshot 2026-04-03 121754.png', 'vgfnbwd', 1, 1, NULL);
+INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`, `is_active`) VALUES
+(1, 4, 'rựu vang', 500000.00, '1775141620_Screenshot 2026-04-02 213852.png', 'dfb', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -234,8 +238,7 @@ CREATE TABLE `food_recipes` (
 --
 
 INSERT INTO `food_recipes` (`id`, `food_id`, `ingredient_id`, `quantity_required`, `unit`) VALUES
-(1, 1, 1, 1.000, 'chai'),
-(2, 2, 2, 0.500, 'kg');
+(1, 1, 1, 1.000, 'chai');
 
 -- --------------------------------------------------------
 
@@ -264,8 +267,7 @@ CREATE TABLE `inventory` (
 --
 
 INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `stock_quantity`, `cost_price`, `supplier_id`, `entry_date`, `expiry_date`, `revenue`, `updated_at`, `min_stock`) VALUES
-(1, 'rựu', 'Đồ uống', 'chai', 191.00, 20000000.00, 1, NULL, '2027-06-26', 0.00, '2026-05-01 13:28:30', 0),
-(2, 'thịt bò', 'Thịt', 'kg', 28.50, 10000000.00, 1, NULL, '2027-12-26', 0.00, '2026-05-01 13:28:30', 0);
+(1, 'rựu', 'Đồ uống', 'chai', 190.00, 20000000.00, 1, NULL, '2027-06-26', 0.00, '2026-05-02 10:08:15', 0);
 
 -- --------------------------------------------------------
 
@@ -361,16 +363,12 @@ CREATE TABLE `inventory_history` (
 INSERT INTO `inventory_history` (`id`, `ingredient_id`, `type`, `quantity`, `created_at`, `performed_by`) VALUES
 (1, 1, 'import', 100.00, '2026-04-02 07:53:10', NULL),
 (2, 1, 'export', 1.00, '2026-04-02 08:27:06', NULL),
-(3, 2, 'import', 10.00, '2026-04-05 05:31:10', NULL),
-(4, 2, 'export', 1.00, '2026-04-25 12:47:48', NULL),
 (5, 1, 'import', 100.00, '2026-04-26 13:37:33', 'Admin'),
 (6, 1, 'import', 100.00, '2026-04-26 13:38:03', 'Admin'),
 (7, 1, 'export', 99.00, '2026-04-26 13:38:24', 'Admin'),
-(8, 2, 'import', 10.00, '2026-04-26 13:51:09', 'Admin'),
-(9, 2, 'import', 10.00, '2026-04-26 13:51:31', 'Admin'),
 (10, 1, 'export', 8.00, '2026-04-29 13:13:35', 'Admin'),
 (11, 1, 'export', 1.00, '2026-05-01 13:28:30', NULL),
-(12, 2, 'export', 0.50, '2026-05-01 13:28:30', NULL);
+(13, 1, 'export', 1.00, '2026-05-02 10:08:15', 'Admin');
 
 -- --------------------------------------------------------
 
@@ -430,6 +428,22 @@ CREATE TABLE `navigation_menu` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `order_items`
+--
+
+DROP TABLE IF EXISTS `order_items`;
+CREATE TABLE `order_items` (
+  `id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `food_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 1,
+  `price` decimal(10,2) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `restaurant_tables`
 --
 
@@ -451,7 +465,7 @@ CREATE TABLE `restaurant_tables` (
 --
 
 INSERT INTO `restaurant_tables` (`id`, `table_code`, `table_number`, `room_type`, `category`, `capacity`, `price`, `status`, `is_available`) VALUES
-(1, 'T1', '1', NULL, 'open', 6, 0.00, 'available', 1),
+(1, 'T1', '1', NULL, 'open', 6, 0.00, 'available', 0),
 (2, 'T2', '2', NULL, 'open', 6, 0.00, 'available', 1),
 (3, 'T3', '3', NULL, 'open', 6, 0.00, 'available', 1),
 (4, 'T4', '4', NULL, 'open', 6, 0.00, 'available', 1),
@@ -509,6 +523,13 @@ CREATE TABLE `service_bookings` (
   `status` enum('Pending','Confirmed','Completed','Cancelled') DEFAULT 'Pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `service_bookings`
+--
+
+INSERT INTO `service_bookings` (`id`, `customer_name`, `customer_phone`, `booking_date`, `service_type`, `table_id`, `combo_id`, `guests`, `message`, `total_amount`, `deposit_amount`, `status`, `created_at`) VALUES
+(13, 'Huỳnh đức thông', '1234567890', '2026-05-09 17:25:00', 'table', 1, NULL, 2, '', 500000.00, 150000.00, 'Pending', '2026-05-02 10:25:55');
 
 -- --------------------------------------------------------
 
@@ -742,6 +763,12 @@ ALTER TABLE `navigation_menu`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `order_items`
+--
+ALTER TABLE `order_items`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `restaurant_tables`
 --
 ALTER TABLE `restaurant_tables`
@@ -813,7 +840,7 @@ ALTER TABLE `bookings`
 -- AUTO_INCREMENT for table `booking_details`
 --
 ALTER TABLE `booking_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -831,13 +858,13 @@ ALTER TABLE `chefs`
 -- AUTO_INCREMENT for table `combos`
 --
 ALTER TABLE `combos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `combo_items`
 --
 ALTER TABLE `combo_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `foods`
@@ -879,7 +906,7 @@ ALTER TABLE `inventory_categories`
 -- AUTO_INCREMENT for table `inventory_history`
 --
 ALTER TABLE `inventory_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `inventory_receipts`
@@ -900,6 +927,12 @@ ALTER TABLE `navigation_menu`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `order_items`
+--
+ALTER TABLE `order_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `restaurant_tables`
 --
 ALTER TABLE `restaurant_tables`
@@ -915,7 +948,7 @@ ALTER TABLE `services`
 -- AUTO_INCREMENT for table `service_bookings`
 --
 ALTER TABLE `service_bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `suppliers`

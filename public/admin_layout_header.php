@@ -51,43 +51,45 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <nav class="sidebar">
         <div class="sidebar-header">RESTO ADMIN</div>
         <ul class="sidebar-menu">
-            <li class="<?= ($current_page == 'admin_dashboard.php') ? 'active' : '' ?>">
-                <a href="../admin/admin_dashboard.php"><i class="fas fa-home"></i> Tổng quan</a>
-            </li>
-            <li><a href="../index.php"><i class="fas fa-globe"></i> Xem Trang chủ</a></li>
-            
-            <li class="<?= ($current_page == 'manage_foods.php' || $current_page == 'add_food.php' || $current_page == 'edit_food.php') ? 'active' : '' ?>">
-                <a href="../admin/manage_foods.php"><i class="fas fa-utensils"></i> Quản lý món ăn</a>
-            </li>
+    <li>
+        <a href="/restaurant-project/admin/admin_dashboard.php"><i class="fas fa-home"></i> Tổng quan</a>
+    </li>
+    <li>
+        <a href="/restaurant-project/index.php"><i class="fas fa-globe"></i> Xem Trang chủ</a>
+    </li>
+    
+    <li class="<?= (strpos($_SERVER['REQUEST_URI'], 'FoodController.php') !== false) ? 'active' : '' ?>">
+        <a href="/restaurant-project/admin/controllers/FoodController.php"><i class="fas fa-utensils"></i> Quản lý món ăn</a>
+    </li>
 
-            <li class="<?= ($current_page == 'settings.php') ? 'active' : '' ?>">
-                <a href="../admin/settings.php"><i class="fas fa-concierge-bell"></i> Cài Đặt Chung</a>
-            </li>
+    <li>
+        <a href="/restaurant-project/admin/controllers/settings.php"><i class="fas fa-concierge-bell"></i> Cài Đặt Chung</a>
+    </li>
 
-            <li class="<?= ($current_page == 'manage_banners.php') ? 'active' : '' ?>">
-                <a href="../admin/manage_banners.php"><i class="fas fa-concierge-bell"></i> Quản lý Banner</a>
-            </li>
+    <li>
+        <a href="/restaurant-project/admin/controllers/manage_banners.php"><i class="fas fa-image"></i> Quản lý Banner</a>
+    </li>
 
-            <li class="<?= ($current_page == 'list_combos.php' || $current_page == 'add_combo.php' || $current_page == 'edit_combo.php') ? 'active' : '' ?>">
-                <a href="../admin/list_combos.php"><i class="fas fa-layer-group"></i> Quản lý Combo</a>
-            </li>
-            
-            <li class="<?= ($current_page == 'manage_videos.php') ? 'active' : '' ?>">
-                <a href="../admin/manage_videos.php"><i class="fas fa-video"></i> Quản lý Video</a>
-            </li>
-            
-            <li class="<?= ($current_page == 'manage_inventory.php') ? 'active' : '' ?>">
-                <a href="../admin/InventoryController.php"><i class="fas fa-warehouse"></i> Quản lý Kho</a>
-            </li>
-            
-            <li class="<?= ($current_page == 'manage_services.php') ? 'active' : '' ?>">
-                <a href="../admin/manage_services.php"><i class="fas fa-concierge-bell"></i> Quản lý Dịch vụ</a>
-            </li>
+    <li class="<?= (strpos($_SERVER['REQUEST_URI'], 'ComboController.php') !== false) ? 'active' : '' ?>">
+        <a href="/restaurant-project/admin/controllers/ComboController.php"><i class="fas fa-layer-group"></i> Quản lý Combo</a>
+    </li>
+    
+    <li>
+        <a href="/restaurant-project/admin/controllers/manage_videos.php"><i class="fas fa-video"></i> Quản lý Video</a>
+    </li>
+    
+    <li>
+        <a href="/restaurant-project/admin/controllers/InventoryController.php"><i class="fas fa-warehouse"></i> Quản lý Kho</a>
+    </li>
+    
+    <li>
+        <a href="/restaurant-project/admin/controllers/manage_services.php"><i class="fas fa-concierge-bell"></i> Quản lý Dịch vụ</a>
+    </li>
 
-            <li class="logout-item">
-                <a href="logout.php" style="color: #e74c3c;"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
-            </li>
-        </ul>
+    <li class="logout-item">
+        <a href="/restaurant-project/admin/logout.php" style="color: #e74c3c;"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+    </li>
+</ul>
     </nav>
 
     <div class="main-content">
