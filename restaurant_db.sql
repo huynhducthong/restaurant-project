@@ -414,6 +414,68 @@ INSERT INTO `inventory_units` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `footer_links`
+--
+
+DROP TABLE IF EXISTS `footer_links`;
+CREATE TABLE `footer_links` (
+  `id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `priority` int(11) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `footer_settings`
+--
+
+DROP TABLE IF EXISTS `footer_settings`;
+CREATE TABLE `footer_settings` (
+  `setting_key` varchar(50) NOT NULL,
+  `setting_value` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `footer_settings`
+--
+
+INSERT INTO `footer_settings` (`setting_key`, `setting_value`) VALUES
+('address', '123 Đường ABC, Quận 1, TP. HCM'),
+('copyright_text', '© 2026 Restaurantly. All Rights Reserved.'),
+('email', 'contact@restaurantly.com'),
+('facebook_url', '#'),
+('footer_bg_color', '#18a9f2'),
+('footer_description', 'Trải nghiệm ẩm thực đẳng cấp giữa lòng thành phố.'),
+('footer_logo', ''),
+('footer_text_color', '#ffffff'),
+('google_map_iframe', ''),
+('instagram_url', '#'),
+('opening_hours', '08:00 AM - 10:00 PM'),
+('phone', '0901 234 567'),
+('restaurant_name', 'Restaurantly'),
+('show_map', '1'),
+('show_newsletter', '0'),
+('show_social', '0'),
+('tiktok_url', '#');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `newsletters`
+--
+
+DROP TABLE IF EXISTS `newsletters`;
+CREATE TABLE `newsletters` (
+  `id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `navigation_menu`
 --
 
@@ -757,6 +819,25 @@ ALTER TABLE `inventory_units`
   ADD UNIQUE KEY `name` (`name`);
 
 --
+-- Indexes for table `footer_links`
+--
+ALTER TABLE `footer_links`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `footer_settings`
+--
+ALTER TABLE `footer_settings`
+  ADD PRIMARY KEY (`setting_key`);
+
+--
+-- Indexes for table `newsletters`
+--
+ALTER TABLE `newsletters`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
 -- Indexes for table `navigation_menu`
 --
 ALTER TABLE `navigation_menu`
@@ -919,6 +1000,18 @@ ALTER TABLE `inventory_receipts`
 --
 ALTER TABLE `inventory_units`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `footer_links`
+--
+ALTER TABLE `footer_links`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `newsletters`
+--
+ALTER TABLE `newsletters`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `navigation_menu`
