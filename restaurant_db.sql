@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 21, 2026 at 05:19 PM
+-- Generation Time: Apr 27, 2026 at 03:04 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -117,15 +117,17 @@ CREATE TABLE `combos` (
   `description` text DEFAULT NULL,
   `price` decimal(15,2) NOT NULL,
   `image` varchar(255) DEFAULT NULL,
-  `status` tinyint(1) DEFAULT 1
+  `status` tinyint(1) DEFAULT 1,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `combos`
 --
 
-INSERT INTO `combos` (`id`, `name`, `description`, `price`, `image`, `status`) VALUES
-(1, 'combo gia đình', 'btrdn', 1000000.00, '1775395639_Screenshot 2026-04-05 200746.png', 1);
+INSERT INTO `combos` (`id`, `name`, `description`, `price`, `image`, `status`, `is_active`, `created_at`) VALUES
+(1, 'combo gia đình', 'btrdn', 1000000.00, '1775395639_Screenshot 2026-04-05 200746.png', 1, 1, '2026-04-26 13:31:30');
 
 -- --------------------------------------------------------
 
@@ -162,16 +164,17 @@ CREATE TABLE `foods` (
   `price` decimal(15,2) NOT NULL,
   `image` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
-  `status` tinyint(1) DEFAULT 1
+  `status` tinyint(1) DEFAULT 1,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `foods`
 --
 
-INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`) VALUES
-(1, 4, 'rựu vang', 500000.00, '1775141620_Screenshot 2026-04-02 213852.png', 'dfb', 1),
-(2, 2, 'Bò bít tết', 800000.00, '1775392540_Screenshot 2026-04-03 121754.png', 'vgfnbwd', 1);
+INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`, `is_active`) VALUES
+(1, 4, 'rựu vang', 500000.00, '1775141620_Screenshot 2026-04-02 213852.png', 'dfb', 1, 1),
+(2, 2, 'Bò bít tết', 800000.00, '1775392540_Screenshot 2026-04-03 121754.png', 'vgfnbwd', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -214,16 +217,47 @@ CREATE TABLE `inventory` (
   `entry_date` date DEFAULT NULL,
   `expiry_date` date DEFAULT NULL,
   `revenue` decimal(15,2) DEFAULT 0.00,
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `min_stock` float DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `inventory`
 --
 
-INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `stock_quantity`, `cost_price`, `supplier_id`, `entry_date`, `expiry_date`, `revenue`, `updated_at`) VALUES
-(1, 'rựu', 'Đồ uống', 'chai', 99.00, 1200000.00, NULL, NULL, NULL, 0.00, '2026-04-02 08:27:06'),
-(2, 'thịt bò', 'Thịt', 'kg', 10.00, 10000000.00, NULL, NULL, NULL, 0.00, '2026-04-05 05:31:10');
+INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `stock_quantity`, `cost_price`, `supplier_id`, `entry_date`, `expiry_date`, `revenue`, `updated_at`, `min_stock`) VALUES
+(1, 'rựu', 'Đồ uống', 'chai', 200.00, 20000000.00, 1, NULL, '2027-06-26', 0.00, '2026-04-26 13:38:24', 0),
+(2, 'thịt bò', 'Thịt', 'kg', 29.00, 10000000.00, 1, NULL, '2027-12-26', 0.00, '2026-04-26 13:51:31', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventory_audits`
+--
+
+DROP TABLE IF EXISTS `inventory_audits`;
+CREATE TABLE `inventory_audits` (
+  `id` int(11) NOT NULL,
+  `audit_date` datetime DEFAULT current_timestamp(),
+  `performed_by` varchar(100) DEFAULT NULL,
+  `notes` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventory_audit_details`
+--
+
+DROP TABLE IF EXISTS `inventory_audit_details`;
+CREATE TABLE `inventory_audit_details` (
+  `id` int(11) NOT NULL,
+  `audit_id` int(11) DEFAULT NULL,
+  `ingredient_id` int(11) DEFAULT NULL,
+  `system_qty` float DEFAULT NULL,
+  `physical_qty` float DEFAULT NULL,
+  `variance` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -260,17 +294,24 @@ CREATE TABLE `inventory_history` (
   `ingredient_id` int(11) DEFAULT NULL,
   `type` enum('import','export','loss') NOT NULL,
   `quantity` decimal(10,2) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `performed_by` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `inventory_history`
 --
 
-INSERT INTO `inventory_history` (`id`, `ingredient_id`, `type`, `quantity`, `created_at`) VALUES
-(1, 1, 'import', 100.00, '2026-04-02 07:53:10'),
-(2, 1, 'export', 1.00, '2026-04-02 08:27:06'),
-(3, 2, 'import', 10.00, '2026-04-05 05:31:10');
+INSERT INTO `inventory_history` (`id`, `ingredient_id`, `type`, `quantity`, `created_at`, `performed_by`) VALUES
+(1, 1, 'import', 100.00, '2026-04-02 07:53:10', NULL),
+(2, 1, 'export', 1.00, '2026-04-02 08:27:06', NULL),
+(3, 2, 'import', 10.00, '2026-04-05 05:31:10', NULL),
+(4, 2, 'export', 1.00, '2026-04-25 12:47:48', NULL),
+(5, 1, 'import', 100.00, '2026-04-26 13:37:33', 'Admin'),
+(6, 1, 'import', 100.00, '2026-04-26 13:38:03', 'Admin'),
+(7, 1, 'export', 99.00, '2026-04-26 13:38:24', 'Admin'),
+(8, 2, 'import', 10.00, '2026-04-26 13:51:09', 'Admin'),
+(9, 2, 'import', 10.00, '2026-04-26 13:51:31', 'Admin');
 
 -- --------------------------------------------------------
 
@@ -459,6 +500,13 @@ CREATE TABLE `suppliers` (
   `contact_person` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `suppliers`
+--
+
+INSERT INTO `suppliers` (`id`, `name`, `phone`, `address`, `created_at`, `email`, `contact_person`) VALUES
+(1, 'công ty fpt', '012345678', 'bvhb', '2026-04-26 13:37:03', 'long@gmail.com', 'long');
+
 -- --------------------------------------------------------
 
 --
@@ -484,7 +532,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`, `created_at`, `google_id`, `reset_token`, `reset_token_expire`, `remember_token`) VALUES
-(1, 'Huỳnh đức thông', '28huynhducthong@gmail.com', '$2y$10$f7cOFOOX2paiJ8e4J2OnneWhZZ87.3CioY3mCximsFWmC7wbAyzni', 'admin', '2026-04-02 07:19:22', '107664704264935131673', NULL, NULL, NULL);
+(1, 'Huỳnh đức thông', '28huynhducthong@gmail.com', '$2y$10$f7cOFOOX2paiJ8e4J2OnneWhZZ87.3CioY3mCximsFWmC7wbAyzni', 'admin', '2026-04-02 07:19:22', '107664704264935131673', NULL, NULL, NULL),
+(8, 'Thong Duc', 'thongd342@gmail.com', '', '', '2026-04-22 05:39:26', '100631379832642815829', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -506,7 +555,7 @@ CREATE TABLE `videos` (
 --
 
 INSERT INTO `videos` (`id`, `video_type`, `video_url`, `file_path`, `created_at`) VALUES
-(1, 'youtube', 'dQw4w9WgXcQ', NULL, '2026-04-02 07:36:16');
+(1, 'youtube', 'tYdL0dEWqaQ', NULL, '2026-04-02 07:36:16');
 
 --
 -- Indexes for dumped tables
@@ -572,6 +621,19 @@ ALTER TABLE `food_recipes`
 ALTER TABLE `inventory`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_inv_supplier` (`supplier_id`);
+
+--
+-- Indexes for table `inventory_audits`
+--
+ALTER TABLE `inventory_audits`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `inventory_audit_details`
+--
+ALTER TABLE `inventory_audit_details`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `audit_id` (`audit_id`);
 
 --
 -- Indexes for table `inventory_categories`
@@ -713,6 +775,18 @@ ALTER TABLE `inventory`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `inventory_audits`
+--
+ALTER TABLE `inventory_audits`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `inventory_audit_details`
+--
+ALTER TABLE `inventory_audit_details`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `inventory_categories`
 --
 ALTER TABLE `inventory_categories`
@@ -722,7 +796,7 @@ ALTER TABLE `inventory_categories`
 -- AUTO_INCREMENT for table `inventory_history`
 --
 ALTER TABLE `inventory_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `inventory_receipts`
@@ -764,13 +838,13 @@ ALTER TABLE `service_bookings`
 -- AUTO_INCREMENT for table `suppliers`
 --
 ALTER TABLE `suppliers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `videos`
@@ -807,6 +881,12 @@ ALTER TABLE `food_recipes`
 --
 ALTER TABLE `inventory`
   ADD CONSTRAINT `fk_inv_supplier` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `inventory_audit_details`
+--
+ALTER TABLE `inventory_audit_details`
+  ADD CONSTRAINT `inventory_audit_details_ibfk_1` FOREIGN KEY (`audit_id`) REFERENCES `inventory_audits` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `inventory_history`

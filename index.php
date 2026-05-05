@@ -69,13 +69,13 @@ try {
         $file_path  = $video_data['file_path'] ?? '';
     }
 
-    // 5.3 Truy vấn Combo
-    $sql_combos = "SELECT c.*, GROUP_CONCAT(f.name SEPARATOR ', ') as list_foods 
+    // 5.3 Truy vấn Combo — đồng bộ với list_combos.php (dùng is_active)
+    $sql_combos = "SELECT c.*, GROUP_CONCAT(f.name ORDER BY f.name SEPARATOR ', ') as list_foods
                    FROM combos c
                    LEFT JOIN combo_items ci ON c.id = ci.combo_id
-                   LEFT JOIN foods f ON ci.food_id = f.id
-                   WHERE c.status = 1 
-                   GROUP BY c.id 
+                   LEFT JOIN foods f        ON ci.food_id = f.id
+                   WHERE c.is_active = 1
+                   GROUP BY c.id
                    ORDER BY c.id DESC";
     $stmt_combos = $db->prepare($sql_combos);
     $stmt_combos->execute();
@@ -90,18 +90,14 @@ include __DIR__ . '/views/client/layouts/header.php';
   <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" style="width: 100%; height: 100vh;">
     
     <div class="carousel-inner">
-      <?php 
-      // Lấy banner từ DB sắp xếp theo thứ tự
-      $stmt_hero = $db->query("SELECT * FROM banners ORDER BY display_order ASC");
+      <?php
+      // Dùng lại $banners_db đã fetch ở trên — tránh query trùng
       $first = true;
-      while($row = $stmt_hero->fetch(PDO::FETCH_ASSOC)): 
-          // Xử lý logic Font Style cho Tiêu đề
+      foreach ($banners_db as $row):
           $title_weight = ($row['font_style'] == 'bold') ? 'bold' : 'normal';
           $title_style  = ($row['font_style'] == 'italic') ? 'italic' : 'normal';
-          
-          // Xử lý logic Font Style cho Mô tả
-          $desc_weight = ($row['desc_font_style'] ?? 'normal' == 'bold') ? 'bold' : 'normal';
-          $desc_style  = ($row['desc_font_style'] ?? 'normal' == 'italic') ? 'italic' : 'normal';
+          $desc_weight  = (($row['desc_font_style'] ?? 'normal') == 'bold') ? 'bold' : 'normal';
+          $desc_style   = (($row['desc_font_style'] ?? 'normal') == 'italic') ? 'italic' : 'normal';
       ?>
         <div class="carousel-item <?= $first ? 'active' : '' ?>" 
              style="background-image: url('public/assets/img/hero/<?= $row['image_url'] ?>'); background-size: cover; height: 100vh; background-position: center; position: relative;">
@@ -137,7 +133,7 @@ include __DIR__ . '/views/client/layouts/header.php';
             </div>
           </div>
         </div>
-      <?php $first = false; endwhile; ?>
+      <?php $first = false; endforeach; ?>
     </div>
 
     <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
@@ -194,33 +190,62 @@ include __DIR__ . '/views/client/layouts/header.php';
         <p style="color: white; font-size: 24px;">Khám phá hương vị <?= htmlspecialchars($settings['restaurant_name'] ?? 'Restaurantly') ?></p>
       </div>
 
-      <?php 
-      $categories = $db->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSOC);
-      foreach (array_chunk($categories, 3) as $chunk): 
+      <?php
+      // Fix N+1: 1 query JOIN duy nhất thay vì query trong foreach
+      // Đồng bộ is_active với manage_foods.php
+      $all_foods_stmt = $db->prepare(
+          "SELECT f.*, c.id as cat_id
+           FROM foods f
+           JOIN categories c ON f.category_id = c.id
+           WHERE f.is_active = 1
+           ORDER BY c.name ASC, f.id ASC"
+      );
+      $all_foods_stmt->execute();
+      $foods_by_cat = [];
+      foreach ($all_foods_stmt->fetchAll(PDO::FETCH_ASSOC) as $frow) {
+          $foods_by_cat[$frow['cat_id']][] = $frow;
+      }
+
+      $categories = $db->query("SELECT * FROM categories ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
+      foreach (array_chunk($categories, 3) as $chunk):
       ?>
       <div class="row mb-5">
-        <?php foreach ($chunk as $cat): 
-          $cat_id = $cat['id'];
-          $foods = $db->query("SELECT * FROM foods WHERE category_id = $cat_id LIMIT 3")->fetchAll(PDO::FETCH_ASSOC);
+        <?php foreach ($chunk as $cat):
+          $cat_foods = array_slice($foods_by_cat[$cat['id']] ?? [], 0, 3);
         ?>
         <div class="col-lg-4 col-md-6 mb-4">
           <div class="category-column-box">
-            <h3 class="category-title text-center" style="color: #cda45e; margin-bottom: 30px;"><?= mb_convert_case($cat['name'], MB_CASE_UPPER, "UTF-8") ?></h3>
+            <h3 class="category-title text-center" style="color: #cda45e; margin-bottom: 30px;">
+              <?= htmlspecialchars(mb_convert_case($cat['name'], MB_CASE_UPPER, 'UTF-8')) ?>
+            </h3>
             <div class="menu-list">
-              <?php foreach ($foods as $f): ?>
+              <?php if (empty($cat_foods)): ?>
+                <p class="text-muted text-center small fst-italic">Chưa có món</p>
+              <?php else: ?>
+              <?php foreach ($cat_foods as $f): ?>
               <div class="menu-item-horizontal d-flex align-items-center mb-4">
-                <div class="item-img" style="width: 70px; height: 70px; margin-right: 15px;">
-                  <img src="public/assets/img/menu/<?= $f['image'] ?>" alt="<?= $f['name'] ?>" style="width: 100%; border-radius: 50%; border: 3px solid #37332a;">
+                <div class="item-img" style="width:70px;height:70px;margin-right:15px;flex-shrink:0;">
+                  <img src="public/assets/img/menu/<?= htmlspecialchars($f['image']) ?>"
+                       alt="<?= htmlspecialchars($f['name']) ?>"
+                       onerror="this.src='public/assets/img/menu/default.jpg'"
+                       style="width:100%;height:100%;object-fit:cover;border-radius:50%;border:3px solid #37332a;">
                 </div>
                 <div class="item-details flex-grow-1">
                   <div class="d-flex justify-content-between align-items-baseline">
-                    <h5 class="food-name" style="color: #fff; font-size: 18px; margin: 0;"><?= $f['name'] ?></h5>
-                    <span class="food-price" style="color: #cda45e; font-weight: 600;"><?= number_format($f['price'], 0, ',', '.') ?>đ</span>
+                    <h5 class="food-name" style="color:#fff;font-size:18px;margin:0;">
+                      <?= htmlspecialchars($f['name']) ?>
+                    </h5>
+                    <span class="food-price" style="color:#cda45e;font-weight:600;">
+                      <?= number_format($f['price'], 0, ',', '.') ?>đ
+                    </span>
                   </div>
-                  <p class="food-desc" style="color: #aaaaaa; font-size: 14px; font-style: italic; margin: 0;"><?= $f['description'] ?></p>
+                  <p class="food-desc" style="color:#aaaaaa;font-size:14px;font-style:italic;margin:0;">
+                    <?= htmlspecialchars($f['description']) ?>
+                  </p>
                 </div>
               </div>
               <?php endforeach; ?>
+              <?php endif; ?>
             </div>
           </div>
         </div>
@@ -246,7 +271,9 @@ include __DIR__ . '/views/client/layouts/header.php';
           <div class="col-lg-4 col-md-6">
             <div class="combo-card-custom">
               <div class="combo-img mb-3">
-                <img src="public/assets/img/combos/<?= $row['image'] ?: 'default-combo.jpg' ?>" alt="<?= htmlspecialchars($row['name']) ?>">
+                <img src="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>"
+                     alt="<?= htmlspecialchars($row['name']) ?>"
+                     onerror="this.src='public/assets/img/combos/default-combo.jpg'">
               </div>
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <h4 class="combo-name-custom"><?= htmlspecialchars($row['name']) ?></h4>

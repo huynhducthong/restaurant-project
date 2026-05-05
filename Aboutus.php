@@ -1,145 +1,321 @@
 <?php
 require_once __DIR__ . '/config/database.php';
+
 $database = new Database();
 $db = $database->getConnection();
 
-// 1. Lấy dữ liệu Câu chuyện
-$stmt = $db->prepare("SELECT * FROM about_content WHERE category_id = (SELECT id FROM about_categories WHERE slug='cau-chuyen' LIMIT 1) AND status = 1 ORDER BY is_pinned DESC, display_order ASC LIMIT 1");
+/*
+|--------------------------------------------------------------------------
+| LẤY DỮ LIỆU CÂU CHUYỆN (Sử dụng làm bài viết nổi bật hoặc nội dung chính)
+|--------------------------------------------------------------------------
+*/
+$stmt = $db->prepare("
+    SELECT * FROM about_content
+    WHERE category_id = (
+        SELECT id FROM about_categories
+        WHERE slug='cau-chuyen'
+        LIMIT 1
+    )
+    AND status = 1
+    ORDER BY is_pinned DESC, display_order ASC
+    LIMIT 1
+");
 $stmt->execute();
 $story = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// 2. Lấy dữ liệu Đội ngũ
-$stmt2 = $db->prepare("SELECT * FROM about_content WHERE category_id = (SELECT id FROM about_categories WHERE slug='doi-ngu' LIMIT 1) AND status = 1 ORDER BY display_order ASC");
+/*
+|--------------------------------------------------------------------------
+| LẤY DỮ LIỆU ĐỘI NGŨ (Sử dụng làm danh sách tin tức dạng lưới)
+|--------------------------------------------------------------------------
+*/
+$stmt2 = $db->prepare("
+    SELECT * FROM about_content
+    WHERE category_id = (
+        SELECT id FROM about_categories
+        WHERE slug='doi-ngu'
+        LIMIT 1
+    )
+    AND status = 1
+    ORDER BY display_order ASC
+");
 $stmt2->execute();
 $team = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 
-include __DIR__ . '/views/client/layouts/header.php'; 
+include __DIR__ . '/views/client/layouts/header.php';
 ?>
 
 <style>
-    /* Reset & Base Styles */
-    .about-section { padding: 80px 0; color: #fff; }
-    .ck-content-view { line-height: 1.8; color: #ced4da; font-size: 1.05rem; }
-    .ck-content-view p { margin-bottom: 1rem; }
-    
-    .section-title { margin-bottom: 50px; }
-    .section-title h2 {
-        font-family: 'Playfair Display', serif;
-        color: #cda45e;
-        font-size: 2.5rem;
+    :root {
+        --main-bg: #0b1311; /* Màu xanh đen đậm theo style ảnh mẫu */
+        --sidebar-bg: #1a2924; 
+        --card-bg: #050505;
+        --gold: #d4a762;
+        --text-light: #f2f2f2;
+        --muted: #a9a9a9;
+    }
+
+    body {
+        background: var(--main-bg);
+        color: var(--text-light);
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* ================= HERO SECTION ================= */
+    #about-hero {
         position: relative;
-        padding-bottom: 15px;
-    }
-    .section-title h2::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        width: 80px;
-        height: 2px;
-        background: #cda45e;
+        height: 350px;
+        background: linear-gradient(rgba(0,0,0,.7), rgba(0,0,0,.7)),
+                    url('public/assets/img/about-bg.jpg') center center/cover no-repeat;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        margin-bottom: 50px;
     }
 
-    /* Hình ảnh */
-    .img-hover-effect {
-        transition: transform 0.4s ease;
-        border: 1px solid rgba(205, 164, 94, 0.2);
-    }
-    .img-hover-effect:hover {
-        transform: scale(1.02);
-        border-color: #cda45e;
+    #about-hero h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 56px;
+        color: var(--gold);
+        text-transform: uppercase;
+        font-weight: 700;
     }
 
-    .chef-img-container {
-        width: 280px;
-        height: 280px;
-        margin: 0 auto;
+    /* ================= MAIN LAYOUT ================= */
+    .news-container {
+        padding-bottom: 80px;
     }
-    .chef-img-container img {
+
+    /* ================= SIDEBAR STYLE ================= */
+    .sidebar-block {
+        background: var(--sidebar-bg);
+        border: 1px solid rgba(212, 167, 98, 0.2);
+        border-radius: 4px;
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+
+    .sidebar-title {
+        background: var(--gold);
+        color: #fff;
+        padding: 10px 15px;
+        font-weight: bold;
+        font-size: 14px;
+        text-transform: uppercase;
+    }
+
+    .side-item {
+        display: flex;
+        padding: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: 0.3s;
+    }
+
+    .side-item:hover {
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .side-item img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        margin-right: 12px;
+        border-radius: 2px;
+    }
+
+    .side-item-info a {
+        color: var(--text-light);
+        text-decoration: none;
+        font-size: 13px;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .side-item-info a:hover {
+        color: var(--gold);
+    }
+
+    /* ================= GRID NEWS CARDS ================= */
+    .news-card {
+        background: var(--card-bg);
+        border-radius: 4px;
+        overflow: hidden;
+        height: 100%;
+        transition: transform 0.3s ease;
+    }
+
+    .news-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .news-thumb {
+        position: relative;
+        height: 220px;
+        overflow: hidden;
+    }
+
+    .news-thumb img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        border: 5px solid #37332a;
+    }
+
+    /* Badge ngày tháng giống ảnh mẫu */
+    .date-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: #fff;
+        color: #333;
+        padding: 5px 10px;
+        text-align: center;
+        border-radius: 2px;
+        line-height: 1.1;
+        font-weight: bold;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .date-badge .day {
+        display: block;
+        font-size: 18px;
+    }
+
+    .date-badge .month {
+        font-size: 11px;
+        text-transform: uppercase;
+    }
+
+    .news-body {
+        padding: 20px;
+    }
+
+    .news-title {
+        font-size: 18px;
+        margin-bottom: 12px;
+        line-height: 1.4;
+        font-weight: 600;
+    }
+
+    .news-title a {
+        color: #fff;
+        text-decoration: none;
         transition: 0.3s;
     }
-    .chef-img-container img:hover { border-color: #cda45e; }
 
-    hr.light-sep { border-top: 1px solid rgba(255,255,255,0.05); margin: 60px 0; }
+    .news-title a:hover {
+        color: var(--gold);
+    }
+
+    .news-excerpt {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 15px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .news-divider {
+        width: 100%;
+        height: 1px;
+        background: rgba(255,255,255,0.1);
+    }
+
+    @media (max-width: 992px) {
+        #about-hero h1 { font-size: 40px; }
+    }
 </style>
 
-<section id="about-hero" class="d-flex align-items-center" style="background: url('public/assets/img/about-bg.jpg') center/cover; height: 400px; position: relative;">
-    <div class="container text-center" style="z-index: 2;">
-        <h1 style="font-family: 'Playfair Display', serif; font-size: 4rem; color: #cda45e; text-transform: uppercase;">Về Chúng Tôi</h1>
-        <div style="width: 100px; height: 2px; background: #cda45e; margin: 20px auto;"></div>
-        <p class="fst-italic text-white">Nơi tinh hoa ẩm thực hội tụ và tỏa sáng</p>
-    </div>
-    <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.75);"></div>
-</section>
-
-<section class="about-section" style="background: #0c0b09;">
+<section id="about-hero">
     <div class="container">
-        <?php if ($story): ?>
-        <div class="row align-items-center">
-            <div class="col-lg-6 mb-5 mb-lg-0">
-                <img src="public/assets/img/about/<?= htmlspecialchars($story['thumbnail']) ?>" 
-                     class="img-fluid rounded shadow-lg img-hover-effect" 
-                     alt="Our Story">
-            </div>
-            <div class="col-lg-6 ps-lg-5">
-                <div class="section-title">
-                    <h2><?= htmlspecialchars($story['title']) ?></h2>
-                </div>
-                <div class="ck-content-view">
-                    <?= htmlspecialchars_decode($story['content']) ?>
-                </div>
-            </div>
-        </div>
-        <?php endif; ?>
+        <h1>Về Chúng Tôi</h1>
     </div>
 </section>
 
-<section class="about-section" style="background: #1a1814;">
+<!-- Header & CSS giữ nguyên từ yêu cầu trước -->
+<section class="news-container">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 style="color: #cda45e; font-family: 'Playfair Display', serif; font-size: 3rem;">Đội Ngũ Tài Năng</h2>
-            <p class="fst-italic text-muted">Những tâm hồn nghệ sĩ đứng sau mỗi món ăn</p>
-        </div>
-
         <div class="row">
-            <?php if (!empty($team)): ?>
-                <?php foreach($team as $index => $member): 
-                    // Logic để đảo bên: Người chẵn ảnh trái, người lẻ ảnh phải
-                    $isEven = ($index % 2 == 0);
-                ?>
-                <div class="col-12 mb-5">
-                    <div class="row align-items-center <?= $isEven ? '' : 'flex-row-reverse' ?>">
-                        
-                        <div class="col-md-5 text-center">
-                            <div class="chef-img-container mb-4 mb-md-0">
-                                <img src="public/assets/img/about/<?= htmlspecialchars($member['thumbnail']) ?>" 
-                                     class="rounded-circle shadow">
+            <!-- SIDEBAR -->
+            <div class="col-lg-3">
+                <aside class="sidebar">
+                    <div class="sidebar-block">
+                        <div class="sidebar-title">Bài Viết Mới</div>
+                        <div class="sidebar-content">
+                            <?php foreach(array_slice($team, 0, 4) as $item): ?>
+                            <div class="side-item">
+                                <img src="public/assets/img/about/<?= htmlspecialchars($item['thumbnail'] ?: 'default.jpg') ?>" alt="">
+                                <div class="side-item-info">
+                                    <!-- Gọi Modal dựa trên ID -->
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modal-<?= $item['id'] ?>">
+                                        <?= htmlspecialchars($item['title']) ?>
+                                    </a>
+                                </div>
                             </div>
+                            <?php endforeach; ?>
                         </div>
-
-                        <div class="col-md-7 <?= $isEven ? 'ps-md-5' : 'pe-md-5' ?> text-start">
-                            <h3 style="color: #cda45e; font-family: 'Playfair Display', serif; font-size: 2rem;">
-                                <?= htmlspecialchars($member['title']) ?>
-                            </h3>
-                            <div style="width: 50px; height: 1px; background: #cda45e; margin-bottom: 20px;"></div>
-                            <div class="ck-content-view">
-                                <?= htmlspecialchars_decode($member['content']) ?>
-                            </div>
-                        </div>
-
                     </div>
-                    <?php if ($index < count($team) - 1): ?>
-                        <hr class="light-sep">
-                    <?php endif; ?>
+                </aside>
+            </div>
+
+            <!-- MAIN GRID -->
+            <div class="col-lg-9">
+                <div class="row">
+                    <?php foreach($team as $member): 
+                        // Xử lý ngày tháng linh hoạt
+                        $d = date('d', strtotime($member['publish_date']));
+                        $m = date('m', strtotime($member['publish_date']));
+                    ?>
+                    <div class="col-md-6 col-xl-4 mb-4">
+                        <article class="news-card">
+                            <div class="news-thumb">
+                                <img src="public/assets/img/about/<?= htmlspecialchars($member['thumbnail'] ?: 'default.jpg') ?>" alt="">
+                                <div class="date-badge">
+                                    <span class="day"><?= $d ?></span>
+                                    <span class="month">Th<?= (int)$m ?></span>
+                                </div>
+                            </div>
+                            <div class="news-body">
+                                <h3 class="news-title">
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modal-<?= $member['id'] ?>">
+                                        <?= htmlspecialchars($member['title']) ?>
+                                    </a>
+                                </h3>
+                                <div class="news-excerpt">
+                                    <?= mb_substr(strip_tags(htmlspecialchars_decode($member['content'])), 0, 100, 'UTF-8') ?>...
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <!-- TRANG PHỤ TẠO NHANH (MODAL) -->
+                    <div class="modal fade" id="modal-<?= $member['id'] ?>" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content border-0" style="background:#14110f; color:#fff;">
+                                <div class="modal-header border-bottom border-secondary">
+                                    <h5 class="modal-title fw-bold text-warning"><?= htmlspecialchars($member['title']) ?></h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <img src="public/assets/img/about/<?= $member['thumbnail'] ?>" class="w-100 rounded mb-4" style="max-height:400px; object-fit:cover;">
+                                    <div class="content-detail text-light">
+                                        <?= htmlspecialchars_decode($member['content']) ?>
+                                    </div>
+                                </div>
+                                <div class="modal-footer border-top border-secondary">
+                                    <small class="text-muted">Đăng ngày: <?= date('d/m/Y', strtotime($member['publish_date'])) ?></small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
                 </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p class="text-center text-muted">Dữ liệu đang được cập nhật...</p>
-            <?php endif; ?>
+            </div>
         </div>
     </div>
 </section>
