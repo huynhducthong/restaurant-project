@@ -1,5 +1,5 @@
 <?php
-include '../../public/admin_layout_header.php'; 
+// include '../../public/admin_layout_header.php'; 
 require_once __DIR__ . '/../../config/database.php';
 
 $db = (new Database())->getConnection();
@@ -27,7 +27,7 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 
                 // 3. Lấy định mức nguyên liệu của từng món
                 $stmt_recipe = $db->prepare("
-                    SELECT r.ingredient_id, r.quantity_required, i.item_name, i.stock_quantity 
+                    SELECT r.ingredient_id, r.quantity_required, r.unit as r_unit, i.item_name, i.stock_quantity, i.unit_name as i_unit
                     FROM food_recipes r
                     JOIN inventory i ON r.ingredient_id = i.id
                     WHERE r.food_id = ?
@@ -37,7 +37,19 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 
                 foreach ($recipes as $rcp) {
                     $ing_id = $rcp['ingredient_id'];
-                    $total_deduct = $rcp['quantity_required'] * $order_qty;
+                    $qty_req = (float)$rcp['quantity_required'];
+                    
+                    $r_unit = strtolower(trim($rcp['r_unit']));
+                    $i_unit = strtolower(trim($rcp['i_unit']));
+                    
+                    // Quy đổi đơn vị nếu định mức là g/ml nhưng kho là kg/L
+                    if ($r_unit == 'g' && $i_unit == 'kg') {
+                        $qty_req /= 1000;
+                    } elseif ($r_unit == 'ml' && $i_unit == 'l') {
+                        $qty_req /= 1000;
+                    }
+                    
+                    $total_deduct = $qty_req * $order_qty;
 
                     // KIỂM TRA TỒN KHO: Nếu không đủ nguyên liệu thì báo lỗi và dừng lại
                     if ($rcp['stock_quantity'] < $total_deduct) {
@@ -96,6 +108,8 @@ if ($filter == 'all') {
     $stmt->execute([':type' => $filter]);
 }
 $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+include '../../public/admin_layout_header.php';
 ?>
 
 <link rel="stylesheet" href="../../public/assets/admin/css/admin-style.css">
