@@ -68,8 +68,8 @@ $(document).ready(function() {
         $('#recipe-food-name').text($(this).data('name'));
         $('#recipe-items-list').empty();
         
-        // ĐƯỜNG DẪN MỚI: ajax/
-        $.getJSON('ajax/ajax_get_recipes.php?food_id=' + foodId, function(data) {
+        // ĐƯỜNG DẪN MỚI: ../ajax/
+        $.getJSON('../ajax/ajax_get_recipes.php?food_id=' + foodId, function(data) {
             if(data && data.length > 0) {
                 data.forEach(item => addIngredientRow(item));
             } else {
@@ -83,7 +83,7 @@ $(document).ready(function() {
     $('#form-save-recipe').on('submit', function(e) {
         e.preventDefault();
         $.ajax({
-            url: 'ajax/ajax_save_recipe.php', // ĐƯỜNG DẪN MỚI: ajax/
+            url: '../ajax/ajax_save_recipe.php', // ĐƯỜNG DẪN MỚI: ../ajax/
             type: 'POST',
             data: $(this).serialize(),
             success: function() { location.reload(); },
@@ -106,8 +106,8 @@ $(document).ready(function() {
         // Cập nhật link xuất PDF (vào thư mục reports nếu bạn đã di chuyển file này)
         $('#btn-export-pdf').attr('href', 'reports/export_pdf.php?id=' + id);
 
-        // ĐƯỜNG DẪN MỚI: ajax/
-        $.getJSON('ajax/ajax_get_booking_detail.php?id=' + id, function(data) {
+        // ĐƯỜNG DẪN MỚI: ../ajax/
+        $.getJSON('../ajax/ajax_get_booking_detail.php?id=' + id, function(data) {
             if(data) {
                 $('#m-phone').text(data.customer_phone);
                 $('#m-type').text(data.service_type.toUpperCase());

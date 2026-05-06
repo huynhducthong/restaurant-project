@@ -57,8 +57,8 @@ try {
     $stmt_banners->execute();
     $banners_db = $stmt_banners->fetchAll(PDO::FETCH_ASSOC);
 
-    // 5.2 Lấy Video - Kiểm tra kỹ is_active
-    $stmt_video = $db->prepare("SELECT * FROM videos WHERE id = 1 LIMIT 1");
+    // 5.2 Lấy Video — đồng bộ với VideoController.php (không hardcode id=1)
+    $stmt_video = $db->prepare("SELECT * FROM videos ORDER BY id ASC LIMIT 1");
     $stmt_video->execute();
     $video_data = $stmt_video->fetch(PDO::FETCH_ASSOC);
 
@@ -158,8 +158,13 @@ include __DIR__ . '/views/client/layouts/header.php';
                     frameborder="0" allowfullscreen style="display: block; border: none;">
             </iframe>
           <?php elseif ($video_type == 'local' && !empty($file_path)): ?>
+            <?php
+            $ext_v = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
+            $mime_map = ['mp4' => 'video/mp4', 'webm' => 'video/webm', 'mov' => 'video/quicktime'];
+            $mime_v = $mime_map[$ext_v] ?? 'video/mp4';
+            ?>
             <video controls style="width: 100%; height: 500px; display: block; object-fit: cover;">
-                <source src="admin/<?php echo htmlspecialchars($file_path); ?>" type="video/mp4">
+                <source src="<?= htmlspecialchars($file_path) ?>" type="<?= $mime_v ?>">
                 Trình duyệt của bạn không hỗ trợ xem video.
             </video>
           <?php else: ?>
