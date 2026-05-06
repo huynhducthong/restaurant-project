@@ -1,95 +1,251 @@
-<?php 
+<?php
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 require_once 'config/database.php';
+require_once 'vendor/autoload.php'; // đảm bảo PHPMailer được load
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 $db = (new Database())->getConnection();
 
-// Lấy thông tin động từ cấu hình Footer để hiển thị trên trang Liên hệ
+// --- Lấy cấu hình Footer (sử dụng lại cho phần liên hệ) ---
 $stmt = $db->query("SELECT * FROM footer_settings");
 $ft = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $ft[$row['setting_key']] = $row['setting_value'];
 }
 
-include 'views/client/layouts/header.php'; 
+// --- Xử lý gửi form ---
+$messageSent = false;
+$errorMsg = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Kiểm tra CSRF token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
+        $errorMsg = 'Yêu cầu không hợp lệ. Vui lòng thử lại.';
+    } else {
+        $name    = trim($_POST['name']    ?? '');
+        $email   = trim($_POST['email']   ?? '');
+        $subject = trim($_POST['subject'] ?? '');
+        $message = trim($_POST['message'] ?? '');
+
+        if ($name === '' || $email === '' || $subject === '' || $message === '') {
+            $errorMsg = 'Vui lòng điền đầy đủ tất cả các trường.';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errorMsg = 'Địa chỉ email không hợp lệ.';
+        } else {
+            // Gửi mail cho admin
+            $mail = new PHPMailer(true);
+            try {
+                // Cấu hình SMTP từ biến môi trường (.env) – bạn có thể thay thế bằng mail() nếu muốn
+                $mail->isSMTP();
+                $mail->Host       = $_ENV['MAIL_HOST']       ?? 'smtp.gmail.com';
+                $mail->SMTPAuth   = true;
+                $mail->Username   = $_ENV['MAIL_USERNAME']   ?? '';
+                $mail->Password   = $_ENV['MAIL_PASSWORD']   ?? '';
+                $mail->SMTPSecure = $_ENV['MAIL_ENCRYPTION'] ?? 'tls';
+                $mail->Port       = $_ENV['MAIL_PORT']       ?? 587;
+                $mail->CharSet    = 'UTF-8';
+
+                $mail->setFrom($email, $name);
+                $mail->addAddress($ft['email'] ?? 'contact@restaurantly.com', $ft['restaurant_name'] ?? 'Restaurantly');
+                $mail->addReplyTo($email, $name);
+
+                $mail->isHTML(false);
+                $mail->Subject = "Liên hệ từ website: $subject";
+                $mail->Body    = "Họ tên: $name\nEmail: $email\n\nNội dung:\n$message";
+
+                $mail->send();
+                $messageSent = true;
+            } catch (Exception $e) {
+                $errorMsg = 'Không thể gửi tin nhắn. Vui lòng thử lại sau. Lỗi: ' . $e->getMessage();
+            }
+        }
+    }
+}
+
+// Tạo CSRF token mới
+$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+
+include 'views/client/layouts/header.php';
 ?>
 
-<main id="main">
-    <section class="breadcrumbs" style="padding: 140px 0 60px; background: #0c0b09; border-bottom: 1px solid rgba(205, 164, 94, 0.2);">
-        <div class="container text-center">
-            <h2 style="font-family: 'Playfair Display', serif; color: #cda45e; font-size: 50px; font-weight: 700;">Liên Hệ</h2>
-            <p style="color: #eee;">Kết nối với chúng tôi để nhận được sự phục vụ tốt nhất</p>
+<style>
+.contact-page {
+    background: #0c0b09;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+}
+.contact-hero {
+    padding: 150px 0 80px;
+    text-align: center;
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('public/assets/img/hero-bg.jpg') center center / cover no-repeat;
+    border-bottom: 1px solid rgba(205,164,94,0.2);
+}
+.contact-hero h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    color: #cda45e;
+    margin-bottom: 15px;
+}
+.contact-hero p { color: #eee; font-style: italic; }
+
+.contact-section {
+    padding: 80px 0;
+}
+.info-item {
+    background: #1a1814;
+    border: 1px solid #37332a;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: 0.3s;
+}
+.info-item:hover { border-color: #cda45e; }
+.info-item i {
+    font-size: 1.8rem;
+    color: #cda45e;
+    margin-right: 15px;
+    float: left;
+}
+.info-item h5 { color: #cda45e; margin-bottom: 5px; }
+.info-item p { margin: 0; color: #aaa; }
+
+.map-mini {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(205,164,94,0.3);
+    height: 200px;
+    margin-top: 20px;
+}
+.map-mini iframe { width: 100%; height: 100%; border: none; }
+
+.form-wrapper {
+    background: #1a1814;
+    border: 1px solid #37332a;
+    border-radius: 16px;
+    padding: 40px;
+    height: 100%;
+}
+.form-wrapper .form-label {
+    color: #cda45e;
+    font-weight: 600;
+    font-size: 14px;
+}
+.form-control {
+    background: #0c0b09;
+    border: 1px solid #37332a;
+    color: #fff;
+    padding: 12px 15px;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+.form-control:focus {
+    border-color: #cda45e;
+    box-shadow: 0 0 0 0.2rem rgba(205,164,94,0.25);
+    background: #0c0b09;
+    color: #fff;
+}
+.btn-gold {
+    background: #cda45e;
+    color: #000;
+    font-weight: 600;
+    padding: 12px 30px;
+    border-radius: 30px;
+    border: none;
+    transition: 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: 100%;
+}
+.btn-gold:hover { background: #b8943f; }
+.alert { border-radius: 8px; }
+</style>
+
+<main class="contact-page">
+    <!-- Hero -->
+    <section class="contact-hero">
+        <div class="container">
+            <h2>Liên Hệ</h2>
+            <p>Kết nối với chúng tôi để nhận được sự phục vụ tốt nhất</p>
         </div>
     </section>
 
-    <section id="contact" class="contact" style="padding: 80px 0; background: #1a1814;">
+    <!-- Nội dung chính -->
+    <section class="contact-section">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-4">
-                    <div class="contact-info" style="color: #fff;">
-                        <div class="info-item mb-5">
-                            <i class="bi bi-geo-alt" style="font-size: 24px; color: #cda45e; float: left; margin-right: 20px;"></i>
-                            <h4 style="font-size: 20px; font-weight: 600; font-family: 'Playfair Display', serif;">Địa chỉ:</h4>
-                            <p style="color: #aaa;"><?= htmlspecialchars($ft['address'] ?? 'Đang cập nhật...') ?></p>
-                        </div>
-
-                        <div class="info-item mb-5">
-                            <i class="bi bi-envelope" style="font-size: 24px; color: #cda45e; float: left; margin-right: 20px;"></i>
-                            <h4 style="font-size: 20px; font-weight: 600; font-family: 'Playfair Display', serif;">Email:</h4>
-                            <p style="color: #aaa;"><?= htmlspecialchars($ft['email'] ?? 'Đang cập nhật...') ?></p>
-                        </div>
-
-                        <div class="info-item mb-5">
-                            <i class="bi bi-phone" style="font-size: 24px; color: #cda45e; float: left; margin-right: 20px;"></i>
-                            <h4 style="font-size: 20px; font-weight: 600; font-family: 'Playfair Display', serif;">Điện thoại:</h4>
-                            <p style="color: #aaa;"><?= htmlspecialchars($ft['phone'] ?? 'Đang cập nhật...') ?></p>
-                        </div>
-
-                        <div class="info-item mb-5">
-                            <i class="bi bi-clock" style="font-size: 24px; color: #cda45e; float: left; margin-right: 20px;"></i>
-                            <h4 style="font-size: 20px; font-weight: 600; font-family: 'Playfair Display', serif;">Giờ mở cửa:</h4>
-                            <p style="color: #aaa;"><?= htmlspecialchars($ft['opening_hours'] ?? 'Đang cập nhật...') ?></p>
-                        </div>
+            <div class="row g-4">
+                <!-- Cột trái: Thông tin liên hệ + Map -->
+                <div class="col-lg-5">
+                    <div class="info-item">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <h5>Địa chỉ</h5>
+                        <p><?= htmlspecialchars($ft['address'] ?? 'Đang cập nhật...') ?></p>
                     </div>
-                </div>
+                    <div class="info-item">
+                        <i class="bi bi-envelope-fill"></i>
+                        <h5>Email</h5>
+                        <p><?= htmlspecialchars($ft['email'] ?? 'Đang cập nhật...') ?></p>
+                    </div>
+                    <div class="info-item">
+                        <i class="bi bi-telephone-fill"></i>
+                        <h5>Điện thoại</h5>
+                        <p><?= htmlspecialchars($ft['phone'] ?? 'Đang cập nhật...') ?></p>
+                    </div>
+                    <div class="info-item">
+                        <i class="bi bi-clock-fill"></i>
+                        <h5>Giờ mở cửa</h5>
+                        <p><?= htmlspecialchars($ft['opening_hours'] ?? 'Đang cập nhật...') ?></p>
+                    </div>
 
-                <div class="col-lg-8">
-                    <form action="#" method="post" class="p-4 rounded shadow" style="background: #0c0b09; border: 1px solid rgba(255,255,255,0.05);">
-                        <div class="row g-3">
-                            <div class="col-md-6 form-group">
-                                <input type="text" name="name" class="form-control" placeholder="Tên của bạn" required style="background: #1a1814; border: 1px solid #37332a; color: #fff; padding: 12px;">
-                            </div>
-                            <div class="col-md-6 form-group">
-                                <input type="email" class="form-control" name="email" placeholder="Email của bạn" required style="background: #1a1814; border: 1px solid #37332a; color: #fff; padding: 12px;">
-                            </div>
-                            <div class="col-md-12 form-group">
-                                <input type="text" class="form-control" name="subject" placeholder="Tiêu đề" required style="background: #1a1814; border: 1px solid #37332a; color: #fff; padding: 12px;">
-                            </div>
-                            <div class="col-md-12 form-group">
-                                <textarea class="form-control" name="message" rows="7" placeholder="Nội dung lời nhắn" required style="background: #1a1814; border: 1px solid #37332a; color: #fff; padding: 12px;"></textarea>
-                            </div>
-                            <div class="col-md-12 text-center">
-                                <button type="submit" style="background: #cda45e; border: 0; padding: 12px 40px; color: #fff; border-radius: 50px; font-weight: 600; transition: 0.3s;">Gửi Lời Nhắn</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-           <?php if (($ft['show_map'] ?? '0') == '1' && !empty($ft['google_map_iframe'])): ?>
-            <div class="row mt-5">
-                <div class="col-12">
-                    <div class="map-wrapper shadow-lg" style="border-radius: 12px; overflow: hidden; border: 2px solid #37332a; height: 450px; background: #1a1814;">
-                        
-                        <style>
-                            .map-wrapper iframe {
-                                width: 100% !important;
-                                height: 100% !important;
-                                border: none !important;
-                            }
-                        </style>
-                        
+                    <?php if (($ft['show_map'] ?? '0') == '1' && !empty($ft['google_map_iframe'])): ?>
+                    <div class="map-mini">
                         <?= $ft['google_map_iframe'] ?>
                     </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Cột phải: Form liên hệ -->
+                <div class="col-lg-7">
+                    <div class="form-wrapper">
+                        <?php if ($messageSent): ?>
+                            <div class="alert alert-success">
+                                <i class="bi bi-check-circle-fill me-2"></i>
+                                Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.
+                            </div>
+                        <?php elseif ($errorMsg !== ''): ?>
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <?= $errorMsg ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <form action="contact.php" method="POST">
+                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+
+                            <div class="mb-3">
+                                <label class="form-label">Họ và tên</label>
+                                <input type="text" name="name" class="form-control" placeholder="Nhập họ tên của bạn" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="email" class="form-control" placeholder="Nhập email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tiêu đề</label>
+                                <input type="text" name="subject" class="form-control" placeholder="Tiêu đề lời nhắn" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nội dung</label>
+                                <textarea name="message" rows="5" class="form-control" placeholder="Viết nội dung bạn muốn gửi..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-gold">Gửi lời nhắn</button>
+                        </form>
+                    </div>
                 </div>
             </div>
-            <?php endif; ?>
+        </div>
+    </section>
+</main>
+
+<?php include 'views/client/layouts/footer.php'; ?>

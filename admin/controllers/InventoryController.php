@@ -12,6 +12,11 @@ $current_user = $_SESSION['username'] ?? 'Admin';
 require_once __DIR__ . '/../../config/database.php';
 $db = (new Database())->getConnection();
 
+// Tự động thêm cột storage_zone nếu chưa có (Phục vụ Quy chuẩn Kho)
+try {
+    $db->exec("ALTER TABLE inventory ADD COLUMN storage_zone VARCHAR(50) DEFAULT 'Kho khô'");
+} catch(PDOException $e) {}
+
 // ============================================================
 // 1. XỬ LÝ YÊU CẦU (REQUEST HANDLING)
 // ============================================================
@@ -50,7 +55,7 @@ if (isset($_GET['export_csv'])) {
     header('Content-Disposition: attachment; filename=ton_kho_' . date('Ymd_His') . '.csv');
     $out = fopen('php://output', 'w');
     fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF)); // UTF-8 BOM
-    fputcsv($out, ['Nguyên Liệu', 'Danh Mục', 'Đơn Vị', 'Tồn Kho', 'Tồn Tối Thiểu', 'Giá Vốn (đ)', 'Nhà Cung Cấp', 'Hạn Sử Dụng']);
+    fputcsv($out, ['Nguyên Liệu', 'Khu Vực', 'Danh Mục', 'Đơn Vị', 'Tồn Kho', 'Tồn Tối Thiểu', 'Giá Vốn (đ)', 'Nhà Cung Cấp', 'Hạn Sử Dụng']);
     $rows = $db->query(
         "SELECT i.*, s.name as s_name
          FROM inventory i
@@ -59,7 +64,7 @@ if (isset($_GET['export_csv'])) {
     )->fetchAll(PDO::FETCH_ASSOC);
     foreach ($rows as $r) {
         fputcsv($out, [
-            $r['item_name'], $r['category'], $r['unit_name'],
+            $r['item_name'], $r['storage_zone'] ?? 'Chưa gán', $r['category'], $r['unit_name'],
             $r['stock_quantity'], $r['min_stock'] ?? 0,
             $r['cost_price'], $r['s_name'] ?? 'Chưa gán',
             $r['expiry_date'] ?? '',
@@ -129,6 +134,7 @@ if (isset($_POST['manage_tag'])) {
 if (isset($_POST['save_inventory'])) {
     $supplier_id = !empty($_POST['supplier_id']) ? (int)$_POST['supplier_id'] : null;
     $min_stock   = max(0, (float)($_POST['min_stock'] ?? 0));
+    $zone        = trim($_POST['storage_zone'] ?? 'Kho khô');
     $data = [
         trim($_POST['item_name']),
         $_POST['category'],
@@ -136,18 +142,19 @@ if (isset($_POST['save_inventory'])) {
         (float)$_POST['cost_price'],
         $supplier_id,
         $min_stock,
+        $zone
     ];
     if (!empty($_POST['item_id'])) {
         $db->prepare(
             "UPDATE inventory
-             SET item_name=?, category=?, unit_name=?, cost_price=?, supplier_id=?, min_stock=?
+             SET item_name=?, category=?, unit_name=?, cost_price=?, supplier_id=?, min_stock=?, storage_zone=?
              WHERE id=?"
         )->execute([...$data, (int)$_POST['item_id']]);
     } else {
         $db->prepare(
             "INSERT INTO inventory
-             (item_name, category, unit_name, cost_price, supplier_id, min_stock, stock_quantity)
-             VALUES (?, ?, ?, ?, ?, ?, 0)"
+             (item_name, category, unit_name, cost_price, supplier_id, min_stock, storage_zone, stock_quantity)
+             VALUES (?, ?, ?, ?, ?, ?, ?, 0)"
         )->execute($data);
     }
     header("Location: InventoryController.php"); exit;
@@ -337,7 +344,7 @@ $reorder_list = $db->query("
 ")->fetchAll(PDO::FETCH_ASSOC);
 
 $today     = date('Y-m-d');
-$warn_date = date('Y-m-d', strtotime('+7 days'));
+$warn_date = date('Y-m-d', strtotime('+14 days'));
 
 $low_stock_count   = 0;
 $expiry_warn_count = 0;
