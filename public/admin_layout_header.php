@@ -75,6 +75,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <li class="<?= ($current_page == 'manage_videos.php') ? 'active' : '' ?>">
                 <a href="../admin/manage_videos.php"><i class="fas fa-video"></i> Quản lý Video</a>
             </li>
+
+            <li class="<?= ($current_page == 'manage_chefs.php') ? 'active' : '' ?>">
+                <a href="../admin/manage_chefs.php"><i class="fas fa-user-tie"></i> Quản lý Đầu bếp</a>
+            </li>
             
             <li class="<?= ($current_page == 'manage_inventory.php') ? 'active' : '' ?>">
                 <a href="../admin/InventoryController.php"><i class="fas fa-warehouse"></i> Quản lý Kho</a>

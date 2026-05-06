@@ -80,7 +80,12 @@ try {
     $stmt_combos = $db->prepare($sql_combos);
     $stmt_combos->execute();
 
-} catch (Exception $e) {}
+    // 5.4 Lấy danh sách đầu bếp nổi bật cho trang chủ
+    $stmt_home_chefs = $db->prepare("SELECT * FROM chefs WHERE is_active = 1 ORDER BY is_featured DESC, sort_order ASC, id ASC LIMIT 3");
+    $stmt_home_chefs->execute();
+    $home_chefs = $stmt_home_chefs->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (Exception $e) { $home_chefs = []; }
 
 // 6. Nhúng Header
 include __DIR__ . '/views/client/layouts/header.php'; 
@@ -300,15 +305,33 @@ include __DIR__ . '/views/client/layouts/header.php';
         <p class="chefs-title">Những nghệ nhân ẩm thực hàng đầu</p>
       </div>
       <div class="row justify-content-center">
-        <div class="col-lg-4 col-md-6">
-          <div class="chef-member-card">
-            <img src="public/assets/img/chefs/chefs-1.jpg" class="img-fluid" alt="Chef 1">
-            <div class="member-info">
-              <h4>Walter White</h4>
-              <span>Bếp trưởng</span>
+        <?php if (!empty($home_chefs)): ?>
+          <?php foreach ($home_chefs as $hchef): ?>
+          <div class="col-lg-4 col-md-6 mb-4">
+            <div class="chef-member-card">
+              <?php if (!empty($hchef['image'])): ?>
+                <img src="public/assets/img/chefs/<?= htmlspecialchars($hchef['image']) ?>"
+                     class="img-fluid" alt="<?= htmlspecialchars($hchef['name']) ?>"
+                     onerror="this.style.display='none'"
+                     style="width:100%;height:220px;object-fit:cover;border-radius:5px;margin-bottom:15px;">
+              <?php else: ?>
+                <div style="width:100%;height:220px;background:linear-gradient(135deg,#2c3e50,#1a252f);display:flex;align-items:center;justify-content:center;border-radius:5px;margin-bottom:15px;">
+                  <i class="bi bi-person" style="font-size:4rem;color:#cda45e;opacity:.5;"></i>
+                </div>
+              <?php endif; ?>
+              <div class="member-info">
+                <h4><?= htmlspecialchars($hchef['name']) ?></h4>
+                <span><?= htmlspecialchars($hchef['position']) ?></span>
+              </div>
             </div>
           </div>
-        </div>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <p class="text-center" style="color:#666;">Chưa có thông tin đầu bếp.</p>
+        <?php endif; ?>
+      </div>
+      <div class="text-center mt-4">
+        <a href="views/client/chefs.php" class="btn-view-all-custom">Xem tất cả đầu bếp</a>
       </div>
     </div>
   </section>

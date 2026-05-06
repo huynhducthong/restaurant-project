@@ -99,6 +99,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
           <li><a class="nav-link <?= ($current_page == 'index.php') ? 'active' : '' ?>" href="index.php">Trang chủ</a></li>
           <li><a class="nav-link" href="#about">Về chúng tôi</a></li>
           <li><a class="nav-link <?= ($current_page == 'menu.php') ? 'active' : '' ?>" href="menu.php">Thực đơn</a></li>
+          <li><a class="nav-link <?= ($current_page == 'chefs.php') ? 'active' : '' ?>" href="views/client/chefs.php">Đội bếp</a></li>
           <li><a class="nav-link" href="#contact">Liên hệ</a></li>
         </ul>
       </nav>
