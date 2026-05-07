@@ -3,10 +3,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once 'config/database.php';
-require_once 'vendor/autoload.php'; // đảm bảo PHPMailer được load
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
 
 $db = (new Database())->getConnection();
 

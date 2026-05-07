@@ -173,8 +173,8 @@ $contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <form method="GET" class="row g-3 align-items-center">
             <div class="col-md-5">
                 <div class="input-group">
-                    <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
-                    <input type="text" name="search" class="form-control" placeholder="Tìm tên, email, chủ đề..." value="<?= htmlspecialchars($search) ?>">
+                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" name="search" class="form-control border-start-0" placeholder="Tìm tên, email, chủ đề..." value="<?= htmlspecialchars($search) ?>">
                 </div>
             </div>
             <div class="col-md-3">
@@ -198,7 +198,7 @@ $contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <!-- Bulk Actions -->
             <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center gap-2">
-                    <select name="bulk_action" class="form-select form-select-sm" style="width: 180px;" required>
+                    <select name="bulk_action" class="form-select form-select-sm" style="width: auto; min-width: 220px;" required>
                         <option value="">-- Hành động hàng loạt --</option>
                         <option value="mark_read">Đánh dấu đã đọc</option>
                         <option value="star">Đánh dấu sao</option>
@@ -219,7 +219,7 @@ $contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <th>Chủ đề</th>
                             <th>Trạng thái</th>
                             <th>Thời gian</th>
-                            <th class="text-end pe-4">Thao tác</th>
+                            <th class="text-center">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -247,10 +247,10 @@ $contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <div class="text-muted small"><?= htmlspecialchars($c['email']) ?></div>
                                 </td>
                                 <td>
-                                    <div class="text-truncate" style="max-width: 250px;" title="<?= htmlspecialchars($c['subject']) ?>">
+                                    <div class="fw-bold text-dark mb-1 text-truncate" style="max-width: 250px;" title="<?= htmlspecialchars($c['subject']) ?>">
                                         <?= htmlspecialchars($c['subject'] ?: '(Không có tiêu đề)') ?>
                                     </div>
-                                    <div class="text-muted small text-truncate" style="max-width: 250px;">
+                                    <div class="text-secondary small text-truncate" style="max-width: 250px; font-size: 0.8rem;">
                                         <?= htmlspecialchars($c['message']) ?>
                                     </div>
                                 </td>
@@ -267,7 +267,7 @@ $contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <?= date('d/m/Y', strtotime($c['created_at'])) ?><br>
                                     <?= date('H:i', strtotime($c['created_at'])) ?>
                                 </td>
-                                <td class="text-end pe-4">
+                                <td class="text-center">
                                     <button type="button" class="btn btn-sm btn-outline-info rounded-circle me-1" 
                                             title="Xem chi tiết" 
                                             onclick="viewContact(<?= htmlspecialchars(json_encode([
@@ -400,6 +400,7 @@ function viewContact(data) {
 }
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </div>
 </body>
 </html>
