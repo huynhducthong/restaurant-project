@@ -24,13 +24,30 @@ $settings['restaurant_name'] = $settings['restaurant_name'] ?? 'Restaurantly';
 $settings['hotline']         = $settings['hotline'] ?? '0123 456 789';
 $settings['open_days']       = $settings['open_days'] ?? 'Thứ 2 - Chủ Nhật';
 $settings['open_time']       = $settings['open_time'] ?? '11:00 AM - 23:00 PM';
-$settings['logo_position']   = $settings['name_position'] ?? 'left'; // Đọc đúng key name_position từ settings
+$settings['logo_position']   = $settings['name_position'] ?? 'left'; 
 
 $current_page = basename($_SERVER['PHP_SELF']);
 
 // 2. Kiểm tra quyền để quyết định xem có hiển thị nút "Vào trang Quản trị" không
 $user_role = $_SESSION['role'] ?? '';
 $is_backend_access = in_array($user_role, ['admin', 'staff', 1, 2]);
+
+// ==========================================
+// XỬ LÝ ĐƯỜNG DẪN ẢNH THÔNG MINH
+// ==========================================
+$is_admin_area = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false);
+$logo_path = $settings['logo_url'] ?? '';
+$final_logo_src = '';
+
+if (!empty($logo_path)) {
+    if ($is_admin_area) {
+        // Đứng ở admin/controllers/ -> lùi 2 cấp
+        $final_logo_src = '../../public/' . $logo_path;
+    } else {
+        // Đứng ở trang chủ (cùng cấp với public) -> tiến vào public
+        $final_logo_src = 'public/' . $logo_path;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -100,7 +117,6 @@ $is_backend_access = in_array($user_role, ['admin', 'staff', 1, 2]);
       gap: 10px;
     }
 
-    /* Nếu vị trí là 'right', ta dùng flex-direction: row-reverse */
     .logo-container-right {
       flex-direction: row-reverse !important;
     }
@@ -197,7 +213,6 @@ $is_backend_access = in_array($user_role, ['admin', 'staff', 1, 2]);
       color: #000;
     }
 
-    /* Canh chỉnh icon trong dropdown */
     .dropdown-item i {
       width: 22px;
       text-align: center;
@@ -226,8 +241,9 @@ $is_backend_access = in_array($user_role, ['admin', 'staff', 1, 2]);
 
       <h1 class="logo">
         <a href="index.php" class="<?= ($settings['logo_position'] == 'right') ? 'logo-container-right' : '' ?>">
-          <?php if (!empty($settings['logo_url'])): ?>
-            <img src="<?= htmlspecialchars($settings['logo_url']) ?>?v=<?= htmlspecialchars($settings['logo_ver'] ?? '1') ?>" alt="Logo">
+          <?php if (!empty($final_logo_src)): ?>
+            <!-- ĐÃ FIX ĐƯỜNG DẪN ẢNH CHUẨN XÁC -->
+            <img src="<?= htmlspecialchars($final_logo_src) ?>?v=<?= htmlspecialchars($settings['logo_ver'] ?? '1') ?>" alt="Logo">
           <?php endif; ?>
           <span><?= htmlspecialchars($settings['restaurant_name']) ?></span>
         </a>

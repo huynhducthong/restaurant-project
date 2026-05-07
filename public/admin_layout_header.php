@@ -405,8 +405,8 @@ function isActive($path)
                         <a href="/restaurant-project/admin/footer_settings.php"><i class="fas fa-palette"></i> Cấu hình Footer</a>
                     </li>
 
-                    <li class="<?= isActive('manage_users.php') ?>">
-                        <a href="/restaurant-project/admin/manage_users.php"><i class="fas fa-users-cog"></i> Quản lý Nhân sự</a>
+                    <li class="<?= isActive('UserController.php') ?>">
+                        <a href="/restaurant-project/admin/controllers/UserController.php"><i class="fas fa-users-cog"></i> Quản lý Người dùng</a>
                     </li>
                 <?php endif; ?>
 

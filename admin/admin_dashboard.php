@@ -42,6 +42,7 @@ $chart_revenue  = array_fill(0, 12, 0);
 $status_data    = [0, 0, 0];
 $recent_bookings = [];
 $low_stock_count = 0;
+$expiry_warn_count = 0;
 
 try {
     // ── Tổng quan ──
@@ -112,9 +113,21 @@ try {
          ORDER BY b.created_at DESC LIMIT 5"
     )->fetchAll(PDO::FETCH_ASSOC);
 
-    // Cảnh báo tồn kho thấp
+    // Cảnh báo tồn kho thấp — đúng với hệ thống đa kho (bảng inventory_stocks)
     $low_stock_count = (int)$db->query(
-        "SELECT COUNT(*) FROM inventory WHERE min_stock > 0 AND stock_quantity <= min_stock"
+        "SELECT COUNT(*) FROM inventory i
+         WHERE i.is_active = 1
+           AND i.min_stock > 0
+           AND IFNULL((SELECT SUM(s.quantity) FROM inventory_stocks s WHERE s.ingredient_id = i.id), 0) <= i.min_stock"
+    )->fetchColumn();
+
+    // Cảnh báo hàng sắp hết hạn (trong vòng 7 ngày)
+    $expiry_warn_count = (int)$db->query(
+        "SELECT COUNT(*) FROM inventory
+         WHERE is_active = 1
+           AND expiry_date IS NOT NULL
+           AND expiry_date <= DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+           AND expiry_date >= CURDATE()"
     )->fetchColumn();
 
 } catch (Exception $e) {
@@ -165,16 +178,27 @@ if ($prev_month_revenue > 0) {
 
 <div class="content-wrapper" style="padding:24px">
 
-    <!-- ===== CẢNH BÁO TỒN KHO ===== -->
+    <!-- ===== CẢNH BÁO TỒN KHO & HẾT HẠN ===== -->
     <?php if ($low_stock_count > 0): ?>
-    <div class="warn-banner">
-        <i class="fas fa-exclamation-triangle fa-lg text-warning"></i>
-        <div>
-            <strong><?= $low_stock_count ?> nguyên liệu</strong> đang ở mức tồn kho thấp.
-            <a href="controllers/ReportController.php?action=low_stock" class="ms-2 text-warning fw-bold">
-                Xem chi tiết →
-            </a>
+    <div class="warn-banner mb-2">
+        <i class="fas fa-boxes fa-lg text-warning"></i>
+        <div class="flex-grow-1">
+            <strong><?= $low_stock_count ?> nguyên liệu</strong> đang ở dưới mức tồn kho tối thiểu.
         </div>
+        <a href="controllers/InventoryController.php?tab=reorder" class="btn btn-sm btn-warning fw-bold shadow-sm" style="white-space:nowrap">
+            <i class="fas fa-arrow-right me-1" style="pointer-events:none"></i>Xem danh sách
+        </a>
+    </div>
+    <?php endif; ?>
+    <?php if ($expiry_warn_count > 0): ?>
+    <div class="warn-banner" style="background:linear-gradient(135deg,#fde8e8,#ffc5c5);border-left-color:#dc3545;">
+        <i class="fas fa-calendar-times fa-lg text-danger"></i>
+        <div class="flex-grow-1">
+            <strong><?= $expiry_warn_count ?> mặt hàng</strong> sẽ hết hạn sử dụng trong vòng <strong>7 ngày</strong> tới.
+        </div>
+        <a href="controllers/InventoryController.php?tab=all" class="btn btn-sm btn-danger fw-bold shadow-sm" style="white-space:nowrap">
+            <i class="fas fa-arrow-right me-1" style="pointer-events:none"></i>Kiểm tra ngay
+        </a>
     </div>
     <?php endif; ?>
 
