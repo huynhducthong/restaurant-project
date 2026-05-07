@@ -125,6 +125,14 @@ if (isset($_POST['btn_save'])) {
         }
     }
 
+    if ($data['start_date'] && $data['end_date']) {
+        if (strtotime($data['end_date']) <= strtotime($data['start_date'])) {
+            $_SESSION['flash'] = ['type' => 'danger', 'msg' => 'Lỗi: Thời gian kết thúc phải diễn ra SAU thời gian bắt đầu!'];
+            header('Location: ' . $_SERVER['PHP_SELF'] . ($id ? "?edit=$id" : ''));
+            exit;
+        }
+    }
+
     $image_name = $_POST['old_image'] ?? '';
 
     // ✅ Validate upload ảnh

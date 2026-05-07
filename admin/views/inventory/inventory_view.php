@@ -944,7 +944,6 @@ include '../../public/admin_layout_header.php';
     let activeFilter = 'all';
 
     $(document).ready(function() {
-        // Tự động chuyển tab nếu có tham số ?tab= trên URL
         const urlParams = new URLSearchParams(window.location.search);
         const targetTab = urlParams.get('tab');
         if (targetTab) {
@@ -1089,6 +1088,7 @@ include '../../public/admin_layout_header.php';
         new bootstrap.Modal(document.getElementById('modalExport')).show();
     }
 
+    // ================= QUẢN LÝ TAG (DANH MỤC / ĐƠN VỊ) =================
     function openTagManager(type) {
         const data = (type === 'category') ? categories : units;
         $('#tagTitle').text(type === 'category' ? 'Quản lý Danh mục' : 'Quản lý Đơn vị');

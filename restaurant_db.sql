@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 07, 2026 at 04:51 AM
+-- Generation Time: May 07, 2026 at 10:03 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -109,6 +109,13 @@ CREATE TABLE `booking_details` (
   `price` decimal(10,2) NOT NULL DEFAULT 0.00,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `booking_details`
+--
+
+INSERT INTO `booking_details` (`id`, `booking_id`, `menu_id`, `item_type`, `quantity`, `price`, `created_at`) VALUES
+(6, 16, 1, 'food', 1, 0.00, '2026-05-07 03:04:00');
 
 -- --------------------------------------------------------
 
@@ -319,10 +326,7 @@ CREATE TABLE `food_recipes` (
 --
 
 INSERT INTO `food_recipes` (`id`, `food_id`, `ingredient_id`, `quantity_required`, `unit`) VALUES
-(1, 1, 1, 1.000, 'chai'),
-(4, 3, 3, 0.500, 'kg'),
-(5, 4, 4, 0.100, 'chai'),
-(6, 4, 3, 0.200, 'chai');
+(1, 1, 1, 1.000, 'chai');
 
 -- --------------------------------------------------------
 
@@ -392,17 +396,17 @@ CREATE TABLE `inventory` (
   `revenue` decimal(15,2) DEFAULT 0.00,
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `min_stock` float DEFAULT 0,
-  `is_active` tinyint(1) DEFAULT 1
+  `is_active` tinyint(1) DEFAULT 1,
+  `storage_zone` varchar(50) DEFAULT 'Kho khô'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `inventory`
 --
 
-INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `cost_price`, `supplier_id`, `entry_date`, `expiry_date`, `revenue`, `updated_at`, `min_stock`, `is_active`) VALUES
-(1, 'rựu', 'Đồ uống', 'chai', 20000000.00, 1, NULL, '2027-06-26', 0.00, '2026-05-05 04:42:52', 10, 1),
-(3, 'thịt bò', 'Thịt', 'kg', 150000.00, 1, NULL, '2026-06-01', 0.00, '2026-05-06 07:23:35', 5, 1),
-(4, 'rau', 'Rau củ', 'kg', 990000.00, NULL, NULL, '2026-05-07', 0.00, '2026-05-06 08:07:09', 1, 1);
+INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `cost_price`, `supplier_id`, `entry_date`, `expiry_date`, `revenue`, `updated_at`, `min_stock`, `is_active`, `storage_zone`) VALUES
+(1, 'rựu', 'Đồ uống', 'chai', 2000000.00, NULL, NULL, '2027-06-26', 0.00, '2026-05-07 03:50:54', 10, 1, 'Kho khô'),
+(6, 'thịt bò', 'Thịt', 'kg', 2000000.00, NULL, NULL, '2026-05-28', 0.00, '2026-05-07 07:38:15', 1, 1, 'Kho khô');
 
 -- --------------------------------------------------------
 
@@ -519,18 +523,20 @@ INSERT INTO `inventory_history` (`id`, `ingredient_id`, `warehouse_id`, `type`, 
 (14, 1, 1, 'export', 1.00, '2026-05-04 03:34:03', NULL),
 (15, 1, 1, 'export', 1.00, '2026-05-04 03:37:13', 'Admin'),
 (16, 1, 1, 'export', 1.00, '2026-05-04 03:43:33', NULL),
-(17, 3, 1, 'import', 60.00, '2026-05-04 04:17:17', 'Admin'),
-(18, 3, 1, 'import', 10.00, '2026-05-04 04:17:44', 'Admin'),
-(19, 3, 1, 'loss', 10.00, '2026-05-04 04:18:00', 'Admin'),
 (20, 1, 1, 'export', 1.00, '2026-05-05 04:42:52', NULL),
-(21, 4, 1, 'import', 10.00, '2026-05-05 11:44:21', 'Admin'),
-(22, 4, 1, 'import', 10.00, '2026-05-05 11:44:47', 'Admin'),
-(25, 3, 1, 'import', 10.00, '2026-05-06 07:23:35', 'Admin (Nhận hàng từ PO #2)'),
-(26, 4, 1, 'export', 1.00, '2026-05-06 07:31:57', 'Admin'),
-(27, 4, 1, 'export', 18.00, '2026-05-06 07:32:41', 'Admin'),
 (28, 1, 1, 'export', 6.00, '2026-05-06 08:05:01', 'Admin'),
-(29, 3, 1, 'export', 1.00, '2026-05-07 02:45:25', 'Admin'),
-(30, 3, 1, 'export', 1.00, '2026-05-07 02:45:29', 'Admin');
+(31, 1, 1, 'export', 10.00, '2026-05-07 02:55:19', 'Admin (Chuyển đi #2)'),
+(32, 1, 3, 'import', 10.00, '2026-05-07 02:55:19', 'Admin (Nhận từ #2)'),
+(33, 1, 1, 'export', 10.00, '2026-05-07 02:55:23', 'Admin (Chuyển đi #1)'),
+(34, 1, 3, 'import', 10.00, '2026-05-07 02:55:23', 'Admin (Nhận từ #1)'),
+(35, 6, 1, 'import', 10.00, '2026-05-07 07:37:19', 'Admin (Nhận hàng từ PO #3)'),
+(36, 6, 1, 'import', 10.00, '2026-05-07 07:38:15', 'Admin'),
+(37, 6, 1, 'export', 10.00, '2026-05-07 07:39:21', 'Admin (Chuyển đi #3)'),
+(38, 6, 2, 'import', 10.00, '2026-05-07 07:39:21', 'Admin (Nhận từ #3)'),
+(39, 1, 1, 'export', 10.00, '2026-05-07 07:39:21', 'Admin (Chuyển đi #3)'),
+(40, 1, 2, 'import', 10.00, '2026-05-07 07:39:21', 'Admin (Nhận từ #3)'),
+(41, 1, 1, 'export', 10.00, '2026-05-07 07:45:20', 'Admin (Chuyển đi #4)'),
+(42, 1, 3, 'import', 10.00, '2026-05-07 07:45:20', 'Admin (Nhận từ #4)');
 
 -- --------------------------------------------------------
 
@@ -570,10 +576,11 @@ CREATE TABLE `inventory_stocks` (
 --
 
 INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity`, `last_updated`) VALUES
-(1, 1, 1, 170.00, '2026-05-06 15:05:01'),
-(2, 1, 3, 68.00, '2026-05-07 09:45:29'),
-(3, 1, 4, 1.00, '2026-05-06 14:32:41'),
-(8, 3, 1, 10.00, '2026-05-06 14:17:26');
+(1, 1, 1, 130.00, '2026-05-07 14:45:20'),
+(8, 3, 1, 40.00, '2026-05-07 14:45:20'),
+(12, 1, 6, 10.00, '2026-05-07 14:39:21'),
+(14, 2, 6, 10.00, '2026-05-07 14:39:21'),
+(15, 2, 1, 10.00, '2026-05-07 14:39:21');
 
 -- --------------------------------------------------------
 
@@ -599,7 +606,10 @@ CREATE TABLE `inventory_transfers` (
 --
 
 INSERT INTO `inventory_transfers` (`id`, `from_warehouse_id`, `to_warehouse_id`, `performed_by`, `transfer_date`, `note`, `status`, `approved_by`, `approved_at`) VALUES
-(1, 1, 3, 'Admin', '2026-05-06 14:17:26', 'Chuyển kho nội bộ', 'pending', NULL, NULL);
+(1, 1, 3, 'Admin', '2026-05-06 14:17:26', 'Chuyển kho nội bộ', 'completed', 'Admin', '2026-05-07 09:55:23'),
+(2, 1, 3, 'Admin', '2026-05-07 09:52:53', 'Yêu cầu chuyển kho nội bộ', 'completed', 'Admin', '2026-05-07 09:55:19'),
+(3, 1, 2, 'Admin', '2026-05-07 14:39:15', 'Yêu cầu chuyển kho nội bộ (2 mặt hàng)', 'completed', 'Admin', '2026-05-07 14:39:21'),
+(4, 1, 3, 'Admin', '2026-05-07 14:45:07', 'Yêu cầu chuyển kho nội bộ (1 mặt hàng)', 'completed', 'Admin', '2026-05-07 14:45:20');
 
 -- --------------------------------------------------------
 
@@ -690,7 +700,8 @@ CREATE TABLE `purchase_orders` (
 --
 
 INSERT INTO `purchase_orders` (`id`, `po_code`, `supplier_id`, `created_by`, `created_at`, `status`, `total_amount`, `notes`) VALUES
-(2, 'PO-20260506092315', 1, NULL, '2026-05-06 14:23:15', 'completed', 1500000.00, NULL);
+(2, 'PO-20260506092315', 1, NULL, '2026-05-06 14:23:15', 'completed', 1500000.00, NULL),
+(3, 'PO-20260507093712', 1, NULL, '2026-05-07 14:37:12', 'completed', 20000000.00, NULL);
 
 -- --------------------------------------------------------
 
@@ -712,7 +723,7 @@ CREATE TABLE `purchase_order_details` (
 --
 
 INSERT INTO `purchase_order_details` (`id`, `po_id`, `ingredient_id`, `expected_qty`, `expected_price`) VALUES
-(1, 2, 3, 10.00, 150000.00);
+(2, 3, 6, 10.00, 2000000.00);
 
 -- --------------------------------------------------------
 
@@ -738,7 +749,7 @@ CREATE TABLE `restaurant_tables` (
 --
 
 INSERT INTO `restaurant_tables` (`id`, `table_code`, `table_number`, `room_type`, `category`, `capacity`, `price`, `status`, `is_available`) VALUES
-(1, 'T1', '1', NULL, 'open', 6, 0.00, 'available', 1),
+(1, 'T1', '1', NULL, 'open', 6, 0.00, 'available', 0),
 (2, 'T2', '2', NULL, 'open', 6, 0.00, 'available', 1),
 (3, 'T3', '3', NULL, 'open', 6, 0.00, 'available', 1),
 (4, 'T4', '4', NULL, 'open', 6, 0.00, 'available', 1),
@@ -796,6 +807,13 @@ CREATE TABLE `service_bookings` (
   `status` enum('Pending','Confirmed','Completed','Cancelled') DEFAULT 'Pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `service_bookings`
+--
+
+INSERT INTO `service_bookings` (`id`, `customer_name`, `customer_phone`, `booking_date`, `service_type`, `table_id`, `combo_id`, `guests`, `message`, `total_amount`, `deposit_amount`, `status`, `created_at`) VALUES
+(16, 'Huỳnh Đức Thông', '1234567890', '2026-05-01 10:03:00', 'table', 1, NULL, 2, '', 500000.00, 150000.00, 'Pending', '2026-05-07 03:04:00');
 
 -- --------------------------------------------------------
 
@@ -872,7 +890,11 @@ CREATE TABLE `transfer_details` (
 --
 
 INSERT INTO `transfer_details` (`id`, `transfer_id`, `ingredient_id`, `quantity`) VALUES
-(1, 1, 1, 10.00);
+(1, 1, 1, 10.00),
+(2, 2, 1, 10.00),
+(3, 3, 6, 10.00),
+(4, 3, 1, 10.00),
+(5, 4, 1, 10.00);
 
 -- --------------------------------------------------------
 
@@ -1239,7 +1261,7 @@ ALTER TABLE `bookings`
 -- AUTO_INCREMENT for table `booking_details`
 --
 ALTER TABLE `booking_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `books`
@@ -1305,7 +1327,7 @@ ALTER TABLE `footer_links`
 -- AUTO_INCREMENT for table `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `inventory_audits`
@@ -1329,7 +1351,7 @@ ALTER TABLE `inventory_categories`
 -- AUTO_INCREMENT for table `inventory_history`
 --
 ALTER TABLE `inventory_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `inventory_receipts`
@@ -1341,13 +1363,13 @@ ALTER TABLE `inventory_receipts`
 -- AUTO_INCREMENT for table `inventory_stocks`
 --
 ALTER TABLE `inventory_stocks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `inventory_transfers`
 --
 ALTER TABLE `inventory_transfers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `inventory_units`
@@ -1377,13 +1399,13 @@ ALTER TABLE `order_items`
 -- AUTO_INCREMENT for table `purchase_orders`
 --
 ALTER TABLE `purchase_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `purchase_order_details`
 --
 ALTER TABLE `purchase_order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `restaurant_tables`
@@ -1401,7 +1423,7 @@ ALTER TABLE `services`
 -- AUTO_INCREMENT for table `service_bookings`
 --
 ALTER TABLE `service_bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `suppliers`
@@ -1413,7 +1435,7 @@ ALTER TABLE `suppliers`
 -- AUTO_INCREMENT for table `transfer_details`
 --
 ALTER TABLE `transfer_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -1536,6 +1558,56 @@ ALTER TABLE `service_bookings`
 ALTER TABLE `transfer_details`
   ADD CONSTRAINT `transfer_details_ibfk_1` FOREIGN KEY (`transfer_id`) REFERENCES `inventory_transfers` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `transfer_details_ibfk_2` FOREIGN KEY (`ingredient_id`) REFERENCES `inventory` (`id`) ON DELETE CASCADE;
+
+-- ========================================================
+-- CÁC BẢNG BỔ SUNG (Thêm vào sau khi đồng bộ từ nhóm)
+-- ========================================================
+
+--
+-- Table structure for table `contacts`
+--
+
+DROP TABLE IF EXISTS `contacts`;
+CREATE TABLE `contacts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(150) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `subject` varchar(255) DEFAULT '',
+  `message` text DEFAULT NULL,
+  `status` enum('new','read','replied') DEFAULT 'new',
+  `is_starred` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `orders`
+-- (Dùng trong admin_dashboard.php để tính doanh thu tổng hợp)
+--
+
+DROP TABLE IF EXISTS `orders`;
+CREATE TABLE `orders` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `total_price` decimal(15,2) DEFAULT 0.00,
+  `status` varchar(50) DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_orders_created` (`created_at`),
+  KEY `idx_orders_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Thêm các cột còn thiếu vào bảng `bookings`
+-- (dùng bởi admin_dashboard.php: b.date, b.user_id, b.guests)
+--
+
+ALTER TABLE `bookings`
+  ADD COLUMN IF NOT EXISTS `user_id` int(11) DEFAULT NULL AFTER `id`,
+  ADD COLUMN IF NOT EXISTS `date` date DEFAULT NULL AFTER `booking_date`,
+  ADD COLUMN IF NOT EXISTS `time` time DEFAULT NULL AFTER `date`,
+  ADD COLUMN IF NOT EXISTS `guests` int(11) DEFAULT 1 AFTER `time`;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

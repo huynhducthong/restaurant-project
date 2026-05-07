@@ -101,7 +101,6 @@ if (isset($_POST['save_inventory'])) {
 
     // FIX LỖI 900,000 -> 900: Lột bỏ dấu phẩy trước khi lưu vào database
     $cost_price = isset($_POST['cost_price']) ? (float)str_replace(',', '', $_POST['cost_price']) : 0;
-
     $data = [
         trim($_POST['item_name']),
         $_POST['category'],
