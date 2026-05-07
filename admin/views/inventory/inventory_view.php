@@ -136,6 +136,7 @@ include '../../public/admin_layout_header.php';
                         <thead class="table-dark">
                             <tr>
                                 <th>Nguyên Liệu</th>
+                                <th>Khu Vực</th>
                                 <th>Nhà Cung Cấp</th>
                                 <th>Tồn Kho</th>
                                 <th>HSD</th>
@@ -161,6 +162,7 @@ include '../../public/admin_layout_header.php';
                                     <div class="small text-muted"><?= htmlspecialchars($i['category']) ?></div>
                                     <?php if($isLow): ?><span class="badge bg-danger" style="font-size:9px">Sắp hết kho</span><?php endif; ?>
                                 </td>
+                                <td><span class="badge bg-secondary"><?= htmlspecialchars($i['storage_zone'] ?? 'Chưa gán') ?></span></td>
                                 <td class="text-primary fw-medium small"><?= htmlspecialchars($i['s_name'] ?? 'Chưa gán NCC') ?></td>
                                 <td>
                                     <span class="fs-6 fw-bold <?= $isLow ? 'text-danger' : '' ?>"><?= (float)$i['stock_quantity'] ?></span>
@@ -385,12 +387,23 @@ include '../../public/admin_layout_header.php';
                     <div class="col-6"><label class="small fw-bold">Danh mục</label><select name="category" id="inv-cat" class="form-select"><?php foreach($cats as $c) echo "<option value='{$c['name']}'>{$c['name']}</option>"; ?></select></div>
                     <div class="col-6"><label class="small fw-bold">Đơn vị</label><select name="unit_name" id="inv-unit" class="form-select"><?php foreach($units as $u) echo "<option value='{$u['name']}'>{$u['name']}</option>"; ?></select></div>
                 </div>
-                <div class="mb-3">
-                    <label class="small fw-bold">Nhà cung cấp mặc định</label>
-                    <select name="supplier_id" id="inv-sup" class="form-select">
-                        <option value="">-- Chọn NCC --</option>
-                        <?php foreach($suppliers as $s) echo "<option value='{$s['id']}'>{$s['name']}</option>"; ?>
-                    </select>
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="small fw-bold">Khu vực bảo quản</label>
+                        <select name="storage_zone" id="inv-zone" class="form-select">
+                            <option value="Kho khô">🌡️ Kho khô</option>
+                            <option value="Kho lạnh mát">❄️ Kho lạnh mát</option>
+                            <option value="Kho lạnh đông">🧊 Kho lạnh đông</option>
+                            <option value="Kho đồ uống">🍷 Kho đồ uống</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="small fw-bold">Nhà cung cấp mặc định</label>
+                        <select name="supplier_id" id="inv-sup" class="form-select">
+                            <option value="">-- Chọn NCC --</option>
+                            <?php foreach($suppliers as $s) echo "<option value='{$s['id']}'>{$s['name']}</option>"; ?>
+                        </select>
+                    </div>
                 </div>
                 <div class="row g-2 mb-0">
                     <div class="col-6"><label class="small fw-bold">Giá vốn (đ)</label><input type="text" name="cost_price" id="inv-price" class="form-control money-input" value="0"></div>
@@ -509,8 +522,8 @@ function switchTab(tabId) {
     if (tabId === 'chart') renderChart();
 }
 
-function openInventoryModal() { $('#inv-id, #inv-name, #inv-price, #inv-min, #inv-sup').val(''); $('#inv-price, #inv-min').val(0); $('#inv-modal-title').text('Thêm Nguyên Liệu'); new bootstrap.Modal(document.getElementById('modalInventory')).show(); }
-function openEdit(data) { $('#inv-id').val(data.id); $('#inv-modal-title').text('Cập Nhật'); $('#inv-name').val(data.item_name); $('#inv-cat').val(data.category); $('#inv-unit').val(data.unit_name); $('#inv-price').val(data.cost_price ? parseInt(data.cost_price).toLocaleString('en-US') : '0'); $('#inv-min').val(data.min_stock || 0); $('#inv-sup').val(data.supplier_id || ''); new bootstrap.Modal(document.getElementById('modalInventory')).show(); }
+function openInventoryModal() { $('#inv-id, #inv-name, #inv-price, #inv-min, #inv-sup').val(''); $('#inv-price, #inv-min').val(0); $('#inv-zone').val('Kho khô'); $('#inv-modal-title').text('Thêm Nguyên Liệu'); new bootstrap.Modal(document.getElementById('modalInventory')).show(); }
+function openEdit(data) { $('#inv-id').val(data.id); $('#inv-modal-title').text('Cập Nhật'); $('#inv-name').val(data.item_name); $('#inv-cat').val(data.category); $('#inv-unit').val(data.unit_name); $('#inv-price').val(data.cost_price); $('#inv-min').val(data.min_stock || 0); $('#inv-sup').val(data.supplier_id || ''); $('#inv-zone').val(data.storage_zone || 'Kho khô'); new bootstrap.Modal(document.getElementById('modalInventory')).show(); }
 
 function openSupplierModal() { $('#s-id, #s-name, #s-contact, #s-phone, #s-email, #s-address').val(''); new bootstrap.Modal(document.getElementById('modalSupplier')).show(); }
 function openEditSupplier(data) { $('#s-id').val(data.id); $('#s-name').val(data.name); $('#s-contact').val(data.contact_person); $('#s-phone').val(data.phone); $('#s-email').val(data.email); $('#s-address').val(data.address); new bootstrap.Modal(document.getElementById('modalSupplier')).show(); }
