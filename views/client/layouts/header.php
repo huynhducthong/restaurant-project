@@ -1,6 +1,6 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+  session_start();
 }
 require_once __DIR__ . '/../../../config/database.php';
 $database = new Database();
@@ -9,12 +9,13 @@ $db = $database->getConnection();
 // Lấy cấu hình chung
 $settings = [];
 try {
-    $stmt = $db->prepare("SELECT key_name, key_value FROM settings");
-    $stmt->execute();
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $settings[$row['key_name']] = $row['key_value'];
-    }
-} catch (Exception $e) {}
+  $stmt = $db->prepare("SELECT key_name, key_value FROM settings");
+  $stmt->execute();
+  while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $settings[$row['key_name']] = $row['key_value'];
+  }
+} catch (Exception $e) {
+}
 
 $settings['restaurant_name'] = $settings['restaurant_name'] ?? 'Restaurantly';
 $settings['hotline']         = $settings['hotline']         ?? '0123 456 789';
@@ -28,6 +29,7 @@ $is_backend_access = in_array($user_role, ['admin', 'staff', 1, 2]);
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -40,8 +42,14 @@ $is_backend_access = in_array($user_role, ['admin', 'staff', 1, 2]);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 
   <style>
-    :root { --primary-color: #cda45e; }
-    body { padding: 0 !important; margin: 0; }
+    :root {
+      --primary-color: #cda45e;
+    }
+
+    body {
+      padding: 0 !important;
+      margin: 0;
+    }
 
     #topbar {
       height: 40px; position: fixed; top: 0; width: 100%; z-index: 998;
@@ -126,8 +134,8 @@ $is_backend_access = in_array($user_role, ['admin', 'staff', 1, 2]);
         <i class="bi bi-clock ms-4 me-1" style="color: var(--primary-color);"></i>
         <span><?= htmlspecialchars($settings['open_days']) ?>: <strong><?= htmlspecialchars($settings['open_time']) ?></strong></span>
         <?php if (!empty($settings['address'])): ?>
-        <i class="bi bi-geo-alt ms-4 me-1" style="color: var(--primary-color);"></i>
-        <span><?= htmlspecialchars($settings['address']) ?></span>
+          <i class="bi bi-geo-alt ms-4 me-1" style="color: var(--primary-color);"></i>
+          <span><?= htmlspecialchars($settings['address']) ?></span>
         <?php endif; ?>
       </div>
     </div>
@@ -147,10 +155,11 @@ $is_backend_access = in_array($user_role, ['admin', 'staff', 1, 2]);
 
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
-          <li><a class="nav-link scrollto active" href="index.php">Trang chủ</a></li>
-          <li><a class="nav-link scrollto" href="about.php">Về chúng tôi</a></li>
-          <li><a class="nav-link scrollto" href="menu.php">Thực đơn</a></li>
-          <li><a class="nav-link scrollto" href="contact.php">Liên hệ</a></li>
+          <li><a class="nav-link <?= $current_page == 'index.php'   ? 'active' : '' ?>" href="index.php">Trang chủ</a></li>
+          <li><a class="nav-link <?= $current_page == 'about.php'   ? 'active' : '' ?>" href="about.php">Về chúng tôi</a></li>
+          <li><a class="nav-link <?= $current_page == 'menu.php'    ? 'active' : '' ?>" href="menu.php">Thực đơn</a></li>
+          <li><a class="nav-link <?= $current_page == 'contact.php' ? 'active' : '' ?>" href="contact.php">Liên hệ</a></li>
+          <li><a class="nav-link <?= $current_page == 'books.php'   ? 'active' : '' ?>" href="books.php">Sách</a></li>
         </ul>
       </nav>
 
@@ -210,4 +219,5 @@ $is_backend_access = in_array($user_role, ['admin', 'staff', 1, 2]);
     });
   </script>
 </body>
+
 </html>
