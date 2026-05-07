@@ -118,6 +118,8 @@ if ($filter == 'all') {
     $stmt->execute([':type' => $filter]);
 }
 $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+include '../../public/admin_layout_header.php';
 ?>
 
 <link rel="stylesheet" href="../../public/assets/admin/css/admin-style.css">

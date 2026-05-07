@@ -1,5 +1,5 @@
 <?php
-// Tên file: admin/inventory_view.php (hoặc thư mục views tùy bạn sắp xếp)
+// Tên file: admin/views/inventory/inventory_view.php
 // File này KHÔNG CHỨA LOGIC KẾT NỐI DATABASE. Mọi dữ liệu đã được Controller chuẩn bị sẵn.
 
 include '../../public/admin_layout_header.php';
@@ -64,6 +64,7 @@ include '../../public/admin_layout_header.php';
                 </form>
             </div>
 
+            <!-- BẢNG MENU ĐIỀU HƯỚNG BÊN TRÁI ĐÃ ĐƯỢC CẬP NHẬT -->
             <div class="card p-2 shadow-sm border-0">
                 <button class="btn btn-primary btn-sm w-100 mb-2 py-2 fw-bold" onclick="switchTab('stock')"><i class="fas fa-boxes me-2"></i> TỒN KHO & HSD</button>
                 <button class="btn btn-danger btn-sm w-100 mb-2 py-2 fw-bold position-relative" onclick="switchTab('reorder')">
@@ -72,10 +73,22 @@ include '../../public/admin_layout_header.php';
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark border border-light"><?= $low_stock_count ?></span>
                     <?php endif; ?>
                 </button>
+                
+                <!-- NÚT MỚI: QUẢN LÝ ĐẶT HÀNG (PO) -->
+                <a href="POController.php" class="btn btn-outline-primary btn-sm w-100 mb-2 py-2 fw-bold text-decoration-none">
+                    <i class="fas fa-file-invoice-dollar me-2"></i> QUẢN LÝ ĐẶT HÀNG (PO)
+                </a>
+
                 <button class="btn btn-warning btn-sm w-100 mb-2 py-2 fw-bold" onclick="switchTab('audit')"><i class="fas fa-clipboard-check me-2"></i> KIỂM KÊ KHO</button>
                 <button class="btn btn-dark btn-sm w-100 mb-2 py-2 fw-bold" onclick="switchTab('suppliers')"><i class="fas fa-truck me-2"></i> NHÀ CUNG CẤP</button>
                 <button class="btn btn-info btn-sm w-100 mb-2 py-2 fw-bold text-white" onclick="switchTab('history')"><i class="fas fa-history me-2"></i> LỊCH SỬ GIAO DỊCH</button>
                 <button class="btn btn-success btn-sm w-100 mb-2 py-2 fw-bold" onclick="switchTab('chart')"><i class="fas fa-chart-bar me-2"></i> BIỂU ĐỒ THỐNG KÊ</button>
+                
+                <!-- NÚT MỚI: BÁO CÁO LỢI NHUẬN (FOOD COST) -->
+                <a href="ReportCostController.php" class="btn btn-secondary btn-sm w-100 mb-2 py-2 fw-bold text-white text-decoration-none">
+                    <i class="fas fa-chart-pie me-2"></i> BÁO CÁO LỢI NHUẬN
+                </a>
+
                 <hr class="my-2">
                 <button class="btn btn-light btn-sm w-100 mb-2 text-start" onclick="openTagManager('category')"><i class="fas fa-tags me-2"></i> Danh Mục</button>
                 <button class="btn btn-light btn-sm w-100 mb-2 text-start" onclick="openTagManager('unit')"><i class="fas fa-balance-scale me-2"></i> Đơn Vị</button>
@@ -185,10 +198,15 @@ include '../../public/admin_layout_header.php';
             </div>
 
             <div class="tab-pane fade" id="tab-reorder">
+                <!-- CẬP NHẬT HEADER CỦA TAB ĐỀ XUẤT ĐẶT HÀNG -->
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4 class="fw-bold m-0 text-uppercase text-danger"><i class="fas fa-cart-plus me-2"></i>Danh Sách Cần Đặt Hàng</h4>
-                    <button class="btn btn-outline-danger btn-sm" onclick="window.print()"><i class="fas fa-print me-2"></i>In danh sách</button>
+                    <div>
+                        <button class="btn btn-outline-danger btn-sm me-2" onclick="window.print()"><i class="fas fa-print me-2"></i>In danh sách</button>
+                        <a href="POController.php" class="btn btn-danger btn-sm fw-bold"><i class="fas fa-arrow-right me-1"></i>Đến trang Đặt Hàng (PO)</a>
+                    </div>
                 </div>
+                
                 <div class="card shadow-sm border-0 overflow-hidden">
                     <table class="table table-hover mb-0">
                         <thead class="table-danger">
@@ -388,7 +406,7 @@ include '../../public/admin_layout_header.php';
                     </div>
                 </div>
                 <div class="row g-2 mb-0">
-                    <div class="col-6"><label class="small fw-bold">Giá vốn (đ)</label><input type="number" name="cost_price" id="inv-price" class="form-control" value="0" min="0"></div>
+                    <div class="col-6"><label class="small fw-bold">Giá vốn (đ)</label><input type="text" name="cost_price" id="inv-price" class="form-control money-input" value="0"></div>
                     <div class="col-6"><label class="small fw-bold">Tồn tối thiểu</label><input type="number" name="min_stock" id="inv-min" class="form-control" value="0" min="0" step="0.01"></div>
                 </div>
             </div>
@@ -413,7 +431,7 @@ include '../../public/admin_layout_header.php';
                 </div>
                 <div class="row g-2 mb-3">
                     <div class="col-6"><label class="fw-bold small">Số lượng (<span id="imp-unit"></span>) <span class="text-danger">*</span></label><input type="number" name="quantity" step="0.01" min="0.01" class="form-control" required></div>
-                    <div class="col-6"><label class="fw-bold small">Giá vốn nhập (đ) <span class="text-danger">*</span></label><input type="number" name="import_price" id="imp-price" class="form-control" min="0" required></div>
+                    <div class="col-6"><label class="fw-bold small">Giá vốn nhập (đ) <span class="text-danger">*</span></label><input type="text" name="import_price" id="imp-price" class="form-control money-input" required></div>
                 </div>
                 <div class="mb-0"><label class="fw-bold small">Hạn sử dụng</label><input type="date" name="expiry_date" class="form-control"></div>
             </div>
@@ -515,11 +533,21 @@ function openExport(id, name, type) { $('#form-export')[0].reset(); $('#exp-id')
 
 $(document).on('submit', '#form-import, #form-export', function(e) {
     e.preventDefault();
+    $(this).find('.money-input').each(function() { this.value = this.value.replace(/,/g, ''); });
     const btn = $(this).find('[type=submit]').prop('disabled', true).text('Đang xử lý...');
     $.post('InventoryController.php', $(this).serialize(), function(r) {
         if (r.status === 'success') location.reload();
         else { alert('❌ ' + (r.msg || 'Không thể xử lý')); btn.prop('disabled', false).text('XÁC NHẬN'); }
     }, 'json').fail(function() { alert('Lỗi kết nối máy chủ.'); btn.prop('disabled', false); });
+});
+
+$(document).on('submit', 'form:not(#form-import):not(#form-export)', function() {
+    $(this).find('.money-input').each(function() { this.value = this.value.replace(/,/g, ''); });
+});
+
+$(document).on('input', '.money-input', function() {
+    let val = this.value.replace(/[^0-9]/g, '');
+    this.value = val !== '' ? parseInt(val, 10).toLocaleString('en-US') : '';
 });
 
 function openTagManager(type) {
@@ -547,7 +575,10 @@ function filterTable() {
 }
 function filterWarning(type, btn) { activeFilter = type; document.querySelectorAll('.btn-outline-secondary, .btn-outline-danger, .btn-outline-warning').forEach(b => b.classList.remove('active')); if (btn) btn.classList.add('active'); filterTable(); }
 function renderPagination() {
-    const rows = [...document.querySelectorAll('#invBody .inv-row')].filter(r => r.getAttribute('data-visible') !== '0');
+    const allRows = document.querySelectorAll('#invBody .inv-row');
+    allRows.forEach(r => r.style.display = 'none'); // Ẩn toàn bộ trước
+    
+    const rows = [...allRows].filter(r => r.getAttribute('data-visible') !== '0');
     const t = rows.length; const pgs = Math.ceil(t / PAGE_SIZE) || 1; currentPage = Math.min(currentPage, pgs);
     rows.forEach((r, i) => r.style.display = (i >= (currentPage-1)*PAGE_SIZE && i < currentPage*PAGE_SIZE) ? '' : 'none');
     document.getElementById('paginInfo').textContent = t > 0 ? `Hiển thị ${(currentPage-1)*PAGE_SIZE+1}–${Math.min(currentPage*PAGE_SIZE, t)} / ${t}` : 'Không tìm thấy';
