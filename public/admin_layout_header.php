@@ -19,9 +19,11 @@ if (!$user_id || !in_array($user_role, $allowed_roles)) {
 $is_admin = ($user_role === 'admin' || $user_role == 1);
 
 // Hàm hỗ trợ active menu hiện tại
-function isActive($path)
-{
-    return basename($_SERVER['PHP_SELF']) === $path ? 'active' : '';
+if (!function_exists('isActive')) {
+    function isActive($path)
+    {
+        return basename($_SERVER['PHP_SELF']) === $path ? 'active' : '';
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -369,9 +371,8 @@ function isActive($path)
                             Footer</a>
                     </li>
 
-                    <li class="<?= isActive('manage_users.php') ?>">
-                        <a href="/restaurant-project/admin/manage_users.php"><i class="fas fa-users-cog"></i> Quản lý Nhân
-                            sự</a>
+                    <li class="<?= isActive('UserController.php') ?>">
+                        <a href="/restaurant-project/admin/controllers/UserController.php"><i class="fas fa-users-cog"></i> Quản lý Người dùng</a>
                     </li>
                 <?php endif; ?>
 

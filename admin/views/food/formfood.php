@@ -182,7 +182,7 @@ $form_action = $is_edit
                         <div class="alert alert-light border small text-muted">
                             <i class="fas fa-info-circle me-1"></i>
                             Chưa có nguyên liệu nào trong kho.
-                            <a href="../InventoryController.php" class="alert-link">Thêm nguyên liệu</a>
+                            <a href="InventoryController.php" class="alert-link">Thêm nguyên liệu</a>
                         </div>
                         <?php else: ?>
                         <div id="recipe-list" class="d-flex flex-column gap-2 mb-3">

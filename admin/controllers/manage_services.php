@@ -1,6 +1,7 @@
 <?php
-include '../../public/admin_layout_header.php';
+// File: admin/controllers/manage_services.php
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../config/inventory_helper.php';
 
 $db = (new Database())->getConnection();
 
@@ -9,33 +10,67 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     $id = (int) $_GET['id'];
     $action = $_GET['action'];
 
-    // A. XÁC NHẬN (CONFIRM) & TRỪ KHO & ĐÁNH DẤU BÀN
+    // A. HÀNH ĐỘNG XÁC NHẬN (CONFIRM) & TRỪ KHO BẾP
     if ($action == 'confirm') {
         $db->beginTransaction();
         try {
+            // 1. Kiểm tra trạng thái: Nếu đã xác nhận rồi thì không trừ kho nữa
+            $check_status = $db->prepare("SELECT status FROM service_bookings WHERE id = ?");
+            $check_status->execute([$id]);
+            $current_status = $check_status->fetchColumn();
+            if ($current_status === 'Confirmed') {
+                throw new Exception("Đơn hàng này đã được xác nhận và trừ kho từ trước!");
+            }
+
+            // 2. Cập nhật trạng thái đơn hàng sang Confirmed
             $db->prepare("UPDATE service_bookings SET status = 'Confirmed' WHERE id = ?")->execute([$id]);
 
+            // 3. Lấy danh sách các món ăn trong đơn hàng này
             $stmt_items = $db->prepare("SELECT menu_id, quantity FROM booking_details WHERE booking_id = ?");
             $stmt_items->execute([$id]);
             $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
+
+            // ĐỊNH VỊ ID CỦA KHO BẾP (WAREHOUSE ID = 2)
+            $kitchen_warehouse_id = 2;
 
             foreach ($items as $item) {
                 $food_id = $item['menu_id'];
                 $order_qty = $item['quantity'];
 
-                $stmt_recipe = $db->prepare("SELECT r.ingredient_id, r.quantity_required, i.item_name, i.stock_quantity 
-                    FROM food_recipes r JOIN inventory i ON r.ingredient_id = i.id WHERE r.food_id = ?");
-                $stmt_recipe->execute([$food_id]);
+                // 4. Lấy định mức nguyên liệu và KIỂM TRA TỒN KHO TRONG KHO BẾP
+                $stmt_recipe = $db->prepare("
+                    SELECT r.ingredient_id, r.quantity_required, r.unit as r_unit, i.item_name, i.unit_name as i_unit,
+                           IFNULL((SELECT quantity FROM inventory_stocks WHERE ingredient_id = i.id AND warehouse_id = ?), 0) as stock_quantity
+                    FROM food_recipes r
+                    JOIN inventory i ON r.ingredient_id = i.id
+                    WHERE r.food_id = ?
+                ");
+                $stmt_recipe->execute([$kitchen_warehouse_id, $food_id]);
                 $recipes = $stmt_recipe->fetchAll(PDO::FETCH_ASSOC);
 
                 foreach ($recipes as $rcp) {
                     $ing_id = $rcp['ingredient_id'];
-                    $total_deduct = $rcp['quantity_required'] * $order_qty;
+                    $qty_req = (float)$rcp['quantity_required'];
+                    
+                    $r_unit = strtolower(trim($rcp['r_unit']));
+                    $i_unit = strtolower(trim($rcp['i_unit']));
+                    
+                    // SỬ DỤNG HELPER ĐỂ QUY ĐỔI ĐƠN VỊ TẬP TRUNG
+                    $qty_in_stock_unit = convert_to_base_unit($qty_req, $r_unit, $i_unit);
+                    $total_deduct = $qty_in_stock_unit * $order_qty;
+
+                    // KIỂM TRA TỒN KHO BẾP: Nếu Bếp không đủ nguyên liệu thì báo lỗi
                     if ($rcp['stock_quantity'] < $total_deduct) {
-                        throw new Exception("Nguyên liệu '{$rcp['item_name']}' không đủ trong kho.");
+                        throw new Exception("Kho Bếp không đủ nguyên liệu '" . $rcp['item_name'] . "' (Cần: $total_deduct $i_unit, Hiện có tại bếp: " . $rcp['stock_quantity'] . " $i_unit). Vui lòng yêu cầu xuất chuyển từ Kho Tổng xuống Kho Bếp!");
                     }
-                    $db->prepare("UPDATE inventory SET stock_quantity = stock_quantity - ? WHERE id = ?")->execute([$total_deduct, $ing_id]);
-                    $db->prepare("INSERT INTO inventory_history (ingredient_id, type, quantity, created_at) VALUES (?, 'export', ?, NOW())")->execute([$ing_id, $total_deduct]);
+
+                    // 4. Trực tiếp trừ số lượng trong bảng Đa Kho (Kho Bếp)
+                    $db->prepare("UPDATE inventory_stocks SET quantity = quantity - ? WHERE ingredient_id = ? AND warehouse_id = ?")
+                       ->execute([$total_deduct, $ing_id, $kitchen_warehouse_id]);
+
+                    // 5. Ghi lịch sử xuất kho (Kèm mã kho Bếp)
+                    $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, 'export', ?, 'Hệ thống POS')")
+                       ->execute([$ing_id, $kitchen_warehouse_id, $total_deduct]);
                 }
             }
 
