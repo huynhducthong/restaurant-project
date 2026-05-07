@@ -1,12 +1,13 @@
 <?php
 include '../public/admin_layout_header.php';
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 $db = (new Database())->getConnection();
 
 // Lấy danh sách món ăn
 $foods = $db->query("SELECT id, name FROM foods ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
 // Lấy danh sách nguyên liệu trong kho
 $ingredients = $db->query("SELECT id, item_name, unit_name FROM inventory ORDER BY item_name ASC")->fetchAll(PDO::FETCH_ASSOC);
+$units = $db->query("SELECT name FROM inventory_units ORDER BY name ASC")->fetchAll(PDO::FETCH_COLUMN);
 ?>
 
 <link rel="stylesheet" href="../public/assets/admin/css/admin-style.css">
@@ -71,31 +72,11 @@ $ingredients = $db->query("SELECT id, item_name, unit_name FROM inventory ORDER 
                 <div class="modal-body">
                     <input type="hidden" name="food_id" id="recipe-food-id">
                     
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Chọn nguyên liệu từ kho</label>
-                        <select name="ingredient_id" class="form-select" required>
-                            <option value="">-- Chọn nguyên liệu --</option>
-                            <?php foreach($ingredients as $i): ?>
-                                <option value="<?= $i['id'] ?>"><?= $i['item_name'] ?> (tồn: <?= $i['unit_name'] ?>)</option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-7 mb-3">
-                            <label class="form-label small fw-bold">Số lượng tiêu hao</label>
-                            <input type="number" name="quantity_required" class="form-control" step="0.01" required placeholder="Ví dụ: 0.5">
-                        </div>
-                        <div class="col-md-5 mb-3">
-                            <label class="form-label small fw-bold">Đơn vị</label>
-                            <select name="unit" class="form-select">
-                                <option value="kg">kg</option>
-                                <option value="g">g</option>
-                                <option value="L">L</option>
-                                <option value="ml">ml</option>
-                            </select>
-                        </div>
-                    </div>
+                    <div id="recipe-items-list"></div>
+                    
+                    <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="btn-add-ingredient-row">
+                        <i class="fas fa-plus"></i> Thêm nguyên liệu
+                    </button>
                 </div>
                 <div class="modal-footer border-0">
                     <button type="submit" class="btn btn-warning w-100 fw-bold">LƯU ĐỊNH MỨC</button>
@@ -106,4 +87,8 @@ $ingredients = $db->query("SELECT id, item_name, unit_name FROM inventory ORDER 
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    window.allIngredients = <?= json_encode($ingredients) ?>;
+    window.allUnits = <?= json_encode($units) ?>;
+</script>
 <script src="../public/assets/admin/js/admin.js"></script>
