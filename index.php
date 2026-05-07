@@ -52,8 +52,8 @@ $file_path  = '';
 $stmt_combos = null;
 
 try {
-    // 5.1 Lấy Banner - Ưu tiên lấy từ Database
-    $stmt_banners = $db->prepare("SELECT * FROM banners ORDER BY display_order ASC");
+    // 5.1 Lấy Banner - Ưu tiên lấy từ Database (Lọc Banner bật và Hẹn giờ)
+    $stmt_banners = $db->prepare("SELECT * FROM banners WHERE is_active = 1 AND (start_date IS NULL OR start_date <= NOW()) AND (end_date IS NULL OR end_date >= NOW()) ORDER BY display_order ASC");
     $stmt_banners->execute();
     $banners_db = $stmt_banners->fetchAll(PDO::FETCH_ASSOC);
 
@@ -134,6 +134,26 @@ include __DIR__ . '/views/client/layouts/header.php';
                     text-shadow: 1px 1px 4px rgba(0,0,0,0.7);">
                     <?= htmlspecialchars($row['description']) ?>
                 </p>
+                <?php if (!empty($row['button_text'])): ?>
+                <a href="<?= htmlspecialchars($row['button_link'] ?? '#') ?>" class="animate__animated animate__fadeInUp" style="
+                    display:inline-block;
+                    padding:12px 36px;
+                    border-radius:50px;
+                    text-transform:uppercase;
+                    text-decoration:none;
+                    font-weight:600;
+                    font-size:14px;
+                    font-family:'Poppins', sans-serif;
+                    letter-spacing:1px;
+                    background-color: <?= htmlspecialchars($row['button_color'] ?? '#cda45e') ?>;
+                    color: #fff;
+                    border: none;
+                    transition:0.3s;
+                    margin-top:20px;
+                " onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
+                    <?= htmlspecialchars($row['button_text']) ?>
+                </a>
+                <?php endif; ?>
               </div>
             </div>
           </div>

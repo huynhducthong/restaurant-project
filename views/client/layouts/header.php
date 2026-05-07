@@ -3,17 +3,13 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-/* =========================================================
-   DATABASE
-========================================================= */
-
 require_once __DIR__ . '/../../../config/database.php';
 
 $database = new Database();
 $db = $database->getConnection();
 
 /* =========================================================
-   SETTINGS
+   LẤY CẤU HÌNH WEBSITE
 ========================================================= */
 
 $settings = [];
@@ -41,7 +37,7 @@ try {
 $settings['restaurant_name'] = $settings['restaurant_name'] ?? 'Restaurantly';
 $settings['hotline']         = $settings['hotline'] ?? '0123 456 789';
 $settings['open_days']       = $settings['open_days'] ?? 'Thứ 2 - Chủ Nhật';
-$settings['open_time']       = $settings['open_time'] ?? '11:00 AM - 23:00 PM';
+$settings['open_time']       = $settings['open_time'] ?? '11:00 - 23:00';
 $settings['address']         = $settings['address'] ?? '';
 $settings['logo_url']        = $settings['logo_url'] ?? '';
 $settings['logo_ver']        = $settings['logo_ver'] ?? '1';
@@ -64,6 +60,26 @@ $is_backend_access = in_array(
     ['admin', 'staff', 1, 2]
 );
 
+/* =========================================================
+   FIX ĐƯỜNG DẪN LOGO
+========================================================= */
+
+$is_admin_area = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false);
+
+$logo_path = $settings['logo_url'] ?? '';
+$final_logo_src = '';
+
+if (!empty($logo_path)) {
+
+    if ($is_admin_area) {
+
+        $final_logo_src = '../../public/' . ltrim($logo_path, '/');
+
+    } else {
+
+        $final_logo_src = 'public/' . ltrim($logo_path, '/');
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -74,26 +90,30 @@ $is_backend_access = in_array(
     <meta charset="utf-8">
 
     <meta
-        content="width=device-width, initial-scale=1.0"
-        name="viewport">
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
     <title>
         <?= htmlspecialchars($settings['restaurant_name']) ?>
     </title>
 
     <!-- GOOGLE FONT -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
     <!-- BOOTSTRAP -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
         rel="stylesheet">
 
     <!-- BOOTSTRAP ICON -->
-    <link rel="stylesheet"
+    <link
+        rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 
     <style>
+
         :root {
             --primary-color: #cda45e;
         }
@@ -122,6 +142,8 @@ $is_backend_access = in_array(
             align-items: center;
 
             color: #fff;
+
+            background: rgba(0, 0, 0, 0.4);
 
             transition: all 0.5s;
         }
@@ -154,7 +176,9 @@ $is_backend_access = in_array(
         }
 
         #header.header-scrolled {
+
             top: 0;
+
             height: 75px;
 
             background: rgba(21, 20, 15, 0.92);
@@ -209,6 +233,7 @@ $is_backend_access = in_array(
         }
 
         .navbar a {
+
             text-decoration: none;
 
             color: #fff;
@@ -237,6 +262,7 @@ $is_backend_access = in_array(
         }
 
         .auth-btn {
+
             padding: 8px 18px;
 
             border-radius: 50px;
@@ -260,6 +286,7 @@ $is_backend_access = in_array(
         }
 
         .register-btn {
+
             border: 2px solid var(--primary-color);
 
             color: #fff;
@@ -268,11 +295,14 @@ $is_backend_access = in_array(
         }
 
         .register-btn:hover {
+
             background: var(--primary-color);
+
             color: #000;
         }
 
         .book-a-table-btn {
+
             padding: 10px 24px;
 
             border-radius: 50px;
@@ -292,7 +322,9 @@ $is_backend_access = in_array(
         }
 
         .book-a-table-btn:hover {
+
             background: var(--primary-color);
+
             color: #000;
         }
 
@@ -300,10 +332,53 @@ $is_backend_access = in_array(
            DROPDOWN
         ======================= */
 
+        .dropdown-menu-dark {
+
+            background: #1a1814;
+
+            border: 1px solid #cda45e;
+
+            border-radius: 8px;
+        }
+
+        .dropdown-menu-dark .dropdown-item {
+            color: #fff;
+        }
+
+        .dropdown-menu-dark .dropdown-item:hover {
+
+            background: rgba(205, 164, 94, 0.15);
+
+            color: #cda45e;
+        }
+
         .dropdown-item i {
             width: 22px;
             text-align: center;
         }
+
+        .mobile-nav-toggle {
+
+            color: #fff;
+
+            cursor: pointer;
+
+            font-size: 24px;
+
+            display: none;
+        }
+
+        @media (max-width: 991px) {
+
+            .navbar {
+                display: none;
+            }
+
+            .mobile-nav-toggle {
+                display: block;
+            }
+        }
+
     </style>
 
 </head>
@@ -330,7 +405,6 @@ $is_backend_access = in_array(
 
                 <span>
                     <?= htmlspecialchars($settings['open_days']) ?>
-
                     :
                     <strong>
                         <?= htmlspecialchars($settings['open_time']) ?>
@@ -367,10 +441,10 @@ $is_backend_access = in_array(
                 <a href="index.php"
                     class="<?= ($settings['logo_position'] == 'right') ? 'logo-container-right' : '' ?>">
 
-                    <?php if (!empty($settings['logo_url'])): ?>
+                    <?php if (!empty($final_logo_src)): ?>
 
                         <img
-                            src="<?= htmlspecialchars($settings['logo_url']) ?>?v=<?= htmlspecialchars($settings['logo_ver']) ?>"
+                            src="<?= htmlspecialchars($final_logo_src) ?>?v=<?= htmlspecialchars($settings['logo_ver']) ?>"
                             alt="Logo">
 
                     <?php endif; ?>
@@ -440,8 +514,7 @@ $is_backend_access = in_array(
 
             <div class="d-flex align-items-center">
 
-                <i class="bi bi-list mobile-nav-toggle"
-                    style="color:#fff; cursor:pointer; font-size:24px;"></i>
+                <i class="bi bi-list mobile-nav-toggle"></i>
 
                 <div class="header-actions ms-3">
 
@@ -465,8 +538,7 @@ $is_backend_access = in_array(
 
                             </a>
 
-                            <ul class="dropdown-menu dropdown-menu-dark shadow"
-                                style="background:#1a1814;border:1px solid #cda45e;">
+                            <ul class="dropdown-menu dropdown-menu-dark shadow">
 
                                 <?php if ($is_backend_access): ?>
 
@@ -489,7 +561,7 @@ $is_backend_access = in_array(
                                 <?php endif; ?>
 
                                 <li>
-                                    <a class="dropdown-item text-white"
+                                    <a class="dropdown-item"
                                         href="profile.php">
 
                                         <i class="bi bi-person me-2"
@@ -501,7 +573,7 @@ $is_backend_access = in_array(
                                 </li>
 
                                 <li>
-                                    <a class="dropdown-item text-white"
+                                    <a class="dropdown-item"
                                         href="my_orders.php">
 
                                         <i class="bi bi-receipt me-2"
@@ -557,7 +629,11 @@ $is_backend_access = in_array(
 
     </header>
 
-    <!-- SCRIPT -->
+    <!-- BOOTSTRAP JS -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- SCROLL EFFECT -->
 
     <script>
 

@@ -1,11 +1,13 @@
 <?php
-// ✅ FIX 1: Xác thực session admin
+// ✅ FIX 1: Xác thực session admin (Phải nằm trên cùng)
 session_start();
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../../login.php'); exit;
 }
 
-include '../../public/admin_layout_header.php';
+// KHÔNG ĐƯỢC INCLUDE GIAO DIỆN Ở ĐÂY.
+// Di chuyển file admin_layout_header.php xuống dưới cùng phần logic.
+
 require_once '../../config/database.php';
 $db = (new Database())->getConnection();
 
@@ -13,6 +15,10 @@ $db = (new Database())->getConnection();
 $flash = $_SESSION['settings_flash'] ?? null;
 unset($_SESSION['settings_flash']);
 
+// ============================================
+// PHẦN XỬ LÝ LOGIC (Lưu dữ liệu, Upload ảnh, Redirect)
+// Mọi lệnh header() chuyển trang phải nằm ở khu vực này
+// ============================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fields = [
         'hotline'         => $_POST['hotline']         ?? '',
@@ -23,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'open_days'       => $_POST['open_days']       ?? 'Thứ 2 - Chủ Nhật',
     ];
 
-    // ✅ FIX 5: Prepare 1 lần ngoài loop, execute nhiều lần
+    // Prepare 1 lần ngoài loop, execute nhiều lần
     $stmt = $db->prepare(
         "INSERT INTO settings (key_name, key_value) VALUES (?, ?)
          ON DUPLICATE KEY UPDATE key_value = VALUES(key_value)"
@@ -32,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$key, $val]);
     }
 
-    // ✅ FIX 2: Validate upload logo - ext + MIME + size
+    // Validate upload logo - ext + MIME + size
     if (!empty($_FILES['logo']['name'])) {
         $allowed_ext  = ['jpg', 'jpeg', 'png', 'webp'];
         $allowed_mime = ['image/jpeg', 'image/png', 'image/webp'];
@@ -61,10 +67,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $file_name   = 'logo.' . $ext;
-        $target_file = '../../public/assets/img/' . $file_name;
+        // ĐÃ FIX: Dùng __DIR__ để thiết lập đường dẫn tuyệt đối khi upload file
+        $target_file = __DIR__ . '/../../public/assets/img/' . $file_name;
+        
         if (move_uploaded_file($tmp_path, $target_file)) {
-            $stmt->execute(['logo_url', '../../public/assets/img/' . $file_name]);
-            // ✅ FIX 6: Version chống cache browser
+            // ĐÃ FIX: Chỉ lưu đường dẫn tính từ thư mục public vào DB (Ví dụ: assets/img/logo.png)
+            $stmt->execute(['logo_url', 'assets/img/' . $file_name]);
+            // Version chống cache browser
             $stmt->execute(['logo_ver', (string)time()]);
         } else {
             $_SESSION['settings_flash'] = ['type' => 'error', 'msg' => 'Không thể tải ảnh lên. Kiểm tra quyền ghi thư mục.'];
@@ -72,8 +81,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // ✅ FIX 4: Flash session + redirect HTTP thay vì alert() JS
+    // Flash session + redirect HTTP
     $_SESSION['settings_flash'] = ['type' => 'success', 'msg' => 'Cập nhật cấu hình thành công!'];
+    
+    // Vì không có giao diện nào được in ra trước đó, lệnh header() này sẽ hoạt động an toàn
     header('Location: settings.php'); exit;
 }
 
@@ -85,12 +96,20 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $settings[$row['key_name']] = $row['key_value'];
 }
 
-// ✅ FIX 3: Escape logo_url + ?v= chống cache browser
+// ĐÃ FIX: Hiển thị logo preview trong trang cài đặt admin
 $logo_src = '';
 if (!empty($settings['logo_url'])) {
     $ver      = $settings['logo_ver'] ?? '1';
-    $logo_src = '../../' . htmlspecialchars($settings['logo_url']) . '?v=' . $ver;
+    // Thêm ../../public/ vì file cài đặt này nằm ở admin/controllers/
+    $logo_src = '../../public/' . htmlspecialchars($settings['logo_url']) . '?v=' . $ver;
 }
+
+
+// ============================================
+// PHẦN HIỂN THỊ GIAO DIỆN (UI)
+// Bây giờ bạn có thể thoải mái include file Layout Header
+// ============================================
+include '../../public/admin_layout_header.php';
 ?>
 
 <!DOCTYPE html>
