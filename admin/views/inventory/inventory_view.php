@@ -277,6 +277,36 @@ include '../../public/admin_layout_header.php';
                     </button>
                 </div>
 
+                <!-- BỘ LỌC THEO KHO -->
+                <div class="mb-3 d-flex gap-2 flex-wrap align-items-center">
+                    <span class="small text-muted fw-bold text-uppercase" style="font-size:11px">Lọc theo kho:</span>
+                    <button class="btn btn-sm btn-dark px-3 fw-bold wh-filter-btn active" data-wh="all">
+                        <i class="fas fa-globe me-1" style="pointer-events:none"></i>Tất cả kho
+                    </button>
+                    <?php foreach ($warehouses as $w):
+                        $wh_colors = ['main' => 'btn-primary', 'kitchen' => 'btn-danger', 'bar' => 'btn-info text-dark'];
+                        $wh_icons  = ['main' => 'fa-warehouse', 'kitchen' => 'fa-fire-burner', 'bar' => 'fa-glass-martini-alt'];
+                        $wh_color  = $wh_colors[$w['type'] ?? ''] ?? 'btn-secondary';
+                        $wh_icon   = $wh_icons[$w['type']  ?? ''] ?? 'fa-box';
+                    ?>
+                    <button class="btn btn-sm btn-outline-secondary px-3 fw-bold wh-filter-btn"
+                            data-wh="<?= $w['id'] ?>"
+                            data-wh-type="<?= $w['type'] ?? '' ?>">
+                        <i class="fas <?= $wh_icon ?> me-1" style="pointer-events:none"></i><?= htmlspecialchars($w['name']) ?>
+                        <span class="badge bg-white text-dark ms-1" style="font-size:10px;pointer-events:none">
+                            <?php
+                            // Đếm số mặt hàng đang có hàng trong kho này
+                            $count_in_wh = 0;
+                            foreach ($inv as $chk_item) {
+                                if (($chk_item['stocks'][$w['id']] ?? 0) > 0) $count_in_wh++;
+                            }
+                            echo $count_in_wh;
+                            ?>
+                        </span>
+                    </button>
+                    <?php endforeach; ?>
+                </div>
+
                 <div class="card shadow-sm border-0 overflow-hidden">
                     <table class="table align-middle mb-0 table-hover" id="invTable">
                         <thead class="table-dark">
@@ -298,10 +328,20 @@ include '../../public/admin_layout_header.php';
                                 $isLow = ($min > 0 && $total <= $min && $i['is_active'] == 1) ? 1 : 0;
                                 $isExpiring = ($exp && $exp <= $warn_date && $i['is_active'] == 1) ? 1 : 0;
                             ?>
+                                <?php
+                                // Tạo danh sách kho có hàng của dòng này
+                                $wh_with_stock = [];
+                                foreach ($warehouses as $wh_chk) {
+                                    if (($i['stocks'][$wh_chk['id']] ?? 0) > 0) {
+                                        $wh_with_stock[] = $wh_chk['id'];
+                                    }
+                                }
+                                ?>
                                 <tr class="inv-row <?= $i['is_active'] == 0 ? 'opacity-50 bg-light' : '' ?>"
                                     data-name="<?= strtolower(htmlspecialchars($i['item_name'])) ?>"
                                     data-low="<?= $isLow ?>"
                                     data-expiry="<?= $isExpiring ?>"
+                                    data-wh-stock='<?= json_encode($wh_with_stock) ?>'
                                     data-visible="1">
                                     <td>
                                         <strong><?= htmlspecialchars($i['item_name']) ?></strong>
@@ -749,32 +789,82 @@ include '../../public/admin_layout_header.php';
 </div>
 
 <!-- Modal Chuyển Kho -->
+<!-- Modal Chuyển Kho NHIỀU MẶT HÀNG -->
 <div class="modal fade" id="modalTransfer" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <form class="modal-content shadow border-0" id="form-transfer" action="InventoryController.php">
-            <input type="hidden" name="action" value="transfer">
-            <input type="hidden" name="item_id" id="trans-id">
+            <input type="hidden" name="action" value="transfer_multi">
             <div class="modal-header bg-dark text-white">
-                <h5>Chuyển Kho: <span id="trans-name" class="text-warning"></span></h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <h5><i class="fas fa-exchange-alt me-2" style="pointer-events:none"></i>Tạo Lệnh Chuyển Kho</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body p-4">
-                <div class="row mb-3">
+            <div class="modal-body p-4 bg-light">
+                <!-- Chọn kho -->
+                <div class="row g-3 mb-3">
                     <div class="col-6">
-                        <label class="small fw-bold">Từ Kho (Xuất)</label>
-                        <select name="from_warehouse_id" class="form-select" required>
-                            <?php foreach ($warehouses as $w): ?><option value="<?= $w['id'] ?>"><?= $w['name'] ?></option><?php endforeach; ?>
+                        <label class="small fw-bold text-uppercase text-muted mb-1">Từ Kho (Xuất) <span class="text-danger">*</span></label>
+                        <select name="from_warehouse_id" class="form-select shadow-sm" id="trans-from-wh" required>
+                            <?php foreach ($warehouses as $w): ?>
+                                <option value="<?= $w['id'] ?>"><?= $w['name'] ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="col-6">
-                        <label class="small fw-bold">Đến Kho (Nhận)</label>
-                        <select name="to_warehouse_id" class="form-select" required>
-                            <?php foreach (array_reverse($warehouses) as $w): ?><option value="<?= $w['id'] ?>"><?= $w['name'] ?></option><?php endforeach; ?>
+                        <label class="small fw-bold text-uppercase text-muted mb-1">Đến Kho (Nhận) <span class="text-danger">*</span></label>
+                        <select name="to_warehouse_id" class="form-select shadow-sm" id="trans-to-wh" required>
+                            <?php foreach (array_reverse($warehouses) as $w): ?>
+                                <option value="<?= $w['id'] ?>"><?= $w['name'] ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                 </div>
-                <div><label class="small fw-bold">Số lượng chuyển (<span id="trans-unit"></span>)</label><input type="number" name="quantity" step="0.01" min="0.01" class="form-control form-control-lg text-center" required></div>
+
+                <!-- Bảng danh sách mặt hàng -->
+                <div class="card border-0 shadow-sm overflow-hidden">
+                    <table class="table table-bordered mb-0" id="transferTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Nguyên Liệu</th>
+                                <th width="160">Số Lượng</th>
+                                <th width="40"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="transferBody">
+                            <tr>
+                                <td>
+                                    <select name="trans_item_id[]" class="form-select form-select-sm trans-item-select" required>
+                                        <option value="">-- Chọn nguyên liệu --</option>
+                                        <?php foreach ($inv as $i): if ($i['is_active'] != 1) continue; ?>
+                                            <option value="<?= $i['id'] ?>" data-unit="<?= htmlspecialchars($i['unit_name']) ?>">
+                                                <?= htmlspecialchars($i['item_name']) ?> (<?= $i['unit_name'] ?>)
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" name="trans_qty[]" class="form-control text-center" step="0.01" min="0.01" placeholder="0.00" required>
+                                        <span class="input-group-text trans-unit-label">đơn vị</span>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-outline-danger btn-sm btn-trans-remove border-0" style="pointer-events:auto" title="Xóa dòng">
+                                        <i class="fas fa-trash" style="pointer-events:none"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn btn-outline-primary btn-sm mt-3 fw-bold" id="btnAddTransRow">
+                    <i class="fas fa-plus me-1" style="pointer-events:none"></i>Thêm mặt hàng
+                </button>
             </div>
-            <div class="modal-footer"><button type="submit" class="btn btn-dark w-100 fw-bold text-warning">THỰC HIỆN CHUYỂN</button></div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="submit" class="btn btn-dark w-100 py-2 fw-bold text-warning shadow">
+                    <i class="fas fa-paper-plane me-2" style="pointer-events:none"></i>TẠO LỆNH CHUYỂN KHO
+                </button>
+            </div>
         </form>
     </div>
 </div>
@@ -919,13 +1009,68 @@ include '../../public/admin_layout_header.php';
         new bootstrap.Modal(document.getElementById('modalImport')).show();
     }
 
+    // Template HTML cho 1 dòng nguyên liệu (dùng khi thêm dòng mới)
+    const transRowTemplate = `<tr>
+        <td>
+            <select name="trans_item_id[]" class="form-select form-select-sm trans-item-select" required>
+                ${$('#transferBody tr:first .trans-item-select').prop('outerHTML').match(/<option[\s\S]*<\/option>/g)?.[0] ? 
+                  $('#transferBody tr:first .trans-item-select').html() : ''}
+            </select>
+        </td>
+        <td>
+            <div class="input-group input-group-sm">
+                <input type="number" name="trans_qty[]" class="form-control text-center" step="0.01" min="0.01" placeholder="0.00" required>
+                <span class="input-group-text trans-unit-label">đơn vị</span>
+            </div>
+        </td>
+        <td class="text-center">
+            <button type="button" class="btn btn-outline-danger btn-sm btn-trans-remove border-0" title="Xóa dòng">
+                <i class="fas fa-trash" style="pointer-events:none"></i>
+            </button>
+        </td>
+    </tr>`;
+
+    // Mở modal chuyển kho — pre-select mặt hàng nếu click từ bảng
     function openTransfer(id, name, unit) {
-        $('#form-transfer')[0].reset();
-        $('#trans-id').val(id);
-        $('#trans-name').text(name);
-        $('#trans-unit').text(unit);
+        // Reset bảng về 1 dòng sạch
+        const $tbody = $('#transferBody');
+        $tbody.find('tr').slice(1).remove(); // Giữ lại dòng đầu, xóa các dòng thêm
+        $tbody.find('.trans-item-select').val(''); // Reset dòng đầu
+        $tbody.find('input[name="trans_qty[]"]').val('');
+        $tbody.find('.trans-unit-label').text('đơn vị');
+
+        // Nếu mở từ nút cụ thể → pre-select mặt hàng đó
+        if (id) {
+            const $firstSelect = $tbody.find('.trans-item-select').first();
+            $firstSelect.val(id);
+            $tbody.find('.trans-unit-label').first().text(unit || 'đơn vị');
+        }
         new bootstrap.Modal(document.getElementById('modalTransfer')).show();
     }
+
+    // Thêm dòng mới vào bảng
+    $(document).on('click', '#btnAddTransRow', function () {
+        const $firstRow = $('#transferBody tr:first').clone();
+        $firstRow.find('.trans-item-select').val('');
+        $firstRow.find('input[name="trans_qty[]"]').val('');
+        $firstRow.find('.trans-unit-label').text('đơn vị');
+        $('#transferBody').append($firstRow);
+    });
+
+    // Xóa dòng
+    $(document).on('click', '.btn-trans-remove', function () {
+        if ($('#transferBody tr').length > 1) {
+            $(this).closest('tr').remove();
+        } else {
+            alert('Phải có ít nhất 1 mặt hàng trong lệnh chuyển kho.');
+        }
+    });
+
+    // Tự động cập nhật nhãn đơn vị khi chọn nguyên liệu
+    $(document).on('change', '.trans-item-select', function () {
+        const unit = $(this).find(':selected').data('unit') || 'đơn vị';
+        $(this).closest('tr').find('.trans-unit-label').text(unit);
+    });
 
     // Xử lý động đổi màu Modal Xuất/Hủy
     function openExport(id, name, type) {
@@ -973,10 +1118,9 @@ include '../../public/admin_layout_header.php';
         });
     });
 
-    // 2. Xử lý gửi AJAX cho các form Nhập, Xuất, Chuyển kho
-    $(document).on('submit', '#form-import, #form-export, #form-transfer', function(e) {
+    // 2a. AJAX cho form Nhập, Xuất (serialize bình thường)
+    $(document).on('submit', '#form-import, #form-export', function(e) {
         e.preventDefault();
-        // (Đã xóa lệnh lột phẩy ở đây vì hàm số 1 ở trên đã lo rồi)
         const btn = $(this).find('[type=submit]').prop('disabled', true).text('Đang xử lý...');
         $.post('InventoryController.php', $(this).serialize(), function(r) {
             if (r.status === 'success') location.reload();
@@ -990,15 +1134,57 @@ include '../../public/admin_layout_header.php';
         });
     });
 
+    // 2b. AJAX cho form Chuyển kho (dùng FormData để gửi mảng đúng chuẩn)
+    $(document).on('submit', '#form-transfer', function(e) {
+        e.preventDefault();
+        const $btn = $(this).find('[type=submit]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...');
+        $.ajax({
+            url: 'InventoryController.php',
+            method: 'POST',
+            data: $(this).serialize(),
+            dataType: 'json',
+            success: function(r) {
+                if (r.status === 'success') location.reload();
+                else {
+                    alert('❌ ' + (r.msg || 'Lỗi không xác định'));
+                    $btn.prop('disabled', false).html('<i class="fas fa-paper-plane me-2"></i>TẠO LỆNH CHUYỂN KHO');
+                }
+            },
+            error: function() {
+                alert('Lỗi kết nối máy chủ.');
+                $btn.prop('disabled', false).html('<i class="fas fa-paper-plane me-2"></i>TẠO LỆNH CHUYỂN KHO');
+            }
+        });
+    });
+
     // 3. Tự động thêm dấu phẩy khi gõ
     $(document).on('input', '.money-input', function() {
         let val = this.value.replace(/[^0-9]/g, '');
         this.value = val !== '' ? parseInt(val, 10).toLocaleString('en-US') : '';
     });
     // ================= LỌC & PHÂN TRANG =================
+    let activeWarehouse = 'all'; // 'all' hoặc ID kho cụ thể
+
+    // Xử lý click nút filter theo kho
+    $(document).on('click', '.wh-filter-btn', function () {
+        activeWarehouse = $(this).data('wh').toString();
+        // Cập nhật active state
+        $('.wh-filter-btn').removeClass('active btn-dark btn-primary btn-danger btn-info')
+                           .addClass('btn-outline-secondary');
+        $(this).removeClass('btn-outline-secondary').addClass('active');
+        if (activeWarehouse === 'all') $(this).addClass('btn-dark');
+        else {
+            const type = $(this).data('wh-type');
+            const colorMap = { main: 'btn-primary', kitchen: 'btn-danger', bar: 'btn-info' };
+            $(this).addClass(colorMap[type] || 'btn-secondary');
+        }
+        filterTable();
+    });
+
     function filterWarning(type, btn) {
         activeFilter = type;
-        $('.btn-outline-secondary, .btn-outline-danger, .btn-outline-warning').removeClass('active');
+        // Chỉ xử lý active cho nhóm nút cảnh báo, không đụng nút kho
+        $('#filterButtons button').removeClass('active');
         $(btn).addClass('active');
         filterTable();
     }
@@ -1006,11 +1192,20 @@ include '../../public/admin_layout_header.php';
     function filterTable() {
         const q = document.getElementById('searchInput').value.toLowerCase();
         document.querySelectorAll('#invBody .inv-row').forEach(r => {
-            const nameMatch = r.dataset.name.includes(q);
-            const filterMatch = (activeFilter === 'all') ? true : (activeFilter === 'low' ? r.dataset.low === '1' : r.dataset.expiry === '1');
+            const nameMatch   = r.dataset.name.includes(q);
+            const filterMatch = (activeFilter === 'all') ? true
+                              : (activeFilter === 'low' ? r.dataset.low === '1' : r.dataset.expiry === '1');
 
-            // Gán flag thay vì ẩn cứng để Phân trang đọc được
-            r.setAttribute('data-visible', (nameMatch && filterMatch) ? '1' : '0');
+            // Filter theo kho: kiểm tra data-wh-stock có chứa ID kho đang chọn không
+            let whMatch = true;
+            if (activeWarehouse !== 'all') {
+                try {
+                    const whStock = JSON.parse(r.dataset.whStock || '[]');
+                    whMatch = whStock.map(String).includes(activeWarehouse);
+                } catch(e) { whMatch = true; }
+            }
+
+            r.setAttribute('data-visible', (nameMatch && filterMatch && whMatch) ? '1' : '0');
         });
         currentPage = 1;
         renderPagination();

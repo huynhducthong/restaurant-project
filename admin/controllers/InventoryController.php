@@ -171,6 +171,7 @@ if (isset($_POST['action'])) {
             $db->prepare("UPDATE inventory_stocks SET quantity = quantity - ? WHERE warehouse_id = ? AND ingredient_id = ?")->execute([$qty, $w_id, $id]);
             $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, ?, ?, ?)")->execute([$id, $w_id, $_POST['action'], $qty, $current_user]);
         } elseif ($_POST['action'] === 'transfer') {
+            // Action cũ (giữ cho tương thích nếu còn gọi từ nơi khác)
             $id = (int)$_POST['item_id'];
             $qty = (float)$_POST['quantity'];
             if ($qty <= 0) throw new Exception("Số lượng phải lớn hơn 0.");
@@ -187,6 +188,39 @@ if (isset($_POST['action'])) {
             $transfer_id = $db->lastInsertId();
             $db->prepare("INSERT INTO transfer_details (transfer_id, ingredient_id, quantity) VALUES (?, ?, ?)")
                 ->execute([$transfer_id, $id, $qty]);
+
+        } elseif ($_POST['action'] === 'transfer_multi') {
+            // Action mới: Chuyển kho NHIỀU MẶT HÀNG cùng lúc
+            $from_id = (int)$_POST['from_warehouse_id'];
+            $to_id   = (int)$_POST['to_warehouse_id'];
+
+            if ($from_id === $to_id) throw new Exception("Kho xuất và nhập không được trùng nhau.");
+
+            $item_ids = $_POST['trans_item_id'] ?? [];
+            $qtys     = $_POST['trans_qty']     ?? [];
+
+            if (empty($item_ids)) throw new Exception("Vui lòng chọn ít nhất 1 mặt hàng.");
+
+            // Validate tất cả dòng trước khi tạo phiếu
+            $valid_items = [];
+            foreach ($item_ids as $k => $raw_id) {
+                $ing_id = (int)$raw_id;
+                $qty    = (float)($qtys[$k] ?? 0);
+                if ($ing_id <= 0) throw new Exception("Vui lòng chọn nguyên liệu ở tất cả các dòng.");
+                if ($qty <= 0)    throw new Exception("Số lượng phải lớn hơn 0 ở tất cả các dòng.");
+                $valid_items[] = ['id' => $ing_id, 'qty' => $qty];
+            }
+
+            // Tạo 1 phiếu chuyển kho duy nhất
+            $db->prepare("INSERT INTO inventory_transfers (from_warehouse_id, to_warehouse_id, performed_by, note, status) VALUES (?, ?, ?, ?, 'pending')")
+               ->execute([$from_id, $to_id, $current_user, 'Yêu cầu chuyển kho nội bộ (' . count($valid_items) . ' mặt hàng)']);
+
+            $transfer_id  = $db->lastInsertId();
+            $stmt_detail  = $db->prepare("INSERT INTO transfer_details (transfer_id, ingredient_id, quantity) VALUES (?, ?, ?)");
+
+            foreach ($valid_items as $item) {
+                $stmt_detail->execute([$transfer_id, $item['id'], $item['qty']]);
+            }
         } elseif ($_POST['action'] === 'approve_transfer') {
             $t_id = (int)$_POST['transfer_id'];
 
