@@ -37,26 +37,15 @@ function isActive($path)
         rel="stylesheet">
     <style>
         :root {
-            --sidebar-bg: #121212;
-            /* Deep elegant black */
-            --sidebar-border: rgba(255, 255, 255, 0.05);
-            --sidebar-text: #ffffff;
-            --sidebar-text-muted: #9ca3af;
-
-            --accent-gradient: linear-gradient(135deg, #f5d061 0%, #e6a30b 100%);
-            --accent-color: #e6a30b;
-            --accent-light: rgba(230, 163, 11, 0.1);
-
-            --text-dark: #1f2937;
-            --text-muted: #6b7280;
-            --bg-main: #f3f4f6;
-            /* Modern cool grey background */
-            --topbar-bg: rgba(255, 255, 255, 0.85);
-            /* Glassmorphism topbar */
-
-            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.02);
-            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.05);
-            --shadow-gold: 0 8px 20px rgba(230, 163, 11, 0.25);
+            --sidebar-bg: #ffffff;
+            --sidebar-border: #e5e7eb;
+            --sidebar-text: #111827;
+            --sidebar-text-muted: #6b7280;
+            --accent-color: #0f172a;
+            --accent-bg: #f8fafc;
+            --text-dark: #111827;
+            --bg-main: #f9fafb;
+            --topbar-bg: #ffffff;
         }
 
         * {
@@ -64,15 +53,16 @@ function isActive($path)
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg-main);
             overflow-x: hidden;
             color: var(--text-dark);
+            margin: 0;
         }
 
         /* ── SIDEBAR ── */
         .admin-sidebar {
-            width: 268px;
+            width: 250px;
             height: 100vh;
             position: fixed;
             top: 0;
@@ -82,52 +72,45 @@ function isActive($path)
             z-index: 1000;
             display: flex;
             flex-direction: column;
-            box-shadow: var(--shadow-md);
         }
 
-        /* Brand */
         .sidebar-brand {
-            padding: 28px 24px 22px;
+            padding: 20px;
             border-bottom: 1px solid var(--sidebar-border);
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
         }
 
         .brand-icon {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, #b8862e, #e0b060);
-            border-radius: 10px;
+            width: 32px;
+            height: 32px;
+            background: var(--accent-color);
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
-            font-size: 18px;
-            flex-shrink: 0;
-            box-shadow: 0 4px 12px rgba(184, 134, 46, 0.35);
+            font-size: 14px;
         }
 
         .brand-text h2 {
             font-size: 15px;
-            font-weight: 700;
+            font-weight: 600;
             color: var(--sidebar-text);
             margin: 0;
-            letter-spacing: 1.2px;
         }
 
         .brand-text span {
             font-size: 11px;
             color: var(--sidebar-text-muted);
-            font-weight: 500;
-            letter-spacing: 0.3px;
         }
 
         /* Nav */
         .menu-scroll {
             flex-grow: 1;
             overflow-y: auto;
-            padding: 16px 0 8px;
+            padding: 15px 0;
         }
 
         .menu-scroll::-webkit-scrollbar {
@@ -135,104 +118,78 @@ function isActive($path)
         }
 
         .menu-scroll::-webkit-scrollbar-thumb {
-            background: var(--accent-mid);
+            background: #cbd5e1;
             border-radius: 4px;
         }
 
         .menu-list {
             list-style: none;
-            padding: 0 14px;
+            padding: 0 15px;
             margin: 0;
         }
 
         .menu-list li a {
             display: flex;
             align-items: center;
-            padding: 12px 16px;
+            padding: 10px 12px;
             color: var(--sidebar-text-muted);
             text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            border-radius: 12px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-bottom: 6px;
+            font-size: 13.5px;
+            border-radius: 6px;
+            margin-bottom: 2px;
             gap: 12px;
-            position: relative;
-            overflow: hidden;
+            transition: 0.2s;
         }
 
         .menu-list li a i {
-            width: 20px;
+            width: 18px;
             text-align: center;
-            font-size: 16px;
-            flex-shrink: 0;
-            transition: all 0.3s ease;
+            font-size: 14px;
         }
 
         .menu-list li a:hover {
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: var(--accent-bg);
             color: var(--sidebar-text);
-            transform: translateX(4px);
         }
 
         .menu-list li.active a {
-            background: var(--accent-light);
+            background: var(--accent-bg);
             color: var(--accent-color);
-            font-weight: 600;
+            font-weight: 500;
         }
 
-        .menu-list li.active a::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: var(--accent-gradient);
-            border-radius: 0 4px 4px 0;
-            box-shadow: 0 0 10px var(--accent-color);
-        }
-
-        .menu-list li.active a i {
-            color: var(--accent-color);
-        }
-
-        /* View Homepage pill */
         .view-home-btn {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin: 0 14px 12px;
-            padding: 10px 14px;
-            background: rgba(212, 175, 55, 0.08);
-            border: 1px dashed rgba(212, 175, 55, 0.5);
-            border-radius: 10px;
-            color: var(--accent-color) !important;
+            gap: 8px;
+            margin: 0 15px 15px;
+            padding: 8px 12px;
+            background: #fff;
+            border: 1px solid var(--sidebar-border);
+            border-radius: 6px;
+            color: var(--sidebar-text) !important;
             font-size: 12.5px;
-            font-weight: 600;
             text-decoration: none;
-            letter-spacing: 0.3px;
-            transition: all 0.2s;
+            transition: 0.2s;
+            justify-content: center;
         }
 
         .view-home-btn:hover {
-            background: rgba(212, 175, 55, 0.15);
-            border-color: var(--accent-color);
+            background: var(--accent-bg);
         }
 
-        /* Menu section header */
         .menu-header {
-            padding: 16px 28px 8px;
-            font-size: 10.5px;
-            font-weight: 700;
+            padding: 15px 15px 8px;
+            font-size: 11px;
+            font-weight: 600;
             text-transform: uppercase;
-            color: #9d8765;
-            letter-spacing: 1.4px;
+            color: var(--sidebar-text-muted);
+            letter-spacing: 0.5px;
         }
 
         /* Logout */
         .logout-area {
-            padding: 16px;
+            padding: 15px;
             border-top: 1px solid var(--sidebar-border);
         }
 
@@ -240,82 +197,51 @@ function isActive($path)
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            background: rgba(239, 68, 68, 0.1);
+            padding: 10px 12px;
+            border-radius: 6px;
             color: #ef4444 !important;
             text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 13.5px;
+            transition: 0.2s;
         }
 
         .logout-btn:hover {
-            background: #ef4444;
-            color: #fff !important;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            background: #fef2f2;
         }
 
         /* ── MAIN WRAPPER ── */
         .main-wrapper {
-            margin-left: 268px;
+            margin-left: 250px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        /* Topbar */
         .topbar {
-            height: 76px;
+            height: 60px;
             background: var(--topbar-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 0 36px;
+            padding: 0 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
-            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid var(--sidebar-border);
             position: sticky;
             top: 0;
             z-index: 100;
         }
 
         .topbar-title {
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 16px;
+            font-weight: 500;
             color: var(--text-dark);
             margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            letter-spacing: -0.3px;
-        }
-
-        .topbar-title::before {
-            content: '';
-            display: inline-block;
-            width: 6px;
-            height: 24px;
-            background: var(--accent-gradient);
-            border-radius: 6px;
-            box-shadow: var(--shadow-gold);
         }
 
         /* User info */
         .user-profile {
             display: flex;
             align-items: center;
-            gap: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-            padding: 6px 12px;
-            border-radius: 12px;
-        }
-
-        .user-profile:hover {
-            background: rgba(0, 0, 0, 0.03);
+            gap: 10px;
         }
 
         .user-info {
@@ -324,49 +250,35 @@ function isActive($path)
 
         .user-info strong {
             display: block;
-            font-size: 15px;
-            font-weight: 700;
+            font-size: 13px;
+            font-weight: 500;
             color: var(--text-dark);
-            margin-bottom: 2px;
         }
 
-        .badge-admin {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 4px 12px;
-            border-radius: 20px;
-            background: var(--accent-gradient);
-            color: #fff;
-            letter-spacing: 0.5px;
-            box-shadow: var(--shadow-gold);
-        }
-
+        .badge-admin,
         .badge-staff {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 4px 12px;
-            border-radius: 20px;
-            background: #e0f2fe;
-            color: #0284c7;
-            letter-spacing: 0.5px;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #f3f4f6;
+            color: #4b5563;
         }
 
         .user-avatar {
-            width: 46px;
-            height: 46px;
-            background: var(--accent-gradient);
+            width: 32px;
+            height: 32px;
+            background: var(--accent-bg);
+            border: 1px solid var(--sidebar-border);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
-            font-size: 18px;
-            box-shadow: var(--shadow-gold);
+            color: var(--sidebar-text-muted);
+            font-size: 14px;
         }
 
-        /* Content */
         .content-area {
-            padding: 28px 32px;
+            padding: 24px;
             flex-grow: 1;
         }
     </style>
@@ -428,6 +340,11 @@ function isActive($path)
                             class="fas fa-chart-line"></i> Báo cáo & Thống kê</a>
                 </li>
 
+                <li class="<?= isActive('manage_contacts.php') ?>">
+                    <a href="/restaurant-project/admin/manage_contacts.php"><i
+                            class="fas fa-envelope"></i> Quản lý Liên hệ</a>
+                </li>
+
                 <!-- Admin Only -->
                 <?php if ($is_admin): ?>
                     <div class="menu-header">Quản trị Hệ thống</div>
@@ -485,7 +402,8 @@ function isActive($path)
                     'manage_videos.php' => 'Quản Lý Video',
                     'settings.php' => 'Cài Đặt Hệ Thống Chung',
                     'footer_settings.php' => 'Cấu Hình Giao Diện Footer',
-                    'manage_users.php' => 'Quản Lý Nhân Sự'
+                    'manage_users.php' => 'Quản Lý Nhân Sự',
+                    'manage_contacts.php' => 'Quản Lý Liên Hệ'
                 ];
                 $current_page = basename($_SERVER['PHP_SELF']);
                 echo $page_titles[$current_page] ?? 'Khu Vực Quản Trị';

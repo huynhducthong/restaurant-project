@@ -74,7 +74,8 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
         $stmt_chk->execute([$id]);
         $b = $stmt_chk->fetch();
         if ($b) {
-            if ($b['status'] == 'Confirmed' && $b['table_id']) {
+            // Bàn bị khóa ngay từ lúc Pending, nên cứ có table_id là giải phóng
+            if ($b['table_id']) {
                 $db->prepare("UPDATE restaurant_tables SET is_available = 1 WHERE id = ?")->execute([$b['table_id']]);
             }
             $db->prepare("DELETE FROM booking_details WHERE booking_id = ?")->execute([$id]);
@@ -274,6 +275,10 @@ $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div class="col-7 fw-bold" id="m-type"></div>
                     </div>
                     <div class="row mb-2">
+                        <div class="col-5 text-muted">Bàn/Phòng:</div>
+                        <div class="col-7 fw-bold text-danger" id="m-table"></div>
+                    </div>
+                    <div class="row mb-2">
                         <div class="col-5 text-muted">Thời gian:</div>
                         <div class="col-7 fw-bold" id="m-date"></div>
                     </div>
@@ -281,9 +286,26 @@ $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div class="col-5 text-muted">Số khách:</div>
                         <div class="col-7 fw-bold" id="m-guests"></div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-2">
+                        <div class="col-5 text-muted">Combo:</div>
+                        <div class="col-7 fw-bold text-info" id="m-combo"></div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5 text-muted">Món ăn:</div>
+                        <div class="col-7" id="m-foods"></div>
+                    </div>
+                    <div class="row mb-2">
                         <div class="col-5 text-muted">Ghi chú:</div>
                         <div class="col-7" id="m-msg"></div>
+                    </div>
+                    <hr class="border-secondary my-2">
+                    <div class="row mb-2">
+                        <div class="col-5 text-muted">Tổng ước tính:</div>
+                        <div class="col-7 fw-bold text-success" id="m-total"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5 text-muted fw-bold">Tiền cọc (30%):</div>
+                        <div class="col-7 fw-bold text-warning fs-5" id="m-deposit"></div>
                     </div>
                 </div>
             </div>
@@ -424,9 +446,27 @@ $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 if (data) {
                     $('#m-phone').text(data.customer_phone);
                     $('#m-type').text(data.service_type.toUpperCase());
+                    $('#m-table').text(data.table_code ? data.table_code : 'Chưa chọn');
                     $('#m-date').text(data.booking_date);
                     $('#m-guests').text(data.guests + ' người');
+                    $('#m-combo').text(data.combo_name ? data.combo_name : 'Không');
+                    
+                    let foodsHtml = '';
+                    if (data.foods && data.foods.length > 0) {
+                        data.foods.forEach(f => {
+                            foodsHtml += `<div class="small">- ${f.name} (x${f.quantity})</div>`;
+                        });
+                    } else {
+                        foodsHtml = 'Không có';
+                    }
+                    $('#m-foods').html(foodsHtml);
+
                     $('#m-msg').text(data.message || 'Không có ghi chú.');
+                    
+                    let formatter = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
+                    $('#m-total').text(formatter.format(data.total_amount || 0));
+                    $('#m-deposit').text(formatter.format(data.deposit_amount || 0));
+
                     $('#btn-export-pdf').attr('href', '../export_pdf.php?id=' + id);
                 }
             });
