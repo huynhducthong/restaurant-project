@@ -1,6 +1,6 @@
 <?php
-include '../public/admin_layout_header.php'; 
-require_once __DIR__ . '/../config/database.php';
+// include '../../public/admin_layout_header.php'; 
+require_once __DIR__ . '/../../config/database.php';
 
 $db = (new Database())->getConnection();
 
@@ -27,7 +27,7 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 
                 // 3. Lấy định mức nguyên liệu của từng món
                 $stmt_recipe = $db->prepare("
-                    SELECT r.ingredient_id, r.quantity_required, i.item_name, i.stock_quantity 
+                    SELECT r.ingredient_id, r.quantity_required, r.unit as r_unit, i.item_name, i.stock_quantity, i.unit_name as i_unit
                     FROM food_recipes r
                     JOIN inventory i ON r.ingredient_id = i.id
                     WHERE r.food_id = ?
@@ -37,7 +37,19 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 
                 foreach ($recipes as $rcp) {
                     $ing_id = $rcp['ingredient_id'];
-                    $total_deduct = $rcp['quantity_required'] * $order_qty;
+                    $qty_req = (float)$rcp['quantity_required'];
+                    
+                    $r_unit = strtolower(trim($rcp['r_unit']));
+                    $i_unit = strtolower(trim($rcp['i_unit']));
+                    
+                    // Quy đổi đơn vị nếu định mức là g/ml nhưng kho là kg/L
+                    if ($r_unit == 'g' && $i_unit == 'kg') {
+                        $qty_req /= 1000;
+                    } elseif ($r_unit == 'ml' && $i_unit == 'l') {
+                        $qty_req /= 1000;
+                    }
+                    
+                    $total_deduct = $qty_req * $order_qty;
 
                     // KIỂM TRA TỒN KHO: Nếu không đủ nguyên liệu thì báo lỗi và dừng lại
                     if ($rcp['stock_quantity'] < $total_deduct) {
@@ -96,9 +108,11 @@ if ($filter == 'all') {
     $stmt->execute([':type' => $filter]);
 }
 $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+include '../../public/admin_layout_header.php';
 ?>
 
-<link rel="stylesheet" href="../public/assets/admin/css/admin-style.css">
+<link rel="stylesheet" href="../../public/assets/admin/css/admin-style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
@@ -273,7 +287,7 @@ $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <div class="modal-footer border-0 pb-4 px-4">
                 <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Đóng</button>
-                <a id="btn-export-pdf" href="#" class="btn btn-warning rounded-pill px-4 fw-bold text-white shadow-sm" style="background: #cda45e; border: none;">Xuất PDF</a>
+                <a id="btn-export-pdf" href="export_pdf.php" class="btn btn-warning rounded-pill px-4 fw-bold text-white shadow-sm" style="background: #cda45e; border: none;">Xuất PDF</a>
             </div>
         </div>
     </div>
@@ -281,4 +295,4 @@ $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../public/assets/admin/js/admin.js"></script>
+<script src="../../public/assets/admin/js/admin.js"></script>

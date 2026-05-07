@@ -1,193 +1,9 @@
 <?php
-// =====================================================================
-// MIGRATION SQL CẦN CHẠY TRƯỚC:
-// ALTER TABLE foods ADD COLUMN IF NOT EXISTS is_active TINYINT(1) NOT NULL DEFAULT 1;
-// =====================================================================
-
-session_start();
-
-// ✅ FIX: Xác thực session admin
-if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login.php'); exit;
-}
-
-include '../public/admin_layout_header.php';
-require_once __DIR__ . '/../config/database.php';
-
-$db = (new Database())->getConnection();
-date_default_timezone_set('Asia/Ho_Chi_Minh');
-
-// --- Lấy dữ liệu dùng chung ---
-$all_units   = $db->query("SELECT name FROM inventory_units ORDER BY name ASC")->fetchAll(PDO::FETCH_COLUMN);
-$ingredients = $db->query("SELECT id, item_name, unit_name FROM inventory ORDER BY item_name ASC")->fetchAll(PDO::FETCH_ASSOC);
-
-// ✅ FIX: Danh mục lấy từ DB thay vì hardcode
-$cats = $db->query("SELECT * FROM categories ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
-
-// ============================================================
-// AJAX: Toggle Ẩn / Hiện món
-// ============================================================
-if (isset($_POST['toggle_active'])) {
-    header('Content-Type: application/json');
-    $fid = (int)$_POST['food_id'];
-    $db->prepare("UPDATE foods SET is_active = NOT is_active WHERE id = ?")->execute([$fid]);
-    $s = $db->prepare("SELECT is_active FROM foods WHERE id = ?");
-    $s->execute([$fid]);
-    echo json_encode(['status' => 'success', 'is_active' => (int)$s->fetchColumn()]);
-    exit;
-}
-
-// ============================================================
-// XÓA MÓN ĂN
-// ============================================================
-$delete_error = '';
-if (isset($_GET['delete_id'])) {
-    $del_id = (int)$_GET['delete_id'];
-
-    // ✅ FIX: Kiểm tra đang nằm trong đơn hàng trước khi xóa
-    $chk_order = $db->prepare("SELECT COUNT(*) FROM order_items WHERE food_id = ?");
-    $chk_order->execute([$del_id]);
-    $in_orders = (int)$chk_order->fetchColumn();
-
-    if ($in_orders > 0) {
-        $delete_error = "Không thể xóa! Món này đã xuất hiện trong <strong>$in_orders đơn hàng</strong>. Hãy dùng nút <strong>Ẩn món</strong> thay vì xóa để giữ lại lịch sử.";
-    } else {
-        $db->beginTransaction();
-        try {
-            $db->prepare("DELETE FROM combo_items  WHERE food_id = ?")->execute([$del_id]);
-            $db->prepare("DELETE FROM food_recipes WHERE food_id = ?")->execute([$del_id]);
-            $db->prepare("DELETE FROM foods         WHERE id = ?")    ->execute([$del_id]);
-            $db->commit();
-            header("Location: manage_foods.php?msg=deleted"); exit;
-        } catch (Exception $e) {
-            $db->rollBack();
-            $delete_error = "Lỗi hệ thống: " . htmlspecialchars($e->getMessage());
-        }
-    }
-}
-
-// ============================================================
-// XÂY DỰNG QUERY DANH SÁCH (có filter, search, sort, phân trang)
-// ============================================================
-$filter  = $_GET['filter'] ?? 'all';
-$sort    = $_GET['sort']   ?? 'newest';
-$search  = trim($_GET['q'] ?? '');
-$show_hidden = isset($_GET['show_hidden']);
-$page    = max(1, (int)($_GET['page'] ?? 1));
-$per_page = 12;
-
-$where_parts = [];
-$params      = [];
-
-// Filter danh mục
-if ($filter !== 'all') {
-    $where_parts[] = "c.name = ?";
-    $params[] = $filter;
-}
-
-// Tìm kiếm tên món
-if ($search !== '') {
-    $where_parts[] = "f.name LIKE ?";
-    $params[] = '%' . $search . '%';
-}
-
-// Filter ẩn/hiện
-if (!$show_hidden) {
-    $where_parts[] = "f.is_active = 1";
-}
-
-$where_sql = $where_parts ? 'WHERE ' . implode(' AND ', $where_parts) : '';
-
-// Sort
-$sort_map = [
-    'newest'     => 'f.id DESC',
-    'oldest'     => 'f.id ASC',
-    'name_asc'   => 'f.name ASC',
-    'name_desc'  => 'f.name DESC',
-    'price_asc'  => 'f.price ASC',
-    'price_desc' => 'f.price DESC',
-];
-$order_sql = 'ORDER BY ' . ($sort_map[$sort] ?? 'f.id DESC');
-
-// Đếm tổng để phân trang
-$count_stmt = $db->prepare("SELECT COUNT(*) FROM foods f LEFT JOIN categories c ON f.category_id = c.id $where_sql");
-$count_stmt->execute($params);
-$total       = (int)$count_stmt->fetchColumn();
-$total_pages = max(1, (int)ceil($total / $per_page));
-$page        = min($page, $total_pages);
-$offset      = ($page - 1) * $per_page;
-
-// ✅ FIX N+1: Fetch tất cả món trong 1 query
-$food_stmt = $db->prepare(
-    "SELECT f.*, c.name as category_name
-     FROM foods f
-     LEFT JOIN categories c ON f.category_id = c.id
-     $where_sql $order_sql
-     LIMIT $per_page OFFSET $offset"
-);
-$food_stmt->execute($params);
-$foods = $food_stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// ✅ FIX N+1: Combo info — 1 query duy nhất thay vì N query
-$combo_map  = [];
-$recipe_map = [];
-$cost_map   = [];
-
-if (!empty($foods)) {
-    $food_ids     = array_column($foods, 'id');
-    $placeholders = implode(',', array_fill(0, count($food_ids), '?'));
-
-    // Combo
-    $cs = $db->prepare("SELECT food_id, COUNT(*) as cnt FROM combo_items WHERE food_id IN ($placeholders) GROUP BY food_id");
-    $cs->execute($food_ids);
-    foreach ($cs->fetchAll(PDO::FETCH_ASSOC) as $r) {
-        $combo_map[(int)$r['food_id']] = (int)$r['cnt'];
-    }
-
-    // Recipes
-    $rs = $db->prepare(
-        "SELECT r.food_id, r.quantity_required, r.unit, i.item_name
-         FROM food_recipes r
-         JOIN inventory i ON r.ingredient_id = i.id
-         WHERE r.food_id IN ($placeholders)
-         ORDER BY i.item_name"
-    );
-    $rs->execute($food_ids);
-    foreach ($rs->fetchAll(PDO::FETCH_ASSOC) as $r) {
-        $recipe_map[(int)$r['food_id']][] = $r;
-    }
-
-    // Giá vốn từ nguyên liệu
-    $cst = $db->prepare(
-        "SELECT r.food_id, SUM(r.quantity_required * i.cost_price) as total_cost
-         FROM food_recipes r
-         JOIN inventory i ON r.ingredient_id = i.id
-         WHERE r.food_id IN ($placeholders)
-         GROUP BY r.food_id"
-    );
-    $cst->execute($food_ids);
-    foreach ($cst->fetchAll(PDO::FETCH_ASSOC) as $r) {
-        $cost_map[(int)$r['food_id']] = (float)$r['total_cost'];
-    }
-}
-
-// Đếm món ẩn để hiển thị badge
-$hidden_count = (int)$db->query("SELECT COUNT(*) FROM foods WHERE is_active = 0")->fetchColumn();
-
-// Hàm build URL giữ nguyên params
-function buildUrl(array $override = []): string {
-    $base = array_merge([
-        'filter' => $_GET['filter'] ?? 'all',
-        'sort'   => $_GET['sort']   ?? 'newest',
-        'q'      => $_GET['q']      ?? '',
-        'page'   => 1,
-    ], $override);
-    $base = array_filter($base, fn($v) => $v !== '' && $v !== 'all' || array_key_exists(array_search($v, $base), ['filter' => 'all']));
-    return 'manage_foods.php?' . http_build_query(array_filter($base, fn($v) => $v !== ''));
-}
+// Gọi chung một layout header từ thư mục public
+include __DIR__ . '/../../../public/admin_layout_header.php';
 ?>
 
-<link rel="stylesheet" href="../public/assets/admin/css/admin-style.css">
+<link rel="stylesheet" href="../../public/assets/admin/css/admin-style.css">
 
 <style>
 .sort-link { font-size: 12px; color: var(--bs-secondary); text-decoration: none; }
@@ -209,12 +25,12 @@ tr.inactive-row td:first-child::after { content:''; }
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <h3 class="fw-bold m-0"><i class="fas fa-utensils me-2 text-warning"></i>Quản lý thực đơn & Định mức</h3>
         <div class="d-flex gap-2">
-            <a href="manage_foods.php?show_hidden=1<?= $show_hidden?'':'' ?>"
+            <a href="FoodController.php?show_hidden=1<?= $show_hidden?'':'' ?>"
                class="btn btn-sm <?= $show_hidden ? 'btn-secondary' : 'btn-outline-secondary' ?>">
                 <i class="fas fa-eye-slash me-1"></i>
                 Món ẩn <?php if($hidden_count > 0): ?><span class="badge bg-danger ms-1"><?= $hidden_count ?></span><?php endif; ?>
             </a>
-            <a href="add_food.php" class="btn btn-primary shadow-sm rounded-pill px-4">
+            <a href="FoodController.php?action=add" class="btn btn-primary shadow-sm rounded-pill px-4">
                 <i class="fas fa-plus me-1"></i>Thêm món mới
             </a>
         </div>
@@ -238,9 +54,9 @@ tr.inactive-row td:first-child::after { content:''; }
     <div class="card border-0 shadow-sm mb-3 p-3" style="border-radius:12px;">
         <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
 
-            <!-- Filter danh mục (từ DB) -->
+            <!-- Filter danh mục -->
             <div class="d-flex flex-wrap gap-2 align-items-center">
-                <a href="manage_foods.php<?= $show_hidden ? '?show_hidden=1' : '' ?>"
+                <a href="FoodController.php<?= $show_hidden ? '?show_hidden=1' : '' ?>"
                    class="btn btn-sm <?= $filter=='all' ? 'btn-dark' : 'btn-outline-dark' ?> rounded-pill px-3">
                     Tất cả <span class="badge bg-secondary ms-1"><?= $total ?></span>
                 </a>
@@ -250,7 +66,7 @@ tr.inactive-row td:first-child::after { content:''; }
                     $cat_count_s->execute([$cat['name']]);
                     $cat_count = $cat_count_s->fetchColumn();
                 ?>
-                <a href="manage_foods.php?filter=<?= urlencode($cat['name']) ?><?= $show_hidden?'&show_hidden=1':'' ?>"
+                <a href="FoodController.php?filter=<?= urlencode($cat['name']) ?><?= $show_hidden?'&show_hidden=1':'' ?>"
                    class="btn btn-sm <?= $filter==$cat['name'] ? 'btn-dark' : 'btn-outline-dark' ?> rounded-pill px-3">
                     <?= htmlspecialchars($cat['name']) ?>
                     <span class="badge bg-secondary ms-1"><?= $cat_count ?></span>
@@ -267,7 +83,7 @@ tr.inactive-row td:first-child::after { content:''; }
                        value="<?= htmlspecialchars($search) ?>">
                 <button type="submit" class="btn btn-sm btn-dark px-3">Tìm</button>
                 <?php if($search): ?>
-                <a href="manage_foods.php<?= $filter!=='all'?"?filter=".urlencode($filter):'' ?>" class="btn btn-sm btn-outline-secondary">✕</a>
+                <a href="FoodController.php<?= $filter!=='all'?"?filter=".urlencode($filter):'' ?>" class="btn btn-sm btn-outline-secondary">✕</a>
                 <?php endif; ?>
             </form>
         </div>
@@ -290,7 +106,7 @@ tr.inactive-row td:first-child::after { content:''; }
                     'price_desc' => 'Giá giảm',
                 ];
                 foreach($sorts as $key => $lbl):
-                    $url = 'manage_foods.php?' . http_build_query(array_filter([
+                    $url = 'FoodController.php?' . http_build_query(array_filter([
                         'filter' => $filter !== 'all' ? $filter : null,
                         'q'      => $search ?: null,
                         'sort'   => $key,
@@ -311,7 +127,7 @@ tr.inactive-row td:first-child::after { content:''; }
         <div class="text-center py-5 text-muted">
             <i class="fas fa-utensils fa-3x mb-3 opacity-25"></i>
             <p class="mb-0">Không tìm thấy món ăn nào<?= $search ? " khớp với \"" . htmlspecialchars($search) . "\"" : '' ?>.</p>
-            <?php if($search): ?><a href="manage_foods.php" class="btn btn-sm btn-outline-dark mt-2">Xem tất cả</a><?php endif; ?>
+            <?php if($search): ?><a href="FoodController.php" class="btn btn-sm btn-outline-dark mt-2">Xem tất cả</a><?php endif; ?>
         </div>
         <?php else: ?>
         <table class="table table-hover align-middle mb-0">
@@ -340,9 +156,9 @@ tr.inactive-row td:first-child::after { content:''; }
 
                     <!-- Ảnh -->
                     <td class="ps-4">
-                        <img src="../public/assets/img/menu/<?= htmlspecialchars($row['image']) ?>"
+                        <img src="../../public/assets/img/menu/<?= htmlspecialchars($row['image']) ?>"
                              class="food-img"
-                             onerror="this.src='../public/assets/img/menu/default.jpg'"
+                             onerror="this.src='../../public/assets/img/menu/default.jpg'"
                              alt="<?= htmlspecialchars($row['name']) ?>">
                     </td>
 
@@ -405,7 +221,6 @@ tr.inactive-row td:first-child::after { content:''; }
                     <!-- Thao tác -->
                     <td class="text-center pe-3">
                         <div class="d-flex gap-1 justify-content-center flex-wrap">
-                            <!-- Định mức -->
                             <button title="Thiết lập định mức"
                                     class="btn btn-sm btn-outline-warning btn-add-recipe"
                                     data-id="<?= $fid ?>"
@@ -413,22 +228,19 @@ tr.inactive-row td:first-child::after { content:''; }
                                 <i class="fas fa-balance-scale"></i>
                             </button>
 
-                            <!-- Sửa -->
-                            <a href="edit_food.php?id=<?= $fid ?>"
+                            <a href="FoodController.php?action=edit&id=<?= $fid ?>"
                                class="btn btn-sm btn-outline-primary"
                                title="Sửa món">
                                 <i class="fas fa-edit"></i>
                             </a>
 
-                            <!-- Ẩn / Hiện -->
-                            <button class="btn btn-sm <?= $is_active ? 'btn-outline-secondary' : 'btn-secondary' ?> btn-toggle-active"
+                            <button class="btn btn-sm <?= $is_active ? 'btn-outline-secondary' : 'btn-secondary' ?> btn-toggle-food"
                                     data-id="<?= $fid ?>"
                                     data-active="<?= $is_active ?>"
                                     title="<?= $is_active ? 'Ẩn món khỏi thực đơn' : 'Hiện lại món' ?>">
                                 <i class="fas <?= $is_active ? 'fa-eye-slash' : 'fa-eye' ?>"></i>
                             </button>
 
-                            <!-- Xóa -->
                             <button class="btn btn-sm btn-outline-danger btn-delete-food"
                                     data-id="<?= $fid ?>"
                                     data-name="<?= htmlspecialchars($row['name']) ?>"
@@ -474,15 +286,12 @@ tr.inactive-row td:first-child::after { content:''; }
 
 </div>
 
-<!-- ===================== MODAL ĐỊNH MỨC ===================== -->
+<!-- MODAL ĐỊNH MỨC & XÓA MÓN GIỮ NGUYÊN (Lược bớt HTML cho gọn, vẫn y như cũ) -->
 <div class="modal fade" id="modalRecipe" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg" style="border-radius:20px;">
             <div class="modal-header border-0 pt-4 px-4">
-                <h5 class="modal-title fw-bold">
-                    <i class="fas fa-balance-scale me-2 text-warning"></i>
-                    Định mức: <span id="recipe-food-name" class="text-warning"></span>
-                </h5>
+                <h5 class="modal-title fw-bold"><i class="fas fa-balance-scale me-2 text-warning"></i>Định mức: <span id="recipe-food-name" class="text-warning"></span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form id="form-save-recipe">
@@ -494,17 +303,13 @@ tr.inactive-row td:first-child::after { content:''; }
                     </button>
                 </div>
                 <div class="modal-footer border-0 pb-4 px-4">
-                    <button type="submit" class="btn btn-warning w-100 fw-bold py-2 rounded-3 text-white shadow-sm"
-                            style="background:#cda45e;border:none;">
-                        LƯU TẤT CẢ ĐỊNH MỨC
-                    </button>
+                    <button type="submit" class="btn btn-warning w-100 fw-bold py-2 rounded-3 text-white shadow-sm" style="background:#cda45e;border:none;">LƯU TẤT CẢ ĐỊNH MỨC</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- ===================== MODAL XÁC NHẬN XÓA ===================== -->
 <div class="modal fade" id="modalConfirmDelete" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content border-0 shadow-lg" style="border-radius:16px;">
@@ -516,8 +321,7 @@ tr.inactive-row td:first-child::after { content:''; }
                 <p class="mb-1">Xóa món ăn:</p>
                 <p class="fw-bold" id="confirm-food-name"></p>
                 <div id="combo-warning" class="alert alert-warning small py-2 d-none">
-                    <i class="fas fa-exclamation-triangle me-1"></i>
-                    Món này đang nằm trong <strong>Combo</strong>. Xóa sẽ ảnh hưởng đến các combo liên quan!
+                    <i class="fas fa-exclamation-triangle me-1"></i>Món này đang nằm trong <strong>Combo</strong>.
                 </div>
                 <small class="text-muted">Hành động này không thể hoàn tác.</small>
             </div>
@@ -529,64 +333,46 @@ tr.inactive-row td:first-child::after { content:''; }
     </div>
 </div>
 
-<!-- Scripts -->
 <script>
 window.allIngredients = <?= json_encode($ingredients) ?>;
 window.allUnits       = <?= json_encode($all_units) ?>;
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../public/assets/admin/js/admin.js"></script>
+<script src="../../public/assets/admin/js/admin.js"></script>
 
 <script>
 $(function () {
-
-    // ---- Xóa món — dùng modal xác nhận thay vì confirm() ----
     $(document).on('click', '.btn-delete-food', function () {
-        const id    = $(this).data('id');
-        const name  = $(this).data('name');
+        const id = $(this).data('id');
+        const name = $(this).data('name');
         const combo = parseInt($(this).data('combo'));
-
         $('#confirm-food-name').text(name);
         $('#combo-warning').toggleClass('d-none', combo === 0);
-        $('#confirm-delete-link').attr('href', 'manage_foods.php?delete_id=' + id
+        $('#confirm-delete-link').attr('href', 'FoodController.php?action=delete&id=' + id
             + '<?= $filter !== "all" ? "&filter=" . urlencode($filter) : "" ?>'
             + '<?= $search ? "&q=" . urlencode($search) : "" ?>'
             + '<?= $show_hidden ? "&show_hidden=1" : "" ?>');
         new bootstrap.Modal(document.getElementById('modalConfirmDelete')).show();
     });
 
-    // ---- Toggle Ẩn / Hiện món ----
-    $(document).on('click', '.btn-toggle-active', function () {
-        const btn  = $(this);
-        const id   = btn.data('id');
-        const row  = btn.closest('tr');
-
-        $.post('manage_foods.php', { toggle_active: 1, food_id: id }, function (r) {
+    $(document).on('click', '.btn-toggle-food', function () {
+        const btn = $(this);
+        const id = btn.data('id');
+        const row = btn.closest('tr');
+        $.post('FoodController.php?action=toggle', { food_id: id }, function (r) {
             if (r.status !== 'success') return;
-
             const active = r.is_active;
             btn.data('active', active);
             btn.attr('title', active ? 'Ẩn món khỏi thực đơn' : 'Hiện lại món');
-            btn.toggleClass('btn-outline-secondary', !!active)
-               .toggleClass('btn-secondary', !active);
+            btn.toggleClass('btn-outline-secondary', !!active).toggleClass('btn-secondary', !active);
             btn.find('i').toggleClass('fa-eye-slash', !!active).toggleClass('fa-eye', !active);
-
             row.toggleClass('inactive-row', !active);
-
-            // Cập nhật badge ĐÃ ẨN trong tên
             const hiddenBadge = row.find('.badge.bg-secondary');
-            if (!active) {
-                if (!hiddenBadge.length) {
-                    row.find('.fw-bold.text-dark').after('<span class="badge bg-secondary ms-1" style="font-size:9px">ĐÃ ẨN</span>');
-                }
-            } else {
-                hiddenBadge.remove();
-            }
+            if (!active) { if (!hiddenBadge.length) row.find('.fw-bold.text-dark').after('<span class="badge bg-secondary ms-1" style="font-size:9px">ĐÃ ẨN</span>'); } else { hiddenBadge.remove(); }
         }, 'json');
     });
 
-    // ---- Auto ẩn alert success sau 3s ----
     setTimeout(() => $('.alert-success').fadeOut(400), 3000);
 });
 </script>
