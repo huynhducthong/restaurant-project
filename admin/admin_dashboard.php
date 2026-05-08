@@ -47,6 +47,8 @@ $status_data    = [0, 0, 0];
 $recent_bookings = [];
 $low_stock_count = 0;
 $expiry_warn_count = 0;
+$trend_pct = 0;
+$trend_up  = true;
 
 try {
     $total_foods = $db->query("SELECT COUNT(*) FROM foods")->fetchColumn() ?: 0;
@@ -92,6 +94,25 @@ try {
            AND expiry_date <= DATE_ADD(CURDATE(), INTERVAL 7 DAY)
            AND expiry_date >= CURDATE()"
     )->fetchColumn();
+
+    // Tính % tăng/giảm so với tháng trước (cho badge trend)
+    $cur_m  = (int)date('m');
+    $cur_y  = (int)date('Y');
+    $prev_m = $cur_m === 1 ? 12 : $cur_m - 1;
+    $prev_y = $cur_m === 1 ? $cur_y - 1 : $cur_y;
+
+    $stmt_prev = $db->prepare("SELECT IFNULL(SUM(total_price),0) FROM orders WHERE MONTH(created_at)=? AND YEAR(created_at)=?");
+    $stmt_prev->execute([$prev_m, $prev_y]);
+    $prev_month_revenue = (float)$stmt_prev->fetchColumn();
+
+    $stmt_this = $db->prepare("SELECT IFNULL(SUM(total_price),0) FROM orders WHERE MONTH(created_at)=? AND YEAR(created_at)=?");
+    $stmt_this->execute([$cur_m, $cur_y]);
+    $this_month_rev = (float)$stmt_this->fetchColumn();
+
+    if ($prev_month_revenue > 0) {
+        $trend_pct = round(abs($this_month_rev - $prev_month_revenue) / $prev_month_revenue * 100, 1);
+        $trend_up  = $this_month_rev >= $prev_month_revenue;
+    }
 
 } catch (Exception $e) {
 }

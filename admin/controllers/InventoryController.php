@@ -131,7 +131,8 @@ if (isset($_POST['action'])) {
 
             $price = (float)$_POST['import_price'];
             $s_id = !empty($_POST['supplier_id']) ? (int)$_POST['supplier_id'] : null;
-            $main_warehouse_id = 1; // Mặc định vào Kho Tổng
+            // Đọc kho từ form (mặc định Kho Tổng = 1 nếu không chọn)
+            $main_warehouse_id = !empty($_POST['warehouse_id']) ? (int)$_POST['warehouse_id'] : 1;
 
             // Lấy tổng tồn kho ở mọi kho để tính giá BQGQ
             $stmt_old = $db->prepare("SELECT IFNULL(SUM(quantity), 0) as total_stock FROM inventory_stocks WHERE ingredient_id = ?");
