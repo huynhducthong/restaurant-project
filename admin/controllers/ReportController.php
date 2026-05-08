@@ -98,11 +98,12 @@ if ($action === 'stats') {
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <h3 class="fw-bold m-0"><i class="fas fa-chart-line me-2 text-primary"></i>Báo cáo & Thống kê Kho</h3>
         <div class="d-flex gap-2">
-            <a href="ReportController.php?action=stats" class="btn btn-sm btn-primary fw-bold px-3"><i class="fas fa-chart-bar me-1"></i>Thống kê</a>
-            <a href="ReportController.php?action=low_stock" class="btn btn-sm btn-outline-danger px-3">
+            <a href="ReportController.php?action=stats" class="btn btn-sm <?= $action==='stats'?'btn-primary fw-bold':'btn-outline-secondary' ?> px-3"><i class="fas fa-chart-bar me-1"></i>Thống kê</a>
+            <a href="ReportController.php?action=low_stock" class="btn btn-sm <?= $action==='low_stock'?'btn-danger fw-bold':'btn-outline-danger' ?> px-3">
                 <i class="fas fa-exclamation-triangle me-1"></i>Tồn kho thấp
                 <?php if ($low_stock_count > 0): ?><span class="badge bg-danger ms-1"><?= $low_stock_count ?></span><?php endif; ?>
             </a>
+            <a href="ReportController.php?action=food_cost" class="btn btn-sm <?= $action==='food_cost'?'btn-warning fw-bold text-dark':'btn-outline-warning' ?> px-3"><i class="fas fa-dollar-sign me-1"></i>Giá vốn món ăn</a>
         </div>
     </div>
 
@@ -269,6 +270,89 @@ if ($action === 'low_stock') {
 <?php
     exit;
 } // end action=low_stock
+
+// ============================================================
+// ACTION: GIÁ VỐN MÓN ĂN (tích hợp từ ReportCostController)
+// ============================================================
+if ($action === 'food_cost') {
+    $food_costs = $db->query("
+        SELECT
+            f.id, f.name as food_name, f.price as selling_price, f.image,
+            COALESCE(SUM(
+                (CASE
+                    WHEN LOWER(TRIM(r.unit)) = 'g'  AND LOWER(TRIM(i.unit_name)) = 'kg' THEN r.quantity_required / 1000
+                    WHEN LOWER(TRIM(r.unit)) = 'ml' AND LOWER(TRIM(i.unit_name)) = 'l'  THEN r.quantity_required / 1000
+                    ELSE r.quantity_required
+                END) * i.cost_price
+            ), 0) as real_cost,
+            COUNT(r.ingredient_id) as ingredient_count
+        FROM foods f
+        LEFT JOIN food_recipes r ON f.id = r.food_id
+        LEFT JOIN inventory i ON r.ingredient_id = i.id
+        WHERE f.is_active = 1
+        GROUP BY f.id
+        ORDER BY (f.price - COALESCE(SUM(
+            (CASE WHEN LOWER(TRIM(r.unit))='g' AND LOWER(TRIM(i.unit_name))='kg' THEN r.quantity_required/1000
+                  WHEN LOWER(TRIM(r.unit))='ml' AND LOWER(TRIM(i.unit_name))='l' THEN r.quantity_required/1000
+                  ELSE r.quantity_required END)*i.cost_price
+        ),0)) ASC
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
+    include '../../public/admin_layout_header.php';
+?>
+<link rel="stylesheet" href="../../public/assets/admin/css/admin-style.css">
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h3 class="fw-bold m-0"><i class="fas fa-dollar-sign me-2 text-warning"></i>Phân tích Giá vốn Món ăn</h3>
+        <div class="d-flex gap-2">
+            <a href="ReportController.php?action=stats" class="btn btn-sm btn-outline-secondary px-3"><i class="fas fa-arrow-left me-1"></i>Thống kê kho</a>
+            <a href="ReportController.php?action=low_stock" class="btn btn-sm btn-outline-danger px-3"><i class="fas fa-exclamation-triangle me-1"></i>Tồn kho thấp</a>
+            <button class="btn btn-sm btn-dark px-3" onclick="window.print()"><i class="fas fa-print me-1"></i>In báo cáo</button>
+        </div>
+    </div>
+    <div class="card border-0 shadow-sm">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th class="ps-4">Món ăn</th>
+                    <th>Thành phần</th>
+                    <th>Giá vốn</th>
+                    <th>Giá bán</th>
+                    <th>Lợi nhuận</th>
+                    <th>Biên lợi</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white">
+            <?php foreach ($food_costs as $fc):
+                $profit = $fc['selling_price'] - $fc['real_cost'];
+                $margin = $fc['selling_price'] > 0 ? ($profit / $fc['selling_price']) * 100 : 0;
+                $margin_class = $margin < 30 ? 'text-danger fw-bold' : ($margin < 50 ? 'text-warning fw-bold' : 'text-success fw-bold');
+                $bg_class = $margin < 30 ? 'table-danger' : '';
+            ?>
+            <tr class="<?= $bg_class ?>">
+                <td class="ps-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <img src="../../public/assets/img/menu/<?= htmlspecialchars($fc['image']) ?>"
+                             onerror="this.src=''"
+                             style="width:38px;height:38px;object-fit:cover;border-radius:8px;">
+                        <strong><?= htmlspecialchars($fc['food_name']) ?></strong>
+                    </div>
+                </td>
+                <td><span class="badge bg-secondary"><?= $fc['ingredient_count'] ?> NL</span></td>
+                <td class="text-danger fw-bold"><?= number_format($fc['real_cost']) ?> đ</td>
+                <td class="text-primary fw-bold"><?= number_format($fc['selling_price']) ?> đ</td>
+                <td class="fw-bold"><?= number_format($profit) ?> đ</td>
+                <td class="<?= $margin_class ?>"><?= round($margin, 1) ?>%</td>
+            </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<?php
+    exit;
+} // end action=food_cost
 
 // Fallback
 header("Location: ReportController.php?action=stats"); exit;

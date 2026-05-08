@@ -342,9 +342,15 @@ if (!function_exists('isActive')) {
                             class="fas fa-chart-line"></i> Báo cáo & Thống kê</a>
                 </li>
 
+
                 <li class="<?= isActive('manage_contacts.php') ?>">
                     <a href="/restaurant-project/admin/manage_contacts.php"><i
                             class="fas fa-envelope"></i> Quản lý Liên hệ</a>
+                </li>
+
+                <li class="<?= isActive('BookController.php') ?>">
+                    <a href="/restaurant-project/admin/controllers/BookController.php"><i
+                            class="fas fa-book"></i> Quản lý Bán sách</a>
                 </li>
 
                 <!-- Admin Only -->
@@ -404,7 +410,8 @@ if (!function_exists('isActive')) {
                     'settings.php' => 'Cài Đặt Hệ Thống Chung',
                     'footer_settings.php' => 'Cấu Hình Giao Diện Footer',
                     'manage_users.php' => 'Quản Lý Nhân Sự',
-                    'manage_contacts.php' => 'Quản Lý Liên Hệ'
+                    'manage_contacts.php' => 'Quản Lý Liên Hệ',
+                    'BookController.php'       => 'Quản Lý Bán Sách',
                 ];
                 $current_page = basename($_SERVER['PHP_SELF']);
                 echo $page_titles[$current_page] ?? 'Khu Vực Quản Trị';

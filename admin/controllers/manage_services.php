@@ -1,5 +1,11 @@
 <?php
 // File: admin/controllers/manage_services.php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: /restaurant-project/login.php');
+    exit;
+}
+$current_user = $_SESSION['username'] ?? 'Admin';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../config/inventory_helper.php';
 
@@ -104,17 +110,44 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 
     // B. XÓA
     elseif ($action == 'delete') {
-        // Cần giải phóng bàn và xóa details trước để tránh lỗi khóa ngoại
-        $stmt_chk = $db->prepare("SELECT table_id, status FROM service_bookings WHERE id = ?");
-        $stmt_chk->execute([$id]);
-        $b = $stmt_chk->fetch();
-        if ($b) {
-            // Bàn bị khóa ngay từ lúc Pending, nên cứ có table_id là giải phóng
-            if ($b['table_id']) {
-                $db->prepare("UPDATE restaurant_tables SET is_available = 1 WHERE id = ?")->execute([$b['table_id']]);
+        $db->beginTransaction();
+        try {
+            $stmt_chk = $db->prepare("SELECT table_id, status FROM service_bookings WHERE id = ?");
+            $stmt_chk->execute([$id]);
+            $b = $stmt_chk->fetch();
+            if ($b) {
+                // Nếu đơn đã Confirmed → hoàn kho Bếp trước khi xóa
+                if ($b['status'] === 'Confirmed') {
+                    $kitchen_warehouse_id = 2;
+                    $stmt_items = $db->prepare("SELECT menu_id, quantity FROM booking_details WHERE booking_id = ?");
+                    $stmt_items->execute([$id]);
+                    $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
+                    foreach ($items as $item) {
+                        $stmt_recipe = $db->prepare("
+                            SELECT r.ingredient_id, r.quantity_required, r.unit as r_unit, i.unit_name as i_unit
+                            FROM food_recipes r JOIN inventory i ON r.ingredient_id = i.id
+                            WHERE r.food_id = ?
+                        ");
+                        $stmt_recipe->execute([$item['menu_id']]);
+                        foreach ($stmt_recipe->fetchAll(PDO::FETCH_ASSOC) as $rcp) {
+                            $qty_back = convert_to_base_unit((float)$rcp['quantity_required'], strtolower(trim($rcp['r_unit'])), strtolower(trim($rcp['i_unit']))) * $item['quantity'];
+                            $db->prepare("UPDATE inventory_stocks SET quantity = quantity + ? WHERE ingredient_id = ? AND warehouse_id = ?")
+                               ->execute([$qty_back, $rcp['ingredient_id'], $kitchen_warehouse_id]);
+                            $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, 'import', ?, ?)")
+                               ->execute([$rcp['ingredient_id'], $kitchen_warehouse_id, $qty_back, ($current_user ?? 'Admin') . ' (Hoàn kho #' . $id . ')']);
+                        }
+                    }
+                }
+                // Giải phóng bàn nếu có
+                if ($b['table_id']) {
+                    $db->prepare("UPDATE restaurant_tables SET is_available = 1 WHERE id = ?")->execute([$b['table_id']]);
+                }
+                $db->prepare("DELETE FROM booking_details WHERE booking_id = ?")->execute([$id]);
+                $db->prepare("DELETE FROM service_bookings WHERE id = ?")->execute([$id]);
             }
-            $db->prepare("DELETE FROM booking_details WHERE booking_id = ?")->execute([$id]);
-            $db->prepare("DELETE FROM service_bookings WHERE id = ?")->execute([$id]);
+            $db->commit();
+        } catch (Exception $e) {
+            $db->rollBack();
         }
         if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             header('Content-Type: application/json');

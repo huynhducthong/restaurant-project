@@ -28,8 +28,8 @@ if (isset($_POST['create_po'])) {
     $db->beginTransaction();
     try {
         // Lưu thông tin chung của Phiếu đặt hàng
-        $stmt = $db->prepare("INSERT INTO purchase_orders (po_code, supplier_id, total_amount, status) VALUES (?, ?, ?, 'pending')");
-        $stmt->execute([$po_code, $supplier_id, $total_amount]);
+        $stmt = $db->prepare("INSERT INTO purchase_orders (po_code, supplier_id, total_amount, status, created_by) VALUES (?, ?, ?, 'pending', ?)");
+        $stmt->execute([$po_code, $supplier_id, $total_amount, $current_user]);
         $po_id = $db->lastInsertId();
 
         // DÒNG ĐÃ ĐƯỢC SỬA ĐÚNG TÊN CỘT:

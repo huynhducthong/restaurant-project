@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once __DIR__ . '/config/database.php';
-require_once __DIR__ . '/app/models/Booking.php';
+
 
 // 2. Khởi tạo kết nối
 $database = new Database();
