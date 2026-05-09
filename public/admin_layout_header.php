@@ -372,15 +372,18 @@ if (!function_exists('isActive')) {
                     </li>
 
                     <li class="<?= isActive('manage_users.php') ?>">
-                        <a href="/restaurant-project/admin/manage_users.php"><i class="fas fa-users-cog"></i> Quản lý Nhân sự</a>
+                        <a href="/restaurant-project/admin/manage_users.php"><i class="fas fa-users-cog"></i> Quản lý Nhân
+                            sự</a>
                     </li>
 
                     <li class="<?= isActive('manage_shifts.php') ?>">
-                        <a href="/restaurant-project/admin/manage_shifts.php"><i class="fas fa-calendar-check"></i> Lịch Ca Làm Việc</a>
+                        <a href="/restaurant-project/admin/manage_shifts.php"><i class="fas fa-calendar-check"></i> Lịch Ca
+                            Làm Việc</a>
                     </li>
 
                     <li class="<?= isActive('manage_payroll.php') ?>">
-                        <a href="/restaurant-project/admin/manage_payroll.php"><i class="fas fa-file-invoice-dollar"></i> Quản Lý Bảng Lương</a>
+                        <a href="/restaurant-project/admin/manage_payroll.php"><i class="fas fa-file-invoice-dollar"></i>
+                            Quản Lý Bảng Lương</a>
                     </li>
                 <?php endif; ?>
 

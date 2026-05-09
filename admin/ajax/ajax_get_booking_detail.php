@@ -1,6 +1,10 @@
-<?php
+<<<<<<< HEAD
+﻿<?php
 session_start();
 if (!isset($_SESSION['user_id'])) { http_response_code(403); echo json_encode(['error'=>'Unauthorized']); exit; }
+=======
+<?php
+>>>>>>> 01a15dc (feat: Add full HR Management system (Employees, Shifts, Payroll))
 // admin/ajax/ajax_get_booking_detail.php
 require_once __DIR__ . '/../../config/database.php';
 header('Content-Type: application/json');
@@ -14,7 +18,11 @@ $id = (int)$_GET['id'];
 $db = (new Database())->getConnection();
 
 try {
+<<<<<<< HEAD
+    // 1. Láº¥y thÃ´ng tin cÆ¡ báº£n cá»§a Ä‘Æ¡n Ä‘áº·t bÃ n
+=======
     // 1. Lấy thông tin cơ bản của đơn đặt bàn
+>>>>>>> 01a15dc (feat: Add full HR Management system (Employees, Shifts, Payroll))
     $stmt = $db->prepare("SELECT * FROM service_bookings WHERE id = ?");
     $stmt->execute([$id]);
     $booking = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -24,7 +32,11 @@ try {
         exit;
     }
 
+<<<<<<< HEAD
+    // 2. Láº¥y danh sÃ¡ch mÃ³n Äƒn Ä‘Ã£ Ä‘áº·t
+=======
     // 2. Lấy danh sách món ăn đã đặt
+>>>>>>> 01a15dc (feat: Add full HR Management system (Employees, Shifts, Payroll))
     $stmt_items = $db->prepare("
         SELECT bd.*, f.name as food_name, f.unit_name as food_unit, f.price
         FROM booking_details bd
@@ -34,7 +46,11 @@ try {
     $stmt_items->execute([$id]);
     $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
 
+<<<<<<< HEAD
+    // 3. Vá»›i má»—i mÃ³n Äƒn, láº¥y Ä‘á»‹nh má»©c nguyÃªn liá»‡u (Recipe)
+=======
     // 3. Với mỗi món ăn, lấy định mức nguyên liệu (Recipe)
+>>>>>>> 01a15dc (feat: Add full HR Management system (Employees, Shifts, Payroll))
     foreach ($items as &$item) {
         $stmt_recipe = $db->prepare("
             SELECT r.*, i.item_name, i.unit_name as inventory_unit
@@ -53,3 +69,7 @@ try {
 } catch (Exception $e) {
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }
+<<<<<<< HEAD
+
+=======
+>>>>>>> 01a15dc (feat: Add full HR Management system (Employees, Shifts, Payroll))
