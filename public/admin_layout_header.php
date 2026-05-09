@@ -393,6 +393,13 @@ $page_title = $page_titles[$current_page] ?? 'Khu Vực Quản Trị';
                 </a>
             </li>
 
+            <li class="<?= isActive('manage_about.php') ?>">
+                <a href="/restaurant-project/admin/manage_about.php">
+                    <i class="fas fa-video"></i>
+                    Quản lý tin tức
+                </a>
+            </li>
+            
             <li class="<?= isActive('manage_chefs.php') ?>">
                 <a href="/restaurant-project/admin/manage_chefs.php">
                     <i class="fas fa-user-chef"></i>
