@@ -81,12 +81,24 @@ $links = $db->query("SELECT * FROM footer_links ORDER BY priority ASC")->fetchAl
                 <!-- Mạng xã hội -->
                 <div class="card p-4">
                     <h5 class="section-title mb-3"><i class="fas fa-share-alt"></i> Mạng xã hội</h5>
-                    <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" name="show_social" value="1" <?= ($ft['show_social'] ?? '0') == '1' ? 'checked' : '' ?>><label>Hiển thị</label></div>
+                    <div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" name="show_social" value="1" <?= ($ft['show_social'] ?? '0') == '1' ? 'checked' : '' ?>><label class="form-check-label">Hiển thị liên kết mạng xã hội</label></div>
                     <div class="row">
-                        <div class="col-md-3"><input type="url" name="facebook_url" class="form-control" placeholder="Facebook" value="<?= htmlspecialchars($ft['facebook_url'] ?? '') ?>"></div>
-                        <div class="col-md-3"><input type="url" name="instagram_url" class="form-control" placeholder="Instagram" value="<?= htmlspecialchars($ft['instagram_url'] ?? '') ?>"></div>
-                        <div class="col-md-3"><input type="url" name="tiktok_url" class="form-control" placeholder="TikTok" value="<?= htmlspecialchars($ft['tiktok_url'] ?? '') ?>"></div>
-                        <div class="col-md-3"><input type="url" name="zalo_url" class="form-control" placeholder="Zalo" value="<?= htmlspecialchars($ft['zalo_url'] ?? '') ?>"></div>
+                        <div class="col-md-6 mb-3">
+                            <label class="small text-muted"><i class="fab fa-facebook text-primary"></i> Facebook</label>
+                            <input type="url" name="facebook_url" class="form-control" placeholder="https://facebook.com/..." value="<?= htmlspecialchars($ft['facebook_url'] ?? '') ?>">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="small text-muted"><i class="fab fa-instagram text-danger"></i> Instagram</label>
+                            <input type="url" name="instagram_url" class="form-control" placeholder="https://instagram.com/..." value="<?= htmlspecialchars($ft['instagram_url'] ?? '') ?>">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="small text-muted"><i class="fab fa-tiktok text-dark"></i> TikTok</label>
+                            <input type="url" name="tiktok_url" class="form-control" placeholder="https://tiktok.com/..." value="<?= htmlspecialchars($ft['tiktok_url'] ?? '') ?>">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="small text-muted"><i class="fas fa-comment-dots text-info"></i> Zalo</label>
+                            <input type="url" name="zalo_url" class="form-control" placeholder="https://zalo.me/..." value="<?= htmlspecialchars($ft['zalo_url'] ?? '') ?>">
+                        </div>
                     </div>
                 </div>
 

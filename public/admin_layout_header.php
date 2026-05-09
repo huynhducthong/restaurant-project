@@ -19,9 +19,11 @@ if (!$user_id || !in_array($user_role, $allowed_roles)) {
 $is_admin = ($user_role === 'admin' || $user_role == 1);
 
 // Hàm hỗ trợ active menu hiện tại
-function isActive($path)
-{
-    return basename($_SERVER['PHP_SELF']) === $path ? 'active' : '';
+if (!function_exists('isActive')) {
+    function isActive($path)
+    {
+        return basename($_SERVER['PHP_SELF']) === $path ? 'active' : '';
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -341,8 +343,8 @@ function isActive($path)
                 </li>
 
                 <li class="<?= isActive('manage_contacts.php') ?>">
-                    <a href="/restaurant-project/admin/manage_contacts.php"><i
-                            class="fas fa-envelope"></i> Quản lý Liên hệ</a>
+                    <a href="/restaurant-project/admin/manage_contacts.php"><i class="fas fa-envelope"></i> Quản lý Liên
+                        hệ</a>
                 </li>
 
                 <!-- Admin Only -->
@@ -370,8 +372,15 @@ function isActive($path)
                     </li>
 
                     <li class="<?= isActive('manage_users.php') ?>">
-                        <a href="/restaurant-project/admin/manage_users.php"><i class="fas fa-users-cog"></i> Quản lý Nhân
-                            sự</a>
+                        <a href="/restaurant-project/admin/manage_users.php"><i class="fas fa-users-cog"></i> Quản lý Nhân sự</a>
+                    </li>
+
+                    <li class="<?= isActive('manage_shifts.php') ?>">
+                        <a href="/restaurant-project/admin/manage_shifts.php"><i class="fas fa-calendar-check"></i> Lịch Ca Làm Việc</a>
+                    </li>
+
+                    <li class="<?= isActive('manage_payroll.php') ?>">
+                        <a href="/restaurant-project/admin/manage_payroll.php"><i class="fas fa-file-invoice-dollar"></i> Quản Lý Bảng Lương</a>
                     </li>
                 <?php endif; ?>
 
@@ -403,6 +412,8 @@ function isActive($path)
                     'settings.php' => 'Cài Đặt Hệ Thống Chung',
                     'footer_settings.php' => 'Cấu Hình Giao Diện Footer',
                     'manage_users.php' => 'Quản Lý Nhân Sự',
+                    'manage_shifts.php' => 'Quản Lý Ca Làm Việc',
+                    'manage_payroll.php' => 'Bảng Lương Nhân Viên',
                     'manage_contacts.php' => 'Quản Lý Liên Hệ'
                 ];
                 $current_page = basename($_SERVER['PHP_SELF']);
