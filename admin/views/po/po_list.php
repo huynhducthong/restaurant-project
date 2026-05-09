@@ -130,20 +130,25 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
     </div>
 </div>
 
-<!-- ================= CÁC MODAL ================= -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
 <div class="modal fade" id="modalCreatePO" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-centered">
-        <form class="modal-content border-0 shadow-lg" method="POST" action="POController.php">
+        <form class="modal-content border-0 shadow-lg" method="POST" action="POController.php" style="border-radius:20px;overflow:hidden;">
             <input type="hidden" name="create_po" value="1">
-            <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title fw-bold">TẠO PHIẾU ĐẶT HÀNG MỚI</h5>
+            <div class="modal-header bg-dark text-white py-3 px-4">
+                <h5 class="modal-title mb-0" style="font-family:'Playfair Display',serif;">
+                    <i class="fas fa-file-invoice-dollar me-2 text-warning"></i> TẠO PHIẾU ĐẶT HÀNG MỚI
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body p-4 bg-light">
-                <div class="row mb-3">
+            <div class="modal-body p-4 bg-white">
+                <p class="fw-bold small text-uppercase text-muted mb-3 border-bottom pb-2">
+                    <i class="fas fa-info-circle me-1 text-warning"></i>Thông tin nhà cung cấp
+                </p>
+                <div class="row mb-4">
                     <div class="col-md-6">
-                        <label class="fw-bold mb-1 small text-muted">NHÀ CUNG CẤP <span class="text-danger">*</span></label>
-                        <select name="supplier_id" class="form-select shadow-sm" required>
+                        <select name="supplier_id" class="form-select bg-light border-0 py-2 shadow-sm" required>
                             <option value="">-- Chọn Nhà Cung Cấp --</option>
                             <?php foreach($suppliers as $s): ?>
                                 <option value="<?= $s['id'] ?>"><?= $s['name'] ?></option>
@@ -152,45 +157,52 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
                     </div>
                 </div>
 
-                <div class="card shadow-sm border-0 overflow-hidden">
-                    <table class="table table-bordered mb-0" id="poTable">
-                        <thead class="table-dark">
+                <p class="fw-bold small text-uppercase text-muted mb-3 border-bottom pb-2">
+                    <i class="fas fa-box-open me-1 text-warning"></i>Chi tiết hàng hóa
+                </p>
+                <div class="card shadow-sm border-0 overflow-hidden mb-3">
+                    <table class="table table-bordered mb-0 align-middle" id="poTable">
+                        <thead class="table-light text-muted small text-uppercase">
                             <tr>
                                 <th>Nguyên Liệu</th>
                                 <th width="150">Số Lượng</th>
-                                <th width="200">Đơn Giá (đ)</th>
-                                <th width="200">Thành Tiền (đ)</th>
-                                <th width="50"></th>
+                                <th width="200">Đơn Giá (VNĐ)</th>
+                                <th width="200">Thành Tiền (VNĐ)</th>
+                                <th width="50" class="text-center">Xóa</th>
                             </tr>
                         </thead>
                         <tbody id="poBody">
                             <tr>
                                 <td>
-                                    <select name="item_id[]" class="form-select item-select" required>
+                                    <select name="item_id[]" class="form-select border-0 bg-light item-select" required>
                                         <option value="">- Chọn NL -</option>
                                         <?php foreach($ingredients as $i): ?>
                                             <option value="<?= $i['id'] ?>" data-price="<?= $i['cost_price'] ?>"><?= $i['item_name'] ?> (<?= $i['unit_name'] ?>)</option>
                                         <?php endforeach; ?>
                                     </select>
                                 </td>
-                                <td><input type="number" name="qty[]" class="form-control qty-input" step="0.01" min="0.01" required></td>
-                                <td><input type="number" name="price[]" class="form-control price-input" required></td>
-                                <td><input type="text" class="form-control row-total" readonly value="0"></td>
-                                <td><button type="button" class="btn btn-outline-danger btn-sm btn-remove border-0"><i class="fas fa-trash"></i></button></td>
+                                <td><input type="number" name="qty[]" class="form-control border-0 bg-light qty-input" step="0.01" min="0.01" placeholder="0" required></td>
+                                <td><input type="text" name="price[]" class="form-control border-0 bg-light price-input money-input" placeholder="0" required></td>
+                                <td><input type="text" class="form-control border-0 bg-light text-danger fw-bold row-total" readonly value="0"></td>
+                                <td class="text-center"><button type="button" class="btn btn-sm btn-outline-danger btn-remove border-0"><i class="fas fa-times"></i></button></td>
                             </tr>
                         </tbody>
                         <tfoot>
-                            <tr class="bg-white">
-                                <td colspan="3" class="text-end fw-bold align-middle">TỔNG CỘNG:</td>
-                                <td colspan="2"><input type="text" id="poGrandTotal" class="form-control fw-bold text-danger border-0 fs-5" readonly value="0"></td>
+                            <tr class="bg-light">
+                                <td colspan="3" class="text-end fw-bold align-middle text-muted">TỔNG CỘNG PHIẾU ĐẶT:</td>
+                                <td colspan="2"><input type="text" id="poGrandTotal" class="form-control fw-bold text-danger border-0 fs-5 bg-transparent" readonly value="0"></td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
-                <button type="button" class="btn btn-outline-primary btn-sm mt-3 fw-bold" id="btnAddRow"><i class="fas fa-plus me-1"></i>Thêm dòng hàng</button>
+                <button type="button" class="btn btn-sm btn-outline-warning rounded-pill px-3 fw-bold" id="btnAddRow">
+                    <i class="fas fa-plus me-1"></i>Thêm dòng hàng
+                </button>
             </div>
-            <div class="modal-footer border-0 bg-light">
-                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold fs-5 shadow">HOÀN TẤT & LƯU PHIẾU</button>
+            <div class="modal-footer border-0 bg-white p-4 pt-0">
+                <button type="submit" class="btn btn-warning w-100 py-3 rounded-pill fw-bold text-white shadow-sm" style="background:#cda45e;border:none;">
+                    <i class="fas fa-check-circle me-2"></i> HOÀN TẤT & LƯU PHIẾU ĐẶT HÀNG
+                </button>
             </div>
         </form>
     </div>
@@ -198,19 +210,19 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
 
 <div class="modal fade" id="modalViewPO" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-white border-bottom py-3">
-                <h5 class="modal-title fw-bold text-primary">CHI TIẾT PHIẾU: <span id="view-po-code"></span></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-content border-0 shadow-lg" style="border-radius:20px;overflow:hidden;">
+            <div class="modal-header bg-dark text-white py-3 px-4">
+                <h5 class="modal-title fw-bold" style="font-family:'Playfair Display',serif;"><i class="fas fa-info-circle me-2 text-warning"></i>CHI TIẾT PHIẾU: <span id="view-po-code" class="text-warning"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-0">
-                <table class="table table-hover mb-0">
-                    <thead>
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light text-muted small text-uppercase">
                         <tr>
-                            <th>Nguyên Liệu</th>
+                            <th class="ps-4">Nguyên Liệu</th>
                             <th class="text-center">Số lượng</th>
                             <th class="text-end">Đơn giá</th>
-                            <th class="text-end">Thành tiền</th>
+                            <th class="text-end pe-4">Thành tiền</th>
                         </tr>
                     </thead>
                     <tbody id="view-po-body"></tbody>
@@ -224,36 +236,69 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 $(document).ready(function() {
+    // Định dạng tiền tệ khi focus/blur để tránh lỗi gõ tiếng Việt
+    $(document).on('focus', '.money-input', function() {
+        let val = $(this).val().replace(/,/g, '');
+        $(this).attr('type', 'number');
+        $(this).val(val);
+    });
+
+    $(document).on('blur', '.money-input', function() {
+        let val = parseFloat($(this).val()) || 0;
+        $(this).attr('type', 'text');
+        $(this).val(val.toLocaleString('en-US'));
+        calcTotal(); // Cập nhật tổng tiền khi blur
+    });
+
     $(document).on('change', '.item-select', function() {
         let price = $(this).find(':selected').data('price') || 0;
-        $(this).closest('tr').find('.price-input').val(price);
+        let priceInput = $(this).closest('tr').find('.price-input');
+        priceInput.attr('type', 'text');
+        priceInput.val(parseFloat(price).toLocaleString('en-US'));
         calcTotal();
     });
-    $(document).on('input', '.qty-input, .price-input', function() { calcTotal(); });
+
+    $(document).on('input', '.qty-input', function() { calcTotal(); });
+
     $('#btnAddRow').click(function() {
         let newRow = $('#poBody tr:first').clone();
         newRow.find('input').val('');
+        newRow.find('input.price-input').attr('type', 'text').val('');
         newRow.find('.row-total').val('0');
         $('#poBody').append(newRow);
     });
+
     $(document).on('click', '.btn-remove', function() {
         if ($('#poBody tr').length > 1) { $(this).closest('tr').remove(); calcTotal(); }
     });
+
     function calcTotal() {
         let grandTotal = 0;
         $('#poBody tr').each(function() {
             let qty = parseFloat($(this).find('.qty-input').val()) || 0;
-            let price = parseFloat($(this).find('.price-input').val()) || 0;
+            // Parse tiền tệ có dấu phẩy
+            let priceStr = $(this).find('.price-input').val() || '0';
+            let price = parseFloat(priceStr.replace(/,/g, '')) || 0;
             let total = qty * price;
+            
             $(this).find('.row-total').val(total.toLocaleString('en-US'));
             grandTotal += total;
         });
         $('#poGrandTotal').val(grandTotal.toLocaleString('en-US') + ' đ');
     }
+
+    // Submit form: Xóa dấu phẩy trước khi gửi
+    $('form[action="POController.php"]').on('submit', function() {
+        $(this).find('.money-input').each(function() {
+            let val = $(this).val().replace(/,/g, '');
+            $(this).attr('type', 'number').val(val);
+        });
+    });
 });
+
 window.viewPO = function(id, code) {
     $('#view-po-code').text(code);
-    $('#view-po-body').html('<tr><td colspan="4" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>');
+    $('#view-po-body').html('<tr><td colspan="4" class="text-center py-5"><div class="spinner-border text-warning"></div></td></tr>');
     new bootstrap.Modal(document.getElementById('modalViewPO')).show();
     $.post('POController.php', { action: 'get_details', po_id: id }, function(res) {
         if(res.status === 'success') {
@@ -264,9 +309,9 @@ window.viewPO = function(id, code) {
                 let price = parseFloat(item.expected_price || item.price || 0);
                 let total = qty * price;
                 grandTotal += total;
-                html += `<tr><td><div class="fw-bold">${item.item_name}</div></td><td class="text-center"><strong>${qty}</strong> <small class="text-muted">${item.unit_name}</small></td><td class="text-end">${price.toLocaleString('en-US')} đ</td><td class="text-end fw-bold text-danger">${total.toLocaleString('en-US')} đ</td></tr>`;
+                html += `<tr><td class="ps-4"><div class="fw-bold">${item.item_name}</div></td><td class="text-center"><strong>${qty}</strong> <small class="text-muted">${item.unit_name}</small></td><td class="text-end">${price.toLocaleString('en-US')} đ</td><td class="text-end fw-bold text-danger pe-4">${total.toLocaleString('en-US')} đ</td></tr>`;
             });
-            html += `<tr class="bg-light"><td colspan="3" class="text-end fw-bold py-3">TỔNG CỘNG:</td><td class="text-end fw-bold text-danger py-3 fs-5">${grandTotal.toLocaleString('en-US')} đ</td></tr>`;
+            html += `<tr class="bg-light"><td colspan="3" class="text-end fw-bold py-3 text-muted">TỔNG CỘNG:</td><td class="text-end fw-bold text-danger py-3 fs-5 pe-4">${grandTotal.toLocaleString('en-US')} đ</td></tr>`;
             $('#view-po-body').html(html);
         }
     }, 'json');

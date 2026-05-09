@@ -270,6 +270,7 @@ include '../../public/admin_layout_header.php';
                     <h4 class="fw-bold m-0 text-uppercase">Tồn Kho Đa Vị Trí</h4>
                     <div class="d-flex gap-2">
                         <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="🔍 Tìm kiếm..." style="width:200px" oninput="filterTable()">
+                        <button class="btn btn-success fw-bold shadow-sm" onclick="exportFilteredExcel()"><i class="fas fa-file-excel me-1"></i> Xuất Excel</button>
                         <button class="btn btn-warning fw-bold shadow-sm" onclick="openInventoryModal()">+ Thêm Mới</button>
                     </div>
                 </div>
@@ -1251,6 +1252,53 @@ include '../../public/admin_layout_header.php';
         currentPage = p;
         renderPagination();
     }
+
+    // ================= XUẤT EXCEL GIỮ NGUYÊN ĐIỀU KIỆN LỌC =================
+    window.exportFilteredExcel = function() {
+        let tableHTML = '<table border="1"><thead><tr><th>Nguyên Liệu</th><th>Danh Mục</th><th>Vị Trí Tồn Kho</th><th>Tổng Tồn</th><th>HSD</th><th>Giá BQGQ</th></tr></thead><tbody>';
+        
+        // Chỉ lấy các dòng đang hiển thị (chưa bị filter giấu đi)
+        const visibleRows = document.querySelectorAll('#invBody .inv-row[data-visible="1"]');
+        if (visibleRows.length === 0) {
+            alert('Không có dữ liệu nào để xuất!');
+            return;
+        }
+
+        visibleRows.forEach(r => {
+            let name = r.querySelector('strong').innerText;
+            let cat = r.querySelector('.text-muted').innerText.split('|')[0].trim();
+            
+            // Format warehouse info
+            let wh_col = r.cells[1].innerText.replace(/\n/g, ' / ').replace('Tổng:', ' - Tổng:');
+            
+            let total = r.querySelector('.text-success.fw-bold') ? r.querySelector('.text-success.fw-bold').innerText : '';
+            let exp = r.cells[2].innerText;
+            let price = r.cells[3].innerText;
+
+            tableHTML += `<tr>
+                <td>${name}</td>
+                <td>${cat}</td>
+                <td>${wh_col}</td>
+                <td>${total}</td>
+                <td>${exp}</td>
+                <td>${price}</td>
+            </tr>`;
+        });
+        tableHTML += '</tbody></table>';
+
+        // Tạo file excel dạng XML/HTML để mở mượt mà không bị lỗi Font hay dồn cột
+        let uri = 'data:application/vnd.ms-excel;base64,';
+        let template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>TonKho</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>{table}</body></html>';
+        
+        let base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) };
+        let format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) };
+        
+        let ctx = {worksheet: 'TonKho', table: tableHTML};
+        let link = document.createElement("a");
+        link.download = "TonKho_Dakho_" + new Date().toISOString().slice(0,10) + ".xls";
+        link.href = uri + base64(format(template, ctx));
+        link.click();
+    };
 
     // ================= LOGIC TAB KIỂM KÊ =================
     $('#auditWarehouseSelect').change(function() {

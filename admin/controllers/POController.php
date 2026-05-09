@@ -62,9 +62,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'get_details') {
     try {
         // Kết hợp 2 bảng để lấy tên và đơn vị tính của nguyên liệu
         $stmt = $db->prepare("
-            SELECT d.*, i.item_name, i.unit_name 
+            SELECT d.*, 
+                   IFNULL(i.item_name, CONCAT('Nguyên liệu đã xóa (ID: ', d.ingredient_id, ')')) as item_name, 
+                   IFNULL(i.unit_name, '-') as unit_name 
             FROM purchase_order_details d
-            JOIN inventory i ON d.ingredient_id = i.id
+            LEFT JOIN inventory i ON d.ingredient_id = i.id
             WHERE d.po_id = ?
         ");
         $stmt->execute([$po_id]);
