@@ -492,12 +492,6 @@ if (!empty($logo_path)) {
                         </a>
                     </li>
 
-                    <li>
-                        <a class="<?= ($current_page == 'books.php') ? 'active' : '' ?>"
-                            href="books.php">
-                            Sách
-                        </a>
-                    </li>
 
                     <li>
                         <a class="<?= ($current_page == 'contact.php') ? 'active' : '' ?>"
