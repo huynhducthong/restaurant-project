@@ -1,5 +1,5 @@
 <?php
-// admin/controllers/check_availability.php
+// File: admin/controllers/check_availability.php
 header('Content-Type: application/json');
 require_once __DIR__ . '/../../config/database.php';
 
@@ -15,23 +15,27 @@ try {
         exit;
     }
 
-    // Lấy công thức và tồn kho hiện tại
+    // ĐỊNH VỊ KHO BẾP LÀ WAREHOUSE ID = 2
+    $kitchen_warehouse_id = 2;
+
+    // Lấy công thức và tồn kho TRONG KHO BẾP
     $stmt = $db->prepare("
-        SELECT r.quantity_required, i.item_name, i.stock_quantity, i.unit_name
+        SELECT r.quantity_required, i.item_name, i.unit_name,
+               IFNULL((SELECT quantity FROM inventory_stocks WHERE ingredient_id = i.id AND warehouse_id = ?), 0) as stock_quantity
         FROM food_recipes r
         JOIN inventory i ON r.ingredient_id = i.id
         WHERE r.food_id = ?
     ");
-    $stmt->execute([$food_id]);
+    $stmt->execute([$kitchen_warehouse_id, $food_id]);
     $recipes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $shortages = [];
     foreach ($recipes as $rcp) {
         $total_needed = $rcp['quantity_required'] * $order_qty;
         
-        // Nếu tồn kho nhỏ hơn số lượng cần dùng -> Thiếu hàng
+        // Nếu tồn kho bếp nhỏ hơn số lượng cần dùng -> Thiếu hàng
         if ($rcp['stock_quantity'] < $total_needed) {
-            $shortages[] = $rcp['item_name'] . " (Cần: " . $total_needed . " " . $rcp['unit_name'] . ", Còn: " . $rcp['stock_quantity'] . " " . $rcp['unit_name'] . ")";
+            $shortages[] = $rcp['item_name'] . " (Cần: " . $total_needed . " " . $rcp['unit_name'] . ", Bếp còn: " . $rcp['stock_quantity'] . " " . $rcp['unit_name'] . ")";
         }
     }
 
@@ -39,7 +43,7 @@ try {
         // Trả về mảng lỗi để JS hiện thông báo
         echo json_encode([
             'status' => 'error', 
-            'msg' => 'Không đủ nguyên liệu trong kho!',
+            'msg' => 'Kho Bếp không đủ nguyên liệu, hãy báo cho Bếp Trưởng!',
             'details' => $shortages
         ]);
     } else {

@@ -1,37 +1,41 @@
 <?php
-// =============================================================
-// File: admin/admin_dashboard.php
-// =============================================================
-
-session_start();
-if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login.php'); exit;
-}
-
 include '../public/admin_layout_header.php';
 require_once __DIR__ . '/../config/database.php';
 $db = (new Database())->getConnection();
 
-// ============================================================
-// FILTER — validate chặt, không ghép thẳng vào SQL
-// ============================================================
-$filter_date    = preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['date'] ?? '')
-                  ? $_GET['date'] : '';
-$filter_month   = (int)($_GET['month']   ?? 0);
-$filter_quarter = (int)($_GET['quarter'] ?? 0);
-$filter_year    = (int)($_GET['year']    ?? date('Y'));
-$year_revenue   = (int)($_GET['year_revenue'] ?? $filter_year);
-$year_booking   = (int)($_GET['year_booking'] ?? $filter_year);
+$total_foods = $total_users = $total_bookings = $selected_revenue = 0;
+$chart_revenue = array_fill(0, 12, 0);
+$status_data = [0, 0, 0];
 
-// Clamp năm hợp lệ
-$cur_year = (int)date('Y');
-foreach ([&$filter_year, &$year_revenue, &$year_booking] as &$y) {
-    if ($y < 2000 || $y > $cur_year + 1) $y = $cur_year;
+$filter_date = $_GET['date'] ?? '';
+$filter_month = (int) ($_GET['month'] ?? 0);
+$filter_quarter = (int) ($_GET['quarter'] ?? 0);
+$filter_year = (int) ($_GET['year'] ?? date('Y'));
+
+$year_revenue = (int) ($_GET['year_revenue'] ?? $filter_year);
+$year_booking = (int) ($_GET['year_booking'] ?? $filter_year);
+
+$conditions = ["YEAR(created_at) = ?"];
+$params = [$filter_year];
+if ($filter_date && preg_match('/^\d{4}-\d{2}-\d{2}$/', $filter_date)) {
+    $conditions[] = "DATE(created_at) = ?";
+    $params[] = $filter_date;
 }
 unset($y);
 
 if ($filter_month   < 0 || $filter_month   > 12) $filter_month   = 0;
 if ($filter_quarter < 0 || $filter_quarter > 4)  $filter_quarter = 0;
+
+// Xây dựng điều kiện WHERE cho query
+if ($filter_month >= 1 && $filter_month <= 12) {
+    $conditions[] = "MONTH(created_at) = ?";
+    $params[] = $filter_month;
+}
+if ($filter_quarter >= 1 && $filter_quarter <= 4) {
+    $conditions[] = "QUARTER(created_at) = ?";
+    $params[] = $filter_quarter;
+}
+$where_sql = implode(" AND ", $conditions);
 
 // ============================================================
 // KHỞI TẠO
@@ -42,93 +46,75 @@ $chart_revenue  = array_fill(0, 12, 0);
 $status_data    = [0, 0, 0];
 $recent_bookings = [];
 $low_stock_count = 0;
+$expiry_warn_count = 0;
+$trend_pct = 0;
+$trend_up  = true;
 
 try {
-    // ── Tổng quan ──
-    $total_foods    = (int)$db->query("SELECT COUNT(*) FROM foods WHERE is_active = 1")->fetchColumn();
-    $total_users    = (int)$db->query("SELECT COUNT(*) FROM users")->fetchColumn();
-    $total_bookings = (int)$db->prepare(
-        "SELECT COUNT(*) FROM bookings WHERE YEAR(date) = ?"
-    )->execute([$filter_year]) ? $db->query(
-        "SELECT COUNT(*) FROM bookings WHERE YEAR(date) = $filter_year"
-    )->fetchColumn() : 0;
-
-    // Doanh thu theo filter — dùng prepared statement
-    $rev_where = ["YEAR(created_at) = ?"];
-    $rev_params = [$filter_year];
-    if ($filter_date)    { $rev_where[] = "DATE(created_at) = ?";     $rev_params[] = $filter_date; }
-    if ($filter_month)   { $rev_where[] = "MONTH(created_at) = ?";    $rev_params[] = $filter_month; }
-    if ($filter_quarter) { $rev_where[] = "QUARTER(created_at) = ?";  $rev_params[] = $filter_quarter; }
-
-    $rev_sql = "SELECT COALESCE(SUM(total_price),0) FROM orders WHERE " . implode(' AND ', $rev_where);
-    $rev_s   = $db->prepare($rev_sql);
-    $rev_s->execute($rev_params);
-    $selected_revenue = (float)$rev_s->fetchColumn();
-
-    // Doanh thu tháng này vs tháng trước (trend)
-    $this_month = (int)date('m');
-    $this_year  = $cur_year;
-    $prev_month = $this_month === 1 ? 12 : $this_month - 1;
-    $prev_year  = $this_month === 1 ? $this_year - 1 : $this_year;
-
-    $s1 = $db->prepare("SELECT COALESCE(SUM(total_price),0) FROM orders WHERE MONTH(created_at)=? AND YEAR(created_at)=?");
-    $s1->execute([$this_month, $this_year]);
-    $this_month_rev = (float)$s1->fetchColumn();
-
-    $s2 = $db->prepare("SELECT COALESCE(SUM(total_price),0) FROM orders WHERE MONTH(created_at)=? AND YEAR(created_at)=?");
-    $s2->execute([$prev_month, $prev_year]);
-    $prev_month_revenue = (float)$s2->fetchColumn();
-
-    // ✅ FIX N+1: Chart doanh thu — 1 query GROUP BY thay vì 12 query
-    $cr_s = $db->prepare(
-        "SELECT MONTH(created_at) as m, SUM(total_price) as total
-         FROM orders WHERE YEAR(created_at) = ?
-         GROUP BY m"
-    );
-    $cr_s->execute([$year_revenue]);
-    foreach ($cr_s->fetchAll(PDO::FETCH_ASSOC) as $row) {
-        $chart_revenue[(int)$row['m'] - 1] = (int)$row['total'];
+    $total_foods = $db->query("SELECT COUNT(*) FROM foods")->fetchColumn() ?: 0;
+    $total_users = $db->query("SELECT COUNT(*) FROM users")->fetchColumn() ?: 0;
+    $stmt = $db->prepare("SELECT COUNT(*) FROM bookings WHERE YEAR(date) = ?");
+    $stmt->execute([$year_booking]);
+    $total_bookings = $stmt->fetchColumn() ?: 0;
+    $stmt = $db->prepare("SELECT SUM(total_price) FROM orders WHERE $where_sql");
+    $stmt->execute($params);
+    $selected_revenue = $stmt->fetchColumn() ?: 0;
+    for ($m = 1; $m <= 12; $m++) {
+        $stmt = $db->prepare("SELECT SUM(total_price) FROM orders WHERE MONTH(created_at)=? AND YEAR(created_at)=?");
+        $stmt->execute([$m, $year_revenue]);
+        $chart_revenue[$m - 1] = (int) $stmt->fetchColumn();
     }
-
-    // ✅ FIX N+1: Chart đặt bàn — 1 query GROUP BY thay vì 3 query
-    $st_map = ['Completed' => 0, 'Pending' => 1, 'Cancelled' => 2];
-    $bk_s = $db->prepare(
-        "SELECT status, COUNT(*) as cnt FROM bookings
-         WHERE YEAR(date) = ? AND status IN ('Completed','Pending','Cancelled')
-         GROUP BY status"
-    );
-    $bk_s->execute([$year_booking]);
-    foreach ($bk_s->fetchAll(PDO::FETCH_ASSOC) as $row) {
-        if (isset($st_map[$row['status']])) {
-            $status_data[$st_map[$row['status']]] = (int)$row['cnt'];
-        }
+    foreach (['Completed', 'Pending', 'Cancelled'] as $i => $st) {
+        $stmt = $db->prepare("SELECT COUNT(*) FROM bookings WHERE status=? AND YEAR(date)=?");
+        $stmt->execute([$st, $year_booking]);
+        $status_data[$i] = (int) $stmt->fetchColumn();
     }
 
     // Đặt bàn gần nhất
     $recent_bookings = $db->query(
-        "SELECT b.*, u.name as user_name
+        "SELECT b.*, u.full_name as user_name
          FROM bookings b
          LEFT JOIN users u ON b.user_id = u.id
          ORDER BY b.created_at DESC LIMIT 5"
     )->fetchAll(PDO::FETCH_ASSOC);
 
-    // Cảnh báo tồn kho thấp
+    // Cảnh báo tồn kho thấp — đúng với hệ thống đa kho
     $low_stock_count = (int)$db->query(
-        "SELECT COUNT(*) FROM inventory WHERE min_stock > 0 AND stock_quantity <= min_stock"
+        "SELECT COUNT(*) FROM inventory i
+         WHERE i.is_active = 1
+           AND i.min_stock > 0
+           AND IFNULL((SELECT SUM(s.quantity) FROM inventory_stocks s WHERE s.ingredient_id = i.id), 0) <= i.min_stock"
     )->fetchColumn();
 
-} catch (Exception $e) {
-    // Dashboard không crash — chỉ hiện dữ liệu mặc định 0
-}
+    // Cảnh báo hàng sắp hết hạn (trong vòng 7 ngày)
+    $expiry_warn_count = (int)$db->query(
+        "SELECT COUNT(*) FROM inventory
+         WHERE is_active = 1
+           AND expiry_date IS NOT NULL
+           AND expiry_date <= DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+           AND expiry_date >= CURDATE()"
+    )->fetchColumn();
 
-// Tính trend doanh thu tháng
-$trend_pct = 0;
-$trend_up  = true;
-if ($prev_month_revenue > 0) {
-    $trend_pct = round(abs($this_month_rev - $prev_month_revenue) / $prev_month_revenue * 100);
-    $trend_up  = $this_month_rev >= $prev_month_revenue;
-} elseif ($this_month_rev > 0) {
-    $trend_pct = 100; $trend_up = true;
+    // Tính % tăng/giảm so với tháng trước (cho badge trend)
+    $cur_m  = (int)date('m');
+    $cur_y  = (int)date('Y');
+    $prev_m = $cur_m === 1 ? 12 : $cur_m - 1;
+    $prev_y = $cur_m === 1 ? $cur_y - 1 : $cur_y;
+
+    $stmt_prev = $db->prepare("SELECT IFNULL(SUM(total_price),0) FROM orders WHERE MONTH(created_at)=? AND YEAR(created_at)=?");
+    $stmt_prev->execute([$prev_m, $prev_y]);
+    $prev_month_revenue = (float)$stmt_prev->fetchColumn();
+
+    $stmt_this = $db->prepare("SELECT IFNULL(SUM(total_price),0) FROM orders WHERE MONTH(created_at)=? AND YEAR(created_at)=?");
+    $stmt_this->execute([$cur_m, $cur_y]);
+    $this_month_rev = (float)$stmt_this->fetchColumn();
+
+    if ($prev_month_revenue > 0) {
+        $trend_pct = round(abs($this_month_rev - $prev_month_revenue) / $prev_month_revenue * 100, 1);
+        $trend_up  = $this_month_rev >= $prev_month_revenue;
+    }
+
+} catch (Exception $e) {
 }
 ?>
 
@@ -165,16 +151,27 @@ if ($prev_month_revenue > 0) {
 
 <div class="content-wrapper" style="padding:24px">
 
-    <!-- ===== CẢNH BÁO TỒN KHO ===== -->
+    <!-- ===== CẢNH BÁO TỒN KHO & HẾT HẠN ===== -->
     <?php if ($low_stock_count > 0): ?>
-    <div class="warn-banner">
-        <i class="fas fa-exclamation-triangle fa-lg text-warning"></i>
-        <div>
-            <strong><?= $low_stock_count ?> nguyên liệu</strong> đang ở mức tồn kho thấp.
-            <a href="controllers/ReportController.php?action=low_stock" class="ms-2 text-warning fw-bold">
-                Xem chi tiết →
-            </a>
+    <div class="warn-banner mb-2">
+        <i class="fas fa-boxes fa-lg text-warning"></i>
+        <div class="flex-grow-1">
+            <strong><?= $low_stock_count ?> nguyên liệu</strong> đang ở dưới mức tồn kho tối thiểu.
         </div>
+        <a href="controllers/InventoryController.php?tab=reorder" class="btn btn-sm btn-warning fw-bold shadow-sm" style="white-space:nowrap">
+            <i class="fas fa-arrow-right me-1" style="pointer-events:none"></i>Xem danh sách
+        </a>
+    </div>
+    <?php endif; ?>
+    <?php if ($expiry_warn_count > 0): ?>
+    <div class="warn-banner" style="background:linear-gradient(135deg,#fde8e8,#ffc5c5);border-left-color:#dc3545;">
+        <i class="fas fa-calendar-times fa-lg text-danger"></i>
+        <div class="flex-grow-1">
+            <strong><?= $expiry_warn_count ?> mặt hàng</strong> sẽ hết hạn sử dụng trong vòng <strong>7 ngày</strong> tới.
+        </div>
+        <a href="controllers/InventoryController.php?tab=all" class="btn btn-sm btn-danger fw-bold shadow-sm" style="white-space:nowrap">
+            <i class="fas fa-arrow-right me-1" style="pointer-events:none"></i>Kiểm tra ngay
+        </a>
     </div>
     <?php endif; ?>
 

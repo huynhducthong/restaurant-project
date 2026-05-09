@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once __DIR__ . '/config/database.php';
-require_once __DIR__ . '/app/models/Booking.php';
+
 
 // 2. Khởi tạo kết nối
 $database = new Database();
@@ -52,8 +52,8 @@ $file_path  = '';
 $stmt_combos = null;
 
 try {
-    // 5.1 Lấy Banner - Ưu tiên lấy từ Database
-    $stmt_banners = $db->prepare("SELECT * FROM banners ORDER BY display_order ASC");
+    // 5.1 Lấy Banner - Ưu tiên lấy từ Database (Lọc Banner bật và Hẹn giờ)
+    $stmt_banners = $db->prepare("SELECT * FROM banners WHERE is_active = 1 AND (start_date IS NULL OR start_date <= NOW()) AND (end_date IS NULL OR end_date >= NOW()) ORDER BY display_order ASC");
     $stmt_banners->execute();
     $banners_db = $stmt_banners->fetchAll(PDO::FETCH_ASSOC);
 
@@ -80,7 +80,12 @@ try {
     $stmt_combos = $db->prepare($sql_combos);
     $stmt_combos->execute();
 
-} catch (Exception $e) {}
+    // 5.4 Lấy danh sách đầu bếp nổi bật cho trang chủ
+    $stmt_home_chefs = $db->prepare("SELECT * FROM chefs WHERE is_active = 1 ORDER BY is_featured DESC, sort_order ASC, id ASC LIMIT 3");
+    $stmt_home_chefs->execute();
+    $home_chefs = $stmt_home_chefs->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (Exception $e) { $home_chefs = []; }
 
 // 6. Nhúng Header
 include __DIR__ . '/views/client/layouts/header.php'; 
@@ -129,6 +134,26 @@ include __DIR__ . '/views/client/layouts/header.php';
                     text-shadow: 1px 1px 4px rgba(0,0,0,0.7);">
                     <?= htmlspecialchars($row['description']) ?>
                 </p>
+                <?php if (!empty($row['button_text'])): ?>
+                <a href="<?= htmlspecialchars($row['button_link'] ?? '#') ?>" class="animate__animated animate__fadeInUp" style="
+                    display:inline-block;
+                    padding:12px 36px;
+                    border-radius:50px;
+                    text-transform:uppercase;
+                    text-decoration:none;
+                    font-weight:600;
+                    font-size:14px;
+                    font-family:'Poppins', sans-serif;
+                    letter-spacing:1px;
+                    background-color: <?= htmlspecialchars($row['button_color'] ?? '#cda45e') ?>;
+                    color: #fff;
+                    border: none;
+                    transition:0.3s;
+                    margin-top:20px;
+                " onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
+                    <?= htmlspecialchars($row['button_text']) ?>
+                </a>
+                <?php endif; ?>
               </div>
             </div>
           </div>
@@ -305,15 +330,33 @@ include __DIR__ . '/views/client/layouts/header.php';
         <p class="chefs-title">Những nghệ nhân ẩm thực hàng đầu</p>
       </div>
       <div class="row justify-content-center">
-        <div class="col-lg-4 col-md-6">
-          <div class="chef-member-card">
-            <img src="public/assets/img/chefs/chefs-1.jpg" class="img-fluid" alt="Chef 1">
-            <div class="member-info">
-              <h4>Walter White</h4>
-              <span>Bếp trưởng</span>
+        <?php if (!empty($home_chefs)): ?>
+          <?php foreach ($home_chefs as $hchef): ?>
+          <div class="col-lg-4 col-md-6 mb-4">
+            <div class="chef-member-card">
+              <?php if (!empty($hchef['image'])): ?>
+                <img src="public/assets/img/chefs/<?= htmlspecialchars($hchef['image']) ?>"
+                     class="img-fluid" alt="<?= htmlspecialchars($hchef['name']) ?>"
+                     onerror="this.style.display='none'"
+                     style="width:100%;height:220px;object-fit:cover;border-radius:5px;margin-bottom:15px;">
+              <?php else: ?>
+                <div style="width:100%;height:220px;background:linear-gradient(135deg,#2c3e50,#1a252f);display:flex;align-items:center;justify-content:center;border-radius:5px;margin-bottom:15px;">
+                  <i class="bi bi-person" style="font-size:4rem;color:#cda45e;opacity:.5;"></i>
+                </div>
+              <?php endif; ?>
+              <div class="member-info">
+                <h4><?= htmlspecialchars($hchef['name']) ?></h4>
+                <span><?= htmlspecialchars($hchef['position']) ?></span>
+              </div>
             </div>
           </div>
-        </div>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <p class="text-center" style="color:#666;">Chưa có thông tin đầu bếp.</p>
+        <?php endif; ?>
+      </div>
+      <div class="text-center mt-4">
+        <a href="views/client/chefs.php" class="btn-view-all-custom">Xem tất cả đầu bếp</a>
       </div>
     </div>
   </section>
