@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once __DIR__ . '/config/database.php';
-require_once __DIR__ . '/app/models/Booking.php';
+
 
 // 2. Khởi tạo kết nối
 $database = new Database();
@@ -52,13 +52,13 @@ $file_path  = '';
 $stmt_combos = null;
 
 try {
-    // 5.1 Lấy Banner - Ưu tiên lấy từ Database
-    $stmt_banners = $db->prepare("SELECT * FROM banners ORDER BY display_order ASC");
+    // 5.1 Lấy Banner - Ưu tiên lấy từ Database (Lọc Banner bật và Hẹn giờ)
+    $stmt_banners = $db->prepare("SELECT * FROM banners WHERE is_active = 1 AND (start_date IS NULL OR start_date <= NOW()) AND (end_date IS NULL OR end_date >= NOW()) ORDER BY display_order ASC");
     $stmt_banners->execute();
     $banners_db = $stmt_banners->fetchAll(PDO::FETCH_ASSOC);
 
-    // 5.2 Lấy Video - Kiểm tra kỹ is_active
-    $stmt_video = $db->prepare("SELECT * FROM videos WHERE id = 1 LIMIT 1");
+    // 5.2 Lấy Video — đồng bộ với VideoController.php (không hardcode id=1)
+    $stmt_video = $db->prepare("SELECT * FROM videos ORDER BY id ASC LIMIT 1");
     $stmt_video->execute();
     $video_data = $stmt_video->fetch(PDO::FETCH_ASSOC);
 
@@ -69,18 +69,23 @@ try {
         $file_path  = $video_data['file_path'] ?? '';
     }
 
-    // 5.3 Truy vấn Combo
-    $sql_combos = "SELECT c.*, GROUP_CONCAT(f.name SEPARATOR ', ') as list_foods 
+    // 5.3 Truy vấn Combo — đồng bộ với list_combos.php (dùng is_active)
+    $sql_combos = "SELECT c.*, GROUP_CONCAT(f.name ORDER BY f.name SEPARATOR ', ') as list_foods
                    FROM combos c
                    LEFT JOIN combo_items ci ON c.id = ci.combo_id
-                   LEFT JOIN foods f ON ci.food_id = f.id
-                   WHERE c.status = 1 
-                   GROUP BY c.id 
+                   LEFT JOIN foods f        ON ci.food_id = f.id
+                   WHERE c.is_active = 1
+                   GROUP BY c.id
                    ORDER BY c.id DESC";
     $stmt_combos = $db->prepare($sql_combos);
     $stmt_combos->execute();
 
-} catch (Exception $e) {}
+    // 5.4 Lấy danh sách đầu bếp nổi bật cho trang chủ
+    $stmt_home_chefs = $db->prepare("SELECT * FROM chefs WHERE is_active = 1 ORDER BY is_featured DESC, sort_order ASC, id ASC LIMIT 3");
+    $stmt_home_chefs->execute();
+    $home_chefs = $stmt_home_chefs->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (Exception $e) { $home_chefs = []; }
 
 // 6. Nhúng Header
 include __DIR__ . '/views/client/layouts/header.php'; 
@@ -90,18 +95,14 @@ include __DIR__ . '/views/client/layouts/header.php';
   <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" style="width: 100%; height: 100vh;">
     
     <div class="carousel-inner">
-      <?php 
-      // Lấy banner từ DB sắp xếp theo thứ tự
-      $stmt_hero = $db->query("SELECT * FROM banners ORDER BY display_order ASC");
+      <?php
+      // Dùng lại $banners_db đã fetch ở trên — tránh query trùng
       $first = true;
-      while($row = $stmt_hero->fetch(PDO::FETCH_ASSOC)): 
-          // Xử lý logic Font Style cho Tiêu đề
+      foreach ($banners_db as $row):
           $title_weight = ($row['font_style'] == 'bold') ? 'bold' : 'normal';
           $title_style  = ($row['font_style'] == 'italic') ? 'italic' : 'normal';
-          
-          // Xử lý logic Font Style cho Mô tả
-          $desc_weight = ($row['desc_font_style'] ?? 'normal' == 'bold') ? 'bold' : 'normal';
-          $desc_style  = ($row['desc_font_style'] ?? 'normal' == 'italic') ? 'italic' : 'normal';
+          $desc_weight  = (($row['desc_font_style'] ?? 'normal') == 'bold') ? 'bold' : 'normal';
+          $desc_style   = (($row['desc_font_style'] ?? 'normal') == 'italic') ? 'italic' : 'normal';
       ?>
         <div class="carousel-item <?= $first ? 'active' : '' ?>" 
              style="background-image: url('public/assets/img/hero/<?= $row['image_url'] ?>'); background-size: cover; height: 100vh; background-position: center; position: relative;">
@@ -133,11 +134,31 @@ include __DIR__ . '/views/client/layouts/header.php';
                     text-shadow: 1px 1px 4px rgba(0,0,0,0.7);">
                     <?= htmlspecialchars($row['description']) ?>
                 </p>
+                <?php if (!empty($row['button_text'])): ?>
+                <a href="<?= htmlspecialchars($row['button_link'] ?? '#') ?>" class="animate__animated animate__fadeInUp" style="
+                    display:inline-block;
+                    padding:12px 36px;
+                    border-radius:50px;
+                    text-transform:uppercase;
+                    text-decoration:none;
+                    font-weight:600;
+                    font-size:14px;
+                    font-family:'Poppins', sans-serif;
+                    letter-spacing:1px;
+                    background-color: <?= htmlspecialchars($row['button_color'] ?? '#cda45e') ?>;
+                    color: #fff;
+                    border: none;
+                    transition:0.3s;
+                    margin-top:20px;
+                " onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
+                    <?= htmlspecialchars($row['button_text']) ?>
+                </a>
+                <?php endif; ?>
               </div>
             </div>
           </div>
         </div>
-      <?php $first = false; endwhile; ?>
+      <?php $first = false; endforeach; ?>
     </div>
 
     <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
@@ -162,8 +183,13 @@ include __DIR__ . '/views/client/layouts/header.php';
                     frameborder="0" allowfullscreen style="display: block; border: none;">
             </iframe>
           <?php elseif ($video_type == 'local' && !empty($file_path)): ?>
+            <?php
+            $ext_v = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
+            $mime_map = ['mp4' => 'video/mp4', 'webm' => 'video/webm', 'mov' => 'video/quicktime'];
+            $mime_v = $mime_map[$ext_v] ?? 'video/mp4';
+            ?>
             <video controls style="width: 100%; height: 500px; display: block; object-fit: cover;">
-                <source src="admin/<?php echo htmlspecialchars($file_path); ?>" type="video/mp4">
+                <source src="<?= htmlspecialchars($file_path) ?>" type="<?= $mime_v ?>">
                 Trình duyệt của bạn không hỗ trợ xem video.
             </video>
           <?php else: ?>
@@ -194,33 +220,62 @@ include __DIR__ . '/views/client/layouts/header.php';
         <p style="color: white; font-size: 24px;">Khám phá hương vị <?= htmlspecialchars($settings['restaurant_name'] ?? 'Restaurantly') ?></p>
       </div>
 
-      <?php 
-      $categories = $db->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSOC);
-      foreach (array_chunk($categories, 3) as $chunk): 
+      <?php
+      // Fix N+1: 1 query JOIN duy nhất thay vì query trong foreach
+      // Đồng bộ is_active với manage_foods.php
+      $all_foods_stmt = $db->prepare(
+          "SELECT f.*, c.id as cat_id
+           FROM foods f
+           JOIN categories c ON f.category_id = c.id
+           WHERE f.is_active = 1
+           ORDER BY c.name ASC, f.id ASC"
+      );
+      $all_foods_stmt->execute();
+      $foods_by_cat = [];
+      foreach ($all_foods_stmt->fetchAll(PDO::FETCH_ASSOC) as $frow) {
+          $foods_by_cat[$frow['cat_id']][] = $frow;
+      }
+
+      $categories = $db->query("SELECT * FROM categories ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
+      foreach (array_chunk($categories, 3) as $chunk):
       ?>
       <div class="row mb-5">
-        <?php foreach ($chunk as $cat): 
-          $cat_id = $cat['id'];
-          $foods = $db->query("SELECT * FROM foods WHERE category_id = $cat_id LIMIT 3")->fetchAll(PDO::FETCH_ASSOC);
+        <?php foreach ($chunk as $cat):
+          $cat_foods = array_slice($foods_by_cat[$cat['id']] ?? [], 0, 3);
         ?>
         <div class="col-lg-4 col-md-6 mb-4">
           <div class="category-column-box">
-            <h3 class="category-title text-center" style="color: #cda45e; margin-bottom: 30px;"><?= mb_convert_case($cat['name'], MB_CASE_UPPER, "UTF-8") ?></h3>
+            <h3 class="category-title text-center" style="color: #cda45e; margin-bottom: 30px;">
+              <?= htmlspecialchars(mb_convert_case($cat['name'], MB_CASE_UPPER, 'UTF-8')) ?>
+            </h3>
             <div class="menu-list">
-              <?php foreach ($foods as $f): ?>
+              <?php if (empty($cat_foods)): ?>
+                <p class="text-muted text-center small fst-italic">Chưa có món</p>
+              <?php else: ?>
+              <?php foreach ($cat_foods as $f): ?>
               <div class="menu-item-horizontal d-flex align-items-center mb-4">
-                <div class="item-img" style="width: 70px; height: 70px; margin-right: 15px;">
-                  <img src="public/assets/img/menu/<?= $f['image'] ?>" alt="<?= $f['name'] ?>" style="width: 100%; border-radius: 50%; border: 3px solid #37332a;">
+                <div class="item-img" style="width:70px;height:70px;margin-right:15px;flex-shrink:0;">
+                  <img src="public/assets/img/menu/<?= htmlspecialchars($f['image']) ?>"
+                       alt="<?= htmlspecialchars($f['name']) ?>"
+                       onerror="this.src='public/assets/img/menu/default.jpg'"
+                       style="width:100%;height:100%;object-fit:cover;border-radius:50%;border:3px solid #37332a;">
                 </div>
                 <div class="item-details flex-grow-1">
                   <div class="d-flex justify-content-between align-items-baseline">
-                    <h5 class="food-name" style="color: #fff; font-size: 18px; margin: 0;"><?= $f['name'] ?></h5>
-                    <span class="food-price" style="color: #cda45e; font-weight: 600;"><?= number_format($f['price'], 0, ',', '.') ?>đ</span>
+                    <h5 class="food-name" style="color:#fff;font-size:18px;margin:0;">
+                      <?= htmlspecialchars($f['name']) ?>
+                    </h5>
+                    <span class="food-price" style="color:#cda45e;font-weight:600;">
+                      <?= number_format($f['price'], 0, ',', '.') ?>đ
+                    </span>
                   </div>
-                  <p class="food-desc" style="color: #aaaaaa; font-size: 14px; font-style: italic; margin: 0;"><?= $f['description'] ?></p>
+                  <p class="food-desc" style="color:#aaaaaa;font-size:14px;font-style:italic;margin:0;">
+                    <?= htmlspecialchars($f['description']) ?>
+                  </p>
                 </div>
               </div>
               <?php endforeach; ?>
+              <?php endif; ?>
             </div>
           </div>
         </div>
@@ -246,7 +301,9 @@ include __DIR__ . '/views/client/layouts/header.php';
           <div class="col-lg-4 col-md-6">
             <div class="combo-card-custom">
               <div class="combo-img mb-3">
-                <img src="public/assets/img/combos/<?= $row['image'] ?: 'default-combo.jpg' ?>" alt="<?= htmlspecialchars($row['name']) ?>">
+                <img src="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>"
+                     alt="<?= htmlspecialchars($row['name']) ?>"
+                     onerror="this.src='public/assets/img/combos/default-combo.jpg'">
               </div>
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <h4 class="combo-name-custom"><?= htmlspecialchars($row['name']) ?></h4>
@@ -273,15 +330,33 @@ include __DIR__ . '/views/client/layouts/header.php';
         <p class="chefs-title">Những nghệ nhân ẩm thực hàng đầu</p>
       </div>
       <div class="row justify-content-center">
-        <div class="col-lg-4 col-md-6">
-          <div class="chef-member-card">
-            <img src="public/assets/img/chefs/chefs-1.jpg" class="img-fluid" alt="Chef 1">
-            <div class="member-info">
-              <h4>Walter White</h4>
-              <span>Bếp trưởng</span>
+        <?php if (!empty($home_chefs)): ?>
+          <?php foreach ($home_chefs as $hchef): ?>
+          <div class="col-lg-4 col-md-6 mb-4">
+            <div class="chef-member-card">
+              <?php if (!empty($hchef['image'])): ?>
+                <img src="public/assets/img/chefs/<?= htmlspecialchars($hchef['image']) ?>"
+                     class="img-fluid" alt="<?= htmlspecialchars($hchef['name']) ?>"
+                     onerror="this.style.display='none'"
+                     style="width:100%;height:220px;object-fit:cover;border-radius:5px;margin-bottom:15px;">
+              <?php else: ?>
+                <div style="width:100%;height:220px;background:linear-gradient(135deg,#2c3e50,#1a252f);display:flex;align-items:center;justify-content:center;border-radius:5px;margin-bottom:15px;">
+                  <i class="bi bi-person" style="font-size:4rem;color:#cda45e;opacity:.5;"></i>
+                </div>
+              <?php endif; ?>
+              <div class="member-info">
+                <h4><?= htmlspecialchars($hchef['name']) ?></h4>
+                <span><?= htmlspecialchars($hchef['position']) ?></span>
+              </div>
             </div>
           </div>
-        </div>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <p class="text-center" style="color:#666;">Chưa có thông tin đầu bếp.</p>
+        <?php endif; ?>
+      </div>
+      <div class="text-center mt-4">
+        <a href="views/client/chefs.php" class="btn-view-all-custom">Xem tất cả đầu bếp</a>
       </div>
     </div>
   </section>

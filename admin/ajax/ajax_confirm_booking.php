@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . '../../config/database.php';
+// File: admin/controllers/ajax_confirm_booking.php
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../config/inventory_helper.php';
 header('Content-Type: application/json');
 
 try {
@@ -20,24 +22,28 @@ try {
         // 2. Cập nhật trạng thái xác nhận đơn hàng
         $db->prepare("UPDATE service_bookings SET status = 'Confirmed' WHERE id = ?")->execute([$booking_id]);
 
-        // 3. Lấy danh sách tất cả các món ăn khách đã đặt trong đơn này
+        // 3. Lấy danh sách tất cả các món ăn khách đã đặt
         $stmt_items = $db->prepare("SELECT menu_id, quantity FROM booking_details WHERE booking_id = ?");
         $stmt_items->execute([$booking_id]);
         $ordered_items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
 
-        // Chuẩn bị sẵn các câu lệnh SQL để tối ưu hiệu suất trong vòng lặp
-        $query_recipe = $db->prepare("SELECT ingredient_id, quantity_required, unit FROM food_recipes WHERE food_id = ?");
+        // Chuẩn bị sẵn các câu lệnh SQL (Đã JOIN để lấy đơn vị tồn kho i_unit và category)
+        $query_recipe = $db->prepare("
+            SELECT r.ingredient_id, r.quantity_required, r.unit as r_unit, i.unit_name as i_unit, i.category
+            FROM food_recipes r
+            JOIN inventory i ON r.ingredient_id = i.id
+            WHERE r.food_id = ?
+        ");
         
         $query_update_inventory = $db->prepare("
-            UPDATE inventory 
-            SET stock_quantity = stock_quantity - ?, 
-                revenue = revenue + (cost_price * ?) 
-            WHERE id = ?
+            UPDATE inventory_stocks 
+            SET quantity = quantity - ? 
+            WHERE ingredient_id = ? AND warehouse_id = ?
         ");
 
         $query_history = $db->prepare("
-            INSERT INTO inventory_history (ingredient_id, type, quantity) 
-            VALUES (?, 'export', ?)
+            INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) 
+            VALUES (?, ?, 'export', ?, 'Hệ thống POS (AJAX)')
         ");
 
         // Duyệt qua từng món ăn
@@ -45,7 +51,7 @@ try {
             $food_id = $item['menu_id'];
             $food_qty = (float)$item['quantity'];
 
-            // Tìm định mức nguyên liệu (Recipe) của món ăn đó
+            // Tìm định mức nguyên liệu (Recipe)
             $query_recipe->execute([$food_id]);
             $recipes = $query_recipe->fetchAll(PDO::FETCH_ASSOC);
 
@@ -53,25 +59,27 @@ try {
             foreach ($recipes as $r) {
                 $ing_id = $r['ingredient_id'];
                 $qty_req = (float)$r['quantity_required'];
+                $category = $r['category'];
+
+                // Xác định kho tương ứng: Đồ uống -> Bar (3), Khác -> Bếp (2)
+                $target_warehouse_id = ($category === 'Đồ uống') ? 3 : 2;
                 
-                // Quy đổi đơn vị: Nếu định mức tính bằng 'g', chia 1000 để khớp với kho 'kg'
-                if (strtolower(trim($r['unit'])) == 'g') { 
-                    $qty_req /= 1000; 
-                }
+                // SỬ DỤNG HELPER ĐỂ QUY ĐỔI ĐƠN VỊ TẬP TRUNG
+                $qty_in_stock_unit = convert_to_base_unit($qty_req, $r['r_unit'], $r['i_unit']);
 
-                // Tổng lượng tiêu hao = Định mức x Số lượng món đặt
-                $total_reduction = $qty_req * $food_qty;
+                $total_reduction = $qty_in_stock_unit * $food_qty;
 
-                // 4. Cập nhật tồn kho và doanh thu tiêu hao (giá vốn)
-                $query_update_inventory->execute([$total_reduction, $total_reduction, $ing_id]);
+                // 4. Trừ tồn kho tại kho tương ứng
+                $query_update_inventory->execute([$total_reduction, $ing_id, $target_warehouse_id]);
 
-                // 5. Ghi lịch sử xuất kho để phục vụ Báo cáo - Thống kê
-                $query_history->execute([$ing_id, $total_reduction]);
+                // 5. Ghi lịch sử xuất kho
+                $query_history->execute([$ing_id, $target_warehouse_id, $total_reduction]);
             }
         }
 
         $db->commit();
         echo json_encode(['status' => 'success', 'message' => 'Xác nhận đơn và trừ kho thành công!']);
+
 
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Yêu cầu không hợp lệ.']);
@@ -82,3 +90,4 @@ try {
     }
     echo json_encode(['status' => 'error', 'message' => 'Lỗi: ' . $e->getMessage()]);
 }
+?>

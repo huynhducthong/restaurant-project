@@ -68,8 +68,8 @@ $(document).ready(function() {
         $('#recipe-food-name').text($(this).data('name'));
         $('#recipe-items-list').empty();
         
-        // ĐƯỜNG DẪN MỚI: ajax/
-        $.getJSON('ajax/ajax_get_recipes.php?food_id=' + foodId, function(data) {
+        // ĐƯỜNG DẪN MỚI: ../ajax/
+        $.getJSON('../ajax/ajax_get_recipes.php?food_id=' + foodId, function(data) {
             if(data && data.length > 0) {
                 data.forEach(item => addIngredientRow(item));
             } else {
@@ -83,7 +83,7 @@ $(document).ready(function() {
     $('#form-save-recipe').on('submit', function(e) {
         e.preventDefault();
         $.ajax({
-            url: 'ajax/ajax_save_recipe.php', // ĐƯỜNG DẪN MỚI: ajax/
+            url: '../ajax/ajax_save_recipe.php', // ĐƯỜNG DẪN MỚI: ../ajax/
             type: 'POST',
             data: $(this).serialize(),
             success: function() { location.reload(); },
@@ -103,17 +103,49 @@ $(document).ready(function() {
             ? '<span class="badge bg-warning text-dark">Chờ duyệt</span>' 
             : '<span class="badge bg-success">Đã xác nhận</span>');
         
+        $('#m-phone').text('...');
+        $('#m-type').text('...');
+        $('#m-date').text('...');
+        $('#m-guests').text('...');
+        $('#m-msg').text('...');
+        $('.booking-items-detail').remove(); // Xóa các mục cũ nếu có
+
         // Cập nhật link xuất PDF (vào thư mục reports nếu bạn đã di chuyển file này)
         $('#btn-export-pdf').attr('href', 'reports/export_pdf.php?id=' + id);
 
-        // ĐƯỜNG DẪN MỚI: ajax/
-        $.getJSON('ajax/ajax_get_booking_detail.php?id=' + id, function(data) {
+        // ĐƯỜNG DẪN MỚI: ../ajax/
+        $.getJSON('../ajax/ajax_get_booking_detail.php?id=' + id, function(data) {
             if(data) {
                 $('#m-phone').text(data.customer_phone);
                 $('#m-type').text(data.service_type.toUpperCase());
                 $('#m-date').text(data.booking_date);
                 $('#m-guests').text(data.guests + ' người');
                 $('#m-msg').text(data.message || 'Không có ghi chú.');
+
+                // Hiển thị danh sách món ăn và định mức
+                if (data.items && data.items.length > 0) {
+                    let itemsHtml = '<div class="mt-3 booking-items-detail"><div class="text-muted small text-uppercase fw-bold mb-2" style="font-size: 10px;">Thực đơn đã chọn</div>';
+                    data.items.forEach(item => {
+                        itemsHtml += `
+                            <div class="p-2 mb-2 border-start border-4 border-warning bg-light">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold">${item.food_name}</span>
+                                    <span class="badge bg-dark">x${item.quantity}</span>
+                                </div>`;
+                        
+                        if (item.recipes && item.recipes.length > 0) {
+                            itemsHtml += '<div class="mt-1 small text-muted" style="font-size: 0.8rem;">';
+                            item.recipes.forEach(r => {
+                                itemsHtml += `• ${r.item_name}: ${r.quantity_required}${r.unit} <br>`;
+                            });
+                            itemsHtml += '</div>';
+                        }
+                        
+                        itemsHtml += '</div>';
+                    });
+                    itemsHtml += '</div>';
+                    $('#m-msg').after(itemsHtml);
+                }
             }
         });
 
