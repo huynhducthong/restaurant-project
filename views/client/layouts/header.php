@@ -387,7 +387,6 @@ if (!empty($logo_path)) {
 
     <!-- TOPBAR -->
 
-
     <div id="topbar">
 
         <div class="container d-flex justify-content-between">
@@ -420,7 +419,6 @@ if (!empty($logo_path)) {
                     <span>
                         <?= htmlspecialchars($settings['address']) ?>
                     </span>
-
                 <?php endif; ?>
 
             </div>
