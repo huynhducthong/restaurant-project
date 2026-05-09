@@ -1,4 +1,6 @@
 <?php
+session_start();
+if (!isset($_SESSION['user_id'])) { http_response_code(403); echo json_encode(['error'=>'Unauthorized']); exit; }
 // admin/ajax/ajax_get_booking_detail.php
 require_once __DIR__ . '/../../config/database.php';
 header('Content-Type: application/json');
