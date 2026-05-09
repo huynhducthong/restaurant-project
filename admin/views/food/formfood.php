@@ -2,8 +2,8 @@
 // Gọi chung layout header
 include __DIR__ . '/../../../public/admin_layout_header.php';
 
-$mode       = $mode       ?? 'add';
-$is_edit    = ($mode === 'edit');
+$action     = $action ?? 'add';
+$is_edit    = ($action === 'edit');
 $form_title = $is_edit ? 'Chỉnh sửa món ăn' : 'Thêm món ăn mới';
 $back_url   = 'FoodController.php?action=list';
 $form_action = $is_edit

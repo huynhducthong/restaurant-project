@@ -99,21 +99,18 @@ if (isset($_POST['save_inventory'])) {
     $supplier_id = !empty($_POST['supplier_id']) ? (int)$_POST['supplier_id'] : null;
     $min_stock = max(0, (float)($_POST['min_stock'] ?? 0));
 
-    // FIX LỖI 900,000 -> 900: Lột bỏ dấu phẩy trước khi lưu vào database
-    $cost_price = isset($_POST['cost_price']) ? (float)str_replace(',', '', $_POST['cost_price']) : 0;
     $data = [
         trim($_POST['item_name']),
         $_POST['category'],
         $_POST['unit_name'],
-        $cost_price,
         $supplier_id,
         $min_stock
     ];
 
     if (!empty($_POST['item_id'])) {
-        $db->prepare("UPDATE inventory SET item_name=?, category=?, unit_name=?, cost_price=?, supplier_id=?, min_stock=? WHERE id=?")->execute([...$data, (int)$_POST['item_id']]);
+        $db->prepare("UPDATE inventory SET item_name=?, category=?, unit_name=?, supplier_id=?, min_stock=? WHERE id=?")->execute([...$data, (int)$_POST['item_id']]);
     } else {
-        $db->prepare("INSERT INTO inventory (item_name, category, unit_name, cost_price, supplier_id, min_stock) VALUES (?, ?, ?, ?, ?, ?)")->execute($data);
+        $db->prepare("INSERT INTO inventory (item_name, category, unit_name, supplier_id, min_stock) VALUES (?, ?, ?, ?, ?)")->execute($data);
     }
     header("Location: InventoryController.php");
     exit;

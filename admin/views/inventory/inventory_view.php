@@ -740,10 +740,7 @@ include '../../public/admin_layout_header.php';
                     <div class="col-6"><label class="small fw-bold">Danh mục</label><select name="category" id="inv-cat" class="form-select"><?php foreach ($cats as $c) echo "<option value='{$c['name']}'>{$c['name']}</option>"; ?></select></div>
                     <div class="col-6"><label class="small fw-bold">Đơn vị</label><select name="unit_name" id="inv-unit" class="form-select"><?php foreach ($units as $u) echo "<option value='{$u['name']}'>{$u['name']}</option>"; ?></select></div>
                 </div>
-                <div class="row g-2 mb-0">
-                    <div class="col-6"><label class="small fw-bold">Giá vốn (đ)</label><input type="text" name="cost_price" id="inv-price" class="form-control money-input" value="0"></div>
-                    <div class="col-6"><label class="small fw-bold">Tồn tối thiểu</label><input type="number" name="min_stock" id="inv-min" class="form-control" value="0" min="0" step="0.01"></div>
-                </div>
+                <div class="mb-3"><label class="small fw-bold">Tồn tối thiểu</label><input type="number" name="min_stock" id="inv-min" class="form-control" value="0" min="0" step="0.01"></div>
             </div>
             <div class="modal-footer"><button type="submit" class="btn btn-warning w-100 fw-bold">LƯU</button></div>
         </form>
@@ -785,6 +782,7 @@ include '../../public/admin_layout_header.php';
             <div class="modal-body p-4 text-center">
                 <label class="fw-bold mb-2 text-start w-100">Kho thực hiện xuất/hủy:</label>
                 <select name="warehouse_id" class="form-select mb-3" required>
+                    <option value="" disabled selected>-- Chọn Kho --</option>
                     <?php foreach ($warehouses as $w): ?><option value="<?= $w['id'] ?>"><?= $w['name'] ?></option><?php endforeach; ?>
                 </select>
                 <label class="fw-bold mb-2 text-start w-100">Số lượng:</label>
@@ -989,7 +987,6 @@ include '../../public/admin_layout_header.php';
         $('#inv-name').val(data.item_name);
         $('#inv-cat').val(data.category);
         $('#inv-unit').val(data.unit_name);
-        $('#inv-price').val(data.cost_price ? parseInt(data.cost_price).toLocaleString('en-US') : '0');
         $('#inv-min').val(data.min_stock || 0);
         new bootstrap.Modal(document.getElementById('modalInventory')).show();
     }
@@ -1166,10 +1163,13 @@ include '../../public/admin_layout_header.php';
         });
     });
 
-    // 3. Tự động thêm dấu phẩy khi gõ
-    $(document).on('input', '.money-input', function() {
+    // 3. Định dạng tiền tệ (Sửa lỗi nhảy số khi gõ tiếng Việt / trên điện thoại)
+    $(document).on('blur', '.money-input', function() {
         let val = this.value.replace(/[^0-9]/g, '');
         this.value = val !== '' ? parseInt(val, 10).toLocaleString('en-US') : '';
+    });
+    $(document).on('focus', '.money-input', function() {
+        this.value = this.value.replace(/,/g, '');
     });
     // ================= LỌC & PHÂN TRANG =================
     let activeWarehouse = 'all'; // 'all' hoặc ID kho cụ thể
