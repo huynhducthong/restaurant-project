@@ -419,7 +419,6 @@ if (!empty($logo_path)) {
                     <span>
                         <?= htmlspecialchars($settings['address']) ?>
                     </span>
-
                 <?php endif; ?>
 
             </div>
