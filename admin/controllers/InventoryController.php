@@ -1,38 +1,35 @@
 <?php
-// File: admin/InventoryController.php
+// File: admin/controllers/InventoryController.php
 
 session_start();
 
-// Xác thực session admin
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login.php'); exit;
+    header('Location: ../login.php');
+    exit;
 }
 $current_user = $_SESSION['username'] ?? 'Admin';
 
 require_once __DIR__ . '/../../config/database.php';
 $db = (new Database())->getConnection();
 
-// Tự động thêm cột storage_zone nếu chưa có (Phục vụ Quy chuẩn Kho)
-try {
-    $db->exec("ALTER TABLE inventory ADD COLUMN storage_zone VARCHAR(50) DEFAULT 'Kho khô'");
-} catch(PDOException $e) {}
+// Lấy danh sách các kho (Warehouses)
+$warehouses = $db->query("SELECT * FROM warehouses WHERE status = 1")->fetchAll(PDO::FETCH_ASSOC);
 
 // ============================================================
 // 1. XỬ LÝ YÊU CẦU (REQUEST HANDLING)
 // ============================================================
 
-// A. Bộ lọc Thống kê — chống SQL Injection hoàn toàn
 $allowed_types = ['day', 'month', 'year'];
 $f_type = in_array($_GET['f_type'] ?? '', $allowed_types) ? $_GET['f_type'] : 'month';
 
 if ($f_type === 'day') {
-    $f_val     = preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['f_val'] ?? '') ? $_GET['f_val'] : date('Y-m-d');
+    $f_val = preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['f_val'] ?? '') ? $_GET['f_val'] : date('Y-m-d');
     $where_col = "DATE(created_at) = ?";
 } elseif ($f_type === 'year') {
-    $f_val     = preg_match('/^\d{4}$/', $_GET['f_val'] ?? '') ? $_GET['f_val'] : date('Y');
+    $f_val = preg_match('/^\d{4}$/', $_GET['f_val'] ?? '') ? $_GET['f_val'] : date('Y');
     $where_col = "YEAR(created_at) = ?";
 } else {
-    $f_val     = preg_match('/^\d{4}-\d{2}$/', $_GET['f_val'] ?? '') ? $_GET['f_val'] : date('Y-m');
+    $f_val = preg_match('/^\d{4}-\d{2}$/', $_GET['f_val'] ?? '') ? $_GET['f_val'] : date('Y-m');
     $where_col = "DATE_FORMAT(created_at, '%Y-%m') = ?";
 }
 
@@ -41,181 +38,243 @@ $stmt_stats = $db->prepare("
         SUM(CASE WHEN type='import' THEN quantity ELSE 0 END) as ti,
         SUM(CASE WHEN type='export' THEN quantity ELSE 0 END) as te,
         SUM(CASE WHEN type='loss'   THEN quantity ELSE 0 END) as tl
-    FROM inventory_history
-    WHERE $where_col
+    FROM inventory_history WHERE $where_col
 ");
 $stmt_stats->execute([$f_val]);
 $stats = $stmt_stats->fetch(PDO::FETCH_ASSOC);
 
-// ----------------------------------------------------------------
-// B. Export CSV
-// ----------------------------------------------------------------
+// --- Export CSV ---
 if (isset($_GET['export_csv'])) {
     header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename=ton_kho_' . date('Ymd_His') . '.csv');
+    header('Content-Disposition: attachment; filename=ton_kho_dakho_' . date('Ymd_His') . '.csv');
     $out = fopen('php://output', 'w');
-    fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF)); // UTF-8 BOM
-    fputcsv($out, ['Nguyên Liệu', 'Khu Vực', 'Danh Mục', 'Đơn Vị', 'Tồn Kho', 'Tồn Tối Thiểu', 'Giá Vốn (đ)', 'Nhà Cung Cấp', 'Hạn Sử Dụng']);
-    $rows = $db->query(
-        "SELECT i.*, s.name as s_name
-         FROM inventory i
-         LEFT JOIN suppliers s ON i.supplier_id = s.id
-         ORDER BY i.item_name"
-    )->fetchAll(PDO::FETCH_ASSOC);
+    fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF));
+    fputcsv($out, ['Nguyên Liệu', 'Danh Mục', 'Đơn Vị', 'Tổng Tồn (Mọi Kho)', 'Tồn Tối Thiểu', 'Giá Vốn', 'Nhà Cung Cấp']);
+
+    $rows = $db->query("
+        SELECT i.item_name, i.category, i.unit_name, i.min_stock, i.cost_price, s.name as s_name,
+               IFNULL((SELECT SUM(quantity) FROM inventory_stocks WHERE ingredient_id = i.id), 0) as total_stock
+        FROM inventory i
+        LEFT JOIN suppliers s ON i.supplier_id = s.id ORDER BY i.item_name
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
     foreach ($rows as $r) {
-        fputcsv($out, [
-            $r['item_name'], $r['storage_zone'] ?? 'Chưa gán', $r['category'], $r['unit_name'],
-            $r['stock_quantity'], $r['min_stock'] ?? 0,
-            $r['cost_price'], $r['s_name'] ?? 'Chưa gán',
-            $r['expiry_date'] ?? '',
-        ]);
+        fputcsv($out, [$r['item_name'], $r['category'], $r['unit_name'], $r['total_stock'], $r['min_stock'] ?? 0, $r['cost_price'], $r['s_name'] ?? 'Chưa gán']);
     }
     fclose($out);
     exit;
 }
 
-// ----------------------------------------------------------------
-// C. Quản lý Nhà Cung Cấp — Thêm / Sửa
-// ----------------------------------------------------------------
+// --- Quản lý NCC & Tags ---
 if (isset($_POST['save_supplier'])) {
-    $data = [
-        trim($_POST['s_name']),
-        trim($_POST['s_phone']),
-        trim($_POST['s_address']),
-        trim($_POST['s_email']),
-        trim($_POST['s_contact']),
-    ];
+    $data = [trim($_POST['s_name']), trim($_POST['s_phone']), trim($_POST['s_address']), trim($_POST['s_email']), trim($_POST['s_contact'])];
     if (!empty($_POST['supplier_id'])) {
-        $db->prepare(
-            "UPDATE suppliers SET name=?, phone=?, address=?, email=?, contact_person=? WHERE id=?"
-        )->execute([...$data, (int)$_POST['supplier_id']]);
+        $db->prepare("UPDATE suppliers SET name=?, phone=?, address=?, email=?, contact_person=? WHERE id=?")->execute([...$data, (int)$_POST['supplier_id']]);
     } else {
-        $db->prepare(
-            "INSERT INTO suppliers (name, phone, address, email, contact_person) VALUES (?, ?, ?, ?, ?)"
-        )->execute($data);
+        $db->prepare("INSERT INTO suppliers (name, phone, address, email, contact_person) VALUES (?, ?, ?, ?, ?)")->execute($data);
     }
-    header("Location: InventoryController.php?tab=suppliers"); exit;
+    header("Location: InventoryController.php?tab=suppliers");
+    exit;
 }
-
-// Xóa Nhà Cung Cấp
 if (isset($_GET['delete_supplier'])) {
     $db->prepare("DELETE FROM suppliers WHERE id = ?")->execute([(int)$_GET['delete_supplier']]);
-    header("Location: InventoryController.php?tab=suppliers"); exit;
+    header("Location: InventoryController.php?tab=suppliers");
+    exit;
 }
-
-// ----------------------------------------------------------------
-// D. Quản lý Tags (Danh mục & Đơn vị)
-// ----------------------------------------------------------------
 if (isset($_POST['manage_tag'])) {
-    $allowed_tables = [
-        'category' => 'inventory_categories',
-        'unit'     => 'inventory_units',
-    ];
-    $table = $allowed_tables[$_POST['tag_type'] ?? ''] ?? null;
+    $tables = ['category' => 'inventory_categories', 'unit' => 'inventory_units'];
+    $table = $tables[$_POST['tag_type'] ?? ''] ?? null;
     if ($table) {
         $action = $_POST['tag_action'] ?? '';
-        if ($action === 'add') {
-            $db->prepare("INSERT IGNORE INTO $table (name) VALUES (?)")
-               ->execute([trim($_POST['tag_name'])]);
-        } elseif ($action === 'edit') {
-            $db->prepare("UPDATE $table SET name = ? WHERE id = ?")
-               ->execute([trim($_POST['tag_name']), (int)$_POST['tag_id']]);
-        } elseif ($action === 'delete') {
-            $db->prepare("DELETE FROM $table WHERE id = ?")
-               ->execute([(int)$_POST['tag_id']]);
-        }
+        if ($action === 'add') $db->prepare("INSERT IGNORE INTO $table (name) VALUES (?)")->execute([trim($_POST['tag_name'])]);
+        elseif ($action === 'edit') $db->prepare("UPDATE $table SET name = ? WHERE id = ?")->execute([trim($_POST['tag_name']), (int)$_POST['tag_id']]);
+        elseif ($action === 'delete') $db->prepare("DELETE FROM $table WHERE id = ?")->execute([(int)$_POST['tag_id']]);
     }
-    header("Location: InventoryController.php"); exit;
+    header("Location: InventoryController.php");
+    exit;
 }
 
-// ----------------------------------------------------------------
-// E. Thêm / Sửa Nguyên liệu
-// ----------------------------------------------------------------
+// --- Thêm/Sửa Nguyên liệu (Bỏ stock_quantity) ---
 if (isset($_POST['save_inventory'])) {
     $supplier_id = !empty($_POST['supplier_id']) ? (int)$_POST['supplier_id'] : null;
-    $min_stock   = max(0, (float)($_POST['min_stock'] ?? 0));
-    $zone        = trim($_POST['storage_zone'] ?? 'Kho khô');
+    $min_stock = max(0, (float)($_POST['min_stock'] ?? 0));
+
+    // FIX LỖI 900,000 -> 900: Lột bỏ dấu phẩy trước khi lưu vào database
+    $cost_price = isset($_POST['cost_price']) ? (float)str_replace(',', '', $_POST['cost_price']) : 0;
     $data = [
         trim($_POST['item_name']),
         $_POST['category'],
         $_POST['unit_name'],
-        (float)$_POST['cost_price'],
+        $cost_price,
         $supplier_id,
-        $min_stock,
-        $zone
+        $min_stock
     ];
+
     if (!empty($_POST['item_id'])) {
-        $db->prepare(
-            "UPDATE inventory
-             SET item_name=?, category=?, unit_name=?, cost_price=?, supplier_id=?, min_stock=?, storage_zone=?
-             WHERE id=?"
-        )->execute([...$data, (int)$_POST['item_id']]);
+        $db->prepare("UPDATE inventory SET item_name=?, category=?, unit_name=?, cost_price=?, supplier_id=?, min_stock=? WHERE id=?")->execute([...$data, (int)$_POST['item_id']]);
     } else {
-        $db->prepare(
-            "INSERT INTO inventory
-             (item_name, category, unit_name, cost_price, supplier_id, min_stock, storage_zone, stock_quantity)
-             VALUES (?, ?, ?, ?, ?, ?, ?, 0)"
-        )->execute($data);
+        $db->prepare("INSERT INTO inventory (item_name, category, unit_name, cost_price, supplier_id, min_stock) VALUES (?, ?, ?, ?, ?, ?)")->execute($data);
     }
-    header("Location: InventoryController.php"); exit;
+    header("Location: InventoryController.php");
+    exit;
 }
 
-// ----------------------------------------------------------------
-// F. Nhập / Xuất / Hủy (AJAX) — Giá bình quân gia quyền
-// ----------------------------------------------------------------
+// --- XỬ LÝ GIAO DỊCH (NHẬP / XUẤT / HỦY / CHUYỂN KHO) ---
 if (isset($_POST['action'])) {
     header('Content-Type: application/json');
     $db->beginTransaction();
     try {
-        $id  = (int)$_POST['item_id'];
-        $qty = (float)$_POST['quantity'];
-        if ($qty <= 0) throw new Exception("Số lượng phải lớn hơn 0.");
-
         if ($_POST['action'] === 'import') {
+            $id = (int)$_POST['item_id'];
+            $qty = (float)$_POST['quantity'];
+            if ($qty <= 0) throw new Exception("Số lượng phải lớn hơn 0.");
+
             $price = (float)$_POST['import_price'];
-            $s_id  = !empty($_POST['supplier_id']) ? (int)$_POST['supplier_id'] : null;
+            $s_id = !empty($_POST['supplier_id']) ? (int)$_POST['supplier_id'] : null;
+            // Đọc kho từ form (mặc định Kho Tổng = 1 nếu không chọn)
+            $main_warehouse_id = !empty($_POST['warehouse_id']) ? (int)$_POST['warehouse_id'] : 1;
 
-            // Giá bình quân gia quyền
-            $stmt_old = $db->prepare("SELECT stock_quantity, cost_price FROM inventory WHERE id = ?");
+            // Lấy tổng tồn kho ở mọi kho để tính giá BQGQ
+            $stmt_old = $db->prepare("SELECT IFNULL(SUM(quantity), 0) as total_stock FROM inventory_stocks WHERE ingredient_id = ?");
             $stmt_old->execute([$id]);
-            $old = $stmt_old->fetch(PDO::FETCH_ASSOC);
-            $total_qty = (float)$old['stock_quantity'] + $qty;
-            $avg_price = $total_qty > 0
-                ? (((float)$old['stock_quantity'] * (float)$old['cost_price']) + ($qty * $price)) / $total_qty
-                : $price;
+            $total_stock = (float)$stmt_old->fetchColumn();
 
-            $db->prepare(
-                "UPDATE inventory
-                 SET stock_quantity = stock_quantity + ?, cost_price = ?, supplier_id = ?, expiry_date = ?
-                 WHERE id = ?"
-            )->execute([$qty, $avg_price, $s_id, $_POST['expiry_date'] ?: null, $id]);
+            $stmt_price = $db->prepare("SELECT cost_price FROM inventory WHERE id = ?");
+            $stmt_price->execute([$id]);
+            $old_price = (float)$stmt_price->fetchColumn();
 
-            $db->prepare(
-                "INSERT INTO inventory_history (ingredient_id, type, quantity, performed_by)
-                 VALUES (?, 'import', ?, ?)"
-            )->execute([$id, $qty, $current_user]);
+            $avg_price = ($total_stock + $qty) > 0 ? (($total_stock * $old_price) + ($qty * $price)) / ($total_stock + $qty) : $price;
 
-        } else {
-            // Xuất / Hủy — kiểm tra tồn kho trước
-            $check = $db->prepare("SELECT stock_quantity FROM inventory WHERE id = ?");
-            $check->execute([$id]);
+            // Cập nhật giá và HSD ở bảng gốc
+            $db->prepare("UPDATE inventory SET cost_price = ?, supplier_id = ?, expiry_date = ? WHERE id = ?")
+                ->execute([$avg_price, $s_id, $_POST['expiry_date'] ?: null, $id]);
+
+            // Cộng vào Kho Tổng
+            $db->prepare("INSERT INTO inventory_stocks (warehouse_id, ingredient_id, quantity) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE quantity = quantity + ?")
+                ->execute([$main_warehouse_id, $id, $qty, $qty]);
+
+            $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, 'import', ?, ?)")->execute([$id, $main_warehouse_id, $qty, $current_user]);
+        } elseif ($_POST['action'] === 'export' || $_POST['action'] === 'loss') {
+            $id = (int)$_POST['item_id'];
+            $qty = (float)$_POST['quantity'];
+            if ($qty <= 0) throw new Exception("Số lượng phải lớn hơn 0.");
+
+            $w_id = (int)$_POST['warehouse_id'];
+            if (!$w_id) throw new Exception("Vui lòng chọn kho để xử lý.");
+
+            $check = $db->prepare("SELECT quantity FROM inventory_stocks WHERE warehouse_id = ? AND ingredient_id = ?");
+            $check->execute([$w_id, $id]);
             $current_stock = (float)$check->fetchColumn();
-            if ($current_stock < $qty) {
-                throw new Exception("Không đủ tồn kho! Hiện còn: " . number_format($current_stock, 2));
+
+            if ($current_stock < $qty) throw new Exception("Kho này không đủ tồn kho! Hiện còn: " . number_format($current_stock, 2));
+
+            $db->prepare("UPDATE inventory_stocks SET quantity = quantity - ? WHERE warehouse_id = ? AND ingredient_id = ?")->execute([$qty, $w_id, $id]);
+            $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, ?, ?, ?)")->execute([$id, $w_id, $_POST['action'], $qty, $current_user]);
+        } elseif ($_POST['action'] === 'transfer') {
+            // Action cũ (giữ cho tương thích nếu còn gọi từ nơi khác)
+            $id = (int)$_POST['item_id'];
+            $qty = (float)$_POST['quantity'];
+            if ($qty <= 0) throw new Exception("Số lượng phải lớn hơn 0.");
+
+            $from_id = (int)$_POST['from_warehouse_id'];
+            $to_id = (int)$_POST['to_warehouse_id'];
+
+            if ($from_id === $to_id) throw new Exception("Kho xuất và nhập không được trùng nhau.");
+
+            // CHỈ TẠO YÊU CẦU (PENDING), CHƯA TRỪ KHO
+            $db->prepare("INSERT INTO inventory_transfers (from_warehouse_id, to_warehouse_id, performed_by, note, status) VALUES (?, ?, ?, 'Yêu cầu chuyển kho nội bộ', 'pending')")
+                ->execute([$from_id, $to_id, $current_user]);
+
+            $transfer_id = $db->lastInsertId();
+            $db->prepare("INSERT INTO transfer_details (transfer_id, ingredient_id, quantity) VALUES (?, ?, ?)")
+                ->execute([$transfer_id, $id, $qty]);
+
+        } elseif ($_POST['action'] === 'transfer_multi') {
+            // Action mới: Chuyển kho NHIỀU MẶT HÀNG cùng lúc
+            $from_id = (int)$_POST['from_warehouse_id'];
+            $to_id   = (int)$_POST['to_warehouse_id'];
+
+            if ($from_id === $to_id) throw new Exception("Kho xuất và nhập không được trùng nhau.");
+
+            $item_ids = $_POST['trans_item_id'] ?? [];
+            $qtys     = $_POST['trans_qty']     ?? [];
+
+            if (empty($item_ids)) throw new Exception("Vui lòng chọn ít nhất 1 mặt hàng.");
+
+            // Validate tất cả dòng trước khi tạo phiếu
+            $valid_items = [];
+            foreach ($item_ids as $k => $raw_id) {
+                $ing_id = (int)$raw_id;
+                $qty    = (float)($qtys[$k] ?? 0);
+                if ($ing_id <= 0) throw new Exception("Vui lòng chọn nguyên liệu ở tất cả các dòng.");
+                if ($qty <= 0)    throw new Exception("Số lượng phải lớn hơn 0 ở tất cả các dòng.");
+                $valid_items[] = ['id' => $ing_id, 'qty' => $qty];
             }
 
-            $db->prepare("UPDATE inventory SET stock_quantity = stock_quantity - ? WHERE id = ?")
-               ->execute([$qty, $id]);
+            // Tạo 1 phiếu chuyển kho duy nhất
+            $db->prepare("INSERT INTO inventory_transfers (from_warehouse_id, to_warehouse_id, performed_by, note, status) VALUES (?, ?, ?, ?, 'pending')")
+               ->execute([$from_id, $to_id, $current_user, 'Yêu cầu chuyển kho nội bộ (' . count($valid_items) . ' mặt hàng)']);
 
-            $db->prepare(
-                "INSERT INTO inventory_history (ingredient_id, type, quantity, performed_by)
-                 VALUES (?, ?, ?, ?)"
-            )->execute([$id, $_POST['action'], $qty, $current_user]);
+            $transfer_id  = $db->lastInsertId();
+            $stmt_detail  = $db->prepare("INSERT INTO transfer_details (transfer_id, ingredient_id, quantity) VALUES (?, ?, ?)");
+
+            foreach ($valid_items as $item) {
+                $stmt_detail->execute([$transfer_id, $item['id'], $item['qty']]);
+            }
+        } elseif ($_POST['action'] === 'approve_transfer') {
+            $t_id = (int)$_POST['transfer_id'];
+
+            // 1. Lấy thông tin phiếu chuyển
+            $stmt = $db->prepare("SELECT * FROM inventory_transfers WHERE id = ? AND status = 'pending'");
+            $stmt->execute([$t_id]);
+            $transfer = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$transfer) throw new Exception("Không tìm thấy phiếu chuyển hoặc phiếu đã được xử lý.");
+
+            // 2. Lấy chi tiết hàng hóa
+            $stmt_d = $db->prepare("SELECT * FROM transfer_details WHERE transfer_id = ?");
+            $stmt_d->execute([$t_id]);
+            $details = $stmt_d->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($details as $d) {
+                $ing_id = $d['ingredient_id'];
+                $qty = (float)$d['quantity'];
+                $from_w = $transfer['from_warehouse_id'];
+                $to_w = $transfer['to_warehouse_id'];
+
+                // Kiểm tra tồn kho tại kho xuất
+                $chk = $db->prepare("SELECT quantity FROM inventory_stocks WHERE warehouse_id = ? AND ingredient_id = ?");
+                $chk->execute([$from_w, $ing_id]);
+                $current_stock = (float)$chk->fetchColumn();
+
+                if ($current_stock < $qty) {
+                    $item_stmt = $db->prepare("SELECT item_name FROM inventory WHERE id = ?");
+                    $item_stmt->execute([$ing_id]);
+                    $item_name = $item_stmt->fetchColumn();
+                    throw new Exception("Kho xuất không đủ hàng cho mục: $item_name (Cần $qty, Có $current_stock)");
+                }
+
+                // Thực hiện trừ kho xuất
+                $db->prepare("UPDATE inventory_stocks SET quantity = quantity - ? WHERE warehouse_id = ? AND ingredient_id = ?")->execute([$qty, $from_w, $ing_id]);
+                // Thực hiện cộng kho nhập
+                $db->prepare("INSERT INTO inventory_stocks (warehouse_id, ingredient_id, quantity) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE quantity = quantity + ?")->execute([$to_w, $ing_id, $qty, $qty]);
+
+                // Ghi lịch sử giao dịch (2 dòng: 1 xuất, 1 nhập)
+                $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, 'export', ?, ?)")
+                    ->execute([$ing_id, $from_w, $qty, $current_user . " (Chuyển đi #$t_id)"]);
+                $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, 'import', ?, ?)")
+                    ->execute([$ing_id, $to_w, $qty, $current_user . " (Nhận từ #$t_id)"]);
+            }
+
+            // 3. Cập nhật trạng thái phiếu chuyển
+            $db->prepare("UPDATE inventory_transfers SET status = 'completed', approved_by = ?, approved_at = NOW() WHERE id = ?")
+                ->execute([$current_user, $t_id]);
+        } elseif ($_POST['action'] === 'cancel_transfer') {
+            $t_id = (int)$_POST['transfer_id'];
+            $db->prepare("UPDATE inventory_transfers SET status = 'cancelled' WHERE id = ?")->execute([$t_id]);
         }
 
         $db->commit();
         echo json_encode(['status' => 'success']);
-
     } catch (Exception $e) {
         $db->rollBack();
         echo json_encode(['status' => 'error', 'msg' => $e->getMessage()]);
@@ -223,80 +282,59 @@ if (isset($_POST['action'])) {
     exit;
 }
 
-// ----------------------------------------------------------------
-// G. Xóa nguyên liệu
-// ----------------------------------------------------------------
+// --- XỬ LÝ ẨN/HIỆN VÀ XÓA NGUYÊN LIỆU ---
+if (isset($_GET['toggle_id'])) {
+    $db->prepare("UPDATE inventory SET is_active = NOT is_active WHERE id = ?")->execute([(int)$_GET['toggle_id']]);
+    header("Location: InventoryController.php");
+    exit;
+}
 if (isset($_GET['delete_id'])) {
     $db->prepare("DELETE FROM inventory WHERE id = ?")->execute([(int)$_GET['delete_id']]);
-    header("Location: InventoryController.php"); exit;
+    header("Location: InventoryController.php");
+    exit;
 }
 
-// ----------------------------------------------------------------
-// H. Kiểm kê kho — ĐÃ FIX: bulk SELECT + validate $ing_id + redirect thay die()
-// ----------------------------------------------------------------
+// --- KIỂM KÊ KHO (AUDIT THEO WAREHOUSE) ---
 if (isset($_POST['perform_audit'])) {
+    $w_id = (int)$_POST['audit_warehouse_id'];
     $db->beginTransaction();
     try {
-        // Lấy danh sách id hợp lệ từ POST, ép kiểu int toàn bộ
+        if (!$w_id) throw new Exception("Chưa chọn kho kiểm kê.");
         $raw_ids = array_keys($_POST['actual_qty'] ?? []);
         $valid_ids = array_filter(array_map('intval', $raw_ids), fn($id) => $id > 0);
+        if (empty($valid_ids)) throw new Exception("Không có dữ liệu hợp lệ.");
 
-        if (empty($valid_ids)) {
-            throw new Exception("Không có dữ liệu kiểm kê hợp lệ.");
-        }
-
-        // ✅ FIX N+1: Bulk SELECT 1 lần thay vì query trong loop
         $placeholders = implode(',', array_fill(0, count($valid_ids), '?'));
-        $bulk = $db->prepare(
-            "SELECT id, stock_quantity FROM inventory WHERE id IN ($placeholders)"
-        );
-        $bulk->execute($valid_ids);
-        $inv_map = array_column($bulk->fetchAll(PDO::FETCH_ASSOC), 'stock_quantity', 'id');
+        $bulk = $db->prepare("SELECT ingredient_id, quantity FROM inventory_stocks WHERE warehouse_id = ? AND ingredient_id IN ($placeholders)");
+        $bulk->execute(array_merge([$w_id], $valid_ids));
+        $inv_map = array_column($bulk->fetchAll(PDO::FETCH_ASSOC), 'quantity', 'ingredient_id');
 
-        // Tạo đợt kiểm kê
-        $db->prepare("INSERT INTO inventory_audits (performed_by, notes) VALUES (?, ?)")
-           ->execute([$current_user, trim($_POST['audit_notes'] ?? '')]);
+        $db->prepare("INSERT INTO inventory_audits (performed_by, notes) VALUES (?, ?)")->execute([$current_user, trim($_POST['audit_notes'] ?? '')]);
         $audit_id = (int)$db->lastInsertId();
 
-        $ins_detail = $db->prepare(
-            "INSERT INTO inventory_audit_details
-             (audit_id, ingredient_id, system_qty, physical_qty, variance)
-             VALUES (?, ?, ?, ?, ?)"
-        );
-        $ins_history = $db->prepare(
-            "INSERT INTO inventory_history (ingredient_id, type, quantity, performed_by)
-             VALUES (?, ?, ?, ?)"
-        );
-        $upd_stock = $db->prepare(
-            "UPDATE inventory SET stock_quantity = ? WHERE id = ?"
-        );
+        $ins_detail = $db->prepare("INSERT INTO inventory_audit_details (audit_id, ingredient_id, system_qty, physical_qty, variance) VALUES (?, ?, ?, ?, ?)");
+        $ins_history = $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, ?, ?, ?)");
+        $upd_stock = $db->prepare("INSERT INTO inventory_stocks (warehouse_id, ingredient_id, quantity) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE quantity = ?");
 
         foreach ($_POST['actual_qty'] as $ing_id => $physical_qty) {
-            // ✅ FIX: Validate key — chỉ xử lý id tồn tại trong DB
             $ing_id = (int)$ing_id;
-            if (!isset($inv_map[$ing_id])) continue;
             if ($physical_qty === '' || $physical_qty === null) continue;
 
             $physical_qty = (float)$physical_qty;
-            $system_qty   = (float)$inv_map[$ing_id];
-            $variance     = $physical_qty - $system_qty;
+            $system_qty = (float)($inv_map[$ing_id] ?? 0);
+            $variance = $physical_qty - $system_qty;
 
-            // Lưu chi tiết kiểm kê
             $ins_detail->execute([$audit_id, $ing_id, $system_qty, $physical_qty, $variance]);
 
-            // Chỉ cập nhật khi có chênh lệch
             if ($variance != 0) {
-                $upd_stock->execute([$physical_qty, $ing_id]);
-                $type = $variance > 0 ? 'import' : 'loss';
-                $ins_history->execute([$ing_id, $type, abs($variance), $current_user . ' (Kiểm kê)']);
+                $upd_stock->execute([$w_id, $ing_id, $physical_qty, $physical_qty]);
+                $type = $variance > 0 ? 'audit_adjust_up' : 'audit_adjust_down';
+                $ins_history->execute([$ing_id, $w_id, $type, abs($variance), $current_user . ' (Kiểm kê)']);
             }
         }
-
         $db->commit();
         header("Location: InventoryController.php?tab=audit&msg=success");
-
     } catch (Exception $e) {
-        // ✅ FIX: Thay die() bằng redirect — không lộ lỗi hệ thống
         $db->rollBack();
         header("Location: InventoryController.php?tab=audit&msg=error");
     }
@@ -304,71 +342,78 @@ if (isset($_POST['perform_audit'])) {
 }
 
 // ============================================================
-// 2. TRUY VẤN DỮ LIỆU HIỂN THỊ
+// 2. TRUY VẤN DỮ LIỆU HIỂN THỊ CHÍNH
 // ============================================================
-$top_used = $db->query("
-    SELECT i.item_name, SUM(h.quantity) as total, i.unit_name
-    FROM inventory_history h
-    JOIN inventory i ON h.ingredient_id = i.id
-    WHERE h.type = 'export'
-    GROUP BY i.id
-    ORDER BY total DESC
-    LIMIT 5
-")->fetchAll(PDO::FETCH_ASSOC);
 
-$cats      = $db->query("SELECT * FROM inventory_categories ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
-$units     = $db->query("SELECT * FROM inventory_units ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
-$suppliers = $db->query("SELECT * FROM suppliers ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+// Lấy danh sách nguyên liệu
+$inv_items = $db->query("SELECT i.*, s.name as s_name FROM inventory i LEFT JOIN suppliers s ON i.supplier_id = s.id ORDER BY i.item_name ASC")->fetchAll(PDO::FETCH_ASSOC);
 
-$inv = $db->query("
-    SELECT i.*, s.name as s_name
-    FROM inventory i
-    LEFT JOIN suppliers s ON i.supplier_id = s.id
-    ORDER BY i.item_name ASC
-")->fetchAll(PDO::FETCH_ASSOC);
-
-$history = $db->query("
-    SELECT h.*, i.item_name, i.unit_name
-    FROM inventory_history h
-    JOIN inventory i ON h.ingredient_id = i.id
-    ORDER BY h.created_at DESC
-    LIMIT 100
-")->fetchAll(PDO::FETCH_ASSOC);
-
-$reorder_list = $db->query("
-    SELECT i.*, (i.min_stock - i.stock_quantity) as suggest_qty, s.name as s_name
-    FROM inventory i
-    LEFT JOIN suppliers s ON i.supplier_id = s.id
-    WHERE i.min_stock > 0 AND i.stock_quantity <= i.min_stock
-    ORDER BY (i.min_stock - i.stock_quantity) DESC
-")->fetchAll(PDO::FETCH_ASSOC);
-
-$today     = date('Y-m-d');
-$warn_date = date('Y-m-d', strtotime('+14 days'));
-
-$low_stock_count   = 0;
-$expiry_warn_count = 0;
-foreach ($inv as $i) {
-    $min = (float)($i['min_stock'] ?? 0);
-    if ($min > 0 && (float)$i['stock_quantity'] <= $min) $low_stock_count++;
-    if (!empty($i['expiry_date']) && $i['expiry_date'] <= $warn_date) $expiry_warn_count++;
+// Lấy cục tồn kho chi tiết và Map vào mảng
+$stocks_raw = $db->query("SELECT ingredient_id, warehouse_id, quantity FROM inventory_stocks")->fetchAll(PDO::FETCH_ASSOC);
+$stock_map = [];
+$total_stock_map = [];
+foreach ($stocks_raw as $s) {
+    $stock_map[$s['ingredient_id']][$s['warehouse_id']] = (float)$s['quantity'];
+    if (!isset($total_stock_map[$s['ingredient_id']])) $total_stock_map[$s['ingredient_id']] = 0;
+    $total_stock_map[$s['ingredient_id']] += (float)$s['quantity'];
 }
 
-$chart_raw = $db->query("
-    SELECT
-        DATE_FORMAT(created_at, '%Y-%m') as mo,
-        SUM(CASE WHEN type='import' THEN quantity ELSE 0 END) as ti,
-        SUM(CASE WHEN type='export' THEN quantity ELSE 0 END) as te,
-        SUM(CASE WHEN type='loss'   THEN quantity ELSE 0 END) as tl
-    FROM inventory_history
-    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 5 MONTH)
-    GROUP BY mo
-    ORDER BY mo ASC
+$low_stock_count = 0;
+$expiry_warn_count = 0;
+$today = date('Y-m-d');
+$warn_date = date('Y-m-d', strtotime('+7 days'));
+
+foreach ($inv_items as &$item) {
+    $item['stocks'] = $stock_map[$item['id']] ?? [];
+    $item['total_stock'] = $total_stock_map[$item['id']] ?? 0;
+
+    $min = (float)($item['min_stock'] ?? 0);
+    // CHỈ TÍNH CẢNH BÁO CHO NHỮNG MÓN ĐANG HOẠT ĐỘNG (is_active = 1)
+    if ($item['is_active'] == 1) {
+        if ($min > 0 && $item['total_stock'] <= $min) $low_stock_count++;
+        if (!empty($item['expiry_date']) && $item['expiry_date'] <= $warn_date) $expiry_warn_count++;
+    }
+}
+unset($item);
+$inv = $inv_items;
+
+// Danh sách Cần Đặt Hàng (PO) cũng sẽ bỏ qua các món đã Ẩn
+$reorder_list = array_filter($inv, fn($i) => $i['min_stock'] > 0 && $i['total_stock'] <= $i['min_stock'] && $i['is_active'] == 1);
+usort($reorder_list, fn($a, $b) => ($b['min_stock'] - $b['total_stock']) <=> ($a['min_stock'] - $a['total_stock']));
+
+$top_used = $db->query("SELECT i.item_name, SUM(h.quantity) as total, i.unit_name FROM inventory_history h JOIN inventory i ON h.ingredient_id = i.id WHERE h.type = 'export' GROUP BY i.id ORDER BY total DESC LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
+$cats = $db->query("SELECT * FROM inventory_categories ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+$units = $db->query("SELECT * FROM inventory_units ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+$suppliers = $db->query("SELECT * FROM suppliers ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+$history = $db->query("SELECT h.*, i.item_name, i.unit_name, w.name as warehouse_name FROM inventory_history h JOIN inventory i ON h.ingredient_id = i.id LEFT JOIN warehouses w ON h.warehouse_id = w.id ORDER BY h.created_at DESC LIMIT 100")->fetchAll(PDO::FETCH_ASSOC);
+$transfers = $db->query("
+    SELECT t.*, 
+           w1.name as from_warehouse_name, 
+           w2.name as to_warehouse_name,
+           (SELECT GROUP_CONCAT(CONCAT(i.item_name, ' (', td.quantity, ')') SEPARATOR ', ') 
+            FROM transfer_details td 
+            JOIN inventory i ON td.ingredient_id = i.id 
+            WHERE td.transfer_id = t.id) as items_summary
+    FROM inventory_transfers t
+    JOIN warehouses w1 ON t.from_warehouse_id = w1.id
+    JOIN warehouses w2 ON t.to_warehouse_id = w2.id
+    ORDER BY t.transfer_date DESC LIMIT 50
+")->fetchAll(PDO::FETCH_ASSOC);
+$chart_raw = $db->query("SELECT DATE_FORMAT(created_at, '%Y-%m') as mo, SUM(CASE WHEN type='import' THEN quantity ELSE 0 END) as ti, SUM(CASE WHEN type='export' THEN quantity ELSE 0 END) as te, SUM(CASE WHEN type='loss' THEN quantity ELSE 0 END) as tl FROM inventory_history WHERE created_at >= DATE_SUB(NOW(), INTERVAL 5 MONTH) GROUP BY mo ORDER BY mo ASC")->fetchAll(PDO::FETCH_ASSOC);
+
+// BÁO CÁO GIÁ TRỊ TỒN KHO THEO TỪNG KHO (VALUE PER WAREHOUSE)
+$warehouse_values = $db->query("
+    SELECT w.id, w.name, 
+           SUM(s.quantity * i.cost_price) as total_value,
+           COUNT(s.ingredient_id) as item_count
+    FROM warehouses w
+    LEFT JOIN inventory_stocks s ON w.id = s.warehouse_id
+    LEFT JOIN inventory i ON s.ingredient_id = i.id
+    WHERE w.status = 1
+    GROUP BY w.id, w.name
 ")->fetchAll(PDO::FETCH_ASSOC);
 
 $msg = $_GET['msg'] ?? '';
 
-// ============================================================
-// 3. NẠP VIEW
-// ============================================================
+// Gọi View
 require_once __DIR__ . '/../../admin/views/inventory/inventory_view.php';
