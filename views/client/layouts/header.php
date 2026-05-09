@@ -471,8 +471,8 @@ if (!empty($logo_path)) {
                     </li>
 
                     <li>
-                        <a class="<?= ($current_page == 'about.php') ? 'active' : '' ?>"
-                            href="about.php">
+                        <a class="<?= ($current_page == 'Aboutus.php') ? 'active' : '' ?>"
+                            href="Aboutus.php">
                             Về chúng tôi
                         </a>
                     </li>
@@ -483,14 +483,6 @@ if (!empty($logo_path)) {
                             Thực đơn
                         </a>
                     </li>
-
-                    <li>
-                        <a class="<?= ($current_page == 'chefs.php') ? 'active' : '' ?>"
-                            href="views/client/chefs.php">
-                            Đội bếp
-                        </a>
-                    </li>
-
 
                     <li>
                         <a class="<?= ($current_page == 'contact.php') ? 'active' : '' ?>"

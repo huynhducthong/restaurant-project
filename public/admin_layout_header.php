@@ -43,6 +43,7 @@ $page_titles = [
     'ReportController.php'     => 'Báo Cáo & Thống Kê',
     'manage_banners.php'       => 'Quản Lý Banner',
     'manage_videos.php'        => 'Quản Lý Video',
+    'manage_about.php'         => 'Quản Lý Tin Tức',
     'manage_chefs.php'         => 'Quản Lý Đầu Bếp',
     'settings.php'             => 'Cài Đặt Hệ Thống',
     'footer_settings.php'      => 'Cấu Hình Footer',
@@ -72,15 +73,14 @@ $page_title = $page_titles[$current_page] ?? 'Khu Vực Quản Trị';
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-
         :root {
-            --sidebar-bg:     #ffffff;
+            --sidebar-bg: #ffffff;
             --sidebar-border: #ececec;
-            --accent:         #b8862e;
-            --accent-light:   #fff7e9;
-            --text-dark:      #222;
-            --text-muted:     #777;
-            --main-bg:        #f5f5f5;
+            --accent: #b8862e;
+            --accent-light: #fff7e9;
+            --text-dark: #222;
+            --text-muted: #777;
+            --main-bg: #f5f5f5;
 
         }
 
@@ -285,7 +285,6 @@ $page_title = $page_titles[$current_page] ?? 'Khu Vực Quản Trị';
         .content-area {
             padding: 30px;
         }
-
     </style>
 </head>
 
