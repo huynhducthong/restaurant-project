@@ -27,12 +27,9 @@ try {
         $stmt_items->execute([$booking_id]);
         $ordered_items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
 
-        // ĐỊNH VỊ KHO BẾP LÀ WAREHOUSE ID = 2
-        $kitchen_warehouse_id = 2;
-
-        // Chuẩn bị sẵn các câu lệnh SQL (Đã JOIN để lấy đơn vị tồn kho i_unit)
+        // Chuẩn bị sẵn các câu lệnh SQL (Đã JOIN để lấy đơn vị tồn kho i_unit và category)
         $query_recipe = $db->prepare("
-            SELECT r.ingredient_id, r.quantity_required, r.unit as r_unit, i.unit_name as i_unit 
+            SELECT r.ingredient_id, r.quantity_required, r.unit as r_unit, i.unit_name as i_unit, i.category
             FROM food_recipes r
             JOIN inventory i ON r.ingredient_id = i.id
             WHERE r.food_id = ?
@@ -62,22 +59,27 @@ try {
             foreach ($recipes as $r) {
                 $ing_id = $r['ingredient_id'];
                 $qty_req = (float)$r['quantity_required'];
+                $category = $r['category'];
+
+                // Xác định kho tương ứng: Đồ uống -> Bar (3), Khác -> Bếp (2)
+                $target_warehouse_id = ($category === 'Đồ uống') ? 3 : 2;
                 
                 // SỬ DỤNG HELPER ĐỂ QUY ĐỔI ĐƠN VỊ TẬP TRUNG
                 $qty_in_stock_unit = convert_to_base_unit($qty_req, $r['r_unit'], $r['i_unit']);
 
                 $total_reduction = $qty_in_stock_unit * $food_qty;
 
-                // 4. Trừ tồn kho tại Kho Bếp
-                $query_update_inventory->execute([$total_reduction, $ing_id, $kitchen_warehouse_id]);
+                // 4. Trừ tồn kho tại kho tương ứng
+                $query_update_inventory->execute([$total_reduction, $ing_id, $target_warehouse_id]);
 
                 // 5. Ghi lịch sử xuất kho
-                $query_history->execute([$ing_id, $kitchen_warehouse_id, $total_reduction]);
+                $query_history->execute([$ing_id, $target_warehouse_id, $total_reduction]);
             }
         }
 
         $db->commit();
-        echo json_encode(['status' => 'success', 'message' => 'Xác nhận đơn và trừ Kho Bếp thành công!']);
+        echo json_encode(['status' => 'success', 'message' => 'Xác nhận đơn và trừ kho thành công!']);
+
 
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Yêu cầu không hợp lệ.']);

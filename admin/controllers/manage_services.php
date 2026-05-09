@@ -36,27 +36,34 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
             $stmt_items->execute([$id]);
             $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
 
-            // ĐỊNH VỊ ID CỦA KHO BẾP (WAREHOUSE ID = 2)
-            $kitchen_warehouse_id = 2;
-
             foreach ($items as $item) {
                 $food_id = $item['menu_id'];
                 $order_qty = $item['quantity'];
 
-                // 4. Lấy định mức nguyên liệu và KIỂM TRA TỒN KHO TRONG KHO BẾP
+                // 4. Lấy định mức nguyên liệu và KIỂM TRA TỒN KHO TRONG KHO TƯƠNG ỨNG (BẾP/BAR)
                 $stmt_recipe = $db->prepare("
-                    SELECT r.ingredient_id, r.quantity_required, r.unit as r_unit, i.item_name, i.unit_name as i_unit,
-                           IFNULL((SELECT quantity FROM inventory_stocks WHERE ingredient_id = i.id AND warehouse_id = ?), 0) as stock_quantity
+                    SELECT r.ingredient_id, r.quantity_required, r.unit as r_unit, i.item_name, i.unit_name as i_unit, i.category
                     FROM food_recipes r
                     JOIN inventory i ON r.ingredient_id = i.id
                     WHERE r.food_id = ?
                 ");
-                $stmt_recipe->execute([$kitchen_warehouse_id, $food_id]);
+
+                $stmt_recipe->execute([$food_id]);
                 $recipes = $stmt_recipe->fetchAll(PDO::FETCH_ASSOC);
 
                 foreach ($recipes as $rcp) {
                     $ing_id = $rcp['ingredient_id'];
                     $qty_req = (float)$rcp['quantity_required'];
+                    $category = $rcp['category'];
+
+                    // XÁC ĐỊNH KHO TƯƠNG ỨNG: Đồ uống -> Kho Bar (3), Còn lại -> Kho Bếp (2)
+                    $target_warehouse_id = ($category === 'Đồ uống') ? 3 : 2;
+                    $warehouse_name = ($target_warehouse_id === 3) ? 'Bar' : 'Bếp';
+
+                    // Lấy tồn kho hiện tại của nguyên liệu này tại kho đích
+                    $stmt_stock = $db->prepare("SELECT quantity FROM inventory_stocks WHERE ingredient_id = ? AND warehouse_id = ?");
+                    $stmt_stock->execute([$ing_id, $target_warehouse_id]);
+                    $current_stock = (float)$stmt_stock->fetchColumn();
                     
                     $r_unit = strtolower(trim($rcp['r_unit']));
                     $i_unit = strtolower(trim($rcp['i_unit']));
@@ -65,18 +72,18 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
                     $qty_in_stock_unit = convert_to_base_unit($qty_req, $r_unit, $i_unit);
                     $total_deduct = $qty_in_stock_unit * $order_qty;
 
-                    // KIỂM TRA TỒN KHO BẾP: Nếu Bếp không đủ nguyên liệu thì báo lỗi
-                    if ($rcp['stock_quantity'] < $total_deduct) {
-                        throw new Exception("Kho Bếp không đủ nguyên liệu '" . $rcp['item_name'] . "' (Cần: $total_deduct $i_unit, Hiện có tại bếp: " . $rcp['stock_quantity'] . " $i_unit). Vui lòng yêu cầu xuất chuyển từ Kho Tổng xuống Kho Bếp!");
+                    // KIỂM TRA TỒN KHO: Nếu kho tương ứng không đủ nguyên liệu thì báo lỗi
+                    if ($current_stock < $total_deduct) {
+                        throw new Exception("Kho $warehouse_name không đủ nguyên liệu '" . $rcp['item_name'] . "' (Cần: $total_deduct $i_unit, Hiện có tại $warehouse_name: " . $current_stock . " $i_unit). Vui lòng yêu cầu xuất chuyển từ Kho Tổng xuống Kho $warehouse_name!");
                     }
 
-                    // 4. Trực tiếp trừ số lượng trong bảng Đa Kho (Kho Bếp)
+                    // 4. Trực tiếp trừ số lượng trong bảng Đa Kho (Kho tương ứng)
                     $db->prepare("UPDATE inventory_stocks SET quantity = quantity - ? WHERE ingredient_id = ? AND warehouse_id = ?")
-                       ->execute([$total_deduct, $ing_id, $kitchen_warehouse_id]);
+                       ->execute([$total_deduct, $ing_id, $target_warehouse_id]);
 
-                    // 5. Ghi lịch sử xuất kho (Kèm mã kho Bếp)
+                    // 5. Ghi lịch sử xuất kho (Kèm mã kho tương ứng)
                     $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, 'export', ?, 'Hệ thống POS')")
-                       ->execute([$ing_id, $kitchen_warehouse_id, $total_deduct]);
+                       ->execute([$ing_id, $target_warehouse_id, $total_deduct]);
                 }
             }
 
@@ -116,28 +123,29 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
             $stmt_chk->execute([$id]);
             $b = $stmt_chk->fetch();
             if ($b) {
-                // Nếu đơn đã Confirmed → hoàn kho Bếp trước khi xóa
+                // Nếu đơn đã Confirmed → hoàn kho đúng vị trí trước khi xóa
                 if ($b['status'] === 'Confirmed') {
-                    $kitchen_warehouse_id = 2;
                     $stmt_items = $db->prepare("SELECT menu_id, quantity FROM booking_details WHERE booking_id = ?");
                     $stmt_items->execute([$id]);
                     $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
                     foreach ($items as $item) {
                         $stmt_recipe = $db->prepare("
-                            SELECT r.ingredient_id, r.quantity_required, r.unit as r_unit, i.unit_name as i_unit
+                            SELECT r.ingredient_id, r.quantity_required, r.unit as r_unit, i.unit_name as i_unit, i.category
                             FROM food_recipes r JOIN inventory i ON r.ingredient_id = i.id
                             WHERE r.food_id = ?
                         ");
                         $stmt_recipe->execute([$item['menu_id']]);
                         foreach ($stmt_recipe->fetchAll(PDO::FETCH_ASSOC) as $rcp) {
+                            $target_warehouse_id = ($rcp['category'] === 'Đồ uống') ? 3 : 2;
                             $qty_back = convert_to_base_unit((float)$rcp['quantity_required'], strtolower(trim($rcp['r_unit'])), strtolower(trim($rcp['i_unit']))) * $item['quantity'];
                             $db->prepare("UPDATE inventory_stocks SET quantity = quantity + ? WHERE ingredient_id = ? AND warehouse_id = ?")
-                               ->execute([$qty_back, $rcp['ingredient_id'], $kitchen_warehouse_id]);
+                               ->execute([$qty_back, $rcp['ingredient_id'], $target_warehouse_id]);
                             $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, 'import', ?, ?)")
-                               ->execute([$rcp['ingredient_id'], $kitchen_warehouse_id, $qty_back, ($current_user ?? 'Admin') . ' (Hoàn kho #' . $id . ')']);
+                               ->execute([$rcp['ingredient_id'], $target_warehouse_id, $qty_back, ($current_user ?? 'Admin') . ' (Hoàn kho #' . $id . ')']);
                         }
                     }
                 }
+
                 // Giải phóng bàn nếu có
                 if ($b['table_id']) {
                     $db->prepare("UPDATE restaurant_tables SET is_available = 1 WHERE id = ?")->execute([$b['table_id']]);

@@ -9,13 +9,29 @@ use PHPMailer\PHPMailer\Exception;
 
 $db = (new Database())->getConnection();
 
-// 1. Cập nhật bảng (Thêm is_starred và status replied)
+// 1. Khởi tạo/Cập nhật bảng contacts
 try {
-    $db->exec("ALTER TABLE contacts ADD COLUMN is_starred TINYINT(1) DEFAULT 0");
-} catch (\Exception $e) {}
-try {
+    // Tạo bảng nếu chưa tồn tại
+    $db->exec("CREATE TABLE IF NOT EXISTS `contacts` (
+        `id` int(11) NOT NULL AUTO_INCREMENT,
+        `name` varchar(100) NOT NULL,
+        `email` varchar(100) NOT NULL,
+        `subject` varchar(255) DEFAULT NULL,
+        `message` text NOT NULL,
+        `status` enum('new','read','replied') DEFAULT 'new',
+        `is_starred` tinyint(1) DEFAULT 0,
+        `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+        PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+
+    // Đảm bảo có cột is_starred (dành cho các phiên bản cũ đã có bảng)
+    $db->exec("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS is_starred TINYINT(1) DEFAULT 0");
+    
+    // Cập nhật enum status nếu cần
     $db->exec("ALTER TABLE contacts MODIFY COLUMN status ENUM('new','read','replied') DEFAULT 'new'");
-} catch (\Exception $e) {}
+} catch (\Exception $e) {
+    // Bỏ qua lỗi nếu cột đã tồn tại hoặc có vấn đề nhỏ khác
+}
 
 $message_success = '';
 $message_error = '';

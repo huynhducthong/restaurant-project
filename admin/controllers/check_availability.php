@@ -15,35 +15,43 @@ try {
         exit;
     }
 
-    // ĐỊNH VỊ KHO BẾP LÀ WAREHOUSE ID = 2
-    $kitchen_warehouse_id = 2;
-
-    // Lấy công thức và tồn kho TRONG KHO BẾP
+    // Lấy công thức nguyên liệu
     $stmt = $db->prepare("
-        SELECT r.quantity_required, i.item_name, i.unit_name,
-               IFNULL((SELECT quantity FROM inventory_stocks WHERE ingredient_id = i.id AND warehouse_id = ?), 0) as stock_quantity
+        SELECT r.quantity_required, i.id as ing_id, i.item_name, i.unit_name, i.category
         FROM food_recipes r
         JOIN inventory i ON r.ingredient_id = i.id
         WHERE r.food_id = ?
     ");
-    $stmt->execute([$kitchen_warehouse_id, $food_id]);
+    $stmt->execute([$food_id]);
     $recipes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $shortages = [];
     foreach ($recipes as $rcp) {
         $total_needed = $rcp['quantity_required'] * $order_qty;
+        $ing_id = $rcp['ing_id'];
+        $category = $rcp['category'];
+
+        // Xác định kho tương ứng: Đồ uống -> Bar (3), Khác -> Bếp (2)
+        $target_warehouse_id = ($category === 'Đồ uống') ? 3 : 2;
+        $warehouse_name = ($target_warehouse_id === 3) ? 'Bar' : 'Bếp';
+
+        // Lấy tồn kho tại kho tương ứng
+        $stmt_stock = $db->prepare("SELECT IFNULL(quantity, 0) FROM inventory_stocks WHERE ingredient_id = ? AND warehouse_id = ?");
+        $stmt_stock->execute([$ing_id, $target_warehouse_id]);
+        $stock_qty = (float)$stmt_stock->fetchColumn();
         
-        // Nếu tồn kho bếp nhỏ hơn số lượng cần dùng -> Thiếu hàng
-        if ($rcp['stock_quantity'] < $total_needed) {
-            $shortages[] = $rcp['item_name'] . " (Cần: " . $total_needed . " " . $rcp['unit_name'] . ", Bếp còn: " . $rcp['stock_quantity'] . " " . $rcp['unit_name'] . ")";
+        // Kiểm tra tồn kho
+        if ($stock_qty < $total_needed) {
+            $shortages[] = $rcp['item_name'] . " (Cần: " . $total_needed . " " . $rcp['unit_name'] . ", tại $warehouse_name còn: " . $stock_qty . " " . $rcp['unit_name'] . ")";
         }
     }
+
 
     if (count($shortages) > 0) {
         // Trả về mảng lỗi để JS hiện thông báo
         echo json_encode([
             'status' => 'error', 
-            'msg' => 'Kho Bếp không đủ nguyên liệu, hãy báo cho Bếp Trưởng!',
+            'msg' => 'Kho không đủ nguyên liệu, hãy báo cho Bếp Trưởng hoặc Quản lý Bar!',
             'details' => $shortages
         ]);
     } else {

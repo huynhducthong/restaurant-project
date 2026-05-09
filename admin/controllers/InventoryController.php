@@ -204,9 +204,9 @@ if (isset($_POST['action'])) {
             // Validate tất cả dòng trước khi tạo phiếu
             $valid_items = [];
             foreach ($item_ids as $k => $raw_id) {
+                if ($raw_id === '') throw new Exception("Vui lòng chọn nguyên liệu ở tất cả các dòng.");
                 $ing_id = (int)$raw_id;
                 $qty    = (float)($qtys[$k] ?? 0);
-                if ($ing_id <= 0) throw new Exception("Vui lòng chọn nguyên liệu ở tất cả các dòng.");
                 if ($qty <= 0)    throw new Exception("Số lượng phải lớn hơn 0 ở tất cả các dòng.");
                 $valid_items[] = ['id' => $ing_id, 'qty' => $qty];
             }

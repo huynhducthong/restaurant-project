@@ -236,7 +236,16 @@ include '../../public/admin_layout_header.php';
                 <button class="btn btn-menu btn-light w-100 mb-2 py-2 fw-bold" id="btn-chart" onclick="switchTab('chart')">
                     <i class="fas fa-chart-bar me-2"></i> BIỂU ĐỒ KHO
                 </button>
+                <hr class="my-3 opacity-10">
+                <h6 class="fw-bold text-secondary text-uppercase small mb-3">Cài đặt danh mục</h6>
+                <button class="btn btn-menu btn-outline-secondary w-100 mb-2 py-2 fw-bold" onclick="openTagManager('category')">
+                    <i class="fas fa-tags me-2"></i> DANH MỤC
+                </button>
+                <button class="btn btn-menu btn-outline-secondary w-100 mb-2 py-2 fw-bold" onclick="openTagManager('unit')">
+                    <i class="fas fa-ruler me-2"></i> ĐƠN VỊ TÍNH
+                </button>
             </div>
+
 
             <?php if ($low_stock_count > 0): ?>
                 <div class="stat-card p-3 mb-3 border-start-danger" style="border-left-color: var(--danger-color);">
