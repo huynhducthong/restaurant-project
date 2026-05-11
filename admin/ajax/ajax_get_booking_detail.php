@@ -7,7 +7,9 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // admin/ajax/ajax_get_booking_detail.php
+// admin/ajax/ajax_get_booking_detail.php
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../config/inventory_helper.php';
 header('Content-Type: application/json');
 
 if (!isset($_GET['id'])) {
@@ -39,16 +41,14 @@ try {
     $stmt_items->execute([$id]);
     $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
 
-    // 3. TỐI ƯU HÓA: Lấy tất cả định mức nguyên liệu chỉ bằng 1 câu truy vấn (Fix N+1 Query)
+    // 3. Lấy định mức nguyên liệu và kiểm tra tồn kho
+    $required_ingredients = [];
     if (!empty($items)) {
-        // Gom tất cả ID món ăn thành một mảng
         $food_ids = array_column($items, 'menu_id');
-        
-        // Tạo danh sách dấu hỏi (?) tương ứng với số lượng ID để dùng IN(...)
         $placeholders = implode(',', array_fill(0, count($food_ids), '?'));
 
         $stmt_recipe = $db->prepare("
-            SELECT r.*, i.item_name, i.unit_name as inventory_unit
+            SELECT r.*, i.item_name, i.unit_name as inventory_unit, i.category
             FROM food_recipes r
             JOIN inventory i ON r.ingredient_id = i.id
             WHERE r.food_id IN ($placeholders)
@@ -56,20 +56,56 @@ try {
         $stmt_recipe->execute($food_ids);
         $all_recipes = $stmt_recipe->fetchAll(PDO::FETCH_ASSOC);
 
-        // Nhóm các nguyên liệu theo ID món ăn để dễ map dữ liệu
         $recipes_by_food = [];
         foreach ($all_recipes as $recipe) {
             $recipes_by_food[$recipe['food_id']][] = $recipe;
         }
 
-        // Gán mảng nguyên liệu đã nhóm vào từng món ăn tương ứng
         foreach ($items as &$item) {
-            $item['recipes'] = $recipes_by_food[$item['menu_id']] ?? [];
+            $item_recipes = $recipes_by_food[$item['menu_id']] ?? [];
+            $item['recipes'] = $item_recipes;
+            
+            // Tính toán tổng nguyên liệu cần thiết cho cả đơn hàng
+            foreach ($item_recipes as $rcp) {
+                $ing_id = $rcp['ingredient_id'];
+                $qty_req = (float)$rcp['quantity_required'] * (float)$item['quantity'];
+                $base_qty = convert_to_base_unit($qty_req, $rcp['unit'], $rcp['inventory_unit']);
+                
+                if (!isset($required_ingredients[$ing_id])) {
+                    $required_ingredients[$ing_id] = [
+                        'id' => $ing_id,
+                        'name' => $rcp['item_name'],
+                        'total_required' => 0,
+                        'unit' => $rcp['inventory_unit'],
+                        'category' => $rcp['category'],
+                        'target_warehouse_id' => ($rcp['category'] === 'Đồ uống') ? 3 : 2,
+                        'target_warehouse_name' => ($rcp['category'] === 'Đồ uống') ? 'Bar' : 'Bếp'
+                    ];
+                }
+                $required_ingredients[$ing_id]['total_required'] += $base_qty;
+            }
+        }
+        
+        // 4. Kiểm tra số lượng tồn thực tế ở các kho
+        foreach ($required_ingredients as &$ing) {
+            // Tồn tại kho đích (Bếp/Bar)
+            $stmt_target = $db->prepare("SELECT quantity FROM inventory_stocks WHERE ingredient_id = ? AND warehouse_id = ?");
+            $stmt_target->execute([$ing['id'], $ing['target_warehouse_id']]);
+            $ing['stock_target'] = (float)($stmt_target->fetchColumn() ?: 0);
+            
+            // Tồn tại kho tổng (Warehouse 1)
+            $stmt_main = $db->prepare("SELECT quantity FROM inventory_stocks WHERE ingredient_id = ? AND warehouse_id = 1");
+            $stmt_main->execute([$ing['id']]);
+            $ing['stock_main'] = (float)($stmt_main->fetchColumn() ?: 0);
+            
+            $ing['is_sufficient'] = ($ing['stock_target'] >= $ing['total_required']);
+            $ing['missing_qty'] = max(0, $ing['total_required'] - $ing['stock_target']);
+            $ing['can_transfer'] = ($ing['stock_main'] >= $ing['missing_qty']);
         }
     }
 
-    // Gộp mảng món ăn vào thông tin booking và trả về JSON
     $booking['foods'] = $items;
+    $booking['inventory_check'] = array_values($required_ingredients);
     echo json_encode($booking);
 
 } catch (Exception $e) {

@@ -25,6 +25,14 @@ $t_room = $db->query("SELECT * FROM restaurant_tables WHERE category='room'  ORD
 $foods  = $db->query("SELECT * FROM foods WHERE status=1 ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 
 include 'views/client/layouts/header.php';
+
+$is_success = isset($_GET['success']) && isset($_GET['id']);
+$booking = null;
+if ($is_success) {
+    $stmt = $db->prepare("SELECT s.*, t.table_code FROM service_bookings s LEFT JOIN restaurant_tables t ON s.table_id = t.id WHERE s.id = ?");
+    $stmt->execute([$_GET['id']]);
+    $booking = $stmt->fetch(PDO::FETCH_ASSOC);
+}
 ?>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -836,6 +844,92 @@ include 'views/client/layouts/header.php';
 </style>
 
 <div class="bk-page">
+    <?php if ($is_success && $booking): ?>
+    <section class="bk-hero" style="padding: 140px 0 100px; background: linear-gradient(135deg, #061210 0%, #143B36 100%);">
+        <div class="container" style="position:relative;z-index:1">
+            <div class="success-icon-wrap" style="margin-bottom: 30px; animation: fadeInUp 0.8s var(--ease);">
+                <div style="width: 80px; height: 80px; background: rgba(205, 164, 94, 0.1); border: 2px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: var(--gold); font-size: 32px; box-shadow: 0 0 30px rgba(205, 164, 94, 0.2);">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="bk-hero-eyebrow" style="animation: fadeInUp 0.8s var(--ease) 0.1s both;">
+                Đặt chỗ thành công
+            </div>
+            <h1 style="animation: fadeInUp 0.8s var(--ease) 0.2s both;">
+                Cảm ơn <em><?= htmlspecialchars($booking['customer_name']) ?></em>!<br>
+                Yêu cầu của bạn đã được ghi nhận
+            </h1>
+            <p class="bk-hero-sub" style="max-width: 600px; margin: 0 auto 40px; animation: fadeInUp 0.8s var(--ease) 0.3s both;">
+                Mã số đặt chỗ: <span style="color: var(--gold); font-weight: 600;">#SVR-<?= htmlspecialchars($booking['id']) ?></span>. 
+                Đội ngũ chúng tôi sẽ gọi điện xác nhận cho bạn qua số <span style="color: #fff;"><?= htmlspecialchars($booking['customer_phone']) ?></span> sớm nhất.
+            </p>
+            <div class="svc-tabs" style="gap: 15px; animation: fadeInUp 0.8s var(--ease) 0.4s both;">
+                <a href="admin/export_pdf.php?id=<?= $booking['id'] ?>" class="btn-go" style="width: auto; padding: 14px 40px; margin-top: 0; background: linear-gradient(135deg, #D4B06A, #A5803A); color: #000; border-radius: 50px;">
+                    <i class="fas fa-file-pdf me-2"></i> Tải Phiếu Xác Nhận (PDF)
+                </a>
+                <a href="index.php" class="svc-tab" style="padding: 14px 40px; border-radius: 50px; border-color: rgba(255,255,255,0.2); backdrop-filter: blur(10px);">
+                    Về trang chủ
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+
+    <div class="bk-wrap" style="margin-top: -60px; grid-template-columns: 1fr; max-width: 850px; animation: fadeInUp 1s var(--ease) 0.5s both;">
+        <div class="seamless-box" style="padding: 50px; border: 1px solid rgba(212, 176, 106, 0.2); background: #fff url('https://www.transparenttextures.com/patterns/cubes.png');">
+            <div style="text-align: center; margin-bottom: 40px;">
+                <h3 class="section-heading" style="justify-content: center; font-size: 1.8rem; margin-bottom: 10px;">Chi tiết đặt dịch vụ</h3>
+                <div style="width: 50px; height: 2px; background: var(--gold); margin: 0 auto;"></div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 40px; margin-bottom: 40px;">
+                <div style="padding: 20px; background: #faf9f6; border-radius: 12px; border-left: 3px solid var(--gold);">
+                    <label class="fl" style="color: var(--txt-muted); font-size: 10px; letter-spacing: 2px;">DỊCH VỤ</label>
+                    <div style="font-size: 1.1rem; font-weight: 600; color: var(--g1);"><?= htmlspecialchars(strtoupper($booking['service_type'])) ?></div>
+                </div>
+                <div style="padding: 20px; background: #faf9f6; border-radius: 12px; border-left: 3px solid var(--gold);">
+                    <label class="fl" style="color: var(--txt-muted); font-size: 10px; letter-spacing: 2px;">THỜI GIAN</label>
+                    <div style="font-size: 1.1rem; font-weight: 600; color: var(--g1);"><?= date('H:i · d/m/Y', strtotime($booking['booking_date'])) ?></div>
+                </div>
+                <div style="padding: 20px; background: #faf9f6; border-radius: 12px; border-left: 3px solid var(--gold);">
+                    <label class="fl" style="color: var(--txt-muted); font-size: 10px; letter-spacing: 2px;">SỐ KHÁCH</label>
+                    <div style="font-size: 1.1rem; font-weight: 600; color: var(--g1);"><?= htmlspecialchars($booking['guests']) ?> NGƯỜI</div>
+                </div>
+                <?php if ($booking['table_code']): ?>
+                <div style="padding: 20px; background: #faf9f6; border-radius: 12px; border-left: 3px solid var(--gold);">
+                    <label class="fl" style="color: var(--txt-muted); font-size: 10px; letter-spacing: 2px;">VỊ TRÍ</label>
+                    <div style="font-size: 1.1rem; font-weight: 600; color: var(--gold);"><?= htmlspecialchars($booking['table_code']) ?></div>
+                </div>
+                <?php endif; ?>
+            </div>
+
+            <div style="background: var(--g0); color: #fff; padding: 25px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5);">Tiền tạm tính</div>
+                    <div style="font-size: 1.4rem; font-weight: 600; color: var(--gold);"><?= number_format($booking['total_amount']) ?>đ</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5);">Tiền cọc cần thanh toán (30%)</div>
+                    <div style="font-size: 1.4rem; font-weight: 600; color: #34d399;"><?= number_format($booking['total_amount'] * 0.3) ?>đ</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px; padding-top: 30px; border-top: 1px dashed #e5dfd5; text-align: center;">
+                <p style="font-size: 13px; color: var(--txt-muted); line-height: 1.6;">
+                    Quý khách vui lòng kiểm tra email hoặc điện thoại để nhận thông tin thanh toán.<br>
+                    Cảm ơn quý khách đã tin tưởng lựa chọn <strong>Restaurantly</strong>.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <?php else: ?>
     <section class="bk-hero">
         <div class="container" style="position:relative;z-index:1">
             <div class="bk-hero-eyebrow">
@@ -1251,5 +1345,7 @@ include 'views/client/layouts/header.php';
         us();
     })();
 </script>
+    <?php endif; ?>
+</div>
 
 <?php include 'views/client/layouts/footer.php'; ?>

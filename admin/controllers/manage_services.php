@@ -386,6 +386,15 @@ include '../../public/admin_layout_header.php';
                         <div class="col-7 fw-bold text-warning fs-5" id="m-deposit"></div>
                     </div>
                 </div>
+
+                <!-- NEW: INVENTORY CHECK SECTION -->
+                <div id="m-inventory-section" class="mt-3 p-3 rounded" style="display:none; background: #fff9f0; border: 1px solid #ffeeba;">
+                    <h6 class="fw-bold mb-2 text-warning" style="font-size: 13px;"><i class="fas fa-exclamation-triangle me-1"></i> Kiểm tra tồn kho nguyên liệu</h6>
+                    <div id="m-inventory-list" class="text-start small mb-3"></div>
+                    <button type="button" id="btn-fast-transfer" class="btn btn-warning btn-sm w-100 fw-bold">
+                        <i class="fas fa-truck-loading me-1"></i> Chuyển kho nhanh từ Kho Tổng
+                    </button>
+                </div>
             </div>
             <div class="modal-footer border-top-0 justify-content-center">
                 <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal">Đóng</button>
@@ -520,7 +529,7 @@ include '../../public/admin_layout_header.php';
                 ? '<span class="badge bg-warning text-dark">Chờ duyệt</span>'
                 : '<span class="badge bg-success">Đã xác nhận</span>');
             // Lấy chi tiết bằng AJAX
-            $.getJSON(`ajax_get_booking_detail.php?id=${id}`, function (data) {
+            $.getJSON(`../ajax/ajax_get_booking_detail.php?id=${id}`, function (data) {
                 if (data) {
                     $('#m-phone').text(data.customer_phone);
                     $('#m-type').text(data.service_type.toUpperCase());
@@ -546,9 +555,76 @@ include '../../public/admin_layout_header.php';
                     $('#m-deposit').text(formatter.format(data.deposit_amount || 0));
 
                     $('#btn-export-pdf').attr('href', '../export_pdf.php?id=' + id);
+
+                    // --- XỬ LÝ TỒN KHO ---
+                    let invHtml = '';
+                    let missingItems = [];
+                    if (data.inventory_check && data.inventory_check.length > 0) {
+                        data.inventory_check.forEach(ing => {
+                            if (!ing.is_sufficient) {
+                                let statusColor = ing.can_transfer ? 'text-warning' : 'text-danger';
+                                let mainInfo = ing.can_transfer ? `(Kho Tổng còn ${ing.stock_main} ${ing.unit})` : `<span class="text-danger fw-bold">(Kho Tổng cũng hết!)</span>`;
+                                
+                                invHtml += `<div class="mb-1 ${statusColor}">
+                                    <strong>${ing.name}</strong>: Cần thêm ${ing.missing_qty.toFixed(2)} ${ing.unit} 
+                                    tại kho ${ing.target_warehouse_name} ${mainInfo}
+                                </div>`;
+                                
+                                if (ing.can_transfer) {
+                                    missingItems.push({
+                                        id: ing.id,
+                                        qty: ing.missing_qty,
+                                        target_warehouse_id: ing.target_warehouse_id
+                                    });
+                                }
+                            }
+                        });
+                    }
+
+                    if (invHtml !== '') {
+                        $('#m-inventory-list').html(invHtml);
+                        $('#m-inventory-section').show();
+                        if (missingItems.length > 0) {
+                            $('#btn-fast-transfer').show().data('items', missingItems).data('booking-id', id);
+                        } else {
+                            $('#btn-fast-transfer').hide();
+                        }
+                    } else {
+                        $('#m-inventory-section').hide();
+                    }
                 }
             });
             new bootstrap.Modal(document.getElementById('modalDetail')).show();
+        });
+
+        // --- XỬ LÝ CHUYỂN KHO NHANH ---
+        $(document).on('click', '#btn-fast-transfer', function() {
+            const btn = $(this);
+            const items = btn.data('items');
+            const bookingId = btn.data('booking-id');
+            if (!items || items.length === 0) return;
+            if (!confirm('Hệ thống sẽ tự động chuyển hàng từ Kho Tổng vào kho Bếp/Bar. Bạn có chắc chắn?')) return;
+
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Đang chuyển hàng...');
+            $.ajax({
+                url: '../ajax/ajax_fast_transfer.php',
+                type: 'POST',
+                data: { booking_id: bookingId, items: items },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert(response.message);
+                        $('#m-inventory-section').fadeOut();
+                    } else {
+                        alert('Lỗi: ' + response.message);
+                        btn.prop('disabled', false).html('<i class="fas fa-truck-loading me-1"></i> Chuyển kho nhanh từ Kho Tổng');
+                    }
+                },
+                error: function() {
+                    alert('Lỗi kết nối hệ thống.');
+                    btn.prop('disabled', false).html('<i class="fas fa-truck-loading me-1"></i> Chuyển kho nhanh từ Kho Tổng');
+                }
+            });
         });
     });
 </script>
