@@ -1,15 +1,17 @@
 <?php
 include '../public/admin_layout_header.php';
 require_once '../config/database.php';
+require_once '../config/csrf.php'; // BỔ SUNG: Import thư viện chống CSRF
 
 $database = new Database();
 $db = $database->getConnection();
 $message = "";
 
 // Hàm tạo Slug tự động
-function create_slug($string) {
-    $search = array('á','à','ả','ã','ạ','ă','ắ','ằ','ẳ','ẵ','ặ','â','ấ','ầ','ẩ','ẫ','ậ','é','è','ẻ','ẽ','ẹ','ê','ế','ề','ể','ễ','ệ','í','ì','ỉ','ĩ','ị','ó','ò','ỏ','õ','ọ','ô','ố','ồ','ổ','ỗ','ộ','ơ','ớ','ờ','ở','ỡ','ợ','ú','ù','ủ','ũ','ụ','ư','ứ','ừ','ử','ữ','ự','ý','ỳ','ỷ','ỹ','ỵ','đ','Á','À','Ả','Ã','Ạ','Ă','Ắ','Ằ','Ẳ','Ẵ','Ặ','Â','Ấ','Ầ','Ẩ','Ẫ','Ậ','É','È','Ẻ','Ẽ','Ẹ','Ê','Ế','Ề','Ể','Ễ','Ệ','Í','Ì','Ỉ','Ĩ','Ị','Ó','Ò','Ỏ','Õ','Ọ','Ô','Ố','Ồ','Ổ','Ỗ','Ộ','Ơ','Ớ','ờ','Ở','Ỡ','Ợ','Ú','Ù','Ủ','Ũ','Ụ','Ư','Ứ','Ừ','Ử','Ữ','Ự','Ý','Ỳ','Ỷ','Ỹ','ỵ','Đ');
-    $replace = array('a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','e','e','e','e','e','e','e','e','e','e','e','i','i','i','i','i','o','o','o','o','o','o','o','o','o','o','o','o','o','o','o','o','o','u','u','u','u','u','u','u','u','u','u','u','y','y','y','y','y','d','A','A','A','A','A','A','A','A','A','A','A','A','A','A','A','A','A','E','E','E','E','E','E','E','E','E','E','E','I','I','I','I','I','O','O','O','O','O','O','O','O','O','O','O','O','O','O','O','O','O','U','U','U','U','U','U','U','U','U','U','U','Y','Y','Y','Y','Y','D');
+function create_slug($string)
+{
+    $search = array('á', 'à', 'ả', 'ã', 'ạ', 'ă', 'ắ', 'ằ', 'ẳ', 'ẵ', 'ặ', 'â', 'ấ', 'ầ', 'ẩ', 'ẫ', 'ậ', 'é', 'è', 'ẻ', 'ẽ', 'ẹ', 'ê', 'ế', 'ề', 'ể', 'ễ', 'ệ', 'í', 'ì', 'ỉ', 'ĩ', 'ị', 'ó', 'ò', 'ỏ', 'õ', 'ọ', 'ô', 'ố', 'ồ', 'ổ', 'ỗ', 'ộ', 'ơ', 'ớ', 'ờ', 'ở', 'ỡ', 'ợ', 'ú', 'ù', 'ủ', 'ũ', 'ụ', 'ư', 'ứ', 'ừ', 'ử', 'ữ', 'ự', 'ý', 'ỳ', 'ỷ', 'ỹ', 'ỵ', 'đ', 'Á', 'À', 'Ả', 'Ã', 'Ạ', 'Ă', 'Ắ', 'Ằ', 'Ẳ', 'Ẵ', 'Ặ', 'Â', 'Ấ', 'Ầ', 'Ẩ', 'Ẫ', 'Ậ', 'É', 'È', 'Ẻ', 'Ẽ', 'Ẹ', 'Ê', 'Ế', 'Ề', 'Ể', 'Ễ', 'Ệ', 'Í', 'Ì', 'Ỉ', 'Ĩ', 'Ị', 'Ó', 'Ò', 'Ỏ', 'Õ', 'Ọ', 'Ô', 'Ố', 'Ồ', 'Ổ', 'Ỗ', 'Ộ', 'Ơ', 'Ớ', 'ờ', 'Ở', 'Ỡ', 'Ợ', 'Ú', 'Ù', 'Ủ', 'Ũ', 'Ụ', 'Ư', 'Ứ', 'Ừ', 'Ử', 'Ữ', 'Ự', 'Ý', 'Ỳ', 'Ỷ', 'Ỹ', 'ỵ', 'Đ');
+    $replace = array('a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'i', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'y', 'y', 'y', 'y', 'y', 'd', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'I', 'I', 'I', 'I', 'I', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'Y', 'Y', 'Y', 'Y', 'Y', 'D');
     $string = str_replace($search, $replace, $string);
     $string = strtolower(trim(preg_replace('/[^A-Za-z0-0-]+/', '-', $string)));
     return $string;
@@ -25,36 +27,44 @@ if (isset($_GET['delete'])) {
 
 // 2. XỬ LÝ THÊM/SỬA
 if (isset($_POST['btn_save'])) {
-    $id = $_POST['id'] ?? null;
-    $title = $_POST['title'];
-    $slug = !empty($_POST['slug']) ? create_slug($_POST['slug']) : create_slug($title);
-    $content = $_POST['content'];
-    $category_id = $_POST['category_id'];
-    $display_order = $_POST['display_order'];
-    $is_pinned = isset($_POST['is_pinned']) ? 1 : 0;
-    $status = isset($_POST['status']) ? 1 : 0;
-    
-    $thumbnail = $_POST['old_thumbnail'] ?? '';
-    if (!empty($_FILES['thumbnail']['name'])) {
-        $target_dir = "../public/assets/img/about/";
-        if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
-        $thumbnail = time() . '_' . basename($_FILES['thumbnail']['name']);
-        move_uploaded_file($_FILES['thumbnail']['tmp_name'], $target_dir . $thumbnail);
-    }
+    // BỔ SUNG: Chặn đứng hacker nếu Token gửi lên không hợp lệ
+    if (!verify_csrf()) {
+        $message = "<div class='alert alert-danger fw-bold'>Lỗi bảo mật (CSRF): Yêu cầu không hợp lệ! Vui lòng tải lại trang.</div>";
+    } else {
+        $id = $_POST['id'] ?? null;
+        $title = $_POST['title'];
+        $slug = !empty($_POST['slug']) ? create_slug($_POST['slug']) : create_slug($title);
+        $content = $_POST['content'];
+        $category_id = $_POST['category_id'];
+        $display_order = $_POST['display_order'];
+        $is_pinned = isset($_POST['is_pinned']) ? 1 : 0;
+        $status = isset($_POST['status']) ? 1 : 0;
 
-    try {
-        if ($id) {
-            $sql = "UPDATE about_content SET title=?, slug=?, content=?, category_id=?, thumbnail=?, display_order=?, is_pinned=?, status=? WHERE id=?";
-            $stmt = $db->prepare($sql);
-            $stmt->execute([$title, $slug, $content, $category_id, $thumbnail, $display_order, $is_pinned, $status, $id]);
-            $message = "<div class='alert alert-success'>Cập nhật thành công!</div>";
-        } else {
-            $sql = "INSERT INTO about_content (title, slug, content, category_id, thumbnail, display_order, is_pinned, status) VALUES (?,?,?,?,?,?,?,?)";
-            $stmt = $db->prepare($sql);
-            $stmt->execute([$title, $slug, $content, $category_id, $thumbnail, $display_order, $is_pinned, $status]);
-            $message = "<div class='alert alert-success'>Thêm bài viết thành công!</div>";
+        $thumbnail = $_POST['old_thumbnail'] ?? '';
+        if (!empty($_FILES['thumbnail']['name'])) {
+            $target_dir = "../public/assets/img/about/";
+            if (!is_dir($target_dir))
+                mkdir($target_dir, 0777, true);
+            $thumbnail = time() . '_' . basename($_FILES['thumbnail']['name']);
+            move_uploaded_file($_FILES['thumbnail']['tmp_name'], $target_dir . $thumbnail);
         }
-    } catch (Exception $e) { $message = "<div class='alert alert-danger'>Lỗi: ".$e->getMessage()."</div>"; }
+
+        try {
+            if ($id) {
+                $sql = "UPDATE about_content SET title=?, slug=?, content=?, category_id=?, thumbnail=?, display_order=?, is_pinned=?, status=? WHERE id=?";
+                $stmt = $db->prepare($sql);
+                $stmt->execute([$title, $slug, $content, $category_id, $thumbnail, $display_order, $is_pinned, $status, $id]);
+                $message = "<div class='alert alert-success'>Cập nhật thành công!</div>";
+            } else {
+                $sql = "INSERT INTO about_content (title, slug, content, category_id, thumbnail, display_order, is_pinned, status) VALUES (?,?,?,?,?,?,?,?)";
+                $stmt = $db->prepare($sql);
+                $stmt->execute([$title, $slug, $content, $category_id, $thumbnail, $display_order, $is_pinned, $status]);
+                $message = "<div class='alert alert-success'>Thêm bài viết thành công!</div>";
+            }
+        } catch (Exception $e) {
+            $message = "<div class='alert alert-danger'>Lỗi: " . $e->getMessage() . "</div>";
+        }
+    }
 }
 
 // 3. LẤY DỮ LIỆU ĐỂ SỬA
@@ -84,14 +94,17 @@ $categories = $db->query("SELECT * FROM about_categories")->fetchAll(PDO::FETCH_
                 </div>
                 <div class="card-body">
                     <form action="" method="POST" enctype="multipart/form-data">
+                        <?= csrf_field() ?>
+
                         <input type="hidden" name="id" value="<?= $edit_data['id'] ?? '' ?>">
                         <input type="hidden" name="old_thumbnail" value="<?= $edit_data['thumbnail'] ?? '' ?>">
-                        
+
                         <div class="row">
                             <div class="col-md-8">
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Tiêu đề bài viết</label>
-                                    <input type="text" name="title" class="form-control" value="<?= $edit_data['title'] ?? '' ?>" required>
+                                    <input type="text" name="title" class="form-control"
+                                        value="<?= $edit_data['title'] ?? '' ?>" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Nội dung chi tiết</label>
@@ -102,7 +115,7 @@ $categories = $db->query("SELECT * FROM about_categories")->fetchAll(PDO::FETCH_
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Danh mục</label>
                                     <select name="category_id" class="form-select">
-                                        <?php foreach($categories as $cat): ?>
+                                        <?php foreach ($categories as $cat): ?>
                                             <option value="<?= $cat['id'] ?>" <?= (isset($edit_data['category_id']) && $edit_data['category_id'] == $cat['id']) ? 'selected' : '' ?>>
                                                 <?= $cat['name'] ?>
                                             </option>
@@ -111,33 +124,39 @@ $categories = $db->query("SELECT * FROM about_categories")->fetchAll(PDO::FETCH_
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Slug (Để trống sẽ tự tạo)</label>
-                                    <input type="text" name="slug" class="form-control" value="<?= $edit_data['slug'] ?? '' ?>">
+                                    <input type="text" name="slug" class="form-control"
+                                        value="<?= $edit_data['slug'] ?? '' ?>">
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Ảnh Thumbnail</label>
                                     <input type="file" name="thumbnail" class="form-control">
-                                    <?php if(isset($edit_data['thumbnail'])): ?>
-                                        <img src="../public/assets/img/about/<?= $edit_data['thumbnail'] ?>" class="mt-2 img-thumbnail" width="150">
+                                    <?php if (isset($edit_data['thumbnail']) && $edit_data['thumbnail']): ?>
+                                        <img src="../public/assets/img/about/<?= $edit_data['thumbnail'] ?>"
+                                            class="mt-2 img-thumbnail" width="150">
                                     <?php endif; ?>
                                 </div>
                                 <div class="row">
                                     <div class="col-6 mb-3">
                                         <label class="form-label fw-bold">Thứ tự</label>
-                                        <input type="number" name="display_order" class="form-control" value="<?= $edit_data['display_order'] ?? '0' ?>">
+                                        <input type="number" name="display_order" class="form-control"
+                                            value="<?= $edit_data['display_order'] ?? '0' ?>">
                                     </div>
                                     <div class="col-6 mb-3 d-flex align-items-end">
                                         <div class="form-check form-switch mb-2">
-                                            <input class="form-check-input" type="checkbox" name="is_pinned" <?= ($edit_data['is_pinned'] ?? 0) ? 'checked' : '' ?>>
+                                            <input class="form-check-input" type="checkbox" name="is_pinned"
+                                                <?= ($edit_data['is_pinned'] ?? 0) ? 'checked' : '' ?>>
                                             <label class="form-check-label fw-bold">Ghim đầu</label>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" name="status" <?= ($edit_data['status'] ?? 1) ? 'checked' : '' ?>>
+                                    <input class="form-check-input" type="checkbox" name="status"
+                                        <?= ($edit_data['status'] ?? 1) ? 'checked' : '' ?>>
                                     <label class="form-check-label fw-bold">Hiển thị công khai</label>
                                 </div>
-                                <button type="submit" name="btn_save" class="btn btn-primary w-100 fw-bold">LƯU BÀI VIẾT</button>
-                                <?php if($edit_data): ?>
+                                <button type="submit" name="btn_save" class="btn btn-primary w-100 fw-bold">LƯU BÀI
+                                    VIẾT</button>
+                                <?php if ($edit_data): ?>
                                     <a href="manage_about.php" class="btn btn-outline-secondary w-100 mt-2">Hủy Sửa</a>
                                 <?php endif; ?>
                             </div>
@@ -163,26 +182,33 @@ $categories = $db->query("SELECT * FROM about_categories")->fetchAll(PDO::FETCH_
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach($posts as $p): ?>
-                            <tr>
-                                <td><?= $p['is_pinned'] ? '📌' : '' ?></td>
-                                <td><img src="../public/assets/img/about/<?= $p['thumbnail'] ?>" width="60" class="rounded"></td>
-                                <td>
-                                    <div class="fw-bold"><?= $p['title'] ?></div>
-                                    <small class="text-muted">Slug: <?= $p['slug'] ?></small>
-                                </td>
-                                <td><span class="badge bg-info"><?= $p['cat_name'] ?></span></td>
-                                <td><?= $p['display_order'] ?></td>
-                                <td>
-                                    <span class="badge <?= $p['status'] ? 'bg-success' : 'bg-secondary' ?>">
-                                        <?= $p['status'] ? 'Hiện' : 'Ẩn' ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="?edit=<?= $p['id'] ?>" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil">Sửa</i></a>
-                                    <a href="?delete=<?= $p['id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa bài này?')">Xóa<i class="bi bi-trash"></i></a>
-                                </td>
-                            </tr>
+                            <?php foreach ($posts as $p): ?>
+                                <tr>
+                                    <td><?= $p['is_pinned'] ? '📌' : '' ?></td>
+                                    <td>
+                                        <?php if ($p['thumbnail']): ?>
+                                            <img src="../public/assets/img/about/<?= $p['thumbnail'] ?>" width="60"
+                                                class="rounded">
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold"><?= htmlspecialchars($p['title']) ?></div>
+                                        <small class="text-muted">Slug: <?= htmlspecialchars($p['slug']) ?></small>
+                                    </td>
+                                    <td><span class="badge bg-info"><?= htmlspecialchars($p['cat_name']) ?></span></td>
+                                    <td><?= $p['display_order'] ?></td>
+                                    <td>
+                                        <span class="badge <?= $p['status'] ? 'bg-success' : 'bg-secondary' ?>">
+                                            <?= $p['status'] ? 'Hiện' : 'Ẩn' ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="?edit=<?= $p['id'] ?>" class="btn btn-sm btn-outline-primary"><i
+                                                class="bi bi-pencil">Sửa</i></a>
+                                        <a href="?delete=<?= $p['id'] ?>" class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Xóa bài này?')">Xóa<i class="bi bi-trash"></i></a>
+                                    </td>
+                                </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
