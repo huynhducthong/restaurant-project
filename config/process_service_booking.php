@@ -78,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         echo "<script>
             alert('Đặt dịch vụ thành công! Nhà hàng sẽ liên hệ lại để xác nhận sớm nhất.');
-            window.location.href = 'index.php';
+            window.location.href = '../booking_success.php?success=1&id=" . $last_id . "';
         </script>";
         exit;
 
@@ -97,7 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 } else {
     // Truy cập trái phép
-    header("Location: index.php");
+    header("Location: ../index.php");
     exit;
 }
 ?>

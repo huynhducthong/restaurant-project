@@ -12,12 +12,6 @@ include '../../public/admin_layout_header.php';
         --light-bg: #f8f9fa;
         --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
     }
-
-    body {
-        font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
-        background-color: #f4f7f6;
-    }
-
     /* Sidebar & Navigation */
     .sidebar-card {
         border: none;
@@ -25,7 +19,6 @@ include '../../public/admin_layout_header.php';
         box-shadow: var(--card-shadow);
         position: relative;
         z-index: 100;
-        /* Đảm bảo menu luôn nằm trên cùng */
     }
 
     .btn-menu {
@@ -35,7 +28,6 @@ include '../../public/admin_layout_header.php';
         border: 1px solid transparent;
         font-size: 0.9rem;
         padding: 12px 18px;
-        /* Tăng diện tích bấm */
         margin-bottom: 5px;
         cursor: pointer !important;
         display: flex;
@@ -47,14 +39,8 @@ include '../../public/admin_layout_header.php';
     .btn-menu:hover {
         background-color: #f0f7ff !important;
         color: var(--accent-color) !important;
-        transform: scale(1.02);
     }
 
-    .btn-menu:active {
-        transform: scale(0.98);
-    }
-
-    /* Hiệu ứng lún xuống khi bấm */
     .btn-menu.active {
         background-color: var(--primary-color) !important;
         color: #fff !important;
@@ -66,14 +52,6 @@ include '../../public/admin_layout_header.php';
         pointer-events: none;
     }
 
-    /* Cards & Containers */
-    .main-card {
-        border: none;
-        border-radius: 15px;
-        box-shadow: var(--card-shadow);
-        background: white;
-    }
-
     .stat-card {
         border: none;
         border-radius: 12px;
@@ -81,13 +59,11 @@ include '../../public/admin_layout_header.php';
         background: #fff;
         border-left: 4px solid var(--accent-color);
         position: relative;
-        /* QUAN TRỌNG: Để nhốt stretched-link bên trong */
     }
 
     .stat-card:hover {
         transform: translateY(-3px);
     }
-
     /* Tables */
     .table thead th {
         background-color: #f8f9fa;
@@ -218,6 +194,9 @@ include '../../public/admin_layout_header.php';
                 </button>
                 <button class="btn btn-menu btn-light w-100 mb-2 py-2 fw-bold" id="btn-transfers" onclick="switchTab('transfers')">
                     <i class="fas fa-exchange-alt me-2"></i> CHUYỂN KHO
+                    <?php if ($pending_transfers_count > 0): ?>
+                        <span class="badge-notify ms-auto"><?= $pending_transfers_count ?></span>
+                    <?php endif; ?>
                 </button>
                 <button class="btn btn-menu btn-light w-100 mb-2 py-2 fw-bold" id="btn-distribution" onclick="switchTab('distribution')">
                     <i class="fas fa-th me-2"></i> BÁO CÁO PHÂN BỔ
@@ -352,6 +331,7 @@ include '../../public/admin_layout_header.php';
                                     data-low="<?= $isLow ?>"
                                     data-expiry="<?= $isExpiring ?>"
                                     data-wh-stock='<?= json_encode($wh_with_stock) ?>'
+                                    data-stocks='<?= json_encode($i['stocks']) ?>'
                                     data-visible="1">
                                     <td>
                                         <strong><?= htmlspecialchars($i['item_name']) ?></strong>
@@ -1116,7 +1096,7 @@ include '../../public/admin_layout_header.php';
     }
 
     // ================= GIAO DỊCH AJAX =================
-    // ================= GIAO DỊCH AJAX =================
+    const warehouses = <?= json_encode($warehouses) ?>;
 
     // 1. TỰ ĐỘNG XÓA DẤU PHẨY TRƯỚC KHI LƯU DB (Của TẤT CẢ các form)
     $(document).on('submit', 'form', function() {
@@ -1253,49 +1233,98 @@ include '../../public/admin_layout_header.php';
         renderPagination();
     }
 
-    // ================= XUẤT EXCEL GIỮ NGUYÊN ĐIỀU KIỆN LỌC =================
+    // ================= XUẤT EXCEL CAO CẤP (MA TRẬN KHO & GIÁ TRỊ) =================
     window.exportFilteredExcel = function() {
-        let tableHTML = '<table border="1"><thead><tr><th>Nguyên Liệu</th><th>Danh Mục</th><th>Vị Trí Tồn Kho</th><th>Tổng Tồn</th><th>HSD</th><th>Giá BQGQ</th></tr></thead><tbody>';
-        
-        // Chỉ lấy các dòng đang hiển thị (chưa bị filter giấu đi)
         const visibleRows = document.querySelectorAll('#invBody .inv-row[data-visible="1"]');
         if (visibleRows.length === 0) {
             alert('Không có dữ liệu nào để xuất!');
             return;
         }
 
+        // Tạo Header động dựa trên danh sách kho
+        let whHeaders = warehouses.map(w => `<th style="background-color: #f8f9fa; font-weight: bold; color: #212529;">${w.name}</th>`).join('');
+        
+        let tableHTML = `<table border="1">
+            <thead>
+                <tr style="background-color: #2c3e50; color: white; font-weight: bold;">
+                    <th style="color: white;">Nguyên Liệu</th>
+                    <th style="color: white;">Danh Mục</th>
+                    ${whHeaders}
+                    <th style="background-color: #d1e7dd; color: #0f5132;">Tổng Tồn</th>
+                    <th style="color: white;">Đơn Vị</th>
+                    <th style="color: white;">Giá Vốn (đ)</th>
+                    <th style="background-color: #fff3cd; color: #664d03;">Thành Tiền (đ)</th>
+                    <th style="color: white;">HSD</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+        let grandTotalValue = 0;
+
         visibleRows.forEach(r => {
             let name = r.querySelector('strong').innerText;
-            let cat = r.querySelector('.text-muted').innerText.split('|')[0].trim();
+            let catText = r.querySelector('.text-muted').innerText;
+            let cat = catText.split('|')[0].trim();
             
-            // Format warehouse info
-            let wh_col = r.cells[1].innerText.replace(/\n/g, ' / ').replace('Tổng:', ' - Tổng:');
-            
-            let total = r.querySelector('.text-success.fw-bold') ? r.querySelector('.text-success.fw-bold').innerText : '';
-            let exp = r.cells[2].innerText;
-            let price = r.cells[3].innerText;
+            // Lấy stocks từ data attribute
+            let stocks = {};
+            try { stocks = JSON.parse(r.dataset.stocks || '{}'); } catch(e) {}
+
+            // Lấy tổng tồn và đơn vị
+            let totalDiv = r.querySelector('.text-success.fw-bold');
+            let totalText = totalDiv ? totalDiv.innerText : '0';
+            let totalMatch = totalText.match(/([\d.]+)\s*(.*)/);
+            let totalQty = totalMatch ? parseFloat(totalMatch[1]) : 0;
+            let unitName = totalMatch ? totalMatch[2] : '';
+
+            // Lấy giá vốn
+            let priceText = r.cells[3].innerText.replace(/[^\d]/g, '');
+            let price = parseFloat(priceText) || 0;
+            let lineValue = totalQty * price;
+            grandTotalValue += lineValue;
+
+            let hsd = r.cells[2].innerText;
+
+            // Xây dựng các cột kho
+            let whCols = warehouses.map(w => {
+                let q = parseFloat(stocks[w.id] || 0);
+                return `<td style="text-align: center;">${q > 0 ? q : '-'}</td>`;
+            }).join('');
 
             tableHTML += `<tr>
-                <td>${name}</td>
+                <td style="font-weight: bold;">${name}</td>
                 <td>${cat}</td>
-                <td>${wh_col}</td>
-                <td>${total}</td>
-                <td>${exp}</td>
-                <td>${price}</td>
+                ${whCols}
+                <td style="text-align: center; font-weight: bold; background-color: #d1e7dd;">${totalQty}</td>
+                <td style="text-align: center;">${unitName}</td>
+                <td style="text-align: right;">${price.toLocaleString('vi-VN')}</td>
+                <td style="text-align: right; font-weight: bold; background-color: #fff3cd;">${lineValue.toLocaleString('vi-VN')}</td>
+                <td style="text-align: center;">${hsd}</td>
             </tr>`;
         });
-        tableHTML += '</tbody></table>';
 
-        // Tạo file excel dạng XML/HTML để mở mượt mà không bị lỗi Font hay dồn cột
+        // Dòng tổng cộng tài sản
+        tableHTML += `
+            <tr style="background-color: #eee;">
+                <td colspan="${2 + warehouses.length}" style="text-align: right; font-weight: bold; padding: 10px;">TỔNG GIÁ TRỊ TÀI SẢN KHO:</td>
+                <td colspan="4" style="text-align: right; font-weight: bold; color: #d63384; font-size: 14px;">${grandTotalValue.toLocaleString('vi-VN')} VNĐ</td>
+                <td></td>
+            </tr>
+        </tbody></table>`;
+
+        // Thông tin Footer
+        let now = new Date().toLocaleString('vi-VN');
+        tableHTML += `<p><i>Báo cáo được xuất tự động vào lúc: ${now}</i></p>`;
+
+        // Download
         let uri = 'data:application/vnd.ms-excel;base64,';
-        let template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>TonKho</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>{table}</body></html>';
-        
+        let template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>BaoCaoKho</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>{table}</body></html>';
         let base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) };
         let format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) };
         
-        let ctx = {worksheet: 'TonKho', table: tableHTML};
+        let ctx = {worksheet: 'BaoCaoKho', table: tableHTML};
         let link = document.createElement("a");
-        link.download = "TonKho_Dakho_" + new Date().toISOString().slice(0,10) + ".xls";
+        link.download = "BaoCao_TonKho_ChiTiet_" + new Date().toISOString().slice(0,10) + ".xls";
         link.href = uri + base64(format(template, ctx));
         link.click();
     };

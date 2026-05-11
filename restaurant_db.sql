@@ -549,7 +549,7 @@ CREATE TABLE `inventory_history` (
   `id` int(11) NOT NULL,
   `ingredient_id` int(11) DEFAULT NULL,
   `warehouse_id` int(11) DEFAULT NULL,
-  `type` enum('import','export','loss') NOT NULL,
+  `type` enum('import','export','loss','audit_adjust_up','audit_adjust_down') NOT NULL,
   `quantity` decimal(10,2) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `performed_by` varchar(100) DEFAULT NULL
@@ -1260,6 +1260,12 @@ ALTER TABLE `services`
 --
 ALTER TABLE `service_bookings`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `settings`
+--
+ALTER TABLE `settings`
+  ADD PRIMARY KEY (`key_name`);
 
 --
 -- Indexes for table `suppliers`

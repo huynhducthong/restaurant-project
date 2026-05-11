@@ -53,6 +53,21 @@ $page_titles = [
 ];
 
 $page_title = $page_titles[$current_page] ?? 'Khu Vực Quản Trị';
+
+// Fetch pending transfers count for badge
+$pending_transfers_count = 0;
+try {
+    if (!isset($db)) {
+        require_once __DIR__ . '/../config/database.php';
+        $db = (new Database())->getConnection();
+    }
+    if (isset($db)) {
+        $stmt_pt = $db->query("SELECT COUNT(*) FROM inventory_transfers WHERE status = 'pending'");
+        $pending_transfers_count = (int)$stmt_pt->fetchColumn();
+    }
+} catch (Exception $e) {
+    // Silent fail if table not exists or connection error
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -183,7 +198,14 @@ $page_title = $page_titles[$current_page] ?? 'Khu Vực Quản Trị';
         .menu-list li.active a {
             background: var(--accent-light);
             color: var(--accent);
-            font-weight: 600;
+            border-left: 3px solid var(--accent);
+            border-radius: 0 10px 10px 0;
+            margin-left: -12px;
+            padding-left: 23px;
+        }
+
+        .menu-list li a {
+            transition: background 0.2s, color 0.2s;
         }
 
         .view-home-btn {
@@ -285,6 +307,25 @@ $page_title = $page_titles[$current_page] ?? 'Khu Vực Quản Trị';
         .content-area {
             padding: 30px;
         }
+
+        /* Badge Style */
+        .badge-notify {
+            background: #ff4757;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 50px;
+            margin-left: auto;
+            box-shadow: 0 2px 5px rgba(255, 71, 87, 0.3);
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+        }
     </style>
 </head>
 
@@ -345,7 +386,10 @@ $page_title = $page_titles[$current_page] ?? 'Khu Vực Quản Trị';
             <li class="<?= isActive('InventoryController.php') ?>">
                 <a href="/restaurant-project/admin/controllers/InventoryController.php">
                     <i class="fas fa-warehouse"></i>
-                    Quản lý Kho
+                    <span>Quản lý Kho</span>
+                    <?php if ($pending_transfers_count > 0): ?>
+                        <span class="badge-notify"><?= $pending_transfers_count ?></span>
+                    <?php endif; ?>
                 </a>
             </li>
 
