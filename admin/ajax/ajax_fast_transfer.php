@@ -14,8 +14,7 @@ $db = (new Database())->getConnection();
 $current_user = $_SESSION['username'] ?? 'Admin';
 
 try {
-    $data = json_decode(file_get_contents('php://output'), true); // Wait, php://input
-    // Let's use POST
+    // Lấy dữ liệu từ POST
     $booking_id = (int)($_POST['booking_id'] ?? 0);
     $items = $_POST['items'] ?? []; // Array of {id, qty, target_warehouse_id}
 

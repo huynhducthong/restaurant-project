@@ -11,6 +11,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $msg = $_POST['message'] ?? '';
     $table_id = $_POST['table_id'] ?? null;
     $combo_id = $_POST['selected_combo_id'] ?? 0;
+    
+    // Anniversary fields
+    $event_type = $_POST['event_type'] ?? null;
+    $decor_package = $_POST['decor_package'] ?? null;
+    $has_cake = isset($_POST['has_cake']) ? 1 : 0;
+    $has_flower = isset($_POST['has_flower']) ? 1 : 0;
 
     if (empty($name) || empty($phone) || empty($date)) {
         echo "<script>alert('Vui lòng điền đầy đủ các thông tin bắt buộc!'); window.history.back();</script>";
@@ -43,8 +49,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // 2. Lưu đơn đặt bàn chính vào service_bookings
-        $stmt_booking = $db->prepare("INSERT INTO service_bookings (service_type, customer_name, customer_phone, booking_date, guests, message, table_id, combo_id, total_amount, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')");
-        $stmt_booking->execute([$type, $name, $phone, $date, $guests, $msg, $table_id, $combo_id, $total_amount]);
+        $stmt_booking = $db->prepare("INSERT INTO service_bookings (service_type, customer_name, customer_phone, booking_date, guests, message, table_id, combo_id, total_amount, status, event_type, decor_package, has_cake, has_flower) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?, ?, ?)");
+        $stmt_booking->execute([$type, $name, $phone, $date, $guests, $msg, $table_id, $combo_id, $total_amount, $event_type, $decor_package, $has_cake, $has_flower]);
         $last_id = $db->lastInsertId();
 
         // 3. Lưu chi tiết các món ăn khách chọn lẻ

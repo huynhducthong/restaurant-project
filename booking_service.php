@@ -167,6 +167,7 @@ body {
     top: -8px; left: 15px; font-size: 11px; color: var(--gold);
     background: var(--forest); padding: 0 5px; letter-spacing: 1px; text-transform: uppercase;
 }
+.input-lux option { background: var(--bg-dark); color: #fff; }
 
 /* Guest Counter */
 .guest-lux {
@@ -327,6 +328,43 @@ body {
                         </div>
                     </div>
                 </div>
+
+                <?php if ($type === 'birthday'): ?>
+                <!-- PHẦN DÀNH RIÊNG CHO TIỆC KỶ NIỆM -->
+                <div class="mt-4 pt-4 border-top border-secondary">
+                    <h3 class="section-title-lux" style="font-size: 1.2rem; color: var(--gold); margin-bottom:15px;"><i class="fas fa-gift me-2"></i> Thông Tin Tiệc Kỷ Niệm</h3>
+                    <div class="row-lux">
+                        <div class="input-group-lux">
+                            <select name="event_type" class="input-lux" onchange="us()">
+                                <option value="Sinh nhật">Tiệc Sinh Nhật</option>
+                                <option value="Kỷ niệm ngày cưới">Kỷ Niệm Ngày Cưới</option>
+                                <option value="Tiệc tỏ tình/Cầu hôn">Tỏ Tình / Cầu Hôn</option>
+                                <option value="Tiệc công ty/Họp mặt">Họp Mặt / Công Ty</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                            <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: var(--forest); padding: 0 5px; letter-spacing: 1px; text-transform: uppercase;">Loại hình kỷ niệm</label>
+                        </div>
+                        <div class="input-group-lux">
+                            <select name="decor_package" class="input-lux" onchange="us()">
+                                <option value="Mặc định">Gói mặc định (Nến & Hoa bàn)</option>
+                                <option value="Lãng mạn">Gói lãng mạn (+ Bóng bay, nhạc nhẹ)</option>
+                                <option value="Hoàng gia">Gói hoàng gia (+ Rượu vang, backdrop)</option>
+                            </select>
+                            <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: var(--forest); padding: 0 5px; letter-spacing: 1px; text-transform: uppercase;">Gói trang trí</label>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-4 mt-2">
+                        <label class="d-flex align-items-center gap-2" style="cursor:pointer;">
+                            <input type="checkbox" name="has_cake" value="1" class="menu-checkbox" onchange="us()">
+                            <span class="small">Đặt bánh kem kỷ niệm</span>
+                        </label>
+                        <label class="d-flex align-items-center gap-2" style="cursor:pointer;">
+                            <input type="checkbox" name="has_flower" value="1" class="menu-checkbox" onchange="us()">
+                            <span class="small">Đặt hoa tươi thiết kế</span>
+                        </label>
+                    </div>
+                </div>
+                <?php endif; ?>
             </div>
 
             <div class="panel-section">
@@ -417,6 +455,11 @@ body {
                 <div class="sum-row"><span>Địa điểm</span> <span class="sum-val highlight" id="saddr-sum" style="text-align:right; max-width:60%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Chưa nhập</span></div>
             <?php endif; ?>
             
+            <?php if ($type === 'birthday'): ?>
+                <div class="sum-row"><span>Loại kỷ niệm</span> <span class="sum-val highlight" id="m-event-sum">Sinh nhật</span></div>
+                <div class="sum-row"><span>Dịch vụ tiệc</span> <span class="sum-val" id="m-addon-sum">Mặc định</span></div>
+            <?php endif; ?>
+            
             <div class="sum-row"><span>Combo / Món</span> <span class="sum-val" id="sm">0 đ</span></div>
             
             <div class="total-box">
@@ -443,6 +486,7 @@ body {
             </div>
             <div class="modal-body cinematic-map">
                 <div class="row">
+                    <?php if ($type !== 'birthday'): ?>
                     <div class="col-md-8 border-end border-secondary">
                         <p style="color:var(--gold); font-size:12px; letter-spacing:2px; text-transform:uppercase; margin-bottom:20px; text-align:center;">Khu Vực Sảnh Chính</p>
                         <div class="map-grid">
@@ -454,9 +498,10 @@ body {
                             <?php endforeach; ?>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <?php endif; ?>
+                    <div class="<?= $type === 'birthday' ? 'col-md-12' : 'col-md-4' ?>">
                         <p style="color:var(--gold); font-size:12px; letter-spacing:2px; text-transform:uppercase; margin-bottom:20px; text-align:center;">Hệ Thống Phòng VIP</p>
-                        <div class="vip-grid">
+                        <div class="<?= $type === 'birthday' ? 'map-grid' : 'vip-grid' ?>">
                             <?php foreach($t_room as $r): $st=$r['is_available']?'available':'booked'; ?>
                             <div class="seat-lux <?= $st ?>" style="padding: 25px 10px;" data-id="<?= $r['id'] ?>" data-price="<?= $r['price'] ?>" data-code="Phòng VIP <?= htmlspecialchars($r['table_code']) ?>">
                                 <span class="seat-code">VIP <?= htmlspecialchars($r['table_code']) ?></span>
@@ -609,6 +654,21 @@ function us(){
   
     var total = food + (typeof selPrice !== 'undefined' ? selPrice : 0);
     document.getElementById('sdep').innerHTML = Math.ceil(total*.3).toLocaleString('vi-VN')+'<span style="font-size:1.2rem; color:#fff;"> đ</span>';
+
+    // Cập nhật tóm tắt Tiệc (nếu có)
+    var evType = document.querySelector('[name="event_type"]');
+    if (evType) {
+        document.getElementById('m-event-sum').textContent = evType.value;
+        
+        let decor = document.querySelector('[name="decor_package"]').value;
+        let cake = document.querySelector('[name="has_cake"]').checked;
+        let flower = document.querySelector('[name="has_flower"]').checked;
+        
+        let addonTxt = decor.split(' ')[0];
+        if (cake) addonTxt += ' + Bánh';
+        if (flower) addonTxt += ' + Hoa';
+        document.getElementById('m-addon-sum').textContent = addonTxt;
+    }
 }
 
 /* NGĂN CHẶN DOUBLE SUBMIT */

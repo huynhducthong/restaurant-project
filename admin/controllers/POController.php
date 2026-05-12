@@ -78,6 +78,33 @@ if (isset($_POST['action']) && $_POST['action'] === 'get_details') {
     exit;
 }
 
+// ================= XỬ LÝ QUICK ADD INGREDIENT (AJAX) =================
+if (isset($_POST['action']) && $_POST['action'] === 'quick_add_ingredient') {
+    header('Content-Type: application/json');
+    $name = trim($_POST['name'] ?? '');
+    $unit = trim($_POST['unit'] ?? '');
+    $cat  = trim($_POST['category'] ?? 'Khác');
+
+    try {
+        if (!$name || !$unit) throw new Exception("Thiếu thông tin bắt buộc.");
+
+        // Kiểm tra xem đã tồn tại chưa
+        $stmt_check = $db->prepare("SELECT id FROM inventory WHERE item_name = ?");
+        $stmt_check->execute([$name]);
+        if ($stmt_check->fetch()) throw new Exception("Nguyên liệu này đã tồn tại trong danh mục.");
+
+        // Thêm vào bảng inventory chính
+        $stmt_ins = $db->prepare("INSERT INTO inventory (item_name, unit_name, category, is_active) VALUES (?, ?, ?, 1)");
+        $stmt_ins->execute([$name, $unit, $cat]);
+        $new_id = $db->lastInsertId();
+
+        echo json_encode(['status' => 'success', 'id' => $new_id]);
+    } catch (Exception $e) {
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
 // ==========================================================
 // 2. XỬ LÝ NHẬN HÀNG VÀ TỰ ĐỘNG CỘNG VÀO "KHO TỔNG"
 // ==========================================================

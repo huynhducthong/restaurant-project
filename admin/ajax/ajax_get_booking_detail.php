@@ -48,9 +48,12 @@ try {
         $placeholders = implode(',', array_fill(0, count($food_ids), '?'));
 
         $stmt_recipe = $db->prepare("
-            SELECT r.*, i.item_name, i.unit_name as inventory_unit, i.category
+            SELECT r.*, i.item_name, i.unit_name as inventory_unit, i.category,
+                   ic.default_warehouse_id, w.name as target_warehouse_name
             FROM food_recipes r
             JOIN inventory i ON r.ingredient_id = i.id
+            LEFT JOIN inventory_categories ic ON i.category = ic.name
+            LEFT JOIN warehouses w ON ic.default_warehouse_id = w.id
             WHERE r.food_id IN ($placeholders)
         ");
         $stmt_recipe->execute($food_ids);
@@ -72,14 +75,17 @@ try {
                 $base_qty = convert_to_base_unit($qty_req, $rcp['unit'], $rcp['inventory_unit']);
                 
                 if (!isset($required_ingredients[$ing_id])) {
+                    $def_w_id = (int)($rcp['default_warehouse_id'] ?: 2);
+                    $def_w_name = $rcp['target_warehouse_name'] ?: 'Bếp';
+
                     $required_ingredients[$ing_id] = [
                         'id' => $ing_id,
                         'name' => $rcp['item_name'],
                         'total_required' => 0,
                         'unit' => $rcp['inventory_unit'],
                         'category' => $rcp['category'],
-                        'target_warehouse_id' => ($rcp['category'] === 'Đồ uống') ? 3 : 2,
-                        'target_warehouse_name' => ($rcp['category'] === 'Đồ uống') ? 'Bar' : 'Bếp'
+                        'target_warehouse_id' => $def_w_id,
+                        'target_warehouse_name' => $def_w_name
                     ];
                 }
                 $required_ingredients[$ing_id]['total_required'] += $base_qty;

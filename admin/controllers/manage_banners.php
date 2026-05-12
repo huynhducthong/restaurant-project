@@ -241,45 +241,55 @@ include '../../public/admin_layout_header.php';
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Lora:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;700&family=Oswald:wght@400;700&family=Pacifico&family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-/* Premium UI Aesthetics */
-body { background: #f8f9fa; font-family: 'Inter', sans-serif; }
-.premium-card { border-radius: 12px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: #ffffff; }
-.premium-card:hover { box-shadow: 0 15px 35px rgba(0,0,0,0.08); }
-.premium-header { border-bottom: 1px solid rgba(0,0,0,0.05); padding: 20px 24px; }
-.form-label { font-weight: 600; color: #495057; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
-.form-control, .form-select { border-radius: 10px; border: 1px solid #dee2e6; padding: 0.6rem 1rem; transition: all 0.2s; background: #fdfdfd; }
-.form-control:focus, .form-select:focus { border-color: #cda45e; box-shadow: 0 0 0 0.25rem rgba(205, 164, 94, 0.25); background: #fff; }
-.form-control-color { padding: 0.375rem; height: 42px; cursor: pointer; }
-.btn-premium { border-radius: 10px; padding: 10px 24px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s; }
-.btn-primary-premium { background: linear-gradient(45deg, #cda45e, #d9b87b); border: none; color: white; }
-.btn-primary-premium:hover { background: linear-gradient(45deg, #b58d4a, #cda45e); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(205, 164, 94, 0.4); }
+    :root {
+        --primary-gold: #cda45e;
+        --soft-bg: #fdfdfd;
+        --border-color: #e9ecef;
+    }
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--soft-bg); color: #444; }
 
-/* Switch Toggle (iOS style) */
-.switch { position: relative; display: inline-block; width: 46px; height: 24px; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
-.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-input:checked + .slider { background-color: #28a745; }
-input:focus + .slider { box-shadow: 0 0 1px #28a745; }
-input:checked + .slider:before { transform: translateX(22px); }
+    /* Layout & Cards */
+    .card-minimal { border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); background: #fff; margin-bottom: 1.5rem; }
+    .card-header-clean { background: transparent; border-bottom: 1px solid var(--border-color); padding: 1.25rem 1.5rem; font-weight: 700; color: #2c3e50; }
+    
+    /* Inputs & Form */
+    .form-control, .form-select { border-radius: 8px; border: 1px solid #ddd; padding: 0.6rem 0.8rem; font-size: 0.95rem; background: #fff; }
+    .form-control:focus { border-color: var(--primary-gold); box-shadow: 0 0 0 0.2rem rgba(205, 164, 94, 0.1); }
+    .form-label { font-weight: 600; color: #6c757d; font-size: 0.75rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
 
-/* Table & List */
-.table-hover tbody tr:hover { background-color: rgba(205, 164, 94, 0.05); }
-.banner-row { transition: all 0.3s ease; }
-.banner-row.inactive-banner { opacity: 0.6; filter: grayscale(50%); }
-.drag-handle { cursor: grab; color: #adb5bd; padding: 10px; transition: color 0.2s; }
-.drag-handle:hover { color: #cda45e; }
-.banner-thumb { width: 120px; height: 70px; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    /* Buttons */
+    .btn-minimal { border-radius: 8px; padding: 0.6rem 1.5rem; font-weight: 600; transition: 0.3s; }
+    .btn-gold { background: var(--primary-gold); color: white; border: none; }
+    .btn-gold:hover { background: #b89252; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(205, 164, 94, 0.2); }
+    .text-gold { color: var(--primary-gold) !important; }
+
+    /* Live Preview */
+    .preview-sticky { position: sticky; top: 1.5rem; z-index: 10; }
+    .preview-frame { border-radius: 15px; overflow: hidden; border: 1px solid #dee2e6; box-shadow: 0 20px 50px rgba(0,0,0,0.1); position: relative; }
+    .preview-label { position: absolute; top: 1rem; right: 1rem; background: rgba(0,0,0,0.4); color: #fff; padding: 0.2rem 0.8rem; border-radius: 20px; font-size: 0.7rem; z-index: 5; font-weight: 600; }
+
+    /* Badge & Controls */
+    .status-toggle { width: 44px; height: 22px; position: relative; display: inline-block; }
+    .status-toggle input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #e2e8f0; transition: .4s; border-radius: 34px; }
+    .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #2ecc71; }
+    input:checked + .slider:before { transform: translateX(22px); }
+
+    /* Table Minimal */
+    .table-clean thead th { background: #f8fafc; color: #64748b; font-size: 0.7rem; text-transform: uppercase; padding: 1rem; border-bottom: 1px solid #e2e8f0; }
+    .table-clean tbody td { padding: 1rem; vertical-align: middle; border-bottom: 1px solid #f1f5f9; }
+    .banner-thumb { width: 90px; height: 55px; object-fit: cover; border-radius: 6px; }
 </style>
 
 <div class="container-fluid py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="fw-bold mb-1" style="color: #2c3e50;">Quản lý Banner (Slide Show)</h2>
-            <p class="text-muted mb-0">Thiết kế và cấu hình trải nghiệm hiển thị đầu tiên cho khách hàng</p>
+            <h3 class="fw-bold mb-1">Cấu hình Banner</h3>
+            <p class="text-muted small mb-0">Quản lý và thiết kế ảnh bìa trang chủ</p>
         </div>
-        <a href="manage_banners.php" class="btn btn-premium btn-primary-premium shadow-sm">
-            <i class="fas fa-plus me-2"></i>Thêm Banner Mới
+        <a href="manage_banners.php" class="btn btn-minimal btn-gold">
+            <i class="fas fa-plus me-2"></i>Thêm mới
         </a>
     </div>
 
@@ -307,110 +317,97 @@ input:checked + .slider:before { transform: translateX(22px); }
                 </div>
                 <?php endif; ?>
 
-                <!-- Card 2: Hình ảnh & Bố cục -->
-                <div class="card premium-card mb-4">
-                    <div class="premium-header bg-transparent d-flex align-items-center">
-                        <h6 class="m-0 fw-bold text-primary"><i class="bi bi-image me-2"></i>1. Hình ảnh & Bố cục</h6>
+                <!-- Phần 1: Hình ảnh & Bố cục -->
+                <div class="card-minimal">
+                    <div class="card-header-clean">
+                        <i class="fas fa-image me-2 text-primary"></i>Hình ảnh & Bố cục
                     </div>
                     <div class="card-body p-4">
                         <div class="row g-4">
                             <div class="col-md-8">
-                                <label class="form-label">Tải lên Ảnh Nền <?= $edit_data ? '<span class="text-muted text-lowercase fw-normal">(Bỏ qua nếu giữ nguyên)</span>' : '<span class="text-danger">*</span>' ?></label>
+                                <label class="form-label">Tải lên Ảnh Nền</label>
                                 <input type="file" name="banner_image" id="input-img" class="form-control" accept=".jpg,.jpeg,.png,.webp" <?= $edit_data ? '' : 'required' ?>>
-                                <div class="form-text mt-2"><i class="fas fa-info-circle me-1"></i>Định dạng JPG, PNG, WEBP. Tối đa 5MB. Kích thước khuyên dùng 1920x1080.</div>
+                                <div class="form-text small"><i class="fas fa-info-circle me-1"></i>JPG, PNG, WEBP. Tối đa 5MB.</div>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label">Thứ tự ưu tiên</label>
+                                <label class="form-label">Thứ tự</label>
                                 <input type="number" name="display_order" class="form-control" value="<?= (int)($edit_data['display_order'] ?? count($banners) + 1) ?>" min="1">
                             </div>
                             <div class="col-md-12">
-                                <label class="form-label">Căn lề Nội dung (Text Align)</label>
-                                <div class="d-flex gap-3">
+                                <label class="form-label">Căn lề</label>
+                                <div class="d-flex gap-4">
                                     <?php foreach (['left'=>'Trái', 'center'=>'Giữa', 'right'=>'Phải'] as $v=>$l): ?>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="text_align" id="align_<?= $v ?>" value="<?= $v ?>" <?= ($edit_data['text_align'] ?? 'center') === $v ? 'checked' : '' ?> onchange="updatePreview()">
-                                        <label class="form-check-label" for="align_<?= $v ?>"><i class="fas fa-align-<?= $v ?> me-1"></i><?= $l ?></label>
+                                        <label class="form-check-label fw-bold small" for="align_<?= $v ?>"><?= $l ?></label>
                                     </div>
                                     <?php endforeach; ?>
-                                    <input type="hidden" id="input-align" value="<?= $edit_data['text_align'] ?? 'center' ?>">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Card 3: Nội dung Tiêu đề & Mô tả -->
-                <div class="card premium-card mb-4">
-                    <div class="premium-header bg-transparent d-flex align-items-center">
-                        <h6 class="m-0 fw-bold text-success"><i class="bi bi-type me-2"></i>2. Nội dung Text</h6>
+                <!-- Phần 2: Nội dung văn bản -->
+                <div class="card-minimal">
+                    <div class="card-header-clean">
+                        <i class="fas fa-font me-2 text-success"></i>Nội dung & Định dạng
                     </div>
                     <div class="card-body p-4">
-                        <div class="row g-4">
-                            <!-- Tiêu đề -->
-                            <div class="col-12">
-                                <label class="form-label text-success"><i class="fas fa-heading me-2"></i>Tiêu đề chính</label>
-                                <input type="text" name="title" id="input-title" class="form-control form-control-lg mb-3" value="<?= htmlspecialchars($edit_data['title'] ?? '') ?>" placeholder="Ví dụ: Chào mừng đến với nhà hàng...">
-                                <div class="row g-2">
-                                    <div class="col-md-4"><select name="font_family" id="input-font" class="form-select"><?php foreach ($fonts as $v => $l): ?><option value="<?= htmlspecialchars($v) ?>" <?= ($edit_data['font_family'] ?? '') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></div>
-                                    <div class="col-md-3"><select name="title_font_size" id="input-title-size" class="form-select"><?php foreach ($font_sizes as $sz): ?><option value="<?= $sz ?>" <?= ($edit_data['title_font_size'] ?? 48) == $sz ? 'selected' : '' ?>>Cỡ <?= $sz ?>px</option><?php endforeach; ?></select></div>
-                                    <div class="col-md-3"><select name="font_style" id="input-style" class="form-select"><?php foreach (['normal'=>'Thường','bold'=>'Đậm','italic'=>'Nghiêng'] as $v=>$l): ?><option value="<?= $v ?>" <?= ($edit_data['font_style'] ?? 'normal') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></div>
-                                    <div class="col-md-2"><input type="color" name="text_color" id="input-color" class="form-control form-control-color w-100" value="<?= htmlspecialchars($edit_data['text_color'] ?? '#ffffff') ?>" title="Màu Tiêu đề"></div>
-                                </div>
+                        <div class="mb-4">
+                            <label class="form-label">Tiêu đề chính</label>
+                            <input type="text" name="title" id="input-title" class="form-control form-control-lg fw-bold mb-3" value="<?= htmlspecialchars($edit_data['title'] ?? '') ?>">
+                            <div class="row g-2">
+                                <div class="col-md-4"><select name="font_family" id="input-font" class="form-select"><?php foreach ($fonts as $v => $l): ?><option value="<?= htmlspecialchars($v) ?>" <?= ($edit_data['font_family'] ?? '') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></div>
+                                <div class="col-md-3"><select name="title_font_size" id="input-title-size" class="form-select"><?php foreach ($font_sizes as $sz): ?><option value="<?= $sz ?>" <?= ($edit_data['title_font_size'] ?? 48) == $sz ? 'selected' : '' ?>><?= $sz ?>px</option><?php endforeach; ?></select></div>
+                                <div class="col-md-3"><select name="font_style" id="input-style" class="form-select"><?php foreach (['normal'=>'Thường','bold'=>'Đậm','italic'=>'Nghiêng'] as $v=>$l): ?><option value="<?= $v ?>" <?= ($edit_data['font_style'] ?? 'normal') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></div>
+                                <div class="col-md-2"><input type="color" name="text_color" id="input-color" class="form-control form-control-color w-100" value="<?= htmlspecialchars($edit_data['text_color'] ?? '#ffffff') ?>"></div>
                             </div>
-                            <hr class="text-muted opacity-25 my-4">
-                            <!-- Mô tả -->
-                            <div class="col-12">
-                                <label class="form-label text-success"><i class="fas fa-paragraph me-2"></i>Mô tả ngắn</label>
-                                <textarea name="description" id="input-desc" class="form-control mb-3" rows="2" placeholder="Nhập một vài dòng giới thiệu ngắn gọn..."><?= htmlspecialchars($edit_data['description'] ?? '') ?></textarea>
-                                <div class="row g-2">
-                                    <div class="col-md-4"><select name="desc_font_family" id="input-desc-font" class="form-select"><?php foreach ($fonts as $v => $l): ?><option value="<?= htmlspecialchars($v) ?>" <?= ($edit_data['desc_font_family'] ?? '') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></div>
-                                    <div class="col-md-3"><select name="desc_font_size" id="input-desc-size" class="form-select"><?php foreach ($font_sizes as $sz): ?><option value="<?= $sz ?>" <?= ($edit_data['desc_font_size'] ?? 24) == $sz ? 'selected' : '' ?>>Cỡ <?= $sz ?>px</option><?php endforeach; ?></select></div>
-                                    <div class="col-md-3"><select name="desc_font_style" id="input-desc-style" class="form-select"><?php foreach (['normal'=>'Thường','bold'=>'Đậm','italic'=>'Nghiêng'] as $v=>$l): ?><option value="<?= $v ?>" <?= ($edit_data['desc_font_style'] ?? 'normal') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></div>
-                                    <div class="col-md-2"><input type="color" name="desc_color" id="input-desc-color" class="form-control form-control-color w-100" value="<?= htmlspecialchars($edit_data['desc_color'] ?? '#eeeeee') ?>" title="Màu Mô tả"></div>
-                                </div>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label">Mô tả ngắn</label>
+                            <textarea name="description" id="input-desc" class="form-control mb-3" rows="2"><?= htmlspecialchars($edit_data['description'] ?? '') ?></textarea>
+                            <div class="row g-2">
+                                <div class="col-md-4"><select name="desc_font_family" id="input-desc-font" class="form-select"><?php foreach ($fonts as $v => $l): ?><option value="<?= htmlspecialchars($v) ?>" <?= ($edit_data['desc_font_family'] ?? '') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></div>
+                                <div class="col-md-3"><select name="desc_font_size" id="input-desc-size" class="form-select"><?php foreach ($font_sizes as $sz): ?><option value="<?= $sz ?>" <?= ($edit_data['desc_font_size'] ?? 24) == $sz ? 'selected' : '' ?>><?= $sz ?>px</option><?php endforeach; ?></select></div>
+                                <div class="col-md-3"><select name="desc_font_style" id="input-desc-style" class="form-select"><?php foreach (['normal'=>'Thường','bold'=>'Đậm','italic'=>'Nghiêng'] as $v=>$l): ?><option value="<?= $v ?>" <?= ($edit_data['desc_font_style'] ?? 'normal') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></div>
+                                <div class="col-md-2"><input type="color" name="desc_color" id="input-desc-color" class="form-control form-control-color w-100" value="<?= htmlspecialchars($edit_data['desc_color'] ?? '#eeeeee') ?>"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Card 4: CTA & Schedule -->
+                <!-- Phần 3: Nút bấm & Lập lịch -->
                 <div class="row g-4 mb-4">
-                    <!-- Nút Hành Động -->
                     <div class="col-md-6">
-                        <div class="card premium-card h-100">
-                            <div class="premium-header bg-transparent d-flex align-items-center pb-2 border-0">
-                                <h6 class="m-0 fw-bold text-warning-emphasis"><i class="bi bi-hand-index-thumb me-2"></i>Nút Tương Tác (CTA)</h6>
-                            </div>
-                            <div class="card-body px-4 pt-0">
+                        <div class="card-minimal h-100">
+                            <div class="card-header-clean small text-uppercase">Nút bấm (CTA)</div>
+                            <div class="card-body p-4">
                                 <div class="mb-3">
-                                    <label class="form-label small">Chữ trên nút (Bỏ trống để ẩn)</label>
-                                    <input type="text" name="button_text" id="input-btn-text" class="form-control" value="<?= htmlspecialchars($edit_data['button_text'] ?? '') ?>" placeholder="VD: Đặt Bàn Ngay">
+                                    <label class="form-label">Tên nút</label>
+                                    <input type="text" name="button_text" id="input-btn-text" class="form-control" value="<?= htmlspecialchars($edit_data['button_text'] ?? '') ?>">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label small">Đường dẫn đích (Link URL / #ID)</label>
-                                    <input type="text" name="button_link" class="form-control" value="<?= htmlspecialchars($edit_data['button_link'] ?? '') ?>" placeholder="VD: #book-a-table">
+                                    <label class="form-label">Link</label>
+                                    <input type="text" name="button_link" class="form-control" value="<?= htmlspecialchars($edit_data['button_link'] ?? '') ?>">
                                 </div>
                                 <div>
-                                    <label class="form-label small">Màu nền nút bấm</label>
+                                    <label class="form-label">Màu nút</label>
                                     <input type="color" name="button_color" id="input-btn-color" class="form-control form-control-color w-100" value="<?= htmlspecialchars($edit_data['button_color'] ?? '#cda45e') ?>">
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- Lập Lịch -->
                     <div class="col-md-6">
-                        <div class="card premium-card h-100">
-                            <div class="premium-header bg-transparent d-flex align-items-center pb-2 border-0">
-                                <h6 class="m-0 fw-bold text-info-emphasis"><i class="bi bi-clock-history me-2"></i>Lập Lịch Hiển Thị</h6>
-                            </div>
-                            <div class="card-body px-4 pt-0">
-                                <div class="alert alert-secondary py-2 small mb-3 border-0"><i class="fas fa-info-circle me-1"></i>Bỏ trống nếu muốn chạy vô thời hạn.</div>
+                        <div class="card-minimal h-100">
+                            <div class="card-header-clean small text-uppercase">Lịch hiển thị</div>
+                            <div class="card-body p-4">
                                 <div class="mb-3">
-                                    <label class="form-label small text-info"><i class="fas fa-play me-1"></i>Bắt đầu từ</label>
+                                    <label class="form-label">Ngày bắt đầu</label>
                                     <input type="datetime-local" name="start_date" class="form-control" value="<?= !empty($edit_data['start_date']) ? date('Y-m-d\TH:i', strtotime($edit_data['start_date'])) : '' ?>">
                                 </div>
                                 <div>
-                                    <label class="form-label small text-danger"><i class="fas fa-stop me-1"></i>Kết thúc lúc</label>
+                                    <label class="form-label">Ngày kết thúc</label>
                                     <input type="datetime-local" name="end_date" class="form-control" value="<?= !empty($edit_data['end_date']) ? date('Y-m-d\TH:i', strtotime($edit_data['end_date'])) : '' ?>">
                                 </div>
                             </div>
@@ -418,25 +415,17 @@ input:checked + .slider:before { transform: translateX(22px); }
                     </div>
                 </div>
 
-                <!-- Submit Area -->
-                <div class="card premium-card mb-5 bg-white">
-                    <div class="card-body p-4 text-end">
-                        <button type="submit" name="btn_save" class="btn btn-premium btn-primary-premium btn-lg w-100">
-                            <i class="fas fa-save me-2"></i><?= $edit_data ? 'Hoàn tất Cập nhật Banner' : 'Tạo mới Banner' ?>
-                        </button>
-                    </div>
-                </div>
+                <button type="submit" name="btn_save" class="btn btn-minimal btn-gold w-100 py-3 mb-5">
+                    <i class="fas fa-save me-2"></i><?= $edit_data ? 'CẬP NHẬT BANNER' : 'LƯU BANNER MỚI' ?>
+                </button>
             </form>
         </div>
 
         <!-- ===== CỘT PHẢI: Sticky Live Preview ===== -->
         <div class="col-lg-5">
-            <div style="position: sticky; top: 30px; z-index: 10;">
-                <div class="card premium-card border-0 overflow-hidden" style="box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
-                    <div class="bg-dark text-white p-3 d-flex justify-content-between align-items-center">
-                        <h6 class="m-0 fw-bold"><i class="fas fa-desktop me-2"></i>Live Preview</h6>
-                        <span class="badge bg-secondary rounded-pill px-3">Mô phỏng Trang chủ</span>
-                    </div>
+            <div class="preview-sticky">
+                <div class="preview-frame">
+                    <div class="preview-label">Live Preview</div>
                     <div class="card-body p-0">
                         <div id="preview-box" class="d-flex flex-column justify-content-center"
                              style="width:100%; height:450px; background-color:#111;
@@ -484,21 +473,20 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
 
     <!-- ===== DANH SÁCH BANNER ===== -->
-    <div class="card premium-card mt-5">
-        <div class="premium-header bg-white d-flex justify-content-between align-items-center">
-            <h4 class="m-0 fw-bold" style="color: #2c3e50;"><i class="fas fa-list-ul me-2 text-primary"></i>Danh sách Banner đang chạy</h4>
-            <span class="badge bg-light text-dark rounded-pill px-3 py-2 shadow-sm"><i class="fas fa-grip-vertical me-2"></i>Kéo thả hàng để thay đổi thứ tự ưu tiên hiển thị</span>
+    <div class="card-minimal mt-5">
+        <div class="card-header-clean d-flex justify-content-between align-items-center">
+            <span>Danh sách Banner</span>
+            <small class="text-muted fw-normal"><i class="fas fa-info-circle me-1"></i>Kéo thả để sắp xếp</small>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" style="min-width: 1000px;">
-                    <thead class="table-light text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.5px;">
+                <table class="table table-clean align-middle mb-0">
+                    <thead>
                         <tr>
-                            <th width="50" class="text-center"></th>
-                            <th width="80" class="text-center">Vị trí</th>
-                            <th width="150">Giao diện (Ảnh)</th>
-                            <th>Chi tiết cấu hình hiển thị</th>
-                            <th width="120" class="text-center">Trạng thái</th>
+                            <th width="40"></th>
+                            <th width="120">Ảnh</th>
+                            <th>Nội dung hiển thị</th>
+                            <th width="100" class="text-center">Bật/Tắt</th>
                             <th width="120" class="text-center">Hành động</th>
                         </tr>
                     </thead>
@@ -510,56 +498,36 @@ input:checked + .slider:before { transform: translateX(22px); }
                             $active = (int)($b['is_active'] ?? 1);
                         ?>
                         <tr class="banner-row <?= !$active ? 'inactive-banner' : '' ?>" data-id="<?= $b['id'] ?>">
-                            <td class="text-center"><span class="drag-handle fs-4">⠿</span></td>
-                            <td class="text-center">
-                                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm" style="width:36px;height:36px;font-weight:bold;" id="order-<?= $b['id'] ?>">
-                                    <?= (int)$b['display_order'] ?>
-                                </div>
+                            <td class="text-center"><span class="drag-handle">⠿</span></td>
+                            <td>
+                                <img src="../../public/assets/img/hero/<?= htmlspecialchars($b['image_url']) ?>" class="banner-thumb border" onerror="this.src='../../public/assets/img/hero/default.jpg'">
                             </td>
                             <td>
-                                <div class="position-relative">
-                                    <img src="../../public/assets/img/hero/<?= htmlspecialchars($b['image_url']) ?>" class="banner-thumb" onerror="this.src='../../public/assets/img/hero/default.jpg'" alt="<?= htmlspecialchars($b['title']) ?>">
+                                <div class="fw-bold text-dark">
+                                    <span id="order-<?= $b['id'] ?>" class="d-none"><?= $b['display_order'] ?></span>
+                                    <?= htmlspecialchars($b['title']) ?>
                                 </div>
-                            </td>
-                            <td class="py-3">
-                                <div class="mb-1">
-                                    <span style="font-family:<?= htmlspecialchars($b['font_family']) ?>; font-size:1.15rem; color:#2c3e50; font-weight:<?= $b['font_style']==='bold' ? 'bold' : 'normal' ?>; font-style:<?= $b['font_style']==='italic' ? 'italic' : 'normal' ?>;">
-                                        <?= htmlspecialchars($b['title']) ?>
-                                    </span>
-                                    <?php if(!empty($b['button_text'])): ?>
-                                        <span class="badge ms-2" style="background-color: <?= htmlspecialchars($b['button_color']) ?>; font-weight:normal; letter-spacing:0.5px;">[CTA] <?= htmlspecialchars($b['button_text']) ?></span>
+                                <div class="text-muted small text-truncate" style="max-width: 300px;"><?= htmlspecialchars($b['description']) ?></div>
+                                <div class="mt-1">
+                                    <span class="badge bg-light text-secondary border small">Căn <?= $b['text_align'] ?></span>
+                                    <?php if($b['button_text']): ?>
+                                        <span class="badge border small" style="background: rgba(205, 164, 94, 0.1); color: var(--primary-gold);">
+                                            <i class="fas fa-link me-1"></i>Nút: <?= htmlspecialchars($b['button_text']) ?>
+                                        </span>
                                     <?php endif; ?>
                                 </div>
-                                <div class="text-muted small mb-2 text-truncate" style="max-width: 400px; font-family:<?= htmlspecialchars($b['desc_font_family']) ?>;">
-                                    <?= htmlspecialchars($b['description']) ?>
-                                </div>
-                                <div class="d-flex align-items-center gap-2">
-                                    <?php 
-                                    if (empty($b['start_date']) && empty($b['end_date'])) {
-                                        echo '<span class="badge bg-light text-secondary border px-2 py-1"><i class="fas fa-infinity me-1"></i>Vô thời hạn</span>';
-                                    } else {
-                                        $sd = !empty($b['start_date']) ? date('d/m H:i', strtotime($b['start_date'])) : '...';
-                                        $ed = !empty($b['end_date'])   ? date('d/m H:i', strtotime($b['end_date']))   : '...';
-                                        echo '<span class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1"><i class="far fa-calendar-alt me-1"></i>' . $sd . ' &rarr; ' . $ed . '</span>';
-                                    }
-                                    ?>
-                                    <span class="badge bg-light text-dark border px-2 py-1"><i class="fas fa-align-<?= htmlspecialchars($b['text_align']) ?> me-1"></i>Căn <?= htmlspecialchars($b['text_align']) === 'left'?'Trái':($b['text_align']==='right'?'Phải':'Giữa') ?></span>
-                                </div>
                             </td>
-                            <td class="text-center align-middle">
-                                <label class="switch mb-0" title="<?= $active ? 'Click để Ẩn' : 'Click để Hiện' ?>">
+                            <td class="text-center">
+                                <label class="status-toggle">
                                     <input type="checkbox" class="toggle-active-btn" data-id="<?= $b['id'] ?>" <?= $active ? 'checked' : '' ?>>
                                     <span class="slider"></span>
                                 </label>
-                                <div class="small mt-1 text-<?= $active ? 'success' : 'secondary' ?> fw-bold toggle-text-<?= $b['id'] ?>"><?= $active ? 'Đang bật' : 'Đã tắt' ?></div>
                             </td>
-                            <td class="text-center align-middle">
-                                <a href="manage_banners.php?edit=<?= $b['id'] ?>" class="btn btn-light btn-sm text-primary shadow-sm border mb-2 w-100 fw-bold">
-                                    <i class="fas fa-pen me-1"></i>Sửa
-                                </a>
-                                <button type="button" class="btn btn-light btn-sm text-danger shadow-sm border w-100 fw-bold btn-delete-banner" data-id="<?= $b['id'] ?>" data-title="<?= htmlspecialchars($b['title']) ?>">
-                                    <i class="fas fa-trash-alt me-1"></i>Xóa
-                                </button>
+                            <td class="text-center">
+                                <div class="btn-group shadow-sm">
+                                    <a href="manage_banners.php?edit=<?= $b['id'] ?>" class="btn btn-sm btn-white border px-3"><i class="fas fa-edit"></i></a>
+                                    <button type="button" class="btn btn-sm btn-white border px-3 text-danger btn-delete-banner" data-id="<?= $b['id'] ?>" data-title="<?= htmlspecialchars($b['title']) ?>"><i class="fas fa-trash"></i></button>
+                                </div>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -571,24 +539,21 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
 </div>
 
-<!-- Modal xác nhận xóa (Premium) -->
+<!-- Modal xác nhận xóa -->
 <div class="modal fade" id="modalDeleteBanner" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-        <div class="modal-content border-0 shadow" style="border-radius:20px; overflow:hidden;">
-            <div class="modal-body text-center p-5">
-                <div class="mb-4 text-danger">
-                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem;"></i>
-                </div>
-                <h5 class="fw-bold mb-3">Xác nhận xóa Banner</h5>
-                <p class="text-muted mb-2">Bạn có chắc chắn muốn xóa:</p>
-                <p class="fw-bold fs-5 text-dark" id="delete-banner-title"></p>
-                <div class="alert alert-danger py-2 mt-4 mb-0 small rounded-3">Hành động này sẽ xóa vĩnh viễn hình ảnh khỏi máy chủ!</div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 card-minimal p-3">
+            <div class="modal-body text-center p-4">
+                <div class="mb-3 text-danger"><i class="fas fa-trash-alt fa-3x"></i></div>
+                <h5 class="fw-bold">Xác nhận xóa?</h5>
+                <p class="text-muted mb-0">Bạn có chắc muốn xóa vĩnh viễn banner này?</p>
+                <p class="fw-bold mt-2" id="delete-banner-title"></p>
             </div>
-            <div class="modal-footer border-0 bg-light p-3 d-flex justify-content-between">
-                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Hủy bỏ</button>
+            <div class="modal-footer border-0 justify-content-center gap-2">
+                <button type="button" class="btn btn-light px-4 border" data-bs-dismiss="modal">Hủy</button>
                 <form method="POST" action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" class="m-0">
                     <input type="hidden" name="delete_banner_id" id="delete-banner-id">
-                    <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm">Xóa Vĩnh Viễn</button>
+                    <button type="submit" class="btn btn-danger px-4">Đồng ý xóa</button>
                 </form>
             </div>
         </div>
