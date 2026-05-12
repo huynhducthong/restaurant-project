@@ -273,18 +273,28 @@ include '../../public/admin_layout_header.php';
                         <i class="fas fa-globe me-1" style="pointer-events:none"></i>Tất cả kho
                     </button>
                     <?php foreach ($warehouses as $w):
-                        $wh_colors = ['main' => 'btn-primary', 'kitchen' => 'btn-danger', 'bar' => 'btn-info text-dark'];
-                        $wh_icons  = ['main' => 'fa-warehouse', 'kitchen' => 'fa-fire-burner', 'bar' => 'fa-glass-martini-alt'];
-                        $wh_color  = $wh_colors[$w['type'] ?? ''] ?? 'btn-secondary';
+                        $wh_colors = [
+                            'main' => 'btn-primary', 
+                            'kitchen' => 'btn-danger', 
+                            'bar' => 'btn-info text-dark',
+                            'cold' => 'btn-primary', 
+                            'supplies' => 'btn-warning text-dark',
+                            'virtual' => 'btn-secondary'
+                        ];
+                        $wh_icons  = [
+                            'main' => 'fa-warehouse', 'kitchen' => 'fa-fire-burner', 'bar' => 'fa-glass-martini-alt',
+                            'cold' => 'fa-snowflake', 'supplies' => 'fa-tools', 'virtual' => 'fa-file-invoice'
+                        ];
+                        $wh_color  = $wh_colors[$w['type'] ?? ''] ?? 'btn-outline-secondary';
                         $wh_icon   = $wh_icons[$w['type']  ?? ''] ?? 'fa-box';
                     ?>
                     <button class="btn btn-sm btn-outline-secondary px-3 fw-bold wh-filter-btn"
                             data-wh="<?= $w['id'] ?>"
-                            data-wh-type="<?= $w['type'] ?? '' ?>">
-                        <i class="fas <?= $wh_icon ?> me-1" style="pointer-events:none"></i><?= htmlspecialchars($w['name']) ?>
+                            data-wh-type="<?= $w['type'] ?? '' ?>"
+                            style="min-width: 120px;">
+                        <i class="fas <?= $wh_icon ?> me-1" style="pointer-events:none"></i><?= htmlspecialchars($w['name'] ?: 'Kho ' . $w['id']) ?>
                         <span class="badge bg-white text-dark ms-1" style="font-size:10px;pointer-events:none">
                             <?php
-                            // Đếm số mặt hàng đang có hàng trong kho này
                             $count_in_wh = 0;
                             foreach ($inv as $chk_item) {
                                 if (($chk_item['stocks'][$w['id']] ?? 0) > 0) $count_in_wh++;
@@ -348,7 +358,7 @@ include '../../public/admin_layout_header.php';
                                             if ($qty > 0): $has_stock = true;
                                                 $badge_color = ($w['type'] == 'main') ? 'bg-primary' : (($w['type'] == 'kitchen') ? 'bg-danger' : 'bg-info text-dark');
                                         ?>
-                                                <div class="mb-1"><span class="badge <?= $badge_color ?> me-1"><?= $w['name'] ?></span> <span class="fw-bold"><?= $qty ?></span> <?= $i['unit_name'] ?></div>
+                                                <div class="mb-1 wh-badge" data-wh-id="<?= $w['id'] ?>"><span class="badge <?= $badge_color ?> me-1"><?= $w['name'] ?></span> <span class="fw-bold"><?= $qty ?></span> <?= $i['unit_name'] ?></div>
                                         <?php endif;
                                         endforeach; ?>
 
@@ -1159,13 +1169,23 @@ include '../../public/admin_layout_header.php';
     $(document).on('click', '.wh-filter-btn', function () {
         activeWarehouse = $(this).data('wh').toString();
         // Cập nhật active state
-        $('.wh-filter-btn').removeClass('active btn-dark btn-primary btn-danger btn-info')
-                           .addClass('btn-outline-secondary');
+        $('.wh-filter-btn').removeClass('active btn-dark btn-primary btn-danger btn-info btn-warning btn-secondary')
+                           .addClass('btn-outline-secondary').css('color', '');
+        
         $(this).removeClass('btn-outline-secondary').addClass('active');
-        if (activeWarehouse === 'all') $(this).addClass('btn-dark');
-        else {
+        
+        if (activeWarehouse === 'all') {
+            $(this).addClass('btn-dark');
+        } else {
             const type = $(this).data('wh-type');
-            const colorMap = { main: 'btn-primary', kitchen: 'btn-danger', bar: 'btn-info' };
+            const colorMap = { 
+                main: 'btn-primary', 
+                kitchen: 'btn-danger', 
+                bar: 'btn-info', 
+                cold: 'btn-primary',
+                supplies: 'btn-warning',
+                virtual: 'btn-secondary'
+            };
             $(this).addClass(colorMap[type] || 'btn-secondary');
         }
         filterTable();
@@ -1196,6 +1216,18 @@ include '../../public/admin_layout_header.php';
             }
 
             r.setAttribute('data-visible', (nameMatch && filterMatch && whMatch) ? '1' : '0');
+
+            // --- ĐIỀU CHỈNH HIỂN THỊ CHI TIẾT KHO TRONG DÒNG ---
+            // Nếu chọn "Tất cả" hoặc "Kho Tổng" (ID 1) -> Hiện hết
+            // Nếu chọn kho cụ thể khác -> Chỉ hiện badge của kho đó
+            const badges = r.querySelectorAll('.wh-badge');
+            badges.forEach(b => {
+                if (activeWarehouse === 'all' || activeWarehouse === '1') {
+                    b.style.display = '';
+                } else {
+                    b.style.display = (b.dataset.whId === activeWarehouse) ? '' : 'none';
+                }
+            });
         });
         currentPage = 1;
         renderPagination();

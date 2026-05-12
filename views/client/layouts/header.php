@@ -143,7 +143,7 @@ if (!empty($logo_path)) {
 
             color: #fff;
 
-            background: rgba(0, 0, 0, 0.4);
+            background: transparent;
 
             transition: all 0.5s;
         }
@@ -299,6 +299,42 @@ if (!empty($logo_path)) {
             background: var(--primary-color);
 
             color: #000;
+        }
+
+        /* Khách: đăng ký / đăng nhập xếp dọc, nút vuông */
+
+        .guest-auth-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+        }
+
+        .guest-auth-stack .auth-btn {
+            border-radius: 4px;
+            text-align: center;
+            border: none;
+            padding: 8px 16px;
+        }
+
+        .guest-register-btn {
+            background: #e6b422;
+            color: #fff;
+        }
+
+        .guest-register-btn:hover {
+            background: #d4a41a;
+            color: #fff;
+        }
+
+        .guest-login-btn {
+            background: #1a1814;
+            color: #fff;
+        }
+
+        .guest-login-btn:hover {
+            background: #2a2620;
+            color: #fff;
         }
 
         .book-a-table-btn {
@@ -590,16 +626,16 @@ if (!empty($logo_path)) {
 
                     <?php else: ?>
 
-                        <div class="d-flex align-items-center gap-2">
-
-                            <a href="public/login.php"
-                                class="auth-btn login-btn">
-                                Đăng nhập
-                            </a>
+                        <div class="guest-auth-stack">
 
                             <a href="public/register.php"
-                                class="auth-btn register-btn">
+                                class="auth-btn guest-register-btn">
                                 Đăng ký
+                            </a>
+
+                            <a href="public/login.php"
+                                class="auth-btn guest-login-btn">
+                                Đăng nhập
                             </a>
 
                         </div>

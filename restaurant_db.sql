@@ -162,6 +162,22 @@ CREATE TABLE `booking_details` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `booking_inventory_deductions`
+--
+
+DROP TABLE IF EXISTS `booking_inventory_deductions`;
+CREATE TABLE `booking_inventory_deductions` (
+  `id` int(11) NOT NULL,
+  `booking_id` int(11) DEFAULT NULL,
+  `ingredient_id` int(11) DEFAULT NULL,
+  `warehouse_id` int(11) DEFAULT NULL,
+  `quantity` decimal(15,2) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `books`
 --
 
@@ -524,19 +540,20 @@ INSERT INTO `inventory_audit_details` (`id`, `audit_id`, `ingredient_id`, `syste
 DROP TABLE IF EXISTS `inventory_categories`;
 CREATE TABLE `inventory_categories` (
   `id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL
+  `name` varchar(100) NOT NULL,
+  `default_warehouse_id` int(11) DEFAULT 2
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `inventory_categories`
 --
 
-INSERT INTO `inventory_categories` (`id`, `name`) VALUES
-(1, 'Thịt'),
-(2, 'Rau củ'),
-(3, 'Gia vị'),
-(4, 'Đồ uống'),
-(5, 'rau');
+INSERT INTO `inventory_categories` (`id`, `name`, `default_warehouse_id`) VALUES
+(1, 'Thịt', 4),
+(2, 'Rau củ', 4),
+(3, 'Gia vị', 2),
+(4, 'Đồ uống', 3),
+(5, 'rau', 4);
 
 -- --------------------------------------------------------
 
@@ -884,6 +901,10 @@ CREATE TABLE `service_bookings` (
   `total_amount` decimal(15,2) DEFAULT 0.00,
   `deposit_amount` decimal(15,2) DEFAULT 0.00,
   `status` enum('Pending','Confirmed','Completed','Cancelled') DEFAULT 'Pending',
+  `event_type` varchar(100) DEFAULT NULL,
+  `decor_package` varchar(100) DEFAULT NULL,
+  `has_cake` tinyint(1) DEFAULT 0,
+  `has_flower` tinyint(1) DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -917,7 +938,10 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 ('open_days', 'Thứ 3 - Chủ Nhật'),
 ('open_time', '09:00 AM - 11:00 PM'),
 ('restaurant_name', 'Restaurantly'),
-('zalo_url', '');
+('zalo_url', ''),
+('inv_low_stock_threshold', '5'),
+('inv_expiry_warning_days', '30'),
+('inv_auto_deduct', '1');
 
 -- --------------------------------------------------------
 
@@ -1043,7 +1067,11 @@ CREATE TABLE `warehouses` (
 INSERT INTO `warehouses` (`id`, `name`, `type`, `status`) VALUES
 (1, 'Kho Tổng (Tiếp nhận hàng)', 'main', 1),
 (2, 'Kho Bếp (Chế biến thức ăn)', 'kitchen', 1),
-(3, 'Kho Bar (Pha chế đồ uống)', 'bar', 1);
+(3, 'Kho Bar (Pha chế đồ uống)', 'bar', 1),
+(4, 'Kho Lạnh (Bảo quản thực phẩm)', 'cold', 1),
+(5, 'Kho Vật Tư (Đồ dùng tiêu hao)', 'supplies', 1),
+(6, 'Kho Xuất (Hàng đã bán)', 'virtual', 1),
+(7, 'Kho Hủy (Hàng hỏng/Hết hạn)', 'virtual', 1);
 
 --
 -- Indexes for dumped tables
@@ -1086,6 +1114,12 @@ ALTER TABLE `bookings`
 ALTER TABLE `booking_details`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_booking_service` (`booking_id`);
+
+--
+-- Indexes for table `booking_inventory_deductions`
+--
+ALTER TABLE `booking_inventory_deductions`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `books`
@@ -1335,6 +1369,12 @@ ALTER TABLE `bookings`
 -- AUTO_INCREMENT for table `booking_details`
 --
 ALTER TABLE `booking_details`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `booking_inventory_deductions`
+--
+ALTER TABLE `booking_inventory_deductions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --

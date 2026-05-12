@@ -28,7 +28,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
 if (!function_exists('isActive')) {
     function isActive($path)
     {
-        return strpos($_SERVER['REQUEST_URI'], $path) !== false ? 'active' : '';
+        $current_page = basename($_SERVER['PHP_SELF']);
+        return $current_page === $path ? 'active' : '';
     }
 }
 

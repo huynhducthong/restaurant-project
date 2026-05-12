@@ -20,16 +20,15 @@ try {
         // 3. Bắt đầu Transaction để đảm bảo tính toàn vẹn dữ liệu
         $db->beginTransaction();
 
-        // Bước A: Cộng dồn số lượng vào bảng tồn kho (inventory)
-        $query_update = "UPDATE inventory SET stock_quantity = stock_quantity + ? WHERE id = ?";
+        // Bước A: Cộng vào bảng tồn kho đa kho (Warehouse 1 - Kho Tổng)
+        $query_update = "INSERT INTO inventory_stocks (warehouse_id, ingredient_id, quantity) VALUES (1, ?, ?) ON DUPLICATE KEY UPDATE quantity = quantity + ?";
         $stmt_update = $db->prepare($query_update);
-        $stmt_update->execute([$quantity, $item_id]);
+        $stmt_update->execute([$item_id, $quantity, $quantity]);
 
         // Bước B: Ghi lại lịch sử nhập kho vào bảng inventory_history
-        // Việc này giúp Dashboard hiển thị số liệu ở ô "NHẬP / XUẤT"
-        $query_history = "INSERT INTO inventory_history (ingredient_id, type, quantity) VALUES (?, 'import', ?)";
+        $query_history = "INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, 1, 'import', ?, ?)";
         $stmt_history = $db->prepare($query_history);
-        $stmt_history->execute([$item_id, $quantity]);
+        $stmt_history->execute([$item_id, $quantity, $_SESSION['username'] ?? 'Admin']);
 
         // 4. Hoàn tất lưu dữ liệu
         $db->commit();

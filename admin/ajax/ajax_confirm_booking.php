@@ -35,10 +35,16 @@ try {
             WHERE r.food_id = ?
         ");
         
-        $query_update_inventory = $db->prepare("
-            UPDATE inventory_stocks 
-            SET quantity = quantity - ? 
+        $query_check_stock = $db->prepare("
+            SELECT quantity
+            FROM inventory_stocks
             WHERE ingredient_id = ? AND warehouse_id = ?
+            FOR UPDATE
+        ");
+        $query_update_inventory = $db->prepare("
+            UPDATE inventory_stocks
+            SET quantity = quantity - ?
+            WHERE ingredient_id = ? AND warehouse_id = ? AND quantity >= ?
         ");
 
         $query_history = $db->prepare("
@@ -46,7 +52,8 @@ try {
             VALUES (?, ?, 'export', ?, 'Hệ thống POS (AJAX)')
         ");
 
-        // Duyệt qua từng món ăn
+        // Duyệt qua từng món ăn để gom tổng lượng cần trừ theo từng nguyên liệu + kho đích
+        $required_by_stock = [];
         foreach ($ordered_items as $item) {
             $food_id = $item['menu_id'];
             $food_qty = (float)$item['quantity'];
@@ -69,12 +76,37 @@ try {
 
                 $total_reduction = $qty_in_stock_unit * $food_qty;
 
-                // 4. Trừ tồn kho tại kho tương ứng
-                $query_update_inventory->execute([$total_reduction, $ing_id, $target_warehouse_id]);
-
-                // 5. Ghi lịch sử xuất kho
-                $query_history->execute([$ing_id, $target_warehouse_id, $total_reduction]);
+                $key = $ing_id . ':' . $target_warehouse_id;
+                if (!isset($required_by_stock[$key])) {
+                    $required_by_stock[$key] = [
+                        'ingredient_id' => $ing_id,
+                        'warehouse_id' => $target_warehouse_id,
+                        'quantity' => 0
+                    ];
+                }
+                $required_by_stock[$key]['quantity'] += $total_reduction;
             }
+        }
+
+        // 4. Khóa tồn kho, kiểm tra đủ hàng rồi mới trừ để tránh âm kho
+        foreach ($required_by_stock as $row) {
+            $ing_id = (int)$row['ingredient_id'];
+            $warehouse_id = (int)$row['warehouse_id'];
+            $total_reduction = (float)$row['quantity'];
+
+            $query_check_stock->execute([$ing_id, $warehouse_id]);
+            $current_stock = (float)($query_check_stock->fetchColumn() ?: 0);
+            if ($current_stock < $total_reduction) {
+                throw new Exception("Kho không đủ nguyên liệu (ID: $ing_id) tại kho $warehouse_id. Cần $total_reduction, còn $current_stock.");
+            }
+
+            $query_update_inventory->execute([$total_reduction, $ing_id, $warehouse_id, $total_reduction]);
+            if ($query_update_inventory->rowCount() === 0) {
+                throw new Exception("Không thể cập nhật tồn kho cho nguyên liệu ID $ing_id tại kho $warehouse_id.");
+            }
+
+            // 5. Ghi lịch sử xuất kho sau khi trừ thành công
+            $query_history->execute([$ing_id, $warehouse_id, $total_reduction]);
         }
 
         $db->commit();

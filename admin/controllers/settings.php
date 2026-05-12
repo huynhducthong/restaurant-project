@@ -27,6 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'name_position'   => $_POST['name_position']   ?? 'center',
         'open_time'       => $_POST['open_time']       ?? '09:00 AM - 11:00 PM',
         'open_days'       => $_POST['open_days']       ?? 'Thứ 2 - Chủ Nhật',
+        'inv_expiry_days' => $_POST['inv_expiry_days'] ?? '7',
+        'inv_low_stock'   => $_POST['inv_low_stock']   ?? '5',
+        'inv_auto_deduct' => $_POST['inv_auto_deduct'] ?? '1',
     ];
 
     // Prepare 1 lần ngoài loop, execute nhiều lần
@@ -192,6 +195,30 @@ include '../../public/admin_layout_header.php';
                             <label class="form-label fw-bold">Địa chỉ</label>
                             <input type="text" name="address" class="form-control"
                                    value="<?= htmlspecialchars($settings['address'] ?? '') ?>">
+                        </div>
+                    </div>
+
+                    <h5 class="section-title mt-4" style="font-size: 1.1rem; border-color: #3498db; color: #3498db;">
+                        <i class="bi bi-box-seam me-2"></i>CẤU HÌNH KHO
+                    </h5>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label fw-bold small text-muted">Cảnh báo HSD trước (ngày)</label>
+                            <input type="number" name="inv_expiry_days" class="form-control"
+                                   value="<?= htmlspecialchars($settings['inv_expiry_days'] ?? '7') ?>">
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label fw-bold small text-muted">Ngưỡng tồn thấp chung</label>
+                            <input type="number" name="inv_low_stock" class="form-control"
+                                   value="<?= htmlspecialchars($settings['inv_low_stock'] ?? '5') ?>">
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label fw-bold small text-muted">Tự động trừ kho khi bán</label>
+                            <select name="inv_auto_deduct" class="form-select">
+                                <option value="1" <?= ($settings['inv_auto_deduct'] ?? '1') == '1' ? 'selected' : '' ?>>Bật (Khuyên dùng)</option>
+                                <option value="0" <?= ($settings['inv_auto_deduct'] ?? '1') == '0' ? 'selected' : '' ?>>Tắt (Thủ công)</option>
+                            </select>
                         </div>
                     </div>
 

@@ -157,9 +157,14 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
                     </div>
                 </div>
 
-                <p class="fw-bold small text-uppercase text-muted mb-3 border-bottom pb-2">
-                    <i class="fas fa-box-open me-1 text-warning"></i>Chi tiết hàng hóa
-                </p>
+                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                    <p class="fw-bold small text-uppercase text-muted mb-0">
+                        <i class="fas fa-box-open me-1 text-warning"></i>Chi tiết hàng hóa
+                    </p>
+                    <button type="button" class="btn btn-sm btn-outline-primary border-0 fw-bold" onclick="openQuickAddIng()">
+                        <i class="fas fa-plus-circle me-1"></i>Thêm nguyên liệu mới
+                    </button>
+                </div>
                 <div class="card shadow-sm border-0 overflow-hidden mb-3">
                     <table class="table table-bordered mb-0 align-middle" id="poTable">
                         <thead class="table-light text-muted small text-uppercase">
@@ -232,6 +237,37 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
     </div>
 </div>
 
+<!-- MODAL THÊM NHANH NGUYÊN LIỆU (QUICK ADD) -->
+<div class="modal fade" id="modalQuickAddIng" tabindex="-1" style="z-index: 1060;">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white py-2 px-3">
+                <h6 class="modal-title mb-0">Thêm nguyên liệu mới</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="mb-2">
+                    <label class="small fw-bold">Tên nguyên liệu</label>
+                    <input type="text" id="quick-ing-name" class="form-control form-control-sm" placeholder="VD: Sốt BBQ">
+                </div>
+                <div class="mb-2">
+                    <label class="small fw-bold">Đơn vị tính</label>
+                    <input type="text" id="quick-ing-unit" class="form-control form-control-sm" placeholder="VD: Chai, Kg...">
+                </div>
+                <div class="mb-3">
+                    <label class="small fw-bold">Danh mục</label>
+                    <select id="quick-ing-cat" class="form-select form-select-sm">
+                        <option value="Gia vị">Gia vị</option>
+                        <option value="Thực phẩm">Thực phẩm</option>
+                        <option value="Khác">Khác</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm w-100 fw-bold" id="btnSaveQuickIng">LƯU & CHỌN</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -293,6 +329,41 @@ $(document).ready(function() {
             let val = $(this).val().replace(/,/g, '');
             $(this).attr('type', 'number').val(val);
         });
+    });
+
+    // ================= XỬ LÝ THÊM NHANH NGUYÊN LIỆU =================
+    window.openQuickAddIng = function() {
+        new bootstrap.Modal(document.getElementById('modalQuickAddIng')).show();
+    };
+
+    $('#btnSaveQuickIng').click(function() {
+        const name = $('#quick-ing-name').val();
+        const unit = $('#quick-ing-unit').val();
+        const cat  = $('#quick-ing-cat').val();
+
+        if(!name || !unit) return alert('Vui lòng nhập đủ Tên và Đơn vị!');
+
+        $(this).prop('disabled', true).text('Đang lưu...');
+
+        $.post('POController.php', {
+            action: 'quick_add_ingredient',
+            name: name,
+            unit: unit,
+            category: cat
+        }, function(res) {
+            $('#btnSaveQuickIng').prop('disabled', false).text('LƯU & CHỌN');
+            if(res.status === 'success') {
+                // Thêm option mới vào TẤT CẢ các select hiện có trong bảng PO
+                const newOpt = `<option value="${res.id}" data-price="0" selected>${name} (${unit})</option>`;
+                $('.item-select').append(newOpt);
+                
+                bootstrap.Modal.getInstance(document.getElementById('modalQuickAddIng')).hide();
+                $('#quick-ing-name, #quick-ing-unit').val('');
+                alert('Đã thêm nguyên liệu mới thành công!');
+            } else {
+                alert('Lỗi: ' + res.message);
+            }
+        }, 'json');
     });
 });
 

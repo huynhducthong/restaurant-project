@@ -86,7 +86,7 @@ $html = '
     <!-- THÔNG TIN KHÁCH HÀNG -->
     <div style="border:1px solid #e8e2d9; border-radius:8px; padding:16px; margin-bottom:20px;">
         <div style="font-size:11px; font-weight:bold; letter-spacing:.15em; text-transform:uppercase; color:#888; margin-bottom:12px; border-bottom:1px solid #f0ece4; padding-bottom:6px;">
-            Thông tin đặt dịch vụ
+            Thông tin khách hàng
         </div>
         <table style="width:100%; font-size:13px; border-collapse:collapse;">
             <tr>
@@ -96,17 +96,48 @@ $html = '
                 <td style="padding:5px 0;">' . htmlspecialchars($s['customer_phone']) . '</td>
             </tr>
             <tr>
-                <td style="padding:5px 0; color:#888;">Loại dịch vụ:</td>
+                <td style="padding:5px 0; color:#888;">Dịch vụ:</td>
                 <td style="padding:5px 0; font-weight:bold; color:#cda45e;">' . htmlspecialchars(strtoupper($s['service_type'])) . '</td>
-                <td style="padding:5px 0; color:#888;">Số khách:</td>
-                <td style="padding:5px 0;">' . htmlspecialchars((string)$s['guests']) . ' người</td>
+                <td style="padding:5px 0; color:#888;">Thời gian:</td>
+                <td style="padding:5px 0; font-weight:bold;">' . htmlspecialchars(date('H:i - d/m/Y', strtotime($s['booking_date']))) . '</td>
             </tr>
             <tr>
-                <td style="padding:5px 0; color:#888;">Ngày & Giờ:</td>
-                <td style="padding:5px 0; font-weight:bold;" colspan="3">' . htmlspecialchars(date('H:i - d/m/Y', strtotime($s['booking_date']))) . '</td>
+                <td style="padding:5px 0; color:#888;">Số lượng khách:</td>
+                <td style="padding:5px 0;">' . htmlspecialchars((string)$s['guests']) . ' người</td>
+                <td style="padding:5px 0; color:#888;">Phòng/Bàn:</td>
+                <td style="padding:5px 0; font-weight:bold;">' . ($s['service_type'] === 'birthday' ? 'PHÒNG VIP (Mặc định)' : 'Bàn tiêu chuẩn') . '</td>
             </tr>
         </table>
     </div>';
+
+// KHỐI CHI TIẾT SỰ KIỆN (CHỈ HIỆN KHI LÀ SINH NHẬT/KỶ NIỆM)
+if ($s['service_type'] === 'birthday') {
+    $addons = [];
+    if ($s['has_cake']) $addons[] = 'Bánh kem';
+    if ($s['has_flower']) $addons[] = 'Hoa tươi';
+    $addon_str = !empty($addons) ? implode(', ', $addons) : 'Không';
+
+    $html .= '
+    <div style="border:1px solid #e8e2d9; background:#fafafa; border-radius:8px; padding:16px; margin-bottom:20px;">
+        <div style="font-size:11px; font-weight:bold; letter-spacing:.15em; text-transform:uppercase; color:#cda45e; margin-bottom:12px; border-bottom:1px solid #f0ece4; padding-bottom:6px;">
+            Chi tiết tiệc kỷ niệm
+        </div>
+        <table style="width:100%; font-size:13px; border-collapse:collapse;">
+            <tr>
+                <td style="padding:5px 0; width:40%; color:#888;">Loại kỷ niệm:</td>
+                <td style="padding:5px 0; font-weight:bold;">' . htmlspecialchars($s['event_type'] ?: 'Sinh nhật') . '</td>
+            </tr>
+            <tr>
+                <td style="padding:5px 0; color:#888;">Gói trang trí:</td>
+                <td style="padding:5px 0;">' . htmlspecialchars($s['decor_package'] ?: 'Gói mặc định') . '</td>
+            </tr>
+            <tr>
+                <td style="padding:5px 0; color:#888;">Dịch vụ đặt thêm:</td>
+                <td style="padding:5px 0; font-weight:bold; color:#d63384;">' . $addon_str . '</td>
+            </tr>
+        </table>
+    </div>';
+}
 
 // BẢNG MÓN ĂN
 if (!empty($items)) {
@@ -159,15 +190,26 @@ if (!empty(trim($s['message']))) {
     </div>';
 }
 
+// LƯU Ý & ĐIỀU KHOẢN
+$html .= '
+    <div style="margin-top:10px; padding:15px; border:1px dashed #cda45e; border-radius:8px; font-size:10px; color:#555; line-height:1.5; background:#fffdfa;">
+        <strong style="color:#cda45e; text-transform:uppercase; letter-spacing:1px;">Lưu ý quan trọng:</strong><br>
+        • Quý khách vui lòng đến đúng giờ đã hẹn. Sau 20 phút, nếu quý khách không có mặt và không thông báo, bàn sẽ được giải phóng.<br>
+        • Tiền cọc (30%) sẽ không được hoàn lại nếu quý khách hủy lịch trong vòng 24 giờ trước giờ hẹn.<br>
+        • Mọi thay đổi về số lượng khách hoặc thực đơn xin vui lòng thông báo trước ít nhất 12 giờ.
+    </div>';
+
 // FOOTER
 $html .= '
-    <div style="margin-top:30px; padding-top:16px; border-top:1px solid #e8e2d9; display:table; width:100%;">
-        <div style="display:table-cell; font-size:10px; color:#aaa;">
-            Cảm ơn quý khách đã sử dụng dịch vụ tại ' . $restaurant_name . '
+    <div style="margin-top:40px; padding-top:16px; border-top:1px solid #e8e2d9; display:table; width:100%;">
+        <div style="display:table-cell; font-size:10px; color:#aaa; vertical-align:top;">
+            Cảm ơn quý khách đã tin tưởng và sử dụng dịch vụ tại ' . $restaurant_name . '.<br>
+            Chúng tôi hân hạnh được đón tiếp quý khách!
         </div>
         <div style="display:table-cell; text-align:right;">
-            <div style="display:inline-block; text-align:center; font-size:10px; color:#555;">
-                <div style="width:120px; border-top:1px solid #555; padding-top:4px; margin-top:40px;">Xác nhận</div>
+            <div style="display:inline-block; text-align:center; font-size:11px; color:#333;">
+                <div style="font-style:italic; margin-bottom:40px; color:#888;">Xác nhận bởi nhà hàng</div>
+                <div style="width:140px; border-top:1px solid #333; padding-top:5px; font-weight:bold;">BAN QUẢN LÝ</div>
             </div>
         </div>
     </div>

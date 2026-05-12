@@ -15,6 +15,11 @@ $db = (new Database())->getConnection();
 // Lấy danh sách các kho (Warehouses)
 $warehouses = $db->query("SELECT * FROM warehouses WHERE status = 1")->fetchAll(PDO::FETCH_ASSOC);
 
+// Lấy cấu hình kho từ bảng settings
+$settings_raw = $db->query("SELECT key_name, key_value FROM settings WHERE key_name IN ('inv_expiry_days', 'inv_low_stock')")->fetchAll(PDO::FETCH_KEY_PAIR);
+$cfg_expiry_days = (int)($settings_raw['inv_expiry_days'] ?? 7);
+$cfg_low_stock   = (float)($settings_raw['inv_low_stock'] ?? 5);
+
 // ============================================================
 // 1. XỬ LÝ YÊU CẦU (REQUEST HANDLING)
 // ============================================================
@@ -166,6 +171,12 @@ if (isset($_POST['action'])) {
             if ($current_stock < $qty) throw new Exception("Kho này không đủ tồn kho! Hiện còn: " . number_format($current_stock, 2));
 
             $db->prepare("UPDATE inventory_stocks SET quantity = quantity - ? WHERE warehouse_id = ? AND ingredient_id = ?")->execute([$qty, $w_id, $id]);
+            
+            // CỘNG VÀO KHO ẢO (Kho Xuất ID: 6 hoặc Kho Hủy ID: 7) để theo dõi tổng quát
+            $virtual_w_id = ($_POST['action'] === 'export') ? 6 : 7;
+            $db->prepare("INSERT INTO inventory_stocks (warehouse_id, ingredient_id, quantity) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE quantity = quantity + ?")
+               ->execute([$virtual_w_id, $id, $qty, $qty]);
+
             $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, ?, ?, ?)")->execute([$id, $w_id, $_POST['action'], $qty, $current_user]);
         } elseif ($_POST['action'] === 'transfer') {
             // Action cũ (giữ cho tương thích nếu còn gọi từ nơi khác)
@@ -351,23 +362,30 @@ $stock_map = [];
 $total_stock_map = [];
 foreach ($stocks_raw as $s) {
     $stock_map[$s['ingredient_id']][$s['warehouse_id']] = (float)$s['quantity'];
-    if (!isset($total_stock_map[$s['ingredient_id']])) $total_stock_map[$s['ingredient_id']] = 0;
-    $total_stock_map[$s['ingredient_id']] += (float)$s['quantity'];
+    
+    // TỔNG TỒN: Chỉ tính các kho vật lý (1, 2, 3, 4, 5), KHÔNG cộng kho ảo (6: Xuất, 7: Hủy)
+    if (!in_array((int)$s['warehouse_id'], [6, 7])) {
+        if (!isset($total_stock_map[$s['ingredient_id']])) $total_stock_map[$s['ingredient_id']] = 0;
+        $total_stock_map[$s['ingredient_id']] += (float)$s['quantity'];
+    }
 }
 
 $low_stock_count = 0;
 $expiry_warn_count = 0;
 $today = date('Y-m-d');
-$warn_date = date('Y-m-d', strtotime('+7 days'));
+$warn_date = date('Y-m-d', strtotime('+' . $cfg_expiry_days . ' days'));
 
 foreach ($inv_items as &$item) {
     $item['stocks'] = $stock_map[$item['id']] ?? [];
     $item['total_stock'] = $total_stock_map[$item['id']] ?? 0;
 
     $min = (float)($item['min_stock'] ?? 0);
+    // Nếu món đó chưa cài định mức riêng, dùng định mức chung từ Cài đặt
+    if ($min <= 0) $min = $cfg_low_stock;
+
     // CHỈ TÍNH CẢNH BÁO CHO NHỮNG MÓN ĐANG HOẠT ĐỘNG (is_active = 1)
     if ($item['is_active'] == 1) {
-        if ($min > 0 && $item['total_stock'] <= $min) $low_stock_count++;
+        if ($item['total_stock'] <= $min) $low_stock_count++;
         if (!empty($item['expiry_date']) && $item['expiry_date'] <= $warn_date) $expiry_warn_count++;
     }
 }
