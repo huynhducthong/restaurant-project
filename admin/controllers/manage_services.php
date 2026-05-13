@@ -209,8 +209,15 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
                 if ($b['table_id']) {
                     $db->prepare("UPDATE restaurant_tables SET is_available = 1 WHERE id = ?")->execute([$b['table_id']]);
                 }
-                $db->prepare("DELETE FROM booking_details WHERE booking_id = ?")->execute([$id]);
-                $db->prepare("DELETE FROM service_bookings WHERE id = ?")->execute([$id]);
+                
+                // Thay vì xóa cứng, ta đánh dấu is_archived = 1.
+                // Đồng thời, nếu đơn CHƯA Hoàn Thành, ta mới chuyển trạng thái thành Cancelled.
+                // Nếu đơn ĐÃ Hoàn Thành, ta GIỮ NGUYÊN trạng thái để Khách hàng xem lại.
+                if ($b['status'] !== 'Completed') {
+                    $db->prepare("UPDATE service_bookings SET status = 'Cancelled', is_archived = 1 WHERE id = ?")->execute([$id]);
+                } else {
+                    $db->prepare("UPDATE service_bookings SET is_archived = 1 WHERE id = ?")->execute([$id]);
+                }
             }
             $db->commit();
         } catch (Exception $e) {
@@ -224,9 +231,36 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
         header("Location: manage_services.php?msg=deleted");
         exit;
     }
+    
+    // C. HOÀN THÀNH (COMPLETED)
+    elseif ($action == 'complete') {
+        $db->beginTransaction();
+        try {
+            $stmt_chk = $db->prepare("SELECT table_id, status FROM service_bookings WHERE id = ?");
+            $stmt_chk->execute([$id]);
+            $b = $stmt_chk->fetch();
+            if ($b && $b['status'] == 'Confirmed') {
+                $db->prepare("UPDATE service_bookings SET status = 'Completed' WHERE id = ?")->execute([$id]);
+                // Giải phóng bàn
+                if ($b['table_id']) {
+                    $db->prepare("UPDATE restaurant_tables SET is_available = 1 WHERE id = ?")->execute([$b['table_id']]);
+                }
+            }
+            $db->commit();
+            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                header('Content-Type: application/json');
+                echo json_encode(['status' => 'success', 'message' => 'Đã hoàn thành đơn hàng.']);
+                exit;
+            }
+            header("Location: manage_services.php?msg=completed");
+            exit;
+        } catch (Exception $e) {
+            $db->rollBack();
+        }
+    }
 }
 
-// C. RESET BÀN
+// D. RESET BÀN
 if (isset($_GET['action']) && $_GET['action'] == 'reset_table' && isset($_GET['table_id'])) {
     $t_id = (int) $_GET['table_id'];
     $db->prepare("UPDATE restaurant_tables SET is_available = 1 WHERE id = ?")->execute([$t_id]);
@@ -246,10 +280,10 @@ $rooms = $db->query("SELECT * FROM restaurant_tables WHERE category = 'room' ORD
 
 $filter = $_GET['filter'] ?? 'all';
 if ($filter == 'all') {
-    $stmt = $db->prepare("SELECT * FROM service_bookings ORDER BY created_at DESC");
+    $stmt = $db->prepare("SELECT * FROM service_bookings WHERE is_archived = 0 ORDER BY created_at DESC");
     $stmt->execute();
 } else {
-    $stmt = $db->prepare("SELECT * FROM service_bookings WHERE service_type = :type ORDER BY created_at DESC");
+    $stmt = $db->prepare("SELECT * FROM service_bookings WHERE service_type = :type AND is_archived = 0 ORDER BY created_at DESC");
     $stmt->execute([':type' => $filter]);
 }
 $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -366,8 +400,17 @@ include '../../public/admin_layout_header.php';
                             <td>
                                 <?php if ($s['status'] == 'Pending'): ?>
                                     <span class="badge-status bg-warning text-dark">Chờ duyệt</span>
-                                <?php else: ?>
+                                <?php elseif ($s['status'] == 'Confirmed'): ?>
                                     <span class="badge-status bg-success">Đã xác nhận</span>
+                                <?php elseif ($s['status'] == 'Cancelled'): ?>
+                                    <span class="badge-status bg-danger">Đã hủy</span>
+                                    <?php if (strpos($s['message'], 'Khách tự hủy') !== false): ?>
+                                        <i class="fas fa-exclamation-triangle text-danger ms-1" title="Khách tự hủy từ trang cá nhân"></i>
+                                    <?php endif; ?>
+                                <?php elseif ($s['status'] == 'Completed'): ?>
+                                    <span class="badge-status bg-info text-dark">Đã hoàn thành</span>
+                                <?php else: ?>
+                                    <span class="badge-status bg-secondary"><?= $s['status'] ?></span>
                                 <?php endif; ?>
                             </td>
                             <td class="text-end">
@@ -382,9 +425,13 @@ include '../../public/admin_layout_header.php';
                                         data-name="<?= htmlspecialchars($s['customer_name']) ?>">
                                         <i class="fas fa-check me-1"></i> Xác nhận
                                     </button>
+                                <?php elseif ($s['status'] == 'Confirmed'): ?>
+                                    <button class="btn btn-sm btn-outline-success btn-complete-service" data-id="<?= $s['id'] ?>" title="Khách đã dùng bữa xong">
+                                        <i class="fas fa-check-double me-1"></i> Hoàn thành
+                                    </button>
                                 <?php endif; ?>
 
-                                <button class="btn btn-sm btn-outline-danger btn-delete-service" data-id="<?= $s['id'] ?>">
+                                <button class="btn btn-sm btn-outline-danger btn-delete-service" data-id="<?= $s['id'] ?>" title="Lưu trữ (Ẩn khỏi danh sách)">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
@@ -530,7 +577,14 @@ include '../../public/admin_layout_header.php';
                     if (response.status === 'success') {
                         const row = btn.closest('tr');
                         row.find('.badge-status').removeClass('bg-warning text-dark').addClass('bg-success').text('Đã xác nhận');
-                        btn.remove();
+                        
+                        // Đổi nút Xác nhận thành nút Hoàn thành
+                        btn.replaceWith(`
+                            <button class="btn btn-sm btn-outline-success btn-complete-service" data-id="${id}" title="Khách đã dùng bữa xong">
+                                <i class="fas fa-check-double me-1"></i> Hoàn thành
+                            </button>
+                        `);
+                        
                         if (response.table_id) {
                             updateSeatStatus(response.table_id, false);
                         }
@@ -546,12 +600,33 @@ include '../../public/admin_layout_header.php';
             });
         });
 
-        // --- XÓA BẰNG AJAX ---
+        // --- HOÀN THÀNH BẰNG AJAX ---
+        $(document).on('click', '.btn-complete-service', function (e) {
+            e.preventDefault();
+            const btn = $(this);
+            const id = btn.data('id');
+            if (!confirm('Xác nhận khách đã dùng bữa xong và thanh toán?')) return;
+            
+            btn.prop('disabled', true);
+            $.ajax({
+                url: `manage_services.php?action=complete&id=${id}`,
+                type: 'GET',
+                dataType: 'json',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                success: function (response) {
+                    if (response.status === 'success') {
+                        location.reload();
+                    }
+                }
+            });
+        });
+
+        // --- XÓA (LƯU TRỮ) BẰNG AJAX ---
         $(document).on('click', '.btn-delete-service', function (e) {
             e.preventDefault();
             const btn = $(this);
             const id = btn.data('id');
-            if (!confirm('Xóa yêu cầu này?')) return;
+            if (!confirm('Ẩn yêu cầu này khỏi danh sách quản lý? (Khách vẫn có thể xem lại trong lịch sử cá nhân)')) return;
             
             btn.prop('disabled', true);
             $.ajax({
@@ -721,5 +796,42 @@ include '../../public/admin_layout_header.php';
                 }
             });
         });
+
+        // --- TỰ ĐỘNG CẬP NHẬT TRANG (POLLING) MỖI 10 GIÂY ---
+        setInterval(function() {
+            // Không làm phiền admin nếu họ đang xem bảng chi tiết (modal đang mở)
+            if ($('.modal.show').length === 0) {
+                $.ajax({
+                    url: window.location.href, // Lấy trang hiện tại (kèm filter)
+                    type: 'GET',
+                    success: function(html) {
+                        // 1. Cập nhật Bảng Dịch Vụ
+                        var newTbody = $(html).find('.table tbody').html();
+                        if (newTbody) {
+                            $('.table tbody').html(newTbody);
+                        }
+                        
+                        // 2. Cập nhật Sơ đồ bàn lẻ & Phòng VIP
+                        var newGrid4 = $(html).find('.grid-4-cols').html();
+                        var newGrid2 = $(html).find('.grid-2-cols').html();
+                        if (newGrid4) $('.grid-4-cols').html(newGrid4);
+                        if (newGrid2) $('.grid-2-cols').html(newGrid2);
+                        
+                        // 3. Cập nhật cảnh báo số màu đỏ ở Sidebar
+                        var newBadge = $(html).find('a[href*="manage_services.php"] .badge-notify');
+                        var oldBadge = $('a[href*="manage_services.php"] .badge-notify');
+                        if (newBadge.length > 0) {
+                            if (oldBadge.length > 0) {
+                                oldBadge.text(newBadge.text());
+                            } else {
+                                $('a[href*="manage_services.php"]').append(newBadge);
+                            }
+                        } else {
+                            oldBadge.remove();
+                        }
+                    }
+                });
+            }
+        }, 10000);
     });
 </script>

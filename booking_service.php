@@ -27,6 +27,19 @@ if ($type !== 'chef') {
 
 $foods  = $db->query("SELECT * FROM foods WHERE status=1 ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 
+// Lấy thông tin người dùng và sổ địa chỉ nếu đã đăng nhập
+$user_info = null;
+$user_addresses = [];
+if (isset($_SESSION['user_id'])) {
+    $u_stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
+    $u_stmt->execute([$_SESSION['user_id']]);
+    $user_info = $u_stmt->fetch(PDO::FETCH_ASSOC);
+
+    $a_stmt = $db->prepare("SELECT * FROM user_addresses WHERE user_id = ? ORDER BY is_default DESC");
+    $a_stmt->execute([$_SESSION['user_id']]);
+    $user_addresses = $a_stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 include 'views/client/layouts/header.php';
 ?>
 
@@ -310,7 +323,7 @@ body {
                         <label class="label-lux">Họ và tên *</label>
                     </div>
                     <div class="input-group-lux">
-                        <input type="tel" name="customer_phone" class="input-lux" placeholder=" " required oninput="us()">
+                        <input type="tel" name="customer_phone" class="input-lux" placeholder=" " value="<?= htmlspecialchars($user_info['phone'] ?? '') ?>" required oninput="us()">
                         <label class="label-lux">Số điện thoại *</label>
                     </div>
                 </div>
@@ -393,6 +406,17 @@ body {
                         <textarea name="service_address" id="saddr" class="input-lux" rows="2" placeholder=" " required oninput="us()"></textarea>
                         <label class="label-lux">Địa chỉ chi tiết nơi Đầu bếp đến *</label>
                     </div>
+                    <?php if (!empty($user_addresses)): ?>
+                        <div class="mt-1 d-flex flex-wrap gap-2">
+                            <?php foreach ($user_addresses as $addr): ?>
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0" 
+                                        onclick="document.getElementById('saddr').value='<?= addslashes($addr['address_detail']) ?>'; us();"
+                                        style="font-size: 10px; border-color: rgba(212, 176, 106, 0.3); color: var(--gold);">
+                                    <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($addr['address_type']) ?>
+                                </button>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
                 <?php endif; ?>
             </div>
 
@@ -652,11 +676,8 @@ function us(){
     var food=selComboPr>0?selComboPr:mt;
     document.getElementById('sm').textContent=food.toLocaleString('vi-VN')+' đ';
   
-    var total = food + (typeof selPrice !== 'undefined' ? selPrice : 0);
-    document.getElementById('sdep').innerHTML = Math.ceil(total*.3).toLocaleString('vi-VN')+'<span style="font-size:1.2rem; color:#fff;"> đ</span>';
-
-    // Cập nhật tóm tắt Tiệc (nếu có)
     var evType = document.querySelector('[name="event_type"]');
+    var decorPrice = 0;
     if (evType) {
         document.getElementById('m-event-sum').textContent = evType.value;
         
@@ -664,10 +685,32 @@ function us(){
         let cake = document.querySelector('[name="has_cake"]').checked;
         let flower = document.querySelector('[name="has_flower"]').checked;
         
+        if (decor.includes('Mặc định')) decorPrice = 500000;
+        else if (decor.includes('Lãng mạn')) decorPrice = 1500000;
+        else if (decor.includes('Hoàng gia')) decorPrice = 3000000;
+        
+        if (cake) decorPrice += 300000;
+        if (flower) decorPrice += 200000;
+
         let addonTxt = decor.split(' ')[0];
         if (cake) addonTxt += ' + Bánh';
         if (flower) addonTxt += ' + Hoa';
         document.getElementById('m-addon-sum').textContent = addonTxt;
+    }
+
+    var total = food + (typeof selPrice !== 'undefined' ? selPrice : 0) + decorPrice;
+    
+    // Cập nhật số tiền đặt cọc 30%
+    var deposit = Math.ceil(total * 0.3);
+    document.getElementById('sdep').innerHTML = deposit.toLocaleString('vi-VN')+'<span style="font-size:1.2rem; color:#fff;"> đ</span>';
+    
+    // Thêm thông báo thanh toán vào bên dưới nút xác nhận nếu chưa có
+    var btnGo = document.getElementById('btn-go');
+    if (btnGo) {
+        var btnTxt = document.getElementById('btn-txt');
+        if (btnTxt) {
+            btnTxt.innerHTML = 'Xác nhận & Thanh toán cọc (' + deposit.toLocaleString('vi-VN') + ' đ)';
+        }
     }
 }
 
@@ -678,6 +721,9 @@ document.getElementById('bk-form').addEventListener('submit',function(){
     b.style.opacity = '0.7';
     document.getElementById('btn-txt').style.display='none';
     document.getElementById('btn-spin').style.display='inline-block';
+    
+    // Để mock thanh toán, ta đổi text loading thành đang xử lý thanh toán
+    document.getElementById('btn-spin').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý thanh toán...';
 });
 
 /* KHỞI TẠO TIME TỐI THIỂU */

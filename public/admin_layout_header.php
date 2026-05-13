@@ -57,6 +57,7 @@ $page_title = $page_titles[$current_page] ?? 'Khu Vực Quản Trị';
 
 // Fetch pending transfers count for badge
 $pending_transfers_count = 0;
+$pending_services_count = 0;
 try {
     if (!isset($db)) {
         require_once __DIR__ . '/../config/database.php';
@@ -65,6 +66,9 @@ try {
     if (isset($db)) {
         $stmt_pt = $db->query("SELECT COUNT(*) FROM inventory_transfers WHERE status = 'pending'");
         $pending_transfers_count = (int)$stmt_pt->fetchColumn();
+
+        $stmt_ps = $db->query("SELECT COUNT(*) FROM service_bookings WHERE status = 'Pending'");
+        $pending_services_count = (int)$stmt_ps->fetchColumn();
     }
 } catch (Exception $e) {
     // Silent fail if table not exists or connection error
@@ -380,7 +384,10 @@ try {
             <li class="<?= isActive('manage_services.php') ?>">
                 <a href="/restaurant-project/admin/controllers/manage_services.php">
                     <i class="fas fa-concierge-bell"></i>
-                    Quản lý Dịch vụ
+                    <span>Quản lý Dịch vụ</span>
+                    <?php if ($pending_services_count > 0): ?>
+                        <span class="badge-notify"><?= $pending_services_count ?></span>
+                    <?php endif; ?>
                 </a>
             </li>
 

@@ -29,29 +29,38 @@ unset($_SESSION['video_flash']);
 // ============================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_update'])) {
 
-    $type      = ($_POST['video_type'] ?? '') === 'local' ? 'local' : 'youtube';
+    $type      = $_POST['video_type'] ?? 'youtube';
     $video_url = '';
-    $file_path = $video['file_path'] ?? ''; // giữ file cũ mặc định
+    $file_path = $video['file_path'] ?? ''; 
 
-    if ($type === 'youtube') {
+    if (in_array($type, ['youtube', 'vimeo', 'muse'])) {
         $url_input = trim($_POST['video_url'] ?? '');
-        // Tách YouTube ID từ nhiều dạng URL
-        if (preg_match(
-            '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i',
-            $url_input, $match
-        )) {
-            $video_url = $match[1];
-        } else {
-            // Người dùng nhập thẳng ID (11 ký tự)
-            $video_url = preg_replace('/[^a-zA-Z0-9_\-]/', '', $url_input);
+        
+        if ($type === 'youtube') {
+            if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url_input, $match)) {
+                $video_url = $match[1];
+            } else {
+                $video_url = preg_replace('/[^a-zA-Z0-9_\-]/', '', $url_input);
+            }
+        } elseif ($type === 'vimeo') {
+            if (preg_match('/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/', $url_input, $match)) {
+                $video_url = $match[1];
+            } else {
+                $video_url = preg_replace('/[^0-9]/', '', $url_input);
+            }
+        } elseif ($type === 'muse') {
+            if (preg_match('/(?:muse\.ai\/v\/|muse\.ai\/embed\/)([a-zA-Z0-9]+)/', $url_input, $match)) {
+                $video_url = $match[1];
+            } else {
+                $video_url = preg_replace('/[^a-zA-Z0-9]/', '', $url_input);
+            }
         }
-
     } else {
-        // ✅ FIX: Validate upload video — ext + MIME + size
+        // Xử lý upload file local
         if (isset($_FILES['video_file']) && $_FILES['video_file']['error'] === UPLOAD_ERR_OK) {
             $allowed_ext  = ['mp4', 'webm', 'mov'];
             $allowed_mime = ['video/mp4', 'video/webm', 'video/quicktime'];
-            $max_size     = 200 * 1024 * 1024; // 200MB
+            $max_size     = 200 * 1024 * 1024;
 
             $ext      = strtolower(pathinfo($_FILES['video_file']['name'], PATHINFO_EXTENSION));
             $tmp_path = $_FILES['video_file']['tmp_name'];
@@ -62,13 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_update'])) {
                 $upload_error = 'Chỉ chấp nhận: MP4, WEBM, MOV.';
             } elseif ($size > $max_size) {
                 $upload_error = 'File quá lớn. Tối đa 200MB.';
-            } elseif (function_exists('finfo_open')) {
-                $finfo = finfo_open(FILEINFO_MIME_TYPE);
-                $mime  = finfo_file($finfo, $tmp_path);
-                finfo_close($finfo);
-                if (!in_array($mime, $allowed_mime)) {
-                    $upload_error = 'File không phải video hợp lệ.';
-                }
             }
 
             if ($upload_error) {
@@ -76,7 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_update'])) {
                 header('Location: ' . $_SERVER['PHP_SELF']); exit;
             }
 
-            // ✅ FIX: Dùng __DIR__ thay relative path
             $upload_dir = __DIR__ . '/../../uploads/videos/';
             if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
 
@@ -84,26 +85,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_update'])) {
             $target        = $upload_dir . $new_file_name;
 
             if (move_uploaded_file($tmp_path, $target)) {
-                // ✅ FIX: Xóa file cũ sau khi upload thành công
                 if (!empty($video['file_path'])) {
                     $old = __DIR__ . '/../../' . ltrim($video['file_path'], '/');
                     if (file_exists($old)) @unlink($old);
                 }
                 $file_path = 'uploads/videos/' . $new_file_name;
-            } else {
-                $_SESSION['video_flash'] = ['type' => 'error', 'msg' => 'Không thể upload file. Kiểm tra quyền ghi thư mục.'];
-                header('Location: ' . $_SERVER['PHP_SELF']); exit;
             }
         }
-        // Nếu không upload file mới → giữ nguyên $file_path cũ
     }
 
     // Lưu vào DB
-    $db->prepare(
-        "UPDATE videos SET video_type = ?, video_url = ?, file_path = ? WHERE id = ?"
-    )->execute([$type, $video_url, $file_path, $video_id_db]);
+    $db->prepare("UPDATE videos SET video_type = ?, video_url = ?, file_path = ? WHERE id = ?")
+       ->execute([$type, $video_url, $file_path, $video_id_db]);
 
-    // ✅ FIX: Flash session + redirect thay vì echo $message
     $_SESSION['video_flash'] = ['type' => 'success', 'msg' => 'Cập nhật video thành công!'];
     header('Location: ' . $_SERVER['PHP_SELF']); exit;
 }
@@ -151,43 +145,69 @@ include '../../public/admin_layout_header.php';
                         <!-- Loại nguồn -->
                         <div class="mb-4">
                             <label class="form-label fw-bold small text-muted">Loại nguồn video</label>
-                            <div class="d-flex gap-2">
-                                <label class="flex-fill">
-                                    <input type="radio" name="video_type" value="youtube"
-                                           <?= ($video['video_type'] ?? '') !== 'local' ? 'checked' : '' ?>
-                                           class="d-none video-type-radio" id="type-yt">
-                                    <div class="type-btn p-3 text-center border rounded-3 cursor-pointer"
-                                         style="cursor:pointer;transition:.2s" onclick="switchType('youtube')">
-                                        <i class="fab fa-youtube fa-2x text-danger mb-1 d-block"></i>
-                                        <div class="small fw-bold">YouTube</div>
-                                        <div class="text-muted" style="font-size:11px">Dùng link URL</div>
-                                    </div>
-                                </label>
-                                <label class="flex-fill">
-                                    <input type="radio" name="video_type" value="local"
-                                           <?= ($video['video_type'] ?? '') === 'local' ? 'checked' : '' ?>
-                                           class="d-none video-type-radio" id="type-local">
-                                    <div class="type-btn p-3 text-center border rounded-3"
-                                         style="cursor:pointer;transition:.2s" onclick="switchType('local')">
-                                        <i class="fas fa-upload fa-2x text-primary mb-1 d-block"></i>
-                                        <div class="small fw-bold">Tải lên</div>
-                                        <div class="text-muted" style="font-size:11px">File MP4/WEBM</div>
-                                    </div>
-                                </label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <label class="w-100">
+                                        <input type="radio" name="video_type" value="youtube"
+                                               <?= ($video['video_type'] ?? '') === 'youtube' ? 'checked' : '' ?>
+                                               class="d-none video-type-radio" id="type-yt">
+                                        <div class="type-btn p-2 text-center border rounded-3"
+                                             style="cursor:pointer;transition:.2s" onclick="switchType('youtube')">
+                                            <i class="fab fa-youtube fa-lg text-danger mb-1 d-block"></i>
+                                            <div class="small fw-bold">YouTube</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="col-6">
+                                    <label class="w-100">
+                                        <input type="radio" name="video_type" value="vimeo"
+                                               <?= ($video['video_type'] ?? '') === 'vimeo' ? 'checked' : '' ?>
+                                               class="d-none video-type-radio" id="type-vimeo">
+                                        <div class="type-btn p-2 text-center border rounded-3"
+                                             style="cursor:pointer;transition:.2s" onclick="switchType('vimeo')">
+                                            <i class="fab fa-vimeo fa-lg text-primary mb-1 d-block"></i>
+                                            <div class="small fw-bold">Vimeo</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="col-6">
+                                    <label class="w-100">
+                                        <input type="radio" name="video_type" value="muse"
+                                               <?= ($video['video_type'] ?? '') === 'muse' ? 'checked' : '' ?>
+                                               class="d-none video-type-radio" id="type-muse">
+                                        <div class="type-btn p-2 text-center border rounded-3"
+                                             style="cursor:pointer;transition:.2s" onclick="switchType('muse')">
+                                            <i class="fas fa-bolt fa-lg text-warning mb-1 d-block"></i>
+                                            <div class="small fw-bold">Muse.ai</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="col-6">
+                                    <label class="w-100">
+                                        <input type="radio" name="video_type" value="local"
+                                               <?= ($video['video_type'] ?? '') === 'local' ? 'checked' : '' ?>
+                                               class="d-none video-type-radio" id="type-local">
+                                        <div class="type-btn p-2 text-center border rounded-3"
+                                             style="cursor:pointer;transition:.2s" onclick="switchType('local')">
+                                            <i class="fas fa-upload fa-lg text-success mb-1 d-block"></i>
+                                            <div class="small fw-bold">Tải lên</div>
+                                        </div>
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- YouTube input -->
-                        <div id="youtube_input"
-                             style="display:<?= ($video['video_type'] ?? '') !== 'local' ? 'block' : 'none' ?>">
-                            <label class="form-label fw-bold small text-muted">
-                                Link YouTube <span class="text-danger">*</span>
+                        <!-- Video URL input (YouTube/Vimeo/Muse) -->
+                        <div id="url_input_wrapper"
+                             style="display:<?= in_array(($video['video_type'] ?? ''), ['youtube', 'vimeo', 'muse']) ? 'block' : 'none' ?>">
+                            <label class="form-label fw-bold small text-muted" id="url_label">
+                                Link Video <span class="text-danger">*</span>
                             </label>
                             <input type="text" name="video_url"
                                    class="form-control bg-light border-0"
                                    value="<?= htmlspecialchars($video['video_url'] ?? '') ?>"
-                                   placeholder="https://youtube.com/watch?v=... hoặc youtu.be/...">
-                            <div class="form-text">Dán link đầy đủ hoặc YouTube ID (11 ký tự)</div>
+                                   placeholder="Dán link hoặc ID video tại đây...">
+                            <div class="form-text" id="url_hint">Hỗ trợ link YouTube, Vimeo hoặc Muse.ai</div>
                         </div>
 
                         <!-- Local upload input -->
@@ -258,11 +278,19 @@ include '../../public/admin_layout_header.php';
                                     type="video/mp4">
                             Trình duyệt không hỗ trợ xem video.
                         </video>
-                        <?php elseif (!empty($video['video_url'])): ?>
+                        <?php elseif ($video['video_type'] === 'youtube' && !empty($video['video_url'])): ?>
                         <iframe src="https://www.youtube.com/embed/<?= htmlspecialchars($video['video_url']) ?>?rel=0"
-                                title="Video preview"
+                                title="YouTube video player" frameborder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowfullscreen></iframe>
+                        <?php elseif ($video['video_type'] === 'vimeo' && !empty($video['video_url'])): ?>
+                        <iframe src="https://player.vimeo.com/video/<?= htmlspecialchars($video['video_url']) ?>"
+                                title="Vimeo video player" frameborder="0"
+                                allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                        <?php elseif ($video['video_type'] === 'muse' && !empty($video['video_url'])): ?>
+                        <iframe src="https://muse.ai/embed/<?= htmlspecialchars($video['video_url']) ?>?search=0&links=0"
+                                title="Muse.ai video player" frameborder="0"
+                                allow="autoplay; fullscreen" allowfullscreen></iframe>
                         <?php else: ?>
                         <div class="d-flex align-items-center justify-content-center text-muted"
                              style="background:#f8f9fa;border-radius:10px">
@@ -279,7 +307,13 @@ include '../../public/admin_layout_header.php';
                             <div class="col-4">
                                 <div class="small text-muted">Loại</div>
                                 <div class="fw-bold small">
-                                    <?= ($video['video_type'] ?? '') === 'local' ? '📁 Local' : '▶ YouTube' ?>
+                                    <?php 
+                                    $v_t = $video['video_type'] ?? '';
+                                    if ($v_t == 'local') echo '📁 Local';
+                                    elseif ($v_t == 'youtube') echo '▶ YouTube';
+                                    elseif ($v_t == 'vimeo') echo 'Ⓜ Vimeo';
+                                    elseif ($v_t == 'muse') echo '⚡ Muse.ai';
+                                    ?>
                                 </div>
                             </div>
                             <div class="col-4">
@@ -315,16 +349,39 @@ include '../../public/admin_layout_header.php';
 <script>
 // ---- Switch type ----
 function switchType(type) {
-    document.getElementById('youtube_input').style.display = (type === 'youtube') ? 'block' : 'none';
-    document.getElementById('local_input').style.display   = (type === 'local')   ? 'block' : 'none';
-    document.getElementById(type === 'youtube' ? 'type-yt' : 'type-local').checked = true;
+    var isUrl = ['youtube', 'vimeo', 'muse'].includes(type);
+    document.getElementById('url_input_wrapper').style.display = isUrl ? 'block' : 'none';
+    document.getElementById('local_input').style.display = (type === 'local') ? 'block' : 'none';
+    
+    // Update labels/placeholders
+    var lbl = document.getElementById('url_label');
+    var hnt = document.getElementById('url_hint');
+    var inp = document.querySelector('input[name="video_url"]');
+    
+    if (type === 'youtube') {
+        lbl.innerHTML = 'Link YouTube <span class="text-danger">*</span>';
+        hnt.innerText = 'Ví dụ: youtube.com/watch?v=ABC123XYZ';
+    } else if (type === 'vimeo') {
+        lbl.innerHTML = 'Link Vimeo <span class="text-danger">*</span>';
+        hnt.innerText = 'Ví dụ: vimeo.com/123456789';
+    } else if (type === 'muse') {
+        lbl.innerHTML = 'Link Muse.ai <span class="text-danger">*</span>';
+        hnt.innerText = 'Ví dụ: muse.ai/v/abc123xyz';
+    }
+
+    var radio = document.getElementById('type-' + type);
+    if (radio) radio.checked = true;
+
     // Highlight active card
     document.querySelectorAll('.type-btn').forEach(function (el) {
         el.style.borderColor = '';
         el.style.background  = '';
     });
-    var active = document.querySelector('#' + (type === 'youtube' ? 'type-yt' : 'type-local') + ' + .type-btn');
-    if (!active) active = document.getElementById(type === 'youtube' ? 'type-yt' : 'type-local').nextElementSibling;
+    var active = document.querySelector('#type-' + type + ' + .type-btn');
+    if (active) {
+        active.style.borderColor = '#0d6efd';
+        active.style.background = '#f0f6ff';
+    }
 }
 
 // ---- Auto-detect: paste YouTube URL → tự chuyển sang tab YouTube ----
@@ -335,8 +392,13 @@ if (urlInput) {
         var pasted = (e.clipboardData || window.clipboardData).getData('text');
         if (/youtube\.com|youtu\.be/i.test(pasted)) {
             switchType('youtube');
-            // Hiện toast nhỏ
             showAutoDetectToast('YouTube', 'fab fa-youtube text-danger');
+        } else if (/vimeo\.com/i.test(pasted)) {
+            switchType('vimeo');
+            showAutoDetectToast('Vimeo', 'fab fa-vimeo text-primary');
+        } else if (/muse\.ai/i.test(pasted)) {
+            switchType('muse');
+            showAutoDetectToast('Muse.ai', 'fas fa-bolt text-warning');
         }
     });
     urlInput.addEventListener('input', function () {

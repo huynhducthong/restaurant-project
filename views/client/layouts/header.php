@@ -368,44 +368,105 @@ if (!empty($logo_path)) {
            DROPDOWN
         ======================= */
 
-        .dropdown-menu-dark {
-
-            background: #1a1814;
-
-            border: 1px solid #cda45e;
-
-            border-radius: 8px;
+        /* =======================
+           ORIENTAL MEGA MENU
+        ======================= */
+        .oriental-nav-wrapper {
+            position: relative;
+            margin-left: 15px;
         }
 
-        .dropdown-menu-dark .dropdown-item {
+        .oriental-trigger {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s;
+            background: transparent;
+        }
+
+        .oriental-trigger:hover {
+            background: var(--primary-color);
+            color: #1a1814;
+        }
+
+        .oriental-trigger i {
+            font-size: 22px;
+        }
+
+        .oriental-panel {
+            position: absolute;
+            top: 55px;
+            right: 0;
+            width: 320px;
+            min-height: 420px;
+            background-image: url('public/assets/img/oriental-frame.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            padding: 60px 40px;
+            z-index: 10001;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+
+        .oriental-nav-wrapper:hover .oriental-panel,
+        .oriental-nav-wrapper:active .oriental-panel {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .oriental-item {
+            text-decoration: none;
             color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(205, 164, 94, 0.15);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .dropdown-menu-dark .dropdown-item:hover {
-
-            background: rgba(205, 164, 94, 0.15);
-
-            color: #cda45e;
+        .oriental-item:last-child {
+            border-bottom: none;
         }
 
-        .dropdown-item i {
-            width: 22px;
+        .oriental-item:hover {
+            color: var(--primary-color);
+            padding-left: 20px;
+            background: rgba(205, 164, 94, 0.08);
+        }
+
+        .oriental-item i {
+            color: var(--primary-color);
+            font-size: 18px;
+            width: 20px;
             text-align: center;
         }
 
-        .mobile-nav-toggle {
-
-            color: #fff;
-
-            cursor: pointer;
-
-            font-size: 24px;
-
-            display: none;
+        .oriental-item.text-danger-custom {
+            color: #ff5e5e !important;
+        }
+        
+        .oriental-item.text-danger-custom:hover {
+            background: rgba(255, 94, 94, 0.1);
         }
 
         @media (max-width: 991px) {
-
             .navbar {
                 display: none;
             }
@@ -535,112 +596,51 @@ if (!empty($logo_path)) {
 
             <div class="d-flex align-items-center">
 
-                <i class="bi bi-list mobile-nav-toggle"></i>
 
                 <div class="header-actions ms-3">
 
-                    <a href="booking_service.php?type=table"
-                        class="book-a-table-btn">
-                        ĐẶT BÀN
-                    </a>
-
-                    <?php if (isset($_SESSION['user_id'])): ?>
-
-                        <div class="dropdown">
-
-                            <a href="#"
-                                class="auth-btn register-btn dropdown-toggle text-white d-flex align-items-center"
-                                data-bs-toggle="dropdown"
-                                style="gap:8px;">
-
-                                <i class="bi bi-person-circle fs-5"></i>
-
-                                <?= htmlspecialchars($_SESSION['user_name'] ?? 'Tài khoản') ?>
-
+                    <!-- ORIENTAL MEGA MENU -->
+                    <div class="oriental-nav-wrapper">
+                        <div class="oriental-trigger">
+                            <i class="bi bi-list"></i>
+                        </div>
+                        
+                        <div class="oriental-panel">
+                            <!-- ĐẶT BÀN (LUÔN CÓ) -->
+                            <a href="booking_service.php?type=table" class="oriental-item">
+                                <i class="bi bi-calendar-check"></i> Đặt bàn
                             </a>
 
-                            <ul class="dropdown-menu dropdown-menu-dark shadow">
-
+                            <?php if (isset($_SESSION['user_id'])): ?>
+                                <!-- TRANG QUẢN TRỊ -->
                                 <?php if ($is_backend_access): ?>
-
-                                    <li>
-                                        <a class="dropdown-item fw-bold"
-                                            style="color:#cda45e;"
-                                            href="admin/admin_dashboard.php">
-
-                                            <i class="bi bi-speedometer2 me-2"></i>
-
-                                            Vào trang Quản trị
-
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-
+                                    <a href="admin/admin_dashboard.php" class="oriental-item" style="color: var(--primary-color);">
+                                        <i class="bi bi-speedometer2"></i> Trang quản trị
+                                    </a>
                                 <?php endif; ?>
 
-                                <li>
-                                    <a class="dropdown-item"
-                                        href="profile.php">
+                                <!-- THÔNG TIN CÁ NHÂN -->
+                                <a href="profile.php" class="oriental-item">
+                                    <i class="bi bi-person"></i> Thông tin cá nhân
+                                </a>
 
-                                        <i class="bi bi-person me-2"
-                                            style="color:#cda45e;"></i>
+                                <!-- ĐĂNG XUẤT -->
+                                <a href="public/logout.php" class="oriental-item text-danger-custom fw-bold">
+                                    <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                                </a>
+                            <?php else: ?>
+                                <!-- ĐĂNG KÝ -->
+                                <a href="public/register.php" class="oriental-item">
+                                    <i class="bi bi-person-plus"></i> Đăng ký
+                                </a>
 
-                                        Thông tin cá nhân
-
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a class="dropdown-item"
-                                        href="my_orders.php">
-
-                                        <i class="bi bi-receipt me-2"
-                                            style="color:#cda45e;"></i>
-
-                                        Lịch sử đặt bàn
-
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-
-                                <li>
-                                    <a class="dropdown-item text-danger fw-bold"
-                                        href="public/logout.php">
-
-                                        <i class="bi bi-box-arrow-right me-2"></i>
-
-                                        Đăng xuất
-
-                                    </a>
-                                </li>
-
-                            </ul>
-
+                                <!-- ĐĂNG NHẬP -->
+                                <a href="public/login.php" class="oriental-item">
+                                    <i class="bi bi-box-arrow-in-right"></i> Đăng nhập
+                                </a>
+                            <?php endif; ?>
                         </div>
-
-                    <?php else: ?>
-
-                        <div class="guest-auth-stack">
-
-                            <a href="public/register.php"
-                                class="auth-btn guest-register-btn">
-                                Đăng ký
-                            </a>
-
-                            <a href="public/login.php"
-                                class="auth-btn guest-login-btn">
-                                Đăng nhập
-                            </a>
-
-                        </div>
-
-                    <?php endif; ?>
+                    </div>
 
                 </div>
 

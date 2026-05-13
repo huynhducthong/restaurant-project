@@ -53,19 +53,22 @@ $trend_up  = true;
 try {
     $total_foods = $db->query("SELECT COUNT(*) FROM foods")->fetchColumn() ?: 0;
     $total_users = $db->query("SELECT COUNT(*) FROM users")->fetchColumn() ?: 0;
-    $stmt = $db->prepare("SELECT COUNT(*) FROM bookings WHERE YEAR(date) = ?");
+    $stmt = $db->prepare("SELECT COUNT(*) FROM service_bookings WHERE YEAR(booking_date) = ? AND is_archived = 0");
     $stmt->execute([$year_booking]);
     $total_bookings = $stmt->fetchColumn() ?: 0;
-    $stmt = $db->prepare("SELECT SUM(total_price) FROM orders WHERE $where_sql");
+    
+    $stmt = $db->prepare("SELECT SUM(total_amount) FROM service_bookings WHERE status != 'Cancelled' AND $where_sql");
     $stmt->execute($params);
     $selected_revenue = $stmt->fetchColumn() ?: 0;
+    
     for ($m = 1; $m <= 12; $m++) {
-        $stmt = $db->prepare("SELECT SUM(total_price) FROM orders WHERE MONTH(created_at)=? AND YEAR(created_at)=?");
+        $stmt = $db->prepare("SELECT SUM(total_amount) FROM service_bookings WHERE status != 'Cancelled' AND MONTH(created_at)=? AND YEAR(created_at)=?");
         $stmt->execute([$m, $year_revenue]);
         $chart_revenue[$m - 1] = (int) $stmt->fetchColumn();
     }
+    
     foreach (['Completed', 'Pending', 'Cancelled'] as $i => $st) {
-        $stmt = $db->prepare("SELECT COUNT(*) FROM bookings WHERE status=? AND YEAR(date)=?");
+        $stmt = $db->prepare("SELECT COUNT(*) FROM service_bookings WHERE status=? AND YEAR(booking_date)=? AND is_archived = 0");
         $stmt->execute([$st, $year_booking]);
         $status_data[$i] = (int) $stmt->fetchColumn();
     }
@@ -73,8 +76,9 @@ try {
     // Đặt bàn gần nhất
     $recent_bookings = $db->query(
         "SELECT b.*, u.full_name as user_name
-         FROM bookings b
+         FROM service_bookings b
          LEFT JOIN users u ON b.user_id = u.id
+         WHERE b.is_archived = 0
          ORDER BY b.created_at DESC LIMIT 5"
     )->fetchAll(PDO::FETCH_ASSOC);
 
@@ -101,11 +105,11 @@ try {
     $prev_m = $cur_m === 1 ? 12 : $cur_m - 1;
     $prev_y = $cur_m === 1 ? $cur_y - 1 : $cur_y;
 
-    $stmt_prev = $db->prepare("SELECT IFNULL(SUM(total_price),0) FROM orders WHERE MONTH(created_at)=? AND YEAR(created_at)=?");
+    $stmt_prev = $db->prepare("SELECT IFNULL(SUM(total_amount),0) FROM service_bookings WHERE status != 'Cancelled' AND MONTH(created_at)=? AND YEAR(created_at)=?");
     $stmt_prev->execute([$prev_m, $prev_y]);
     $prev_month_revenue = (float)$stmt_prev->fetchColumn();
 
-    $stmt_this = $db->prepare("SELECT IFNULL(SUM(total_price),0) FROM orders WHERE MONTH(created_at)=? AND YEAR(created_at)=?");
+    $stmt_this = $db->prepare("SELECT IFNULL(SUM(total_amount),0) FROM service_bookings WHERE status != 'Cancelled' AND MONTH(created_at)=? AND YEAR(created_at)=?");
     $stmt_this->execute([$cur_m, $cur_y]);
     $this_month_rev = (float)$stmt_this->fetchColumn();
 
@@ -368,8 +372,8 @@ try {
                 ?>
                 <tr>
                     <td><strong><?= htmlspecialchars($b['user_name'] ?? $b['customer_name'] ?? '—') ?></strong></td>
-                    <td><?= htmlspecialchars($b['date'] ?? '—') ?></td>
-                    <td><?= htmlspecialchars($b['time'] ?? '—') ?></td>
+                    <td><?= date('d/m/Y', strtotime($b['booking_date'])) ?></td>
+                    <td><?= date('H:i', strtotime($b['booking_date'])) ?></td>
                     <td><?= (int)($b['guests'] ?? $b['number_of_people'] ?? 0) ?> người</td>
                     <td><span class="badge <?= $bc ?> rounded-pill"><?= $bl ?></span></td>
                 </tr>
