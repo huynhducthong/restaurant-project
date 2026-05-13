@@ -185,6 +185,16 @@ include __DIR__ . '/views/client/layouts/header.php';
                 src="https://www.youtube.com/embed/<?php echo htmlspecialchars($video_url); ?>"
                 frameborder="0" allowfullscreen style="display: block; border: none;">
               </iframe>
+            <?php elseif ($video_type == 'vimeo' && !empty($video_url)): ?>
+              <iframe width="100%" height="500"
+                src="https://player.vimeo.com/video/<?php echo htmlspecialchars($video_url); ?>"
+                frameborder="0" allowfullscreen style="display: block; border: none;">
+              </iframe>
+            <?php elseif ($video_type == 'muse' && !empty($video_url)): ?>
+              <iframe width="100%" height="500"
+                src="https://muse.ai/embed/<?php echo htmlspecialchars($video_url); ?>?search=0&links=0"
+                frameborder="0" allowfullscreen style="display: block; border: none;">
+              </iframe>
             <?php elseif ($video_type == 'local' && !empty($file_path)): ?>
               <?php
               $ext_v = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));

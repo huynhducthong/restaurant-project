@@ -1,4 +1,9 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$user_id = $_SESSION['user_id'] ?? null;
+
 require_once 'database.php';
 $db = (new Database())->getConnection();
 
@@ -47,10 +52,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $total_amount += ($foods_price[$m_id] ?? 0) * $qty;
             }
         }
+        
+        // Tính tiền Combo
+        if ($combo_id > 0) {
+            $c_stmt = $db->prepare("SELECT price FROM combos WHERE id = ?");
+            $c_stmt->execute([$combo_id]);
+            $total_amount += $c_stmt->fetchColumn() ?: 0;
+        }
 
-        // 2. Lưu đơn đặt bàn chính vào service_bookings
-        $stmt_booking = $db->prepare("INSERT INTO service_bookings (service_type, customer_name, customer_phone, booking_date, guests, message, table_id, combo_id, total_amount, status, event_type, decor_package, has_cake, has_flower) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?, ?, ?)");
-        $stmt_booking->execute([$type, $name, $phone, $date, $guests, $msg, $table_id, $combo_id, $total_amount, $event_type, $decor_package, $has_cake, $has_flower]);
+        // Tính tiền trang trí (Sinh nhật / Sự kiện)
+        if ($event_type === 'birthday') {
+            if ($decor_package === 'standard') $total_amount += 500000;
+            if ($decor_package === 'premium') $total_amount += 1500000;
+            if ($decor_package === 'luxury') $total_amount += 3000000;
+            if ($has_cake) $total_amount += 300000;
+            if ($has_flower) $total_amount += 200000;
+        }
+
+        // Tính 30% cọc
+        $deposit_amount = $total_amount * 0.3;
+
+        // 2. Lưu đơn đặt bàn chính vào service_bookings (Bổ sung user_id và deposit_amount)
+        $stmt_booking = $db->prepare("INSERT INTO service_bookings (user_id, service_type, customer_name, customer_phone, booking_date, guests, message, table_id, combo_id, total_amount, deposit_amount, status, event_type, decor_package, has_cake, has_flower) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?, ?, ?)");
+        $stmt_booking->execute([$user_id, $type, $name, $phone, $date, $guests, $msg, $table_id, $combo_id, $total_amount, $deposit_amount, $event_type, $decor_package, $has_cake, $has_flower]);
         $last_id = $db->lastInsertId();
 
         // 3. Lưu chi tiết các món ăn khách chọn lẻ

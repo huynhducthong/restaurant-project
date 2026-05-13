@@ -1193,7 +1193,13 @@ include '../../public/admin_layout_header.php';
 
     function filterWarning(type, btn) {
         activeFilter = type;
-        // Chỉ xử lý active cho nhóm nút cảnh báo, không đụng nút kho
+        
+        // Nếu chọn một cảnh báo cụ thể (low hoặc expiry), tự động chuyển về "Tất cả kho" 
+        // để đảm bảo người dùng thấy được mặt hàng bị cảnh báo đó
+        if (type !== 'all') {
+            $('.wh-filter-btn[data-wh="all"]').trigger('click');
+        }
+
         $('#filterButtons button').removeClass('active');
         $(btn).addClass('active');
         filterTable();
