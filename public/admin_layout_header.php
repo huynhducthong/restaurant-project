@@ -2,6 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+date_default_timezone_set('Asia/Ho_Chi_Minh');
 
 /* =========================================================
    KIỂM TRA ĐĂNG NHẬP & PHÂN QUYỀN
@@ -10,7 +11,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $user_id   = $_SESSION['user_id'] ?? null;
 $user_role = $_SESSION['role'] ?? '';
 
-$allowed_roles = ['admin', 'staff', 1, 2];
+$allowed_roles = ['admin', 'staff', 'waiter', 'chef', 'cashier', 1, 2];
 
 if (!$user_id || !in_array($user_role, $allowed_roles)) {
     header("Location: /restaurant-project/login.php?error=access_denied");
@@ -463,6 +464,27 @@ try {
                     </a>
                 </li>
 
+                <li class="<?= isActive('manage_shifts.php') ?>">
+                    <a href="/restaurant-project/admin/manage_shifts.php">
+                        <i class="fas fa-calendar-alt"></i>
+                        Chia lịch làm việc
+                    </a>
+                </li>
+
+                <li class="<?= isActive('manage_attendance.php') ?>">
+                    <a href="/restaurant-project/admin/views/attendance/manage_attendance.php">
+                        <i class="fas fa-user-check"></i>
+                        Kiểm tra Chấm công
+                    </a>
+                </li>
+
+                <li class="<?= isActive('manage_payroll.php') ?>">
+                    <a href="/restaurant-project/admin/manage_payroll.php">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        Quản lý Bảng lương
+                    </a>
+                </li>
+
                 <li class="<?= isActive('UserController.php') ?>">
                     <a href="/restaurant-project/admin/controllers/UserController.php">
                         <i class="fas fa-users-cog"></i>
@@ -470,6 +492,16 @@ try {
                     </a>
                 </li>
 
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'staff'): ?>
+                <div class="menu-header">Nhân sự & Chấm công</div>
+                <li>
+                    <a href="/restaurant-project/views/client/employee_dashboard.php">
+                        <i class="fas fa-clock"></i>
+                        Lịch làm & Chấm công
+                    </a>
+                </li>
             <?php endif; ?>
 
         </ul>

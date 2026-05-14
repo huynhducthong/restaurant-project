@@ -99,6 +99,16 @@ try {
            AND expiry_date >= CURDATE()"
     )->fetchColumn();
 
+    // 4. Cảnh báo Vắng mặt hôm nay
+    $stmt_absent = $db->query("
+        SELECT e.full_name, s.shift_name 
+        FROM shift_assignments sa
+        JOIN employees e ON sa.employee_id = e.id
+        JOIN shifts s ON sa.shift_id = s.id
+        WHERE sa.work_date = CURRENT_DATE AND sa.status = 'absent'
+    ");
+    $absents = $stmt_absent->fetchAll(PDO::FETCH_ASSOC);
+
     // Tính % tăng/giảm so với tháng trước (cho badge trend)
     $cur_m  = (int)date('m');
     $cur_y  = (int)date('Y');
@@ -176,6 +186,18 @@ try {
         <a href="controllers/InventoryController.php?tab=all" class="btn btn-sm btn-danger fw-bold shadow-sm" style="white-space:nowrap">
             <i class="fas fa-arrow-right me-1" style="pointer-events:none"></i>Kiểm tra ngay
         </a>
+    </div>
+    <?php endif; ?>
+
+    <!-- ===== CẢNH BÁO VẮNG MẶT ===== -->
+    <?php if (count($absents) > 0): ?>
+    <div class="alert alert-danger shadow-sm border-start border-4 border-danger rounded-3 p-3">
+        <h6 class="fw-bold text-danger mb-2"><i class="fas fa-user-times me-2"></i> Cảnh báo Vắng mặt hôm nay:</h6>
+        <ul class="mb-0">
+            <?php foreach ($absents as $a): ?>
+                <li><strong><?= htmlspecialchars($a['full_name']) ?></strong> - Ca: <?= htmlspecialchars($a['shift_name']) ?></li>
+            <?php endforeach; ?>
+        </ul>
     </div>
     <?php endif; ?>
 

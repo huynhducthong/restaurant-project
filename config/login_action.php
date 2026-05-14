@@ -14,9 +14,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // 1. Truy vấn user theo email
-    $stmt = $db->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
-    $stmt->execute([':email' => $email]);
+    // 1. Truy vấn user theo email hoặc username (Dùng ? để tránh lỗi lặp tên tham số)
+    $stmt = $db->prepare("SELECT * FROM users WHERE email = ? OR username = ? LIMIT 1");
+    $stmt->execute([$email, $email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user) {
@@ -32,6 +32,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // 3. Điều hướng dựa trên quyền (role)
             if ($user['role'] == 1 || $user['role'] == 'admin') {
                 header("Location: ../admin/admin_dashboard.php");
+            } elseif ($user['role'] == 'staff') {
+                header("Location: ../views/client/employee_dashboard.php");
             } else {
                 header("Location: ../index.php");
             }
