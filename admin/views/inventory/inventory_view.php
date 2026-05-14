@@ -376,6 +376,9 @@ include '../../public/admin_layout_header.php';
                                     <td class="text-success fw-bold small"><?= number_format($i['cost_price']) ?>đ</td>
                                     <td class="text-end">
                                         <div class="btn-group shadow-sm">
+                                            <button class="btn btn-sm btn-outline-info border-0" onclick='viewBatches(<?= $i['id'] ?>, <?= json_encode($i['item_name']) ?>)' title="Xem chi tiết các lô hàng (HSD)">
+                                                <i class="fas fa-layer-group"></i>
+                                            </button>
                                             <?php if ($i['is_active'] == 1): ?>
                                                 <!-- Nút chức năng đầy đủ -->
                                                 <button class="btn btn-sm btn-success" title="Nhập hàng" onclick="openImport(<?= $i['id'] ?>, '<?= addslashes($i['item_name']) ?>', '<?= $i['unit_name'] ?>')"><i class="fas fa-arrow-down"></i></button>
@@ -928,6 +931,36 @@ include '../../public/admin_layout_header.php';
     </div>
 </div>
 
+<!-- MODAL CHI TIẾT LÔ HÀNG (BATCH DETAILS) -->
+<div class="modal fade" id="modalBatchDetails" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:15px; overflow:hidden;">
+            <div class="modal-header bg-info text-white py-3">
+                <h5 class="modal-title fw-bold"><i class="fas fa-layer-group me-2"></i>Chi tiết các lô hàng: <span id="batch-item-name"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light small text-uppercase fw-bold">
+                            <tr>
+                                <th class="ps-4">Mã lô (PO)</th>
+                                <th>Kho chứa</th>
+                                <th class="text-center">Số lượng tồn</th>
+                                <th class="text-center">Hạn sử dụng</th>
+                                <th class="text-center">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="batch-list-body">
+                            <!-- Data load via AJAX -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -948,6 +981,37 @@ include '../../public/admin_layout_header.php';
             switchTab(targetTab);
         }
     });
+
+    window.viewBatches = function(id, name) {
+        $('#batch-item-name').text(name);
+        $('#batch-list-body').html('<tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-info"></div></td></tr>');
+        const modal = new bootstrap.Modal(document.getElementById('modalBatchDetails'));
+        modal.show();
+
+        $.post('InventoryController.php', { action: 'get_batches', item_id: id }, function(res) {
+            if(res.status === 'success') {
+                let html = '';
+                if(res.data.length === 0) {
+                    html = '<tr><td colspan="5" class="text-center py-4 text-muted">Không còn lô hàng nào trong kho.</td></tr>';
+                } else {
+                    const today = new Date();
+                    res.data.forEach(b => {
+                        let hsdClass = '', statusText = '<span class="badge bg-success">Ổn định</span>';
+                        if(b.expiry_date) {
+                            const exp = new Date(b.expiry_date);
+                            const diff = (exp - today) / (1000 * 60 * 60 * 24);
+                            if(diff < 0) { hsdClass = 'text-danger fw-bold'; statusText = '<span class="badge bg-danger">Hết hạn</span>'; }
+                            else if(diff <= 7) { hsdClass = 'text-warning fw-bold'; statusText = '<span class="badge bg-warning text-dark">Sắp hết</span>'; }
+                        }
+                        html += `<tr><td class="ps-4">#${b.batch_code || 'N/A'}</td><td>${b.warehouse_name}</td><td class="text-center fw-bold">${parseFloat(b.quantity)}</td><td class="text-center ${hsdClass}">${b.expiry_date || '-'}</td><td class="text-center">${statusText}</td></tr>`;
+                    });
+                }
+                $('#batch-list-body').html(html);
+            }
+        }, 'json').fail(function() {
+            $('#batch-list-body').html('<tr><td colspan="5" class="text-center py-4 text-danger">Lỗi kết nối máy chủ khi tải lô hàng.</td></tr>');
+        });
+    };
 
     // ================= HÀM CHUYỂN TAB =================
     function switchTab(tabId) {
@@ -1115,6 +1179,15 @@ include '../../public/admin_layout_header.php';
         });
     });
 
+    // 1b. Định dạng tiền tệ khi focus/blur
+    $(document).on('blur', '.money-input', function() {
+        let val = this.value.replace(/[^0-9]/g, '');
+        this.value = val !== '' ? parseInt(val, 10).toLocaleString('en-US') : '';
+    });
+    $(document).on('focus', '.money-input', function() {
+        this.value = this.value.replace(/,/g, '');
+    });
+
     // 2a. AJAX cho form Nhập, Xuất (serialize bình thường)
     $(document).on('submit', '#form-import, #form-export', function(e) {
         e.preventDefault();
@@ -1152,15 +1225,6 @@ include '../../public/admin_layout_header.php';
                 $btn.prop('disabled', false).html('<i class="fas fa-paper-plane me-2"></i>TẠO LỆNH CHUYỂN KHO');
             }
         });
-    });
-
-    // 3. Định dạng tiền tệ (Sửa lỗi nhảy số khi gõ tiếng Việt / trên điện thoại)
-    $(document).on('blur', '.money-input', function() {
-        let val = this.value.replace(/[^0-9]/g, '');
-        this.value = val !== '' ? parseInt(val, 10).toLocaleString('en-US') : '';
-    });
-    $(document).on('focus', '.money-input', function() {
-        this.value = this.value.replace(/,/g, '');
     });
     // ================= LỌC & PHÂN TRANG =================
     let activeWarehouse = 'all'; // 'all' hoặc ID kho cụ thể

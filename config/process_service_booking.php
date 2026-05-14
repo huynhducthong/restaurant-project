@@ -106,6 +106,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Xác nhận thành công toàn bộ quá trình
         $db->commit();
 
+        // --- THÊM: GỬI THÔNG BÁO TELEGRAM CHO QUẢN TRỊ VIÊN ---
+        require_once 'notification_helper.php';
+        $time_str = date('H:i d/m', strtotime($date));
+        $event_str = $event_type ? " ($event_type)" : "";
+        $booking_msg = "<b>🆕 ĐƠN ĐẶT BÀN MỚI</b>\n\n";
+        $booking_msg .= "👤 Khách: <b>$name</b>\n";
+        $booking_msg .= "📞 SĐT: $phone\n";
+        $booking_msg .= "⏰ Lúc: $time_str\n";
+        $booking_msg .= "👥 Khách: $guests người\n";
+        $booking_msg .= "🏷 Loại: " . ucfirst($type) . $event_str . "\n";
+        if ($msg) $booking_msg .= "📝 Ghi chú: <i>$msg</i>\n\n";
+        $booking_msg .= "💰 Dự kiến: " . number_format($total_amount) . " VNĐ\n";
+        $booking_msg .= "👉 Vui lòng duyệt đơn trên Admin.";
+
+        @sendTelegramNotification($booking_msg);
+
         echo "<script>
             alert('Đặt dịch vụ thành công! Nhà hàng sẽ liên hệ lại để xác nhận sớm nhất.');
             window.location.href = '../booking_success.php?success=1&id=" . $last_id . "';

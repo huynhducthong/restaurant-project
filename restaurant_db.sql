@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 13, 2026 at 10:21 AM
+-- Generation Time: May 14, 2026 at 10:04 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -165,7 +165,9 @@ CREATE TABLE `booking_details` (
 
 INSERT INTO `booking_details` (`id`, `booking_id`, `menu_id`, `item_type`, `quantity`, `price`, `created_at`) VALUES
 (1, 1, 1, 'food', 1, 0.00, '2026-05-13 08:17:11'),
-(2, 2, 1, 'food', 1, 0.00, '2026-05-13 08:18:22');
+(2, 2, 1, 'food', 1, 0.00, '2026-05-13 08:18:22'),
+(3, 3, 1, 'food', 1, 400000.00, '2026-05-14 10:00:00'),
+(4, 3, 2, 'food', 1, 120000.00, '2026-05-14 10:00:00');
 
 -- --------------------------------------------------------
 
@@ -308,6 +310,14 @@ CREATE TABLE `chefs` (
   `image` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `chefs`
+--
+
+INSERT INTO `chefs` (`id`, `name`, `position`, `image`) VALUES
+(1, 'Chef Minh', 'Bếp trưởng', NULL),
+(2, 'Chef Lan', 'Bếp phó', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -339,6 +349,39 @@ CREATE TABLE `combo_items` (
   `food_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `combos`
+--
+
+INSERT INTO `combos` (`id`, `name`, `description`, `price`, `image`, `status`, `is_active`, `created_at`) VALUES
+(1, 'Combo Gia đình', 'Bít tết + salad cho 2 người', 850000.00, NULL, 1, 1, '2026-05-14 08:00:00');
+
+--
+-- Dumping data for table `combo_items`
+--
+
+INSERT INTO `combo_items` (`id`, `combo_id`, `food_id`) VALUES
+(1, 1, 1),
+(2, 1, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `contacts`
+--
+
+DROP TABLE IF EXISTS `contacts`;
+CREATE TABLE `contacts` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `subject` varchar(255) DEFAULT NULL,
+  `message` text NOT NULL,
+  `status` enum('new','read','replied') DEFAULT 'new',
+  `is_starred` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 -- --------------------------------------------------------
 
 --
@@ -362,6 +405,15 @@ CREATE TABLE `employees` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `employees`
+--
+
+INSERT INTO `employees` (`id`, `full_name`, `phone`, `email`, `identity_card`, `address`, `dob`, `gender`, `position`, `salary`, `status`, `avatar`, `created_at`) VALUES
+(1, 'Le Huu Thuan Fat', '0867081911', 'fatqua@gmail.com', '', '', '2026-05-30', 'male', 'Thu ngân', 1.00, 'working', NULL, '2026-05-14 03:37:08'),
+(2, 'Huynh Duc Thon', '12345667890', '28huynhducthong@gmail.com', '102910382038141', '123 Đường ABC, Quận 1, TP. HCM', '2026-04-28', 'male', 'Pha chế', 0.00, 'working', NULL, '2026-05-14 06:51:48'),
+(3, '', NULL, 'www.huynhqduong@gmail.com', NULL, NULL, NULL, 'other', 'admin', 0.00, 'working', NULL, '2026-05-14 07:05:27');
+
 -- --------------------------------------------------------
 
 --
@@ -373,6 +425,7 @@ CREATE TABLE `foods` (
   `id` int(11) NOT NULL,
   `category_id` int(11) DEFAULT NULL,
   `name` varchar(255) NOT NULL,
+  `unit_name` varchar(50) DEFAULT NULL,
   `price` decimal(15,2) NOT NULL,
   `image` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
@@ -384,8 +437,9 @@ CREATE TABLE `foods` (
 -- Dumping data for table `foods`
 --
 
-INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`, `is_active`) VALUES
-(1, 2, 'bit tết', 400000.00, '7d76786780be41b26cea039d.jpg', 'đạm đà', 1, 1);
+INSERT INTO `foods` (`id`, `category_id`, `name`, `unit_name`, `price`, `image`, `description`, `status`, `is_active`) VALUES
+(1, 2, 'Bít tết', 'phần', 400000.00, '7d76786780be41b26cea039d.jpg', 'Đậm đà, thịt nhập khẩu', 1, 1),
+(2, 1, 'Salad Caesar', 'phần', 120000.00, NULL, 'Rau tươi, sốt Caesar', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -407,7 +461,8 @@ CREATE TABLE `food_recipes` (
 --
 
 INSERT INTO `food_recipes` (`id`, `food_id`, `ingredient_id`, `quantity_required`, `unit`) VALUES
-(1, 1, 3, 0.500, 'kg');
+(1, 1, 3, 0.500, 'kg'),
+(2, 2, 2, 0.200, 'kg');
 
 -- --------------------------------------------------------
 
@@ -422,6 +477,16 @@ CREATE TABLE `footer_links` (
   `url` varchar(255) NOT NULL,
   `priority` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `footer_links`
+--
+
+INSERT INTO `footer_links` (`id`, `title`, `url`, `priority`) VALUES
+(1, 'Trang chủ', '/', 1),
+(2, 'Thực đơn', '/menu.php', 2),
+(3, 'Đặt bàn', '/booking_service.php?type=table', 3),
+(4, 'Liên hệ', '/contact.php', 4);
 
 -- --------------------------------------------------------
 
@@ -486,7 +551,11 @@ CREATE TABLE `inventory` (
 --
 
 INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `cost_price`, `supplier_id`, `entry_date`, `expiry_date`, `revenue`, `updated_at`, `min_stock`, `is_active`, `storage_zone`) VALUES
-(3, 'thịt bò', 'Thịt', 'kg', 2000000.00, NULL, NULL, '2026-05-13', 0.00, '2026-05-09 07:18:03', 5, 1, 'Kho khô');
+(1, 'Gạo ST25', 'Gia vị', 'kg', 25000.00, 1, NULL, NULL, 0.00, '2026-05-09 06:40:22', 10, 1, 'Kho khô'),
+(2, 'Rau xà lách', 'Rau củ', 'kg', 35000.00, 1, NULL, '2026-06-15', 0.00, '2026-05-09 14:17:21', 5, 1, 'Kho lạnh'),
+(3, 'Thịt bò', 'Thịt', 'kg', 200000.00, NULL, NULL, '2026-06-30', 0.00, '2026-05-09 07:18:03', 5, 1, 'Kho lạnh'),
+(4, 'Gia vị đặc biệt', 'Gia vị', 'kg', 50000.00, 1, NULL, '2026-12-31', 0.00, '2026-05-07 09:50:36', 1, 1, 'Kho khô'),
+(6, 'Nguyên liệu nhập PO', 'Gia vị', 'kg', 100000.00, 1, NULL, '2026-08-01', 0.00, '2026-05-07 07:38:15', 0, 1, 'Kho khô');
 
 -- --------------------------------------------------------
 
@@ -693,6 +762,38 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `inventory_batches`
+-- (Lô hàng — FEFO, nhập PO, cảnh báo HSD)
+--
+
+DROP TABLE IF EXISTS `inventory_batches`;
+CREATE TABLE `inventory_batches` (
+  `id` int(11) NOT NULL,
+  `ingredient_id` int(11) NOT NULL,
+  `warehouse_id` int(11) NOT NULL,
+  `batch_code` varchar(50) DEFAULT NULL,
+  `quantity` decimal(15,3) NOT NULL DEFAULT 0.000,
+  `expiry_date` date DEFAULT NULL,
+  `cost_price` decimal(15,2) DEFAULT 0.00,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `inventory_batches`
+-- (Tổng quantity theo lô khớp inventory_stocks > 0)
+--
+
+INSERT INTO `inventory_batches` (`id`, `ingredient_id`, `warehouse_id`, `batch_code`, `quantity`, `expiry_date`, `cost_price`, `created_at`) VALUES
+(1, 1, 1, 'LOT-G-2026-A', 35.000, '2026-12-31', 25000.00, '2026-05-01 08:00:00'),
+(2, 1, 3, 'LOT-G-BAR-01', 5.000, '2026-12-31', 25000.00, '2026-05-07 02:55:19'),
+(3, 2, 1, 'LOT-RAU-01', 80.000, '2026-06-15', 35000.00, '2026-05-08 08:00:00'),
+(4, 3, 1, 'LOT-BO-TONG', 25.000, '2026-06-30', 200000.00, '2026-05-09 07:18:03'),
+(5, 3, 2, 'LOT-BO-BEP', 14.000, '2026-06-25', 200000.00, '2026-05-09 14:18:56'),
+(6, 3, 6, 'XUAT-BAN-LOG', 1.000, NULL, 200000.00, '2026-05-13 15:18:30');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `inventory_transfers`
 --
 
@@ -763,6 +864,17 @@ CREATE TABLE `navigation_menu` (
   `position` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `navigation_menu`
+--
+
+INSERT INTO `navigation_menu` (`id`, `title`, `url`, `position`) VALUES
+(1, 'Trang chủ', '/', 1),
+(2, 'Giới thiệu', '/about.php', 2),
+(3, 'Thực đơn', '/menu.php', 3),
+(4, 'Đặt bàn', '/booking_service.php', 4),
+(5, 'Liên hệ', '/contact.php', 5);
+
 -- --------------------------------------------------------
 
 --
@@ -791,6 +903,54 @@ CREATE TABLE `order_items` (
   `price` decimal(10,2) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payrolls`
+--
+
+DROP TABLE IF EXISTS `payrolls`;
+CREATE TABLE `payrolls` (
+  `id` int(11) NOT NULL,
+  `employee_id` int(11) NOT NULL,
+  `month` int(11) NOT NULL,
+  `year` int(11) NOT NULL,
+  `base_salary` decimal(15,2) NOT NULL,
+  `work_days` decimal(10,2) DEFAULT 0.00,
+  `allowance` decimal(15,2) DEFAULT 0.00,
+  `bonus` decimal(15,2) DEFAULT 0.00,
+  `deduction` decimal(15,2) DEFAULT 0.00,
+  `net_salary` decimal(15,2) NOT NULL,
+  `status` enum('draft','approved') DEFAULT 'draft'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `positions`
+--
+
+DROP TABLE IF EXISTS `positions`;
+CREATE TABLE `positions` (
+  `id` int(11) NOT NULL,
+  `position_name` varchar(100) NOT NULL,
+  `base_salary` float DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `positions`
+--
+
+INSERT INTO `positions` (`id`, `position_name`, `base_salary`) VALUES
+(9, 'Quản lý', 0),
+(10, 'Bếp trưởng', 0),
+(11, 'Đầu bếp', 0),
+(12, 'Phụ bếp', 0),
+(13, 'Phục vụ', 0),
+(14, 'Thu ngân', 0),
+(15, 'Tạp vụ', 0),
+(16, 'Pha chế', 0);
 
 -- --------------------------------------------------------
 
@@ -900,6 +1060,15 @@ CREATE TABLE `services` (
   `price` decimal(15,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `services`
+--
+
+INSERT INTO `services` (`id`, `service_name`, `price`) VALUES
+(1, 'Đặt bàn thường', 0.00),
+(2, 'Tiệc sinh nhật VIP', 1500000.00),
+(3, 'Đầu bếp riêng tại bàn', 2500000.00);
+
 -- --------------------------------------------------------
 
 --
@@ -935,7 +1104,9 @@ CREATE TABLE `service_bookings` (
 
 INSERT INTO `service_bookings` (`id`, `user_id`, `customer_name`, `customer_phone`, `booking_date`, `service_type`, `table_id`, `combo_id`, `guests`, `message`, `total_amount`, `deposit_amount`, `status`, `event_type`, `decor_package`, `has_cake`, `has_flower`, `is_archived`, `created_at`) VALUES
 (1, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-16 15:17:00', 'table', 1, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-13 08:17:11'),
-(2, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-23 15:18:00', 'table', 1, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-13 08:18:22');
+(2, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-23 15:18:00', 'table', 1, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-13 08:18:22'),
+(3, 2, 'Khách demo', '0909123456', '2026-05-20 18:00:00', 'table', 2, 1, 4, 'Đặt combo gia đình', 850000.00, 255000.00, 'Pending', NULL, NULL, 0, 0, 0, '2026-05-14 10:00:00'),
+(4, NULL, 'Ẩn danh', '0911222333', '2026-05-25 12:00:00', 'birthday', 19, 0, 8, 'Tiệc sinh nhật', 2000000.00, 600000.00, 'Pending', 'birthday', 'premium', 1, 1, 0, '2026-05-14 10:05:00');
 
 -- --------------------------------------------------------
 
@@ -960,7 +1131,9 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 ('footer_text', '© 2024 Restaurantly. All Rights Reserved.'),
 ('hotline', '0456789124'),
 ('inv_auto_deduct', '1'),
+('inv_expiry_days', '7'),
 ('inv_expiry_warning_days', '30'),
+('inv_low_stock', '5'),
 ('inv_low_stock_threshold', '5'),
 ('logo_url', 'assets/img/logo.png'),
 ('logo_ver', '1778058575'),
@@ -970,7 +1143,61 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 ('open_days', 'Thứ 3 - Chủ Nhật'),
 ('open_time', '09:00 AM - 11:00 PM'),
 ('restaurant_name', 'Restaurantly'),
+('telegram_eod_enabled', '1'),
+('telegram_eod_hour', '22'),
+('enable_telegram', '0'),
+('telegram_bot_token', ''),
+('telegram_chat_id', ''),
 ('zalo_url', '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shifts`
+--
+
+DROP TABLE IF EXISTS `shifts`;
+CREATE TABLE `shifts` (
+  `id` int(11) NOT NULL,
+  `shift_name` varchar(50) NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shifts`
+--
+
+INSERT INTO `shifts` (`id`, `shift_name`, `start_time`, `end_time`) VALUES
+(1, 'Ca Sáng', '08:00:00', '16:00:00'),
+(2, 'Ca Chiều', '16:00:00', '22:00:00'),
+(3, 'Full-time', '08:00:00', '22:00:00'),
+(4, 'tang ca', '14:09:00', '15:00:00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shift_assignments`
+--
+
+DROP TABLE IF EXISTS `shift_assignments`;
+CREATE TABLE `shift_assignments` (
+  `id` int(11) NOT NULL,
+  `employee_id` int(11) NOT NULL,
+  `shift_id` int(11) NOT NULL,
+  `work_date` date NOT NULL,
+  `check_in` datetime DEFAULT NULL,
+  `check_out` datetime DEFAULT NULL,
+  `status` enum('scheduled','present','absent') DEFAULT 'scheduled',
+  `approval_status` enum('pending','approved','rejected') DEFAULT 'pending'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shift_assignments`
+--
+
+INSERT INTO `shift_assignments` (`id`, `employee_id`, `shift_id`, `work_date`, `check_in`, `check_out`, `status`, `approval_status`) VALUES
+(4, 2, 4, '2026-05-14', '2026-05-14 14:14:43', '2026-05-14 14:14:46', 'present', 'pending');
 
 -- --------------------------------------------------------
 
@@ -1041,19 +1268,23 @@ CREATE TABLE `users` (
   `birthday` date DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `google_id` varchar(255) DEFAULT NULL,
-  `role` enum('admin','cashier','chef','waiter','customer') DEFAULT 'customer',
+  `role` enum('admin','cashier','chef','waiter','customer','staff') DEFAULT 'customer',
   `is_active` tinyint(1) DEFAULT 1,
-  `created_at` datetime DEFAULT current_timestamp()
+  `created_at` datetime DEFAULT current_timestamp(),
+  `employee_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `avatar`, `phone`, `birthday`, `email`, `google_id`, `role`, `is_active`, `created_at`) VALUES
-(2, 'Huỳnh Đức Thông', '', 'Quản trị viên', NULL, NULL, NULL, '28huynhducthong@gmail.com', '107664704264935131673', 'admin', 1, '2026-05-06 10:49:37'),
-(4, 'Thong Duc', '', '', NULL, NULL, NULL, 'thongd342@gmail.com', '100631379832642815829', '', 1, '2026-05-06 15:59:00'),
-(5, 'Huỳnh Dương', '', '', NULL, NULL, NULL, 'www.huynhqduong@gmail.com', '112739013180770480868', 'admin', 1, '2026-05-09 21:03:14');
+INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `avatar`, `phone`, `birthday`, `email`, `google_id`, `role`, `is_active`, `created_at`, `employee_id`) VALUES
+(2, 'Huỳnh Đức Thông', '', 'Quản trị viên', NULL, NULL, NULL, '28huynhducthong@gmail.com', '107664704264935131673', 'admin', 1, '2026-05-06 10:49:37', 2),
+(4, 'Thong Duc', '', '', NULL, NULL, NULL, 'thongd342@gmail.com', '100631379832642815829', '', 1, '2026-05-06 15:59:00', NULL),
+(5, 'Huỳnh Dương', '', '', NULL, NULL, NULL, 'www.huynhqduong@gmail.com', '112739013180770480868', 'admin', 1, '2026-05-09 21:03:14', 3),
+(6, 'Long Hoang', '', '', NULL, NULL, NULL, 'hoanglongduongle@gmail.com', '109729244014013210980', 'admin', 1, '2026-05-14 09:27:18', 3),
+(7, 'fatqua_65', '$2y$10$cxk4RfLDH/o.SwbYVnuE.OOPVrNbNvzG2cHEsAxELE7fV15612GF.', 'Le Huu Thuan Fat', NULL, '', NULL, 'fatqua@gmail.com', NULL, 'staff', 1, '2026-05-14 10:37:08', 1),
+(8, '28huynhducthong_10', '$2y$10$OLjEsWZxLXBx/uF6KU1PC.1.kDg1sO52SqzXUIdJwhllJe4ZOGdSW', 'Huynh Duc Thon', NULL, '0901 234 567', NULL, '28huynhducthong@gmail.com', NULL, 'chef', 1, '2026-05-14 13:51:48', 2);
 
 -- --------------------------------------------------------
 
@@ -1216,6 +1447,12 @@ ALTER TABLE `combo_items`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `contacts`
+--
+ALTER TABLE `contacts`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `employees`
 --
 ALTER TABLE `employees`
@@ -1283,6 +1520,15 @@ ALTER TABLE `inventory_stocks`
   ADD UNIQUE KEY `idx_wh_ing` (`warehouse_id`,`ingredient_id`);
 
 --
+-- Indexes for table `inventory_batches`
+--
+ALTER TABLE `inventory_batches`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ingredient_id` (`ingredient_id`),
+  ADD KEY `warehouse_id` (`warehouse_id`),
+  ADD KEY `expiry_date` (`expiry_date`);
+
+--
 -- Indexes for table `inventory_transfers`
 --
 ALTER TABLE `inventory_transfers`
@@ -1310,6 +1556,19 @@ ALTER TABLE `newsletters`
 -- Indexes for table `order_items`
 --
 ALTER TABLE `order_items`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `payrolls`
+--
+ALTER TABLE `payrolls`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `employee_id` (`employee_id`,`month`,`year`);
+
+--
+-- Indexes for table `positions`
+--
+ALTER TABLE `positions`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1350,6 +1609,20 @@ ALTER TABLE `settings`
   ADD PRIMARY KEY (`key_name`);
 
 --
+-- Indexes for table `shifts`
+--
+ALTER TABLE `shifts`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `shift_assignments`
+--
+ALTER TABLE `shift_assignments`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `employee_id` (`employee_id`),
+  ADD KEY `shift_id` (`shift_id`);
+
+--
 -- Indexes for table `suppliers`
 --
 ALTER TABLE `suppliers`
@@ -1365,7 +1638,8 @@ ALTER TABLE `transfer_details`
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `employee_id` (`employee_id`);
 
 --
 -- Indexes for table `user_addresses`
@@ -1424,7 +1698,7 @@ ALTER TABLE `bookings`
 -- AUTO_INCREMENT for table `booking_details`
 --
 ALTER TABLE `booking_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `booking_inventory_deductions`
@@ -1460,49 +1734,55 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `chefs`
 --
 ALTER TABLE `chefs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `combos`
 --
 ALTER TABLE `combos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `combo_items`
 --
 ALTER TABLE `combo_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `contacts`
+--
+ALTER TABLE `contacts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `employees`
 --
 ALTER TABLE `employees`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `foods`
 --
 ALTER TABLE `foods`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `food_recipes`
 --
 ALTER TABLE `food_recipes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `footer_links`
 --
 ALTER TABLE `footer_links`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `inventory_audits`
@@ -1541,6 +1821,12 @@ ALTER TABLE `inventory_stocks`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
+-- AUTO_INCREMENT for table `inventory_batches`
+--
+ALTER TABLE `inventory_batches`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT for table `inventory_transfers`
 --
 ALTER TABLE `inventory_transfers`
@@ -1556,7 +1842,7 @@ ALTER TABLE `inventory_units`
 -- AUTO_INCREMENT for table `navigation_menu`
 --
 ALTER TABLE `navigation_menu`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `newsletters`
@@ -1569,6 +1855,18 @@ ALTER TABLE `newsletters`
 --
 ALTER TABLE `order_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `payrolls`
+--
+ALTER TABLE `payrolls`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `positions`
+--
+ALTER TABLE `positions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `purchase_orders`
@@ -1592,13 +1890,25 @@ ALTER TABLE `restaurant_tables`
 -- AUTO_INCREMENT for table `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `service_bookings`
 --
 ALTER TABLE `service_bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `shifts`
+--
+ALTER TABLE `shifts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `shift_assignments`
+--
+ALTER TABLE `shift_assignments`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `suppliers`
@@ -1616,7 +1926,7 @@ ALTER TABLE `transfer_details`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `user_addresses`
@@ -1648,10 +1958,29 @@ ALTER TABLE `book_order_items`
   ADD CONSTRAINT `book_order_items_ibfk_2` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`);
 
 --
+-- Constraints for table `payrolls`
+--
+ALTER TABLE `payrolls`
+  ADD CONSTRAINT `payrolls_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `service_bookings`
 --
 ALTER TABLE `service_bookings`
   ADD CONSTRAINT `fk_booking_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `shift_assignments`
+--
+ALTER TABLE `shift_assignments`
+  ADD CONSTRAINT `shift_assignments_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `shift_assignments_ibfk_2` FOREIGN KEY (`shift_id`) REFERENCES `shifts` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `user_addresses`

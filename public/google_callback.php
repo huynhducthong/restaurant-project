@@ -49,7 +49,26 @@ if (isset($_GET['code'])) {
             $_SESSION['user_name'] = $user['username']; // Đã khớp với cột username
             $_SESSION['role'] = $user['role'];
 
-            header('Location: ../index.php'); 
+            if ($user['role'] == 1 || $user['role'] == 'admin') {
+                // --- THÔNG BÁO BẢO MẬT ĐĂNG NHẬP ADMIN ---
+                require_once '../config/notification_helper.php';
+                $ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'Unknown IP';
+                $login_time = date('H:i:s d/m/Y');
+                $admin_name = $user['username'];
+                
+                $security_msg = "🚨 <b>CẢNH BÁO BẢO MẬT (GOOGLE OAUTH)</b>\n\n";
+                $security_msg .= "Tài khoản Quản trị viên vừa đăng nhập thành công qua Google.\n";
+                $security_msg .= "👤 User: <b>{$admin_name}</b>\n";
+                $security_msg .= "⏰ Thời gian: {$login_time}\n";
+                $security_msg .= "🌐 Địa chỉ IP: <code>{$ip_address}</code>\n\n";
+                $security_msg .= "<i>Nếu không phải bạn, hãy kiểm tra hệ thống ngay lập tức!</i>";
+                
+                @sendTelegramNotification($security_msg);
+
+                header("Location: ../admin/admin_dashboard.php");
+            } else {
+                header('Location: ../index.php'); 
+            }
             exit();
 
         } catch (Exception $e) {
