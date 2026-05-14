@@ -82,6 +82,19 @@ if (isset($_POST['save_user'])) {
             $hashed_pass = password_hash($password, PASSWORD_BCRYPT);
             $stmt = $db->prepare("INSERT INTO users (username, password, full_name, phone, email, role) VALUES (?, ?, ?, ?, ?, ?)");
             $stmt->execute([$username, $hashed_pass, $full_name, $phone, $email, $role]);
+            $user_id = $db->lastInsertId();
+
+            // Tự động tạo hồ sơ nhân viên nếu vai trò là nhân viên
+            $staff_roles = ['waiter', 'chef', 'cashier', 'staff'];
+            if (in_array($role, $staff_roles)) {
+                $stmt_emp = $db->prepare("INSERT INTO employees (full_name, phone, email, position, status) VALUES (?, ?, ?, ?, 'working')");
+                $stmt_emp->execute([$full_name, $phone, $email, $role]);
+                $employee_id = $db->lastInsertId();
+                
+                // Cập nhật lại employee_id cho user
+                $db->prepare("UPDATE users SET employee_id = ? WHERE id = ?")->execute([$employee_id, $user_id]);
+            }
+
             $_SESSION['msg'] = "Thêm người dùng mới thành công!";
         }
     } catch (Exception $e) {

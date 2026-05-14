@@ -7,6 +7,9 @@ $db = (new Database())->getConnection();
 $message_success = '';
 $message_error = '';
 
+// Lấy danh sách chức vụ để hiện trong dropdown
+$positions = $db->query("SELECT * FROM positions ORDER BY position_name ASC")->fetchAll(PDO::FETCH_ASSOC);
+
 // Handle POST actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
@@ -41,7 +44,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($action === 'create') {
                     $stmt = $db->prepare("INSERT INTO employees (full_name, phone, email, identity_card, address, dob, gender, position, salary, status, avatar) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                     if ($stmt->execute([$full_name, $phone, $email, $identity_card, $address, $dob, $gender, $position, $salary, $status, $avatar_name])) {
+                        $employee_id = $db->lastInsertId();
                         $message_success = "Đã thêm nhân sự thành công.";
+                        
+                        // Tự động tạo tài khoản đăng nhập (users)
+                        if (!empty($email)) {
+                            $default_password = password_hash('123456', PASSWORD_DEFAULT);
+                            // Lấy phần trước @ của email làm username mặc định
+                            $username = explode('@', $email)[0] . '_' . rand(10, 99); 
+                            
+                            $stmt_user = $db->prepare("INSERT INTO users (username, email, password, full_name, role, employee_id) VALUES (?, ?, ?, ?, 'staff', ?)");
+                            $stmt_user->execute([$username, $email, $default_password, $full_name, $employee_id]);
+                        }
                     } else {
                         $message_error = "Có lỗi xảy ra khi thêm nhân sự: " . implode(" - ", $stmt->errorInfo());
                     }
@@ -307,7 +321,12 @@ $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         
                         <div class="col-md-4">
                             <label class="form-label fw-bold">Vị trí / Chức vụ</label>
-                            <input type="text" class="form-control" name="position" id="empPosition" placeholder="VD: Phục vụ, Đầu bếp...">
+                            <select name="position" class="form-select" id="empPosition" required>
+                                <option value="">-- Chọn chức vụ --</option>
+                                <?php foreach ($positions as $p): ?>
+                                    <option value="<?= htmlspecialchars($p['position_name']) ?>"><?= htmlspecialchars($p['position_name']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-bold">Mức lương cơ bản</label>

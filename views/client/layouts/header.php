@@ -612,10 +612,14 @@ if (!empty($logo_path)) {
                             </a>
 
                             <?php if (isset($_SESSION['user_id'])): ?>
-                                <!-- TRANG QUẢN TRỊ -->
-                                <?php if ($is_backend_access): ?>
+                                <!-- TRANG QUẢN TRỊ / BẢNG CÔNG -->
+                                <?php if ($user_role === 'admin' || $user_role == 1): ?>
                                     <a href="admin/admin_dashboard.php" class="oriental-item" style="color: var(--primary-color);">
                                         <i class="bi bi-speedometer2"></i> Trang quản trị
+                                    </a>
+                                <?php elseif ($user_role !== 'admin' && $user_role !== 'customer' && !empty($user_role)): ?>
+                                    <a href="views/client/employee_dashboard.php" class="oriental-item" style="color: var(--primary-color);">
+                                        <i class="bi bi-clock-history"></i> Bảng công & Chấm công
                                     </a>
                                 <?php endif; ?>
 

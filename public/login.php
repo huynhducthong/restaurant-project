@@ -327,7 +327,7 @@ $login_url = $client->createAuthUrl();
           <?php 
             $err = $_GET['error'];
             if($err == 'wrong_password') echo "Mật khẩu không chính xác!";
-            elseif($err == 'user_not_found') echo "Email này chưa được đăng ký!";
+            elseif($err == 'user_not_found') echo "Tài khoản này chưa được đăng ký!";
             elseif($err == 'empty') echo "Vui lòng nhập đầy đủ thông tin!";
             else echo "Lỗi đăng nhập, vui lòng thử lại!";
           ?>
@@ -337,8 +337,8 @@ $login_url = $client->createAuthUrl();
       <form action="../config/login_action.php" method="POST">
 
         <div class="input-group-custom">
-          <input type="email" name="email" class="form-input" placeholder="Địa chỉ email" required autocomplete="email">
-          <i class="bi bi-envelope input-icon"></i>
+          <input type="text" name="email" class="form-input" placeholder="Email hoặc Tên đăng nhập" required autocomplete="username">
+          <i class="bi bi-person input-icon"></i>
         </div>
 
         <div class="input-group-custom">
