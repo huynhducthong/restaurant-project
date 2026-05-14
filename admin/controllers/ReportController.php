@@ -203,6 +203,7 @@ if ($action === 'low_stock') {
         <h3 class="fw-bold m-0 text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Cảnh báo tồn kho thấp</h3>
         <div class="d-flex gap-2">
             <a href="ReportController.php?action=stats" class="btn btn-sm btn-outline-primary px-3"><i class="fas fa-chart-bar me-1"></i>Thống kê</a>
+            <a href="POController.php?trigger_suggestion=1" class="btn btn-sm btn-dark fw-bold px-3"><i class="fas fa-magic me-1"></i>Tạo PO hàng loạt</a>
             <a href="ReportController.php?action=low_stock" class="btn btn-sm btn-danger fw-bold px-3"><i class="fas fa-exclamation-triangle me-1"></i>Tồn kho thấp</a>
         </div>
     </div>

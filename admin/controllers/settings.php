@@ -30,6 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'inv_expiry_days' => $_POST['inv_expiry_days'] ?? '7',
         'inv_low_stock'   => $_POST['inv_low_stock']   ?? '5',
         'inv_auto_deduct' => $_POST['inv_auto_deduct'] ?? '1',
+        'enable_telegram'    => $_POST['enable_telegram']    ?? '0',
+        'telegram_bot_token' => $_POST['telegram_bot_token'] ?? '',
+        'telegram_chat_id'   => $_POST['telegram_chat_id']   ?? '',
+        'telegram_eod_hour'    => (string) max(0, min(23, (int) ($_POST['telegram_eod_hour'] ?? 22))),
+        'telegram_eod_enabled' => $_POST['telegram_eod_enabled'] ?? '1',
     ];
 
     // Prepare 1 lần ngoài loop, execute nhiều lần
@@ -88,6 +93,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['settings_flash'] = ['type' => 'success', 'msg' => 'Cập nhật cấu hình thành công!'];
     
     // Vì không có giao diện nào được in ra trước đó, lệnh header() này sẽ hoạt động an toàn
+    header('Location: settings.php'); exit;
+}
+
+// THÊM: Xử lý gửi test Telegram
+if (isset($_POST['test_telegram'])) {
+    require_once '../../config/notification_helper.php';
+    $msg = generateMorningReport();
+    if (!$msg) {
+        $msg = "🚨 <b>THÔNG BÁO TEST:</b> Hệ thống kết nối tốt. Hiện tại không có mặt hàng nào cần cảnh báo.";
+    }
+    
+    $sent = sendTelegramNotification($msg);
+    if ($sent) {
+        $_SESSION['settings_flash'] = ['type' => 'success', 'msg' => '✅ Đã gửi báo cáo đến Telegram của bạn!'];
+    } else {
+        $_SESSION['settings_flash'] = ['type' => 'error', 'msg' => '❌ Gửi thất bại. Vui lòng kiểm tra Token/ChatID hoặc kết nối mạng.'];
+    }
+    header('Location: settings.php'); exit;
+}
+
+if (isset($_POST['test_telegram_eod'])) {
+    require_once '../../config/notification_helper.php';
+    $msg = generateEndOfDayRevenueReport($db);
+    $sent = sendTelegramNotification($msg);
+    if ($sent) {
+        $_SESSION['settings_flash'] = ['type' => 'success', 'msg' => '✅ Đã gửi thử báo cáo doanh thu cuối ngày (hôm nay) qua Telegram.'];
+    } else {
+        $_SESSION['settings_flash'] = ['type' => 'error', 'msg' => '❌ Gửi báo cáo cuối ngày thất bại. Kiểm tra bật Telegram / Token / Chat ID.'];
+    }
     header('Location: settings.php'); exit;
 }
 
@@ -220,6 +254,58 @@ include '../../public/admin_layout_header.php';
                                 <option value="0" <?= ($settings['inv_auto_deduct'] ?? '1') == '0' ? 'selected' : '' ?>>Tắt (Thủ công)</option>
                             </select>
                         </div>
+                    </div>
+                    
+                    <h5 class="section-title mt-4" style="font-size: 1.1rem; border-color: #0088cc; color: #0088cc;">
+                        <i class="bi bi-telegram me-2"></i>THÔNG BÁO TELEGRAM (MOBILE)
+                    </h5>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div class="alert alert-info small">
+                                <i class="bi bi-info-circle me-1"></i> <b>Hướng dẫn:</b> Tạo Bot qua @BotFather để lấy <b>Token</b>. Gửi tin nhắn cho @userinfobot để lấy <b>Chat ID</b> của bạn.
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label fw-bold small text-muted">Trạng thái</label>
+                            <select name="enable_telegram" class="form-select">
+                                <option value="1" <?= ($settings['enable_telegram'] ?? '0') == '1' ? 'selected' : '' ?>>Bật thông báo</option>
+                                <option value="0" <?= ($settings['enable_telegram'] ?? '0') == '0' ? 'selected' : '' ?>>Tắt</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8 mb-4">
+                            <label class="form-label fw-bold small text-muted">Bot Token</label>
+                            <input type="text" name="telegram_bot_token" class="form-control" placeholder="123456789:ABCDefgh..."
+                                   value="<?= htmlspecialchars($settings['telegram_bot_token'] ?? '') ?>">
+                        </div>
+                        <div class="col-md-12 mb-4">
+                            <label class="form-label fw-bold small text-muted">Chat ID (Người nhận)</label>
+                            <input type="text" name="telegram_chat_id" class="form-control" placeholder="Ví dụ: 987654321"
+                                   value="<?= htmlspecialchars($settings['telegram_chat_id'] ?? '') ?>">
+                            <small class="text-muted">Báo cáo kho buổi sáng (khi có cảnh báo) và báo cáo doanh thu cuối ngày đều gửi vào chat này.</small>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label fw-bold small text-muted">Giờ gửi báo cáo cuối ngày (0–23)</label>
+                            <input type="number" name="telegram_eod_hour" class="form-control" min="0" max="23"
+                                   value="<?= htmlspecialchars($settings['telegram_eod_hour'] ?? '22') ?>">
+                            <small class="text-muted">Mặc định 22 (22h). Sau giờ này, lần đầu mở Dashboard trong ngày sẽ gửi Telegram.</small>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label fw-bold small text-muted">Báo cáo cuối ngày</label>
+                            <select name="telegram_eod_enabled" class="form-select">
+                                <option value="1" <?= ($settings['telegram_eod_enabled'] ?? '1') === '1' ? 'selected' : '' ?>>Bật</option>
+                                <option value="0" <?= ($settings['telegram_eod_enabled'] ?? '1') === '0' ? 'selected' : '' ?>>Tắt</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-2 mb-4 d-flex flex-wrap justify-content-center gap-2">
+                        <button type="submit" name="test_telegram" class="btn btn-sm btn-outline-primary rounded-pill px-4">
+                            <i class="bi bi-send me-1"></i> Gửi thử báo cáo kho
+                        </button>
+                        <button type="submit" name="test_telegram_eod" class="btn btn-sm btn-outline-secondary rounded-pill px-4">
+                            <i class="bi bi-graph-up me-1"></i> Gửi thử báo cáo cuối ngày
+                        </button>
                     </div>
 
                     <div class="mb-4">

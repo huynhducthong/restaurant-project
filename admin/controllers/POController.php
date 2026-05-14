@@ -106,10 +106,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'quick_add_ingredient') {
 }
 
 // ==========================================================
-// 2. XỬ LÝ NHẬN HÀNG VÀ TỰ ĐỘNG CỘNG VÀO "KHO TỔNG"
+// 2. XỬ LÝ NHẬN HÀNG CHI TIẾT (TỪ MODAL)
 // ==========================================================
-if (isset($_GET['action']) && $_GET['action'] == 'receive' && isset($_GET['id'])) {
-    $po_id = (int)$_GET['id'];
+if (isset($_POST['receive_po_final'])) {
+    $po_id = (int)$_POST['po_id'];
     $main_warehouse_id = 1; // 1 = ID của Kho Tổng (Central Warehouse)
     
     $db->beginTransaction();
@@ -121,23 +121,22 @@ if (isset($_GET['action']) && $_GET['action'] == 'receive' && isset($_GET['id'])
             throw new Exception("Phiếu nhập này đã được xử lý từ trước!");
         }
 
-        // Lấy danh sách chi tiết hàng hóa trong PO
-        $stmt = $db->prepare("SELECT * FROM purchase_order_details WHERE po_id = ?");
-        $stmt->execute([$po_id]);
-        $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
         // Các câu lệnh chuẩn bị sẵn
         $upd_stock   = $db->prepare("INSERT INTO inventory_stocks (warehouse_id, ingredient_id, quantity) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE quantity = quantity + ?");
         $ins_history = $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, 'import', ?, ?)");
+        $upd_inv     = $db->prepare("UPDATE inventory SET cost_price = ?, expiry_date = ? WHERE id = ?");
+        $ins_batch   = $db->prepare("INSERT INTO inventory_batches (ingredient_id, warehouse_id, batch_code, quantity, expiry_date, cost_price) VALUES (?, ?, ?, ?, ?, ?)");
 
-        foreach ($details as $d) {
-            // Hỗ trợ cả 2 chuẩn tên cột
-            $new_qty   = isset($d['quantity'])      ? (float)$d['quantity']       : (float)$d['expected_qty'];
-            $new_price = isset($d['price'])         ? (float)$d['price']          : (float)$d['expected_price'];
-            $ing_id    = (int)$d['ingredient_id'];
+        foreach ($_POST['ingredient_id'] as $key => $ing_id) {
+            $ing_id    = (int)$ing_id;
+            $new_qty   = (float)$_POST['received_qty'][$key];
+            $new_price = (float)str_replace(',', '', $_POST['received_price'][$key]);
+            $hsd       = !empty($_POST['expiry_date'][$key]) ? $_POST['expiry_date'][$key] : null;
 
-            // 1. Tính giá vốn BQGQ (Bình quân gia quyền) — ĐỒNG NHẤT VỚI InventoryController
-            $stmt_old_stock = $db->prepare("SELECT IFNULL(SUM(quantity), 0) FROM inventory_stocks WHERE ingredient_id = ?");
+            if ($new_qty <= 0) continue;
+
+            // 1. Tính giá vốn BQGQ
+            $stmt_old_stock = $db->prepare("SELECT IFNULL(SUM(quantity), 0) FROM inventory_stocks WHERE ingredient_id = ? AND warehouse_id IN (1,2,3,4,5)");
             $stmt_old_stock->execute([$ing_id]);
             $old_total_stock = (float)$stmt_old_stock->fetchColumn();
 
@@ -150,16 +149,26 @@ if (isset($_GET['action']) && $_GET['action'] == 'receive' && isset($_GET['id'])
                 ? (($old_total_stock * $old_price) + ($new_qty * $new_price)) / ($old_total_stock + $new_qty)
                 : $new_price;
 
-            $db->prepare("UPDATE inventory SET cost_price = ? WHERE id = ?")->execute([$avg_price, $ing_id]);
+            // 2. Cập nhật lô hàng (Batch)
+            $po_code_res = $db->query("SELECT po_code FROM purchase_orders WHERE id = $po_id")->fetchColumn();
+            $ins_batch->execute([$ing_id, $main_warehouse_id, $po_code_res, $new_qty, $hsd, $new_price]);
 
-            // 2. Cộng số lượng vào Kho Tổng (ID = 1)
+            // 3. Cập nhật HSD tổng (Lấy ngày sớm nhất của các lô còn hàng)
+            $stmt_min_hsd = $db->prepare("SELECT MIN(expiry_date) FROM inventory_batches WHERE ingredient_id = ? AND quantity > 0 AND expiry_date IS NOT NULL");
+            $stmt_min_hsd->execute([$ing_id]);
+            $earliest_hsd = $stmt_min_hsd->fetchColumn() ?: $hsd;
+
+            // 4. Cập nhật giá và HSD vào bảng chính
+            $upd_inv->execute([$avg_price, $earliest_hsd, $ing_id]);
+
+            // 5. Cộng số lượng vào Kho Tổng (ID = 1)
             $upd_stock->execute([$main_warehouse_id, $ing_id, $new_qty, $new_qty]);
 
-            // 3. Ghi lịch sử giao dịch
-            $ins_history->execute([$ing_id, $main_warehouse_id, $new_qty, $current_user . " (Nhận hàng từ PO #" . $po_id . ")"]);
+            // 6. Ghi lịch sử giao dịch
+            $ins_history->execute([$ing_id, $main_warehouse_id, $new_qty, $current_user . " (Nhận hàng PO #" . $po_id . ")"]);
         }
 
-        // Đổi trạng thái PO thành hoàn tất (Đã nhập kho)
+        // Đổi trạng thái PO thành hoàn tất
         $db->prepare("UPDATE purchase_orders SET status = 'completed' WHERE id = ?")->execute([$po_id]);
 
         $db->commit();

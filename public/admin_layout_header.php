@@ -70,9 +70,19 @@ try {
 
         $stmt_ps = $db->query("SELECT COUNT(*) FROM service_bookings WHERE status = 'Pending'");
         $pending_services_count = (int)$stmt_ps->fetchColumn();
+
+        // THÊM: Cảnh báo tồn kho thấp
+        $stmt_low = $db->query("SELECT COUNT(*) FROM inventory i WHERE i.is_active = 1 AND i.min_stock > 0 AND IFNULL((SELECT SUM(s.quantity) FROM inventory_stocks s WHERE s.ingredient_id = i.id), 0) <= i.min_stock");
+        $low_stock_count = (int)$stmt_low->fetchColumn();
+
+        // THÊM: Cảnh báo hết hạn (7 ngày tới)
+        $stmt_exp = $db->query("SELECT COUNT(*) FROM inventory WHERE is_active = 1 AND expiry_date IS NOT NULL AND expiry_date <= DATE_ADD(CURDATE(), INTERVAL 7 DAY) AND expiry_date >= CURDATE()");
+        $expiry_count = (int)$stmt_exp->fetchColumn();
+
+        $total_alerts = $low_stock_count + $expiry_count + $pending_transfers_count;
     }
 } catch (Exception $e) {
-    // Silent fail if table not exists or connection error
+    $low_stock_count = $expiry_count = $total_alerts = 0;
 }
 ?>
 <!DOCTYPE html>
@@ -332,6 +342,47 @@ try {
             70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
             100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
         }
+        /* --- NOTIFICATION BELL --- */
+        .notification-wrapper { position: relative; margin-right: 20px; }
+        .notification-btn { 
+            background: none; border: none; font-size: 20px; color: #555; position: relative; cursor: pointer;
+            transition: all 0.3s; padding: 5px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        .notification-btn:hover { background: rgba(0,0,0,0.05); color: var(--accent); }
+        .notification-badge {
+            position: absolute; top: -2px; right: -2px; background: #ff4757; color: white;
+            font-size: 10px; min-width: 16px; height: 16px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; border: 2px solid #fff;
+            animation: pulse-red 2s infinite;
+        }
+        .notification-dropdown {
+            position: absolute; top: 45px; right: 0; width: 320px; background: #fff;
+            border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #eee;
+            display: none; z-index: 1000; overflow: hidden;
+        }
+        .notification-dropdown.show { display: block; animation: slideDown 0.3s ease; }
+        .notify-header { padding: 12px 15px; border-bottom: 1px solid #eee; font-weight: bold; font-size: 14px; background: #f9f9f9; }
+        .notify-item { 
+            padding: 12px 15px; border-bottom: 1px solid #f5f5f5; display: flex; align-items: center; gap: 12px;
+            text-decoration: none; color: #333; transition: background 0.2s;
+        }
+        .notify-item:hover { background: #f8f9fa; color: inherit; }
+        .notify-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+        .notify-content { flex: 1; }
+        .notify-title { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+        .notify-desc { font-size: 11px; color: #777; }
+        
+        .bg-warning-subtle { background-color: #fff3cd; }
+        .bg-danger-subtle { background-color: #f8d7da; }
+        .bg-info-subtle { background-color: #cff4fc; }
+
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes bellShake {
+            0% { transform: rotate(0); } 15% { transform: rotate(15deg); } 30% { transform: rotate(-15deg); }
+            45% { transform: rotate(10deg); } 60% { transform: rotate(-10deg); } 75% { transform: rotate(5deg); }
+            85% { transform: rotate(-5deg); } 100% { transform: rotate(0); }
+        }
+        .bell-ring { animation: bellShake 1s ease infinite; }
     </style>
 </head>
 
@@ -526,6 +577,64 @@ try {
                 <?= $page_title ?>
             </h4>
 
+            <div class="d-flex align-items-center">
+                <!-- NOTIFICATION BELL -->
+                <div class="notification-wrapper">
+                    <button class="notification-btn <?= ($total_alerts > 0) ? 'bell-ring' : '' ?>" onclick="toggleNotify()">
+                        <i class="fas fa-bell"></i>
+                        <?php if ($total_alerts > 0): ?>
+                            <span class="notification-badge"><?= $total_alerts ?></span>
+                        <?php endif; ?>
+                    </button>
+                    <div class="notification-dropdown shadow-lg" id="notifyDropdown">
+                        <div class="notify-header d-flex justify-content-between">
+                            <span>Thông báo thông minh</span>
+                            <span class="badge bg-danger"><?= $total_alerts ?> mới</span>
+                        </div>
+                        <div class="notify-body">
+                            <?php if ($total_alerts == 0): ?>
+                                <div class="p-4 text-center text-muted small">
+                                    <i class="fas fa-check-circle fa-2x mb-2 text-success opacity-50"></i>
+                                    <p class="m-0">Tuyệt vời! Không có cảnh báo nào.</p>
+                                </div>
+                            <?php else: ?>
+                                <?php if ($pending_transfers_count > 0): ?>
+                                    <a href="/restaurant-project/admin/controllers/InventoryController.php?tab=transfers" class="notify-item">
+                                        <div class="notify-icon bg-warning-subtle text-warning"><i class="fas fa-exchange-alt"></i></div>
+                                        <div class="notify-content">
+                                            <div class="notify-title">Chuyển kho chờ duyệt</div>
+                                            <div class="notify-desc">Có <?= $pending_transfers_count ?> lệnh cần bạn xác nhận ngay.</div>
+                                        </div>
+                                    </a>
+                                <?php endif; ?>
+
+                                <?php if ($low_stock_count > 0): ?>
+                                    <a href="/restaurant-project/admin/controllers/ReportController.php?action=low_stock" class="notify-item">
+                                        <div class="notify-icon bg-danger-subtle text-danger"><i class="fas fa-exclamation-triangle"></i></div>
+                                        <div class="notify-content">
+                                            <div class="notify-title">Tồn kho sắp hết</div>
+                                            <div class="notify-desc"><?= $low_stock_count ?> nguyên liệu dưới định mức tối thiểu.</div>
+                                        </div>
+                                    </a>
+                                <?php endif; ?>
+
+                                <?php if ($expiry_count > 0): ?>
+                                    <a href="/restaurant-project/admin/controllers/InventoryController.php?tab=all" class="notify-item">
+                                        <div class="notify-icon bg-info-subtle text-info"><i class="fas fa-clock"></i></div>
+                                        <div class="notify-content">
+                                            <div class="notify-title">Hàng sắp hết hạn</div>
+                                            <div class="notify-desc">Có <?= $expiry_count ?> mặt hàng sẽ hết hạn trong 7 ngày tới.</div>
+                                        </div>
+                                    </a>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
+                        <div class="p-2 text-center border-top">
+                            <a href="/restaurant-project/admin/admin_dashboard.php" class="small text-decoration-none fw-bold">Xem tất cả Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+
             <div class="user-profile">
                 <div class="user-info">
                     <strong>
@@ -545,3 +654,18 @@ try {
         </header>
 
         <div class="content-area">
+
+    <script>
+        function toggleNotify() {
+            const dropdown = document.getElementById('notifyDropdown');
+            dropdown.classList.toggle('show');
+        }
+        window.addEventListener('click', function(event) {
+            if (!event.target.closest('.notification-wrapper')) {
+                const dropdown = document.getElementById('notifyDropdown');
+                if (dropdown && dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        });
+    </script>
