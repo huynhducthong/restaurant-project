@@ -27,29 +27,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = trim($_POST['email']);
         $birthday = $_POST['birthday'] ?: null;
         
-        $avatar_path = null;
+        $avatar_blob = null;
+        $avatar_mime = null;
         if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
             $ext = strtolower(pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION));
             if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-                $new_name = "avatar_" . $user_id . "_" . time() . "." . $ext;
-                $target = "public/uploads/avatars/" . $new_name;
-                if (move_uploaded_file($_FILES['avatar']['tmp_name'], $target)) {
-                    $avatar_path = "public/uploads/avatars/" . $new_name;
-                    
-                    // Xóa ảnh cũ trên server
-                    $stmt = $db->prepare("SELECT avatar FROM users WHERE id = ?");
-                    $stmt->execute([$user_id]);
-                    $old_avatar = $stmt->fetchColumn();
-                    if (!empty($old_avatar) && file_exists($old_avatar)) {
-                        unlink($old_avatar);
-                    }
-                }
+                $avatar_blob = file_get_contents($_FILES['avatar']['tmp_name']);
+                $avatar_mime = $_FILES['avatar']['type'];
             }
         }
 
-        $sql = "UPDATE users SET full_name = ?, phone = ?, email = ?, birthday = ?" . ($avatar_path ? ", avatar = ?" : "") . " WHERE id = ?";
+        $sql = "UPDATE users SET full_name = ?, phone = ?, email = ?, birthday = ?" . ($avatar_blob ? ", avatar_blob = ?, avatar_mime = ?, avatar = NULL" : "") . " WHERE id = ?";
         $params = [$full_name, $phone, $email, $birthday];
-        if ($avatar_path) $params[] = $avatar_path;
+        if ($avatar_blob) {
+            $params[] = $avatar_blob;
+            $params[] = $avatar_mime;
+        }
         $params[] = $user_id;
 
         if ($db->prepare($sql)->execute($params)) {
@@ -476,8 +469,15 @@ body{
       <!-- Avatar + tên -->
       <div class="prof-top">
         <div class="av-ring">
-          <img src="<?= $current_user['avatar'] ?: 'public/assets/img/default-avatar.png' ?>"
-               alt="Avatar" onerror="this.src='public/assets/img/default-avatar.png'">
+          <?php 
+            $my_av = 'public/assets/img/default-avatar.png';
+            if ($current_user['avatar_blob']) {
+                $my_av = 'ajax/get_avatar.php?user_id=' . $current_user['id'];
+            } elseif (!empty($current_user['avatar'])) {
+                $my_av = (strpos($current_user['avatar'], 'http') === 0) ? $current_user['avatar'] : $current_user['avatar'];
+            }
+          ?>
+          <img src="<?= $my_av ?>" alt="Avatar" onerror="this.src='public/assets/img/default-avatar.png'">
         </div>
         <h5 class="prof-name"><?= htmlspecialchars($current_user['full_name'] ?: $current_user['username']) ?></h5>
         <p class="prof-email"><?= htmlspecialchars($current_user['email']) ?></p>
@@ -554,8 +554,15 @@ body{
           <div class="text-center mb-32" style="margin-bottom:28px">
             <label for="avatar_input" class="av-upload">
               <div class="av-upload-ring">
-                <img src="<?= $current_user['avatar'] ?: 'public/assets/img/default-avatar.png' ?>"
-                     id="avatar_preview" onerror="this.src='public/assets/img/default-avatar.png'">
+                <?php 
+                  $my_av_form = 'public/assets/img/default-avatar.png';
+                  if ($current_user['avatar_blob']) {
+                      $my_av_form = 'ajax/get_avatar.php?user_id=' . $current_user['id'];
+                  } elseif (!empty($current_user['avatar'])) {
+                      $my_av_form = (strpos($current_user['avatar'], 'http') === 0) ? $current_user['avatar'] : $current_user['avatar'];
+                  }
+                ?>
+                <img src="<?= $my_av_form ?>" id="avatar_preview" onerror="this.src='public/assets/img/default-avatar.png'">
               </div>
               <span class="av-upload-lbl"><i class="bi bi-camera me-1"></i>Đổi ảnh đại diện</span>
             </label>

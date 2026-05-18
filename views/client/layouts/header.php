@@ -570,7 +570,7 @@ if (!empty($logo_path)) {
                     <li>
                         <a class="<?= ($current_page == 'Aboutus.php') ? 'active' : '' ?>"
                             href="Aboutus.php">
-                            Về chúng tôi
+                            Tin Tức
                         </a>
                     </li>
 

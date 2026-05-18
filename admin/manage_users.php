@@ -31,19 +31,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $message_error = "Vui lòng nhập họ tên nhân viên.";
         } else {
             try {
-                // Xử lý upload Avatar
-                $avatar_name = null;
+                // Xử lý upload Avatar vào DB
+                $avatar_blob = null;
+                $avatar_mime = null;
                 if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
                     $ext = strtolower(pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION));
                     if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-                        $avatar_name = time() . '_' . uniqid() . '.' . $ext;
-                        move_uploaded_file($_FILES['avatar']['tmp_name'], '../public/assets/uploads/avatars/' . $avatar_name);
+                        $avatar_blob = file_get_contents($_FILES['avatar']['tmp_name']);
+                        $avatar_mime = $_FILES['avatar']['type'];
                     }
                 }
 
                 if ($action === 'create') {
-                    $stmt = $db->prepare("INSERT INTO employees (full_name, phone, email, identity_card, address, dob, gender, position, salary, status, avatar) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                    if ($stmt->execute([$full_name, $phone, $email, $identity_card, $address, $dob, $gender, $position, $salary, $status, $avatar_name])) {
+                    $stmt = $db->prepare("INSERT INTO employees (full_name, phone, email, identity_card, address, dob, gender, position, salary, status, avatar_blob, avatar_mime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    if ($stmt->execute([$full_name, $phone, $email, $identity_card, $address, $dob, $gender, $position, $salary, $status, $avatar_blob, $avatar_mime])) {
                         $employee_id = $db->lastInsertId();
                         $message_success = "Đã thêm nhân sự thành công.";
                         
@@ -60,9 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $message_error = "Có lỗi xảy ra khi thêm nhân sự: " . implode(" - ", $stmt->errorInfo());
                     }
                 } else {
-                    if ($avatar_name) {
-                        $stmt = $db->prepare("UPDATE employees SET full_name=?, phone=?, email=?, identity_card=?, address=?, dob=?, gender=?, position=?, salary=?, status=?, avatar=? WHERE id=?");
-                        $success = $stmt->execute([$full_name, $phone, $email, $identity_card, $address, $dob, $gender, $position, $salary, $status, $avatar_name, $id]);
+                    if ($avatar_blob) {
+                        $stmt = $db->prepare("UPDATE employees SET full_name=?, phone=?, email=?, identity_card=?, address=?, dob=?, gender=?, position=?, salary=?, status=?, avatar_blob=?, avatar_mime=? WHERE id=?");
+                        $success = $stmt->execute([$full_name, $phone, $email, $identity_card, $address, $dob, $gender, $position, $salary, $status, $avatar_blob, $avatar_mime, $id]);
                     } else {
                         $stmt = $db->prepare("UPDATE employees SET full_name=?, phone=?, email=?, identity_card=?, address=?, dob=?, gender=?, position=?, salary=?, status=? WHERE id=?");
                         $success = $stmt->execute([$full_name, $phone, $email, $identity_card, $address, $dob, $gender, $position, $salary, $status, $id]);
@@ -192,8 +193,8 @@ $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <tr>
                             <td class="ps-4">
                                 <div class="d-flex align-items-center gap-3">
-                                    <?php if ($emp['avatar']): ?>
-                                        <img src="/restaurant-project/public/assets/uploads/avatars/<?= htmlspecialchars($emp['avatar']) ?>" class="rounded-circle shadow-sm" style="width: 40px; height: 40px; object-fit: cover;" alt="Avatar">
+                                    <?php if ($emp['avatar_blob']): ?>
+                                        <img src="/restaurant-project/ajax/get_avatar.php?emp_id=<?= $emp['id'] ?>" class="rounded-circle shadow-sm" style="width: 40px; height: 40px; object-fit: cover;" alt="Avatar">
                                     <?php else: ?>
                                         <div class="avatar-placeholder">
                                             <?= strtoupper(mb_substr($emp['full_name'], 0, 1)) ?>

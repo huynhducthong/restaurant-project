@@ -490,7 +490,7 @@ try {
                 <li class="<?= isActive('manage_about.php') ?>">
                     <a href="/restaurant-project/admin/manage_about.php">
                         <i class="fas fa-newspaper"></i>
-                        Quản lý tin tức
+                        Quản lý Tin tức
                     </a>
                 </li>
 
