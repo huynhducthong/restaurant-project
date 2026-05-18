@@ -125,6 +125,10 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
                         if ($deduct_primary > 0) {
                             $db->prepare("UPDATE inventory_stocks SET quantity = quantity - ? WHERE ingredient_id = ? AND warehouse_id = ?")
                                ->execute([$deduct_primary, $ing_id, $target_warehouse_id]);
+                            
+                            // TRỪ THEO LÔ (FEFO)
+                            deductStockFEFO($db, $ing_id, $target_warehouse_id, $deduct_primary, ($current_user ?? 'Admin'), 'export');
+
                             $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, 'export', ?, ?)")
                                ->execute([$ing_id, $target_warehouse_id, $deduct_primary, 'POS (Xác nhận #' . $id . ')']);
                             // Ghi nhớ để hoàn kho sau này
@@ -134,6 +138,10 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
                         if ($deduct_kitchen > 0) {
                             $db->prepare("UPDATE inventory_stocks SET quantity = quantity - ? WHERE ingredient_id = ? AND warehouse_id = 2")
                                ->execute([$deduct_kitchen, $ing_id]);
+                            
+                            // TRỪ THEO LÔ (FEFO)
+                            deductStockFEFO($db, $ing_id, 2, $deduct_kitchen, ($current_user ?? 'Admin'), 'export');
+
                             $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, 2, 'export', ?, ?)")
                                ->execute([$ing_id, $deduct_kitchen, 'POS (Vét kho dự phòng #' . $id . ')']);
                             // Ghi nhớ để hoàn kho sau này

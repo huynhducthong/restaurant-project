@@ -112,9 +112,9 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
                                 <td class="text-end">
                                     <button class="btn btn-sm btn-light border fw-bold me-1" onclick="viewPO(<?= $p['id'] ?>, '<?= htmlspecialchars($p['po_code']) ?>')">Xem</button>
                                     <?php if($p['status'] == 'pending'): ?>
-                                        <a href="POController.php?action=receive&id=<?= $p['id'] ?>" class="btn btn-sm btn-success fw-bold" onclick="return confirm('Xác nhận hàng đã về và tự động cộng vào Kho Tổng?')">
-                                            Nhận hàng
-                                        </a>
+                                        <button class="btn btn-sm btn-success fw-bold" onclick="openReceivePO(<?= $p['id'] ?>, '<?= htmlspecialchars($p['po_code']) ?>')">
+                                            <i class="fas fa-arrow-down me-1"></i>Nhận hàng
+                                        </button>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -200,9 +200,14 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
                         </tfoot>
                     </table>
                 </div>
-                <button type="button" class="btn btn-sm btn-outline-warning rounded-pill px-3 fw-bold" id="btnAddRow">
-                    <i class="fas fa-plus me-1"></i>Thêm dòng hàng
-                </button>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-warning rounded-pill px-3 fw-bold" id="btnAddRow">
+                        <i class="fas fa-plus me-1"></i>Thêm dòng hàng
+                    </button>
+                    <button type="button" class="btn btn-sm btn-info text-white rounded-pill px-3 fw-bold shadow-sm" onclick="loadSuggestions()">
+                        <i class="fas fa-lightbulb me-1"></i>Gợi ý từ tồn kho thấp
+                    </button>
+                </div>
             </div>
             <div class="modal-footer border-0 bg-white p-4 pt-0">
                 <button type="submit" class="btn btn-warning w-100 py-3 rounded-pill fw-bold text-white shadow-sm" style="background:#cda45e;border:none;">
@@ -234,6 +239,48 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
                 </table>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- MODAL NHẬN HÀNG (GOODS RECEIPT) -->
+<div class="modal fade" id="modalReceivePO" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <form class="modal-content border-0 shadow-lg" method="POST" action="POController.php" style="border-radius:20px;overflow:hidden;">
+            <input type="hidden" name="receive_po_final" value="1">
+            <input type="hidden" name="po_id" id="receive-po-id">
+            <div class="modal-header bg-success text-white py-3 px-4">
+                <h5 class="modal-title fw-bold" style="font-family:'Playfair Display',serif;">
+                    <i class="fas fa-check-double me-2"></i>NHẬN HÀNG VÀ NHẬP KHO: <span id="receive-po-code" class="text-white"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="alert alert-info m-3 py-2 small">
+                    <i class="fas fa-info-circle me-1"></i>Vui lòng kiểm tra số lượng và giá thực tế khi nhận hàng. Hàng sẽ được nhập vào <b>Kho Tổng</b>.
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light text-muted small text-uppercase">
+                            <tr>
+                                <th class="ps-4">Nguyên Liệu</th>
+                                <th class="text-center" width="150">SL Đặt</th>
+                                <th class="text-center" width="180">SL Thực Nhận</th>
+                                <th class="text-center" width="180">Giá Nhập (đ)</th>
+                                <th class="text-center" width="180">Hạn sử dụng</th>
+                            </tr>
+                        </thead>
+                        <tbody id="receive-po-body">
+                            <!-- Dữ liệu load bằng AJAX -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer bg-light border-0 p-3">
+                <button type="submit" class="btn btn-success px-5 py-2 fw-bold rounded-pill">
+                    <i class="fas fa-save me-2"></i>XÁC NHẬN NHẬP KHO
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -272,7 +319,17 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 $(document).ready(function() {
-    // Định dạng tiền tệ khi focus/blur để tránh lỗi gõ tiếng Việt
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('trigger_suggestion') === '1') {
+        const myModal = new bootstrap.Modal(document.getElementById('modalCreatePO'));
+        myModal.show();
+        // Đợi modal hiện xong rồi mới gọi gợi ý
+        document.getElementById('modalCreatePO').addEventListener('shown.bs.modal', function () {
+            loadSuggestions();
+        }, { once: true });
+    }
+
+    // Định dạng tiền tệ khi focus/blur
     $(document).on('focus', '.money-input', function() {
         let val = $(this).val().replace(/,/g, '');
         $(this).attr('type', 'number');
@@ -283,7 +340,7 @@ $(document).ready(function() {
         let val = parseFloat($(this).val()) || 0;
         $(this).attr('type', 'text');
         $(this).val(val.toLocaleString('en-US'));
-        calcTotal(); // Cập nhật tổng tiền khi blur
+        calcTotal();
     });
 
     $(document).on('change', '.item-select', function() {
@@ -312,18 +369,15 @@ $(document).ready(function() {
         let grandTotal = 0;
         $('#poBody tr').each(function() {
             let qty = parseFloat($(this).find('.qty-input').val()) || 0;
-            // Parse tiền tệ có dấu phẩy
             let priceStr = $(this).find('.price-input').val() || '0';
             let price = parseFloat(priceStr.replace(/,/g, '')) || 0;
             let total = qty * price;
-            
             $(this).find('.row-total').val(total.toLocaleString('en-US'));
             grandTotal += total;
         });
         $('#poGrandTotal').val(grandTotal.toLocaleString('en-US') + ' đ');
     }
 
-    // Submit form: Xóa dấu phẩy trước khi gửi
     $('form[action="POController.php"]').on('submit', function() {
         $(this).find('.money-input').each(function() {
             let val = $(this).val().replace(/,/g, '');
@@ -331,7 +385,6 @@ $(document).ready(function() {
         });
     });
 
-    // ================= XỬ LÝ THÊM NHANH NGUYÊN LIỆU =================
     window.openQuickAddIng = function() {
         new bootstrap.Modal(document.getElementById('modalQuickAddIng')).show();
     };
@@ -340,51 +393,123 @@ $(document).ready(function() {
         const name = $('#quick-ing-name').val();
         const unit = $('#quick-ing-unit').val();
         const cat  = $('#quick-ing-cat').val();
-
         if(!name || !unit) return alert('Vui lòng nhập đủ Tên và Đơn vị!');
-
         $(this).prop('disabled', true).text('Đang lưu...');
 
-        $.post('POController.php', {
-            action: 'quick_add_ingredient',
-            name: name,
-            unit: unit,
-            category: cat
-        }, function(res) {
+        $.post('POController.php', { action: 'quick_add_ingredient', name: name, unit: unit, category: cat }, function(res) {
             $('#btnSaveQuickIng').prop('disabled', false).text('LƯU & CHỌN');
             if(res.status === 'success') {
-                // Thêm option mới vào TẤT CẢ các select hiện có trong bảng PO
                 const newOpt = `<option value="${res.id}" data-price="0" selected>${name} (${unit})</option>`;
                 $('.item-select').append(newOpt);
-                
                 bootstrap.Modal.getInstance(document.getElementById('modalQuickAddIng')).hide();
                 $('#quick-ing-name, #quick-ing-unit').val('');
-                alert('Đã thêm nguyên liệu mới thành công!');
+                alert('Đã thêm nguyên liệu mới!');
             } else {
                 alert('Lỗi: ' + res.message);
             }
         }, 'json');
     });
-});
 
-window.viewPO = function(id, code) {
-    $('#view-po-code').text(code);
-    $('#view-po-body').html('<tr><td colspan="4" class="text-center py-5"><div class="spinner-border text-warning"></div></td></tr>');
-    new bootstrap.Modal(document.getElementById('modalViewPO')).show();
-    $.post('POController.php', { action: 'get_details', po_id: id }, function(res) {
-        if(res.status === 'success') {
-            let html = '';
-            let grandTotal = 0;
-            res.data.forEach(item => {
-                let qty = parseFloat(item.expected_qty || item.quantity || 0);
-                let price = parseFloat(item.expected_price || item.price || 0);
-                let total = qty * price;
-                grandTotal += total;
-                html += `<tr><td class="ps-4"><div class="fw-bold">${item.item_name}</div></td><td class="text-center"><strong>${qty}</strong> <small class="text-muted">${item.unit_name}</small></td><td class="text-end">${price.toLocaleString('en-US')} đ</td><td class="text-end fw-bold text-danger pe-4">${total.toLocaleString('en-US')} đ</td></tr>`;
-            });
-            html += `<tr class="bg-light"><td colspan="3" class="text-end fw-bold py-3 text-muted">TỔNG CỘNG:</td><td class="text-end fw-bold text-danger py-3 fs-5 pe-4">${grandTotal.toLocaleString('en-US')} đ</td></tr>`;
-            $('#view-po-body').html(html);
-        }
-    }, 'json');
-};
+    window.viewPO = function(id, code) {
+        $('#view-po-code').text(code);
+        $('#view-po-body').html('<tr><td colspan="4" class="text-center py-5"><div class="spinner-border text-warning"></div></td></tr>');
+        new bootstrap.Modal(document.getElementById('modalViewPO')).show();
+        $.post('POController.php', { action: 'get_details', po_id: id }, function(res) {
+            if(res.status === 'success') {
+                let html = '', grandTotal = 0;
+                res.data.forEach(item => {
+                    let qty = parseFloat(item.expected_qty || item.quantity || 0);
+                    let price = parseFloat(item.expected_price || item.price || 0);
+                    let total = qty * price;
+                    grandTotal += total;
+                    html += `<tr><td class="ps-4"><div class="fw-bold">${item.item_name}</div></td><td class="text-center"><strong>${qty}</strong> <small class="text-muted">${item.unit_name}</small></td><td class="text-end">${price.toLocaleString('en-US')} đ</td><td class="text-end fw-bold text-danger pe-4">${total.toLocaleString('en-US')} đ</td></tr>`;
+                });
+                html += `<tr class="bg-light"><td colspan="3" class="text-end fw-bold py-3 text-muted">TỔNG CỘNG:</td><td class="text-end fw-bold text-danger py-3 fs-5 pe-4">${grandTotal.toLocaleString('en-US')} đ</td></tr>`;
+                $('#view-po-body').html(html);
+            }
+        }, 'json');
+    };
+
+    window.openReceivePO = function(id, code) {
+        $('#receive-po-id').val(id);
+        $('#receive-po-code').text(code);
+        $('#receive-po-body').html('<tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-success"></div></td></tr>');
+        new bootstrap.Modal(document.getElementById('modalReceivePO')).show();
+        $.post('POController.php', { action: 'get_details', po_id: id }, function(res) {
+            if(res.status === 'success') {
+                let html = '';
+                res.data.forEach(item => {
+                    let qty = parseFloat(item.expected_qty || 0);
+                    let price = parseFloat(item.expected_price || 0);
+                    html += `<tr><td class="ps-4"><div class="fw-bold">${item.item_name}</div><input type="hidden" name="ingredient_id[]" value="${item.ingredient_id}"></td><td class="text-center text-muted">${qty} ${item.unit_name}</td><td><div class="input-group input-group-sm"><input type="number" name="received_qty[]" class="form-control text-center fw-bold" step="0.01" value="${qty}" required><span class="input-group-text">${item.unit_name}</span></div></td><td><input type="text" name="received_price[]" class="form-control form-control-sm text-end money-input" value="${price.toLocaleString('en-US')}" required></td><td class="pe-4"><input type="date" name="expiry_date[]" class="form-control form-control-sm"></td></tr>`;
+                });
+                $('#receive-po-body').html(html);
+            }
+        }, 'json');
+    };
+
+    // ================= GỢI Ý NHẬP HÀNG TỰ ĐỘNG =================
+    window.loadSuggestions = function() {
+        const btn = event.target.closest('button');
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang tải...';
+
+        $.post('../controllers/InventoryController.php', { action: 'get_reorder_list' }, function(res) {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+
+            if(res.status === 'success' && res.data.length > 0) {
+                // Xóa dòng đầu tiên nếu nó trống
+                const firstRow = $('#poBody tr').first();
+                if(firstRow.find('.item-select').val() === '') {
+                    firstRow.remove();
+                }
+
+                res.data.forEach(item => {
+                    // Kiểm tra xem item đã có trong danh sách chưa
+                    let exists = false;
+                    $('.item-select').each(function() {
+                        if($(this).val() == item.id) exists = true;
+                    });
+                    if(exists) return;
+
+                    const min = parseFloat(item.min_stock) || 5;
+                    const stock = parseFloat(item.total_stock);
+                    // Gợi ý: Nhập bù đủ min + 50% dự phòng
+                    const suggestQty = Math.ceil((min - stock) + (min * 0.5));
+                    
+                    const newRow = `
+                        <tr>
+                            <td>
+                                <select name="item_id[]" class="form-select border-0 bg-light item-select" required>
+                                    <option value="${item.id}" selected>${item.item_name} (${item.unit_name})</option>
+                                </select>
+                            </td>
+                            <td><input type="number" name="qty[]" class="form-control border-0 bg-light qty-input" step="0.01" min="0.01" value="${suggestQty}" required></td>
+                            <td><input type="text" name="price[]" class="form-control border-0 bg-light price-input money-input" value="${parseInt(item.cost_price).toLocaleString('en-US')}" required></td>
+                            <td><input type="text" class="form-control border-0 bg-light text-danger fw-bold row-total" readonly value="0"></td>
+                            <td class="text-center"><button type="button" class="btn btn-sm btn-outline-danger btn-remove border-0"><i class="fas fa-times"></i></button></td>
+                        </tr>
+                    `;
+                    $('#poBody').append(newRow);
+                });
+                // Cập nhật lại thành tiền cho các dòng mới
+                $('#poBody tr').each(function() {
+                    const qty = parseFloat($(this).find('.qty-input').val()) || 0;
+                    const price = parseInt($(this).find('.price-input').val().replace(/[^0-9]/g, '')) || 0;
+                    $(this).find('.row-total').val((qty * price).toLocaleString('en-US'));
+                });
+                updateGrandTotal();
+                alert('✅ Đã tự động thêm ' + res.data.length + ' nguyên liệu cần nhập hàng.');
+            } else {
+                alert('ℹ️ Hiện tại không có nguyên liệu nào dưới mức tồn tối thiểu.');
+            }
+        }, 'json').fail(function() {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+            alert('❌ Lỗi kết nối máy chủ.');
+        });
+    };
+});
 </script>

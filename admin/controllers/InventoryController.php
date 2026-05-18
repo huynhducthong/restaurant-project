@@ -10,7 +10,28 @@ if (!isset($_SESSION['user_id'])) {
 $current_user = $_SESSION['username'] ?? 'Admin';
 
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../config/inventory_helper.php';
 $db = (new Database())->getConnection();
+
+// API: Lấy danh sách gợi ý nhập hàng (cho PO)
+if (isset($_POST['action']) && $_POST['action'] === 'get_reorder_list') {
+    header('Content-Type: application/json');
+    $settings_raw = $db->query("SELECT key_name, key_value FROM settings WHERE key_name IN ('inv_low_stock')")->fetchAll(PDO::FETCH_KEY_PAIR);
+    $cfg_low_stock = (float)($settings_raw['inv_low_stock'] ?? 5);
+
+    $stmt = $db->query("
+        SELECT i.id, i.item_name, i.unit_name, i.cost_price, i.min_stock,
+               IFNULL(SUM(s.quantity), 0) as total_stock
+        FROM inventory i
+        LEFT JOIN inventory_stocks s ON i.id = s.ingredient_id
+        WHERE i.is_active = 1
+        GROUP BY i.id
+        HAVING total_stock <= CASE WHEN i.min_stock > 0 THEN i.min_stock ELSE $cfg_low_stock END
+    ");
+    $list = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode(['status' => 'success', 'data' => $list]);
+    exit;
+}
 
 // Lấy danh sách các kho (Warehouses)
 $warehouses = $db->query("SELECT * FROM warehouses WHERE status = 1")->fetchAll(PDO::FETCH_ASSOC);
@@ -151,6 +172,15 @@ if (isset($_POST['action'])) {
             $db->prepare("UPDATE inventory SET cost_price = ?, supplier_id = ?, expiry_date = ? WHERE id = ?")
                 ->execute([$avg_price, $s_id, $_POST['expiry_date'] ?: null, $id]);
 
+            // Tạo lô hàng mới
+            createBatch($db, $id, $main_warehouse_id, $qty, $_POST['expiry_date'], $price, "Nhập trực tiếp");
+
+            // Cập nhật lại HSD tổng (Lấy ngày sớm nhất của các lô còn hàng)
+            $stmt_min_hsd = $db->prepare("SELECT MIN(expiry_date) FROM inventory_batches WHERE ingredient_id = ? AND quantity > 0 AND expiry_date IS NOT NULL");
+            $stmt_min_hsd->execute([$id]);
+            $earliest_hsd = $stmt_min_hsd->fetchColumn() ?: ($_POST['expiry_date'] ?: null);
+            $db->prepare("UPDATE inventory SET expiry_date = ? WHERE id = ?")->execute([$earliest_hsd, $id]);
+
             // Cộng vào Kho Tổng
             $db->prepare("INSERT INTO inventory_stocks (warehouse_id, ingredient_id, quantity) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE quantity = quantity + ?")
                 ->execute([$main_warehouse_id, $id, $qty, $qty]);
@@ -172,6 +202,9 @@ if (isset($_POST['action'])) {
 
             $db->prepare("UPDATE inventory_stocks SET quantity = quantity - ? WHERE warehouse_id = ? AND ingredient_id = ?")->execute([$qty, $w_id, $id]);
             
+            // TRỪ KHO THEO LÔ (FEFO)
+            deductStockFEFO($db, $id, $w_id, $qty, $current_user, $_POST['action']);
+
             // CỘNG VÀO KHO ẢO (Kho Xuất ID: 6 hoặc Kho Hủy ID: 7) để theo dõi tổng quát
             $virtual_w_id = ($_POST['action'] === 'export') ? 6 : 7;
             $db->prepare("INSERT INTO inventory_stocks (warehouse_id, ingredient_id, quantity) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE quantity = quantity + ?")
@@ -279,6 +312,18 @@ if (isset($_POST['action'])) {
         } elseif ($_POST['action'] === 'cancel_transfer') {
             $t_id = (int)$_POST['transfer_id'];
             $db->prepare("UPDATE inventory_transfers SET status = 'cancelled' WHERE id = ?")->execute([$t_id]);
+        } elseif ($_POST['action'] === 'get_batches') {
+            $id = (int)$_POST['item_id'];
+            $stmt = $db->prepare("
+                SELECT b.*, w.name as warehouse_name 
+                FROM inventory_batches b
+                JOIN warehouses w ON b.warehouse_id = w.id
+                WHERE b.ingredient_id = ? AND b.quantity > 0
+                ORDER BY (b.expiry_date IS NULL), b.expiry_date ASC
+            ");
+            $stmt->execute([$id]);
+            echo json_encode(['status' => 'success', 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
+            exit;
         }
 
         $db->commit();

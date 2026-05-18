@@ -1,6 +1,7 @@
 <?php
 include '../public/admin_layout_header.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/notification_helper.php';
 $db = (new Database())->getConnection();
 
 $total_foods = $total_users = $total_bookings = $selected_revenue = 0;
@@ -49,6 +50,8 @@ $low_stock_count = 0;
 $expiry_warn_count = 0;
 $trend_pct = 0;
 $trend_up  = true;
+$absents   = [];
+$cur_year  = (int)date('Y');
 
 try {
     $total_foods = $db->query("SELECT COUNT(*) FROM foods")->fetchColumn() ?: 0;
@@ -99,28 +102,59 @@ try {
            AND expiry_date >= CURDATE()"
     )->fetchColumn();
 
-    // 4. Cảnh báo Vắng mặt hôm nay
-    $stmt_absent = $db->query("
-        SELECT e.full_name, s.shift_name 
-        FROM shift_assignments sa
-        JOIN employees e ON sa.employee_id = e.id
-        JOIN shifts s ON sa.shift_id = s.id
-        WHERE sa.work_date = CURRENT_DATE AND sa.status = 'absent'
-    ");
-    $absents = $stmt_absent->fetchAll(PDO::FETCH_ASSOC);
+    // 4. Cảnh báo Vắng mặt hôm nay (Bọc try-catch riêng đề phòng thiếu bảng trong DB)
+    try {
+        $stmt_absent = $db->query("
+            SELECT e.full_name, s.shift_name 
+            FROM shift_assignments sa
+            JOIN employees e ON sa.employee_id = e.id
+            JOIN shifts s ON sa.shift_id = s.id
+            WHERE sa.work_date = CURRENT_DATE AND sa.status = 'absent'
+        ");
+        $absents = $stmt_absent->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        $absents = []; // Bảng chưa tồn tại hoặc lỗi query
+    }
 
+    // --- TỰ ĐỘNG GỬI TELEGRAM BUỔI SÁNG (Chạy 1 lần mỗi ngày khi Admin vào Dashboard) ---
+    $last_alert = $db->query("SELECT key_value FROM settings WHERE key_name = 'last_telegram_alert_date'")->fetchColumn();
+    $today_str = date('Y-m-d');
+    
+    if ($last_alert !== $today_str) {
+        $report_msg = generateMorningReport();
+        if ($report_msg) {
+            $sent = sendTelegramNotification($report_msg);
+            if ($sent) {
+                // Cập nhật ngày đã gửi để không gửi lại trong ngày hôm nay
+                $db->prepare("INSERT INTO settings (key_name, key_value) VALUES ('last_telegram_alert_date', ?) 
+                              ON DUPLICATE KEY UPDATE key_value = VALUES(key_value)")->execute([$today_str]);
+            }
+        }
+    }
+
+    // --- BÁO CÁO DOANH THU CUỐI NGÀY (TELEGRAM): sau giờ cấu hình, tối đa 1 lần/ngày khi có người vào Dashboard ---
+    $eod_enabled = ($db->query("SELECT key_value FROM settings WHERE key_name = 'telegram_eod_enabled'")->fetchColumn() ?? '1') === '1';
+    $last_eod = $db->query("SELECT key_value FROM settings WHERE key_name = 'last_telegram_eod_date'")->fetchColumn();
+    $eod_hour = getTelegramEodHour($db);
+    if ($eod_enabled && (int) date('G') >= $eod_hour && $last_eod !== $today_str) {
+        $eod_msg = generateEndOfDayRevenueReport($db, $today_str);
+        $sent_eod = sendTelegramNotification($eod_msg);
+        if ($sent_eod) {
+            $db->prepare("INSERT INTO settings (key_name, key_value) VALUES ('last_telegram_eod_date', ?)
+                          ON DUPLICATE KEY UPDATE key_value = VALUES(key_value)")->execute([$today_str]);
+        }
+    }
     // Tính % tăng/giảm so với tháng trước (cho badge trend)
     $cur_m  = (int)date('m');
-    $cur_y  = (int)date('Y');
     $prev_m = $cur_m === 1 ? 12 : $cur_m - 1;
-    $prev_y = $cur_m === 1 ? $cur_y - 1 : $cur_y;
+    $prev_y = $cur_m === 1 ? $cur_year - 1 : $cur_year;
 
     $stmt_prev = $db->prepare("SELECT IFNULL(SUM(total_amount),0) FROM service_bookings WHERE status != 'Cancelled' AND MONTH(created_at)=? AND YEAR(created_at)=?");
     $stmt_prev->execute([$prev_m, $prev_y]);
     $prev_month_revenue = (float)$stmt_prev->fetchColumn();
 
     $stmt_this = $db->prepare("SELECT IFNULL(SUM(total_amount),0) FROM service_bookings WHERE status != 'Cancelled' AND MONTH(created_at)=? AND YEAR(created_at)=?");
-    $stmt_this->execute([$cur_m, $cur_y]);
+    $stmt_this->execute([$cur_m, $cur_year]);
     $this_month_rev = (float)$stmt_this->fetchColumn();
 
     if ($prev_month_revenue > 0) {
