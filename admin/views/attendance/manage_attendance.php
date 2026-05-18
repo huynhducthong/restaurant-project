@@ -106,7 +106,7 @@ $unassigned = $stmt_un->fetchAll(PDO::FETCH_ASSOC);
                             <?php endif; ?>
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-light" onclick="editTime(<?= $row['id'] ?>)"><i
+                            <button class="btn btn-sm btn-light" onclick="editTime(<?= $row['id'] ?>, '<?= $row['check_in'] ?? '' ?>', '<?= $row['check_out'] ?? '' ?>')" title="Sửa giờ chấm công thủ công"><i
                                     class="fas fa-pencil-alt"></i></button>
                         </td>
                     </tr>
@@ -115,6 +115,9 @@ $unassigned = $stmt_un->fetchAll(PDO::FETCH_ASSOC);
         </table>
     </div>
 </div>
+<!-- SCRIPTS DEPS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     function approve(id, action) {
@@ -157,8 +160,28 @@ $unassigned = $stmt_un->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
 <script>
-function editTime(id) {
+function editTime(id, checkIn, checkOut) {
     $('#edit_assignment_id').val(id);
+    
+    // Convert SQL datetime 'YYYY-MM-DD HH:MM:SS' to 'YYYY-MM-DDTHH:MM' for input type="datetime-local"
+    if (checkIn && checkIn !== 'null' && checkIn !== '') {
+        let formattedCheckIn = checkIn.replace(' ', 'T').substring(0, 16);
+        $('#edit_check_in').val(formattedCheckIn);
+    } else {
+        // If not checked in, prefill with today's date + current time
+        let now = new Date();
+        let tzoffset = now.getTimezoneOffset() * 60000; 
+        let localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 16);
+        $('#edit_check_in').val(localISOTime);
+    }
+
+    if (checkOut && checkOut !== 'null' && checkOut !== '') {
+        let formattedCheckOut = checkOut.replace(' ', 'T').substring(0, 16);
+        $('#edit_check_out').val(formattedCheckOut);
+    } else {
+        $('#edit_check_out').val('');
+    }
+
     const modal = new bootstrap.Modal(document.getElementById('modalEditTime'));
     modal.show();
 }
@@ -174,3 +197,8 @@ $('#formEditTime').submit(function(e) {
     }, 'json');
 });
 </script>
+
+</div> <!-- Closing content-area -->
+</div> <!-- Closing main-wrapper -->
+</body>
+</html>

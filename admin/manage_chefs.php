@@ -1,7 +1,7 @@
 <?php
 ob_start();
 include '../public/admin_layout_header.php';
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/csrf.php';
 
 $db = (new Database())->getConnection();
 $message_success = '';
@@ -9,72 +9,76 @@ $message_error = '';
 
 // Handle POST actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? '';
-    
-    if ($action === 'create' || $action === 'edit') {
-        $id = $_POST['id'] ?? null;
-        $name = trim($_POST['name'] ?? '');
-        $position = trim($_POST['position'] ?? '');
-        $experience = (int)($_POST['experience'] ?? 0);
-        $specialty = trim($_POST['specialty'] ?? '');
-        $description = trim($_POST['description'] ?? '');
-        $quote = trim($_POST['quote'] ?? '');
-        $facebook = trim($_POST['facebook'] ?? '');
-        $instagram = trim($_POST['instagram'] ?? '');
-        $email = trim($_POST['email'] ?? '');
-        $sort_order = (int)($_POST['sort_order'] ?? 0);
-        $is_active = isset($_POST['is_active']) ? 1 : 0;
-        $is_featured = isset($_POST['is_featured']) ? 1 : 0;
+    if (!verify_csrf()) {
+        $message_error = "Lỗi bảo mật (CSRF): Yêu cầu không hợp lệ! Vui lòng tải lại trang.";
+    } else {
+        $action = $_POST['action'] ?? '';
+        
+        if ($action === 'create' || $action === 'edit') {
+            $id = $_POST['id'] ?? null;
+            $name = trim($_POST['name'] ?? '');
+            $position = trim($_POST['position'] ?? '');
+            $experience = (int)($_POST['experience'] ?? 0);
+            $specialty = trim($_POST['specialty'] ?? '');
+            $description = trim($_POST['description'] ?? '');
+            $quote = trim($_POST['quote'] ?? '');
+            $facebook = trim($_POST['facebook'] ?? '');
+            $instagram = trim($_POST['instagram'] ?? '');
+            $email = trim($_POST['email'] ?? '');
+            $sort_order = (int)($_POST['sort_order'] ?? 0);
+            $is_active = isset($_POST['is_active']) ? 1 : 0;
+            $is_featured = isset($_POST['is_featured']) ? 1 : 0;
 
-        if (empty($name)) {
-            $message_error = "Vui lòng nhập họ tên đầu bếp.";
-        } else {
-            try {
-                // Xử lý upload ảnh
-                $image_name = null;
-                if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                    $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
-                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-                        $target_dir = "../public/assets/img/chefs/";
-                        if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
-                        $image_name = time() . '_' . uniqid() . '.' . $ext;
-                        move_uploaded_file($_FILES['image']['tmp_name'], $target_dir . $image_name);
-                    }
-                }
-
-                if ($action === 'create') {
-                    $stmt = $db->prepare("INSERT INTO chefs (name, position, image, experience, specialty, description, quote, facebook, instagram, email, is_active, is_featured, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                    if ($stmt->execute([$name, $position, $image_name, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order])) {
-                        $message_success = "Đã thêm đầu bếp thành công.";
-                    } else {
-                        $message_error = "Có lỗi xảy ra khi thêm đầu bếp: " . implode(" - ", $stmt->errorInfo());
-                    }
-                } else {
-                    if ($image_name) {
-                        $stmt = $db->prepare("UPDATE chefs SET name=?, position=?, image=?, experience=?, specialty=?, description=?, quote=?, facebook=?, instagram=?, email=?, is_active=?, is_featured=?, sort_order=? WHERE id=?");
-                        $success = $stmt->execute([$name, $position, $image_name, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $id]);
-                    } else {
-                        $stmt = $db->prepare("UPDATE chefs SET name=?, position=?, experience=?, specialty=?, description=?, quote=?, facebook=?, instagram=?, email=?, is_active=?, is_featured=?, sort_order=? WHERE id=?");
-                        $success = $stmt->execute([$name, $position, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $id]);
-                    }
-                    if ($success) {
-                        $message_success = "Cập nhật thông tin đầu bếp thành công.";
-                    } else {
-                        $message_error = "Có lỗi xảy ra khi cập nhật: " . implode(" - ", $stmt->errorInfo());
-                    }
-                }
-            } catch (PDOException $e) {
-                $message_error = "Lỗi Database: " . $e->getMessage();
-            }
-        }
-    } elseif ($action === 'delete') {
-        $id = $_POST['id'] ?? null;
-        if ($id) {
-            $stmt = $db->prepare("DELETE FROM chefs WHERE id = ?");
-            if ($stmt->execute([$id])) {
-                $message_success = "Đã xóa đầu bếp thành công.";
+            if (empty($name)) {
+                $message_error = "Vui lòng nhập họ tên đầu bếp.";
             } else {
-                $message_error = "Lỗi khi xóa đầu bếp.";
+                try {
+                    // Xử lý upload ảnh
+                    $image_name = null;
+                    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                        $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+                        if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                            $target_dir = "../public/assets/img/chefs/";
+                            if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
+                            $image_name = time() . '_' . uniqid() . '.' . $ext;
+                            move_uploaded_file($_FILES['image']['tmp_name'], $target_dir . $image_name);
+                        }
+                    }
+
+                    if ($action === 'create') {
+                        $stmt = $db->prepare("INSERT INTO chefs (name, position, image, experience, specialty, description, quote, facebook, instagram, email, is_active, is_featured, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        if ($stmt->execute([$name, $position, $image_name, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order])) {
+                            $message_success = "Đã thêm đầu bếp thành công.";
+                        } else {
+                            $message_error = "Có lỗi xảy ra khi thêm đầu bếp: " . implode(" - ", $stmt->errorInfo());
+                        }
+                    } else {
+                        if ($image_name) {
+                            $stmt = $db->prepare("UPDATE chefs SET name=?, position=?, image=?, experience=?, specialty=?, description=?, quote=?, facebook=?, instagram=?, email=?, is_active=?, is_featured=?, sort_order=? WHERE id=?");
+                            $success = $stmt->execute([$name, $position, $image_name, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $id]);
+                        } else {
+                            $stmt = $db->prepare("UPDATE chefs SET name=?, position=?, experience=?, specialty=?, description=?, quote=?, facebook=?, instagram=?, email=?, is_active=?, is_featured=?, sort_order=? WHERE id=?");
+                            $success = $stmt->execute([$name, $position, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $id]);
+                        }
+                        if ($success) {
+                            $message_success = "Cập nhật thông tin đầu bếp thành công.";
+                        } else {
+                            $message_error = "Có lỗi xảy ra khi cập nhật: " . implode(" - ", $stmt->errorInfo());
+                        }
+                    }
+                } catch (PDOException $e) {
+                    $message_error = "Lỗi Database: " . $e->getMessage();
+                }
+            }
+        } elseif ($action === 'delete') {
+            $id = $_POST['id'] ?? null;
+            if ($id) {
+                $stmt = $db->prepare("DELETE FROM chefs WHERE id = ?");
+                if ($stmt->execute([$id])) {
+                    $message_success = "Đã xóa đầu bếp thành công.";
+                } else {
+                    $message_error = "Lỗi khi xóa đầu bếp.";
+                }
             }
         }
     }
@@ -225,6 +229,7 @@ $chefs = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <form method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đầu bếp này? Dữ liệu không thể khôi phục.');">
+                                    <?= csrf_field() ?>
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="id" value="<?= $chef['id'] ?>">
                                     <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" title="Xóa">
@@ -269,6 +274,7 @@ $chefs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <div class="modal-body p-4 text-dark">
                 <form method="POST" id="chefForm" enctype="multipart/form-data">
+                    <?= csrf_field() ?>
                     <input type="hidden" name="action" id="formAction" value="create">
                     <input type="hidden" name="id" id="chefId">
                     
