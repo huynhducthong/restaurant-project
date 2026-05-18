@@ -5,7 +5,7 @@ session_start();
 
 // ✅ FIX: Xác thực session admin
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login.php');
+    header('Location: ../public/login.php');
     exit;
 }
 

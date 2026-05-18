@@ -10,7 +10,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // ✅ FIX: Đường dẫn login nhất quán với toàn project
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login.php');
+    header('Location: ../public/login.php');
     exit;
 }
 
