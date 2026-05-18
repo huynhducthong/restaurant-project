@@ -27,26 +27,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $generated = 0;
         foreach ($employees as $emp) {
-            // Tính tổng giờ làm việc
+            // Tính tổng số ngày công (ngày/ca làm việc thực tế đã được duyệt)
             $stmt_work = $db->prepare("
-                SELECT SUM(
-                    LEAST(
-                        TIMESTAMPDIFF(MINUTE, sa.check_in, sa.check_out), 
-                        TIMESTAMPDIFF(MINUTE, s.start_time, s.end_time)
-                    )
-                ) / 60 as total_hours
+                SELECT COUNT(sa.id) as work_days
                 FROM shift_assignments sa
-                JOIN shifts s ON sa.shift_id = s.id
                 WHERE sa.employee_id = ? 
                 AND sa.work_date BETWEEN ? AND ? 
                 AND sa.status = 'present' 
                 AND sa.approval_status = 'approved'
             ");
             $stmt_work->execute([$emp['id'], $start_date, $end_date]);
-            $total_hours = (float) $stmt_work->fetchColumn();
+            $work_days = (float) $stmt_work->fetchColumn();
 
-            // Lương tháng = (Lương cơ bản / 208 giờ chuẩn) * Số giờ thực tế đã duyệt
-            $base = ($emp['salary'] / 208) * $total_hours;
+            // Lương tháng = Lương theo ngày * Số ngày công thực tế đã duyệt
+            $base = $emp['salary'] * $work_days;
             $net = $base; 
 
             // Upsert
@@ -57,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     work_days = VALUES(work_days), 
                     net_salary = VALUES(base_salary) + allowance + bonus - deduction";
             $stmt_upsert = $db->prepare($sql);
-            if ($stmt_upsert->execute([$emp['id'], $calc_month, $calc_year, $base, $total_hours, $net])) {
+            if ($stmt_upsert->execute([$emp['id'], $calc_month, $calc_year, $base, $work_days, $net])) {
                 $generated++;
             }
         }
@@ -71,14 +65,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $bonus = floatval(str_replace(',', '', $_POST['bonus']));
         $deduction = floatval(str_replace(',', '', $_POST['deduction']));
 
-        $stmt = $db->prepare("SELECT base_salary FROM payrolls WHERE id = ?");
-        $stmt->execute([$payroll_id]);
-        $base_salary = $stmt->fetchColumn();
+        // Lấy lương ngày của nhân viên từ payrolls JOIN employees
+        $stmt_emp_sal = $db->prepare("
+            SELECT e.salary 
+            FROM payrolls p 
+            JOIN employees e ON p.employee_id = e.id 
+            WHERE p.id = ?
+        ");
+        $stmt_emp_sal->execute([$payroll_id]);
+        $daily_salary = floatval($stmt_emp_sal->fetchColumn());
 
+        $work_days = floatval($_POST['work_days'] ?? 0);
+        $base_salary = $daily_salary * $work_days;
+        
         $net_salary = $base_salary + $allowance + $bonus - $deduction;
 
-        $stmt_update = $db->prepare("UPDATE payrolls SET allowance = ?, bonus = ?, deduction = ?, net_salary = ? WHERE id = ?");
-        if ($stmt_update->execute([$allowance, $bonus, $deduction, $net_salary, $payroll_id])) {
+        $stmt_update = $db->prepare("
+            UPDATE payrolls 
+            SET work_days = ?, base_salary = ?, allowance = ?, bonus = ?, deduction = ?, net_salary = ? 
+            WHERE id = ?
+        ");
+        if ($stmt_update->execute([$work_days, $base_salary, $allowance, $bonus, $deduction, $net_salary, $payroll_id])) {
             $message_success = "Đã cập nhật bảng lương thành công.";
         } else {
             $message_error = "Có lỗi xảy ra khi cập nhật.";
@@ -191,7 +198,7 @@ foreach ($payrolls as $p) {
                 <thead class="bg-light text-muted" style="font-size: 0.85rem; text-transform: uppercase;">
                     <tr>
                         <th class="ps-4">Nhân viên</th>
-                        <th class="text-center">Số giờ làm</th>
+                        <th class="text-center">Ngày công</th>
                         <th class="text-end">Lương cơ bản</th>
                         <th class="text-end">Thưởng/Phụ cấp</th>
                         <th class="text-end">Khấu trừ</th>
@@ -215,12 +222,12 @@ foreach ($payrolls as $p) {
                         <tr>
                             <td class="ps-4">
                                 <div class="fw-bold text-dark"><?= htmlspecialchars($p['full_name']) ?></div>
-                                <div class="text-muted small"><?= htmlspecialchars($p['position']) ?> • Lương HĐ:
+                                <div class="text-muted small"><?= htmlspecialchars($p['position']) ?> • Lương ngày:
                                     <?= number_format($p['contract_salary']) ?>đ
                                 </div>
                             </td>
                             <td class="text-center fw-bold text-primary">
-                                <?= number_format($p['work_days'], 1) ?> Giờ
+                                <?= number_format($p['work_days'], 1) ?> Ngày
                             </td>
                             <td class="text-end fw-medium">
                                 <?= number_format($p['base_salary']) ?> đ
@@ -294,6 +301,13 @@ foreach ($payrolls as $p) {
 
                     <div class="row g-3">
                         <div class="col-12">
+                            <label class="form-label fw-bold text-primary">Số ngày công thực tế</label>
+                            <div class="input-group">
+                                <input type="number" step="0.1" class="form-control text-end" name="work_days" id="modalWorkDays"
+                                    value="0" required>
+                                <span class="input-group-text">Ngày</span>
+                            </div>
+                        </div>
                             <label class="form-label fw-bold">Tiền Phụ cấp (+)</label>
                             <div class="input-group">
                                 <input type="number" class="form-control text-end" name="allowance" id="modalAllowance"
@@ -348,6 +362,7 @@ foreach ($payrolls as $p) {
         let formatter = new Intl.NumberFormat('vi-VN');
         document.getElementById('modalBaseSalary').innerText = formatter.format(data.base_salary) + ' đ';
 
+        document.getElementById('modalWorkDays').value = parseFloat(data.work_days);
         document.getElementById('modalAllowance').value = Math.round(data.allowance);
         document.getElementById('modalBonus').value = Math.round(data.bonus);
         document.getElementById('modalDeduction').value = Math.round(data.deduction);

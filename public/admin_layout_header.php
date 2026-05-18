@@ -14,7 +14,7 @@ $user_role = $_SESSION['role'] ?? '';
 $allowed_roles = ['admin', 'staff', 'waiter', 'chef', 'cashier', 1, 2];
 
 if (!$user_id || !in_array($user_role, $allowed_roles)) {
-    header("Location: /restaurant-project/login.php?error=access_denied");
+    header("Location: /restaurant-project/public/login.php?error=access_denied");
     exit();
 }
 
@@ -464,6 +464,7 @@ try {
                     </a>
                 </li>
 
+                <?php /*
                 <li class="<?= isActive('manage_shifts.php') ?>">
                     <a href="/restaurant-project/admin/manage_shifts.php">
                         <i class="fas fa-calendar-alt"></i>
@@ -477,6 +478,7 @@ try {
                         Kiểm tra Chấm công
                     </a>
                 </li>
+                */ ?>
 
                 <li class="<?= isActive('manage_payroll.php') ?>">
                     <a href="/restaurant-project/admin/manage_payroll.php">
@@ -494,7 +496,7 @@ try {
 
             <?php endif; ?>
 
-            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'staff'): ?>
+            <?php /* if (isset($_SESSION['role']) && $_SESSION['role'] === 'staff'): ?>
                 <div class="menu-header">Nhân sự & Chấm công</div>
                 <li>
                     <a href="/restaurant-project/views/client/employee_dashboard.php">
@@ -502,7 +504,7 @@ try {
                         Lịch làm & Chấm công
                     </a>
                 </li>
-            <?php endif; ?>
+            <?php endif; */ ?>
 
         </ul>
 

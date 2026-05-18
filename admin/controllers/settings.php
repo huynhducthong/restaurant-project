@@ -2,7 +2,7 @@
 // ✅ FIX 1: Xác thực session admin (Phải nằm trên cùng)
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../../login.php'); exit;
+    header('Location: ../../public/login.php'); exit;
 }
 
 // KHÔNG ĐƯỢC INCLUDE GIAO DIỆN Ở ĐÂY.
