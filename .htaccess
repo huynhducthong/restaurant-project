@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /restaurant-project/
+
+    # 1. Nếu yêu cầu là file hoặc thư mục có thật (như admin, public, index.php)
+    # thì cho phép truy cập trực tiếp, không xử lý gì thêm
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # 2. Làm đẹp đường dẫn (Tùy chọn)
+    # Ví dụ: cho phép truy cập localhost/restaurant-project/menu thay vì menu.php
+    RewriteCond %{REQUEST_FILENAME}.php -f
+    RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+</IfModule>
