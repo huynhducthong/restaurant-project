@@ -1668,172 +1668,178 @@ INSERT INTO `warehouses` (`id`, `name`, `type`, `status`) VALUES
 (7, 'Kho Hủy (Hàng hỏng/Hết hạn)', '', 1);
 
 --
+--
+--
+--
+--
+--
 -- Chỉ mục cho các bảng đã đổ
 --
 
 --
--- Chỉ mục cho bảng `about_comments`
---
-ALTER TABLE `about_comments`
 -- Chỉ mục cho bảng `about_categories`
 --
-ALTER TABLE `about_categories`
-  ADD PRIMARY KEY (`id`);
-
---
--- Chỉ mục cho bảng `about_content`
---
-ALTER TABLE `about_content`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_content` (`content_id`),
-  ADD KEY `idx_author_ip` (`author_ip`);
+ALTER TABLE `about_categories` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `about_comment_bans`
 --
-ALTER TABLE `about_comment_bans`
--- Chỉ mục cho bảng `admins`
---
-ALTER TABLE `admins`
-  ADD PRIMARY KEY (`id`);
-
---
--- Chỉ mục cho bảng `banners`
---
-ALTER TABLE `banners`
-  ADD PRIMARY KEY (`id`);
-
---
--- Chỉ mục cho bảng `bookings`
---
-ALTER TABLE `bookings`
-  ADD PRIMARY KEY (`id`);
-
---
--- Chỉ mục cho bảng `booking_details`
---
-ALTER TABLE `booking_details`
-  ADD PRIMARY KEY (`id`),
+ALTER TABLE `about_comment_bans` ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_ip_ban` (`user_ip`),
   ADD UNIQUE KEY `unique_user_ban` (`user_id`);
 
 --
 -- Chỉ mục cho bảng `about_comment_likes`
 --
-ALTER TABLE `about_comment_likes`
--- Chỉ mục cho bảng `booking_inventory_deductions`
---
-ALTER TABLE `booking_inventory_deductions`
-  ADD PRIMARY KEY (`id`);
-
---
--- Chỉ mục cho bảng `books`
---
-ALTER TABLE `books`
-  ADD PRIMARY KEY (`id`);
-
---
--- Chỉ mục cho bảng `book_orders`
---
-ALTER TABLE `book_orders`
-  ADD PRIMARY KEY (`id`),
+ALTER TABLE `about_comment_likes` ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_like` (`comment_id`,`user_id`);
 
 --
 -- Chỉ mục cho bảng `about_comment_reports`
--- Chỉ mục cho bảng `book_order_items`
 --
-ALTER TABLE `about_comment_reports`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `about_comment_reports` ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `about_comments`
+--
+ALTER TABLE `about_comments` ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_content` (`content_id`),
+  ADD KEY `idx_author_ip` (`author_ip`);
+
+--
+-- Chỉ mục cho bảng `about_content`
+--
+ALTER TABLE `about_content` ADD PRIMARY KEY (`id`),
+  ADD KEY `category_id` (`category_id`);
 
 --
 -- Chỉ mục cho bảng `about_likes`
 --
-ALTER TABLE `about_likes`
-  ADD PRIMARY KEY (`id`),
+ALTER TABLE `about_likes` ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_like` (`content_id`,`user_ip`);
 
 --
 -- Chỉ mục cho bảng `about_saved_posts`
--- Chỉ mục cho bảng `categories`
 --
-ALTER TABLE `about_saved_posts`
-  ADD PRIMARY KEY (`id`),
+ALTER TABLE `about_saved_posts` ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `user_id` (`user_id`,`post_id`);
 
 --
 -- Chỉ mục cho bảng `about_shares`
--- Chỉ mục cho bảng `chefs`
 --
-ALTER TABLE `about_shares`
-  ADD PRIMARY KEY (`id`),
+ALTER TABLE `about_shares` ADD PRIMARY KEY (`id`),
   ADD KEY `idx_content` (`content_id`);
 
 --
--- Chỉ mục cho bảng `combos`
+-- Chỉ mục cho bảng `admins`
 --
-ALTER TABLE `combos`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `admins` ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `banners`
+--
+ALTER TABLE `banners` ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `book_order_items`
+--
+ALTER TABLE `book_order_items` ADD PRIMARY KEY (`id`),
+  ADD KEY `order_id` (`order_id`),
+  ADD KEY `book_id` (`book_id`);
+
+--
+-- Chỉ mục cho bảng `book_orders`
+--
+ALTER TABLE `book_orders` ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `order_code` (`order_code`),
+  ADD KEY `idx_book_orders_status` (`status`),
+  ADD KEY `idx_book_orders_created` (`created_at`);
+
+--
+-- Chỉ mục cho bảng `booking_details`
+--
+ALTER TABLE `booking_details` ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_booking_service` (`booking_id`);
+
+--
+-- Chỉ mục cho bảng `booking_inventory_deductions`
+--
+ALTER TABLE `booking_inventory_deductions` ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `bookings`
+--
+ALTER TABLE `bookings` ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `books`
+--
+ALTER TABLE `books` ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `categories`
+--
+ALTER TABLE `categories` ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `chefs`
+--
+ALTER TABLE `chefs` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `combo_items`
 --
-ALTER TABLE `combo_items`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `combo_items` ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `combos`
+--
+ALTER TABLE `combos` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `contacts`
 --
-ALTER TABLE `contacts`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `contacts` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `employees`
 --
-ALTER TABLE `employees`
-  ADD PRIMARY KEY (`id`);
-
---
--- Chỉ mục cho bảng `foods`
---
-ALTER TABLE `foods`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `employees` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `food_recipes`
 --
-ALTER TABLE `food_recipes`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `food_recipes` ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `foods`
+--
+ALTER TABLE `foods` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `footer_links`
 --
-ALTER TABLE `footer_links`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `footer_links` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `inventory`
 --
-ALTER TABLE `inventory`
-  ADD PRIMARY KEY (`id`);
-
---
--- Chỉ mục cho bảng `inventory_audits`
---
-ALTER TABLE `inventory_audits`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `inventory` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `inventory_audit_details`
 --
-ALTER TABLE `inventory_audit_details`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `inventory_audit_details` ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `inventory_audits`
+--
+ALTER TABLE `inventory_audits` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `inventory_batches`
 --
-ALTER TABLE `inventory_batches`
-  ADD PRIMARY KEY (`id`),
+ALTER TABLE `inventory_batches` ADD PRIMARY KEY (`id`),
   ADD KEY `ingredient_id` (`ingredient_id`),
   ADD KEY `warehouse_id` (`warehouse_id`),
   ADD KEY `expiry_date` (`expiry_date`);
@@ -1841,410 +1847,418 @@ ALTER TABLE `inventory_batches`
 --
 -- Chỉ mục cho bảng `inventory_categories`
 --
-ALTER TABLE `inventory_categories`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `inventory_categories` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `inventory_history`
 --
-ALTER TABLE `inventory_history`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `inventory_history` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `inventory_receipts`
 --
-ALTER TABLE `inventory_receipts`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `inventory_receipts` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `inventory_stocks`
 --
-ALTER TABLE `inventory_stocks`
-  ADD PRIMARY KEY (`id`),
+ALTER TABLE `inventory_stocks` ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `idx_wh_ing` (`warehouse_id`,`ingredient_id`);
 
 --
 -- Chỉ mục cho bảng `inventory_transfers`
 --
-ALTER TABLE `inventory_transfers`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `inventory_transfers` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `inventory_units`
 --
-ALTER TABLE `inventory_units`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `inventory_units` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `navigation_menu`
 --
-ALTER TABLE `navigation_menu`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `navigation_menu` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `newsletters`
 --
-ALTER TABLE `newsletters`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `newsletters` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `notifications`
 --
-ALTER TABLE `notifications`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `notifications` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `order_items`
 --
-ALTER TABLE `order_items`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `order_items` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `payrolls`
 --
-ALTER TABLE `payrolls`
-  ADD PRIMARY KEY (`id`),
+ALTER TABLE `payrolls` ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `employee_id` (`employee_id`,`month`,`year`);
 
 --
 -- Chỉ mục cho bảng `positions`
 --
-ALTER TABLE `positions`
-  ADD PRIMARY KEY (`id`);
-
---
--- Chỉ mục cho bảng `purchase_orders`
---
-ALTER TABLE `purchase_orders`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `positions` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `purchase_order_details`
 --
-ALTER TABLE `purchase_order_details`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `purchase_order_details` ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `purchase_orders`
+--
+ALTER TABLE `purchase_orders` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `restaurant_tables`
 --
-ALTER TABLE `restaurant_tables`
-  ADD PRIMARY KEY (`id`);
-
---
--- Chỉ mục cho bảng `services`
---
-ALTER TABLE `services`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `restaurant_tables` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `service_bookings`
 --
-ALTER TABLE `service_bookings`
-  ADD PRIMARY KEY (`id`),
+ALTER TABLE `service_bookings` ADD PRIMARY KEY (`id`),
   ADD KEY `fk_booking_user` (`user_id`);
+
+--
+-- Chỉ mục cho bảng `services`
+--
+ALTER TABLE `services` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `settings`
 --
-ALTER TABLE `settings`
-  ADD PRIMARY KEY (`key_name`);
-
---
--- Chỉ mục cho bảng `shifts`
---
-ALTER TABLE `shifts`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `settings` ADD PRIMARY KEY (`key_name`);
 
 --
 -- Chỉ mục cho bảng `shift_assignments`
 --
-ALTER TABLE `shift_assignments`
-  ADD PRIMARY KEY (`id`),
+ALTER TABLE `shift_assignments` ADD PRIMARY KEY (`id`),
   ADD KEY `employee_id` (`employee_id`),
   ADD KEY `shift_id` (`shift_id`);
 
 --
+-- Chỉ mục cho bảng `shifts`
+--
+ALTER TABLE `shifts` ADD PRIMARY KEY (`id`);
+
+--
 -- Chỉ mục cho bảng `suppliers`
 --
-ALTER TABLE `suppliers`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `suppliers` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `transfer_details`
 --
-ALTER TABLE `transfer_details`
-  ADD PRIMARY KEY (`id`);
-
---
--- Chỉ mục cho bảng `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `employee_id` (`employee_id`);
+ALTER TABLE `transfer_details` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `user_addresses`
 --
-ALTER TABLE `user_addresses`
-  ADD PRIMARY KEY (`id`),
+ALTER TABLE `user_addresses` ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
+
+--
+-- Chỉ mục cho bảng `users`
+--
+ALTER TABLE `users` ADD PRIMARY KEY (`id`),
+  ADD KEY `employee_id` (`employee_id`);
 
 --
 -- Chỉ mục cho bảng `videos`
 --
-ALTER TABLE `videos`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `videos` ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `warehouses`
 --
-ALTER TABLE `warehouses`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `warehouses` ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT cho các bảng đã đổ
 --
 
 --
--- AUTO_INCREMENT cho bảng `about_comments`
 -- AUTO_INCREMENT cho bảng `about_categories`
 --
-ALTER TABLE `about_comments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+ALTER TABLE `about_categories` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `about_comment_bans`
 --
-ALTER TABLE `about_comment_bans`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+ALTER TABLE `about_comment_bans` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `about_comment_likes`
 --
-ALTER TABLE `about_comment_likes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `about_comment_likes` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `about_comment_reports`
 --
-ALTER TABLE `about_comment_reports`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+ALTER TABLE `about_comment_reports` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT cho bảng `about_comments`
+--
+ALTER TABLE `about_comments` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+
+--
+-- AUTO_INCREMENT cho bảng `about_content`
+--
+ALTER TABLE `about_content` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `about_likes`
 --
-ALTER TABLE `about_likes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+ALTER TABLE `about_likes` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT cho bảng `about_saved_posts`
 --
-ALTER TABLE `about_saved_posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+ALTER TABLE `about_saved_posts` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `about_shares`
 --
-ALTER TABLE `about_shares`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=140;
+ALTER TABLE `about_shares` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=140;
+
+--
+-- AUTO_INCREMENT cho bảng `admins`
+--
+ALTER TABLE `admins` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `banners`
+--
+ALTER TABLE `banners` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT cho bảng `book_order_items`
+--
+ALTER TABLE `book_order_items` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT cho bảng `book_orders`
+--
+ALTER TABLE `book_orders` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT cho bảng `booking_details`
+--
+ALTER TABLE `booking_details` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT cho bảng `booking_inventory_deductions`
+--
+ALTER TABLE `booking_inventory_deductions` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT cho bảng `bookings`
+--
+ALTER TABLE `bookings` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `books`
+--
+ALTER TABLE `books` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT cho bảng `categories`
+--
+ALTER TABLE `categories` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT cho bảng `chefs`
+--
+ALTER TABLE `chefs` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `combo_items`
+--
+ALTER TABLE `combo_items` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `combos`
+--
+ALTER TABLE `combos` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `contacts`
+--
+ALTER TABLE `contacts` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `employees`
 --
-ALTER TABLE `employees`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT cho bảng `foods`
---
-ALTER TABLE `foods`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+ALTER TABLE `employees` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `food_recipes`
 --
-ALTER TABLE `food_recipes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+ALTER TABLE `food_recipes` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT cho bảng `foods`
+--
+ALTER TABLE `foods` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `footer_links`
 --
-ALTER TABLE `footer_links`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `footer_links` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `inventory`
 --
-ALTER TABLE `inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT cho bảng `inventory_audits`
---
-ALTER TABLE `inventory_audits`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+ALTER TABLE `inventory` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT cho bảng `inventory_audit_details`
 --
-ALTER TABLE `inventory_audit_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+ALTER TABLE `inventory_audit_details` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT cho bảng `inventory_audits`
+--
+ALTER TABLE `inventory_audits` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT cho bảng `inventory_batches`
 --
-ALTER TABLE `inventory_batches`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+ALTER TABLE `inventory_batches` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT cho bảng `inventory_categories`
 --
-ALTER TABLE `inventory_categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+ALTER TABLE `inventory_categories` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT cho bảng `inventory_history`
 --
-ALTER TABLE `inventory_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+ALTER TABLE `inventory_history` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT cho bảng `inventory_receipts`
 --
-ALTER TABLE `inventory_receipts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `inventory_receipts` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `inventory_stocks`
 --
-ALTER TABLE `inventory_stocks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+ALTER TABLE `inventory_stocks` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT cho bảng `inventory_transfers`
 --
-ALTER TABLE `inventory_transfers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+ALTER TABLE `inventory_transfers` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT cho bảng `inventory_units`
 --
-ALTER TABLE `inventory_units`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+ALTER TABLE `inventory_units` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT cho bảng `navigation_menu`
 --
-ALTER TABLE `navigation_menu`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `navigation_menu` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT cho bảng `newsletters`
 --
-ALTER TABLE `newsletters`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `newsletters` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `notifications`
 --
-ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `notifications` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `order_items`
 --
-ALTER TABLE `order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `order_items` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `payrolls`
 --
-ALTER TABLE `payrolls`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+ALTER TABLE `payrolls` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `positions`
 --
-ALTER TABLE `positions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
-
---
--- AUTO_INCREMENT cho bảng `purchase_orders`
---
-ALTER TABLE `purchase_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+ALTER TABLE `positions` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT cho bảng `purchase_order_details`
 --
-ALTER TABLE `purchase_order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+ALTER TABLE `purchase_order_details` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT cho bảng `purchase_orders`
+--
+ALTER TABLE `purchase_orders` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `restaurant_tables`
 --
-ALTER TABLE `restaurant_tables`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
-
---
--- AUTO_INCREMENT cho bảng `services`
---
-ALTER TABLE `services`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `restaurant_tables` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT cho bảng `service_bookings`
 --
-ALTER TABLE `service_bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+ALTER TABLE `service_bookings` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT cho bảng `shifts`
+-- AUTO_INCREMENT cho bảng `services`
 --
-ALTER TABLE `shifts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+ALTER TABLE `services` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `shift_assignments`
 --
-ALTER TABLE `shift_assignments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+ALTER TABLE `shift_assignments` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT cho bảng `shifts`
+--
+ALTER TABLE `shifts` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `suppliers`
 --
-ALTER TABLE `suppliers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+ALTER TABLE `suppliers` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `transfer_details`
 --
-ALTER TABLE `transfer_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
-
---
--- AUTO_INCREMENT cho bảng `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+ALTER TABLE `transfer_details` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT cho bảng `user_addresses`
 --
-ALTER TABLE `user_addresses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `user_addresses` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `users`
+--
+ALTER TABLE `users` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT cho bảng `videos`
 --
-ALTER TABLE `videos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+ALTER TABLE `videos` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `warehouses`
 --
-ALTER TABLE `warehouses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+ALTER TABLE `warehouses` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
@@ -2253,40 +2267,35 @@ ALTER TABLE `warehouses`
 --
 -- Các ràng buộc cho bảng `book_order_items`
 --
-ALTER TABLE `book_order_items`
-  ADD CONSTRAINT `book_order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `book_orders` (`id`) ON DELETE CASCADE,
+ALTER TABLE `book_order_items` ADD CONSTRAINT `book_order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `book_orders` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `book_order_items_ibfk_2` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`);
 
 --
 -- Các ràng buộc cho bảng `payrolls`
 --
-ALTER TABLE `payrolls`
-  ADD CONSTRAINT `payrolls_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE;
+ALTER TABLE `payrolls` ADD CONSTRAINT `payrolls_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `service_bookings`
 --
-ALTER TABLE `service_bookings`
-  ADD CONSTRAINT `fk_booking_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+ALTER TABLE `service_bookings` ADD CONSTRAINT `fk_booking_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
 -- Các ràng buộc cho bảng `shift_assignments`
 --
-ALTER TABLE `shift_assignments`
-  ADD CONSTRAINT `shift_assignments_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE,
+ALTER TABLE `shift_assignments` ADD CONSTRAINT `shift_assignments_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `shift_assignments_ibfk_2` FOREIGN KEY (`shift_id`) REFERENCES `shifts` (`id`) ON DELETE CASCADE;
-
---
--- Các ràng buộc cho bảng `users`
---
-ALTER TABLE `users`
-  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE SET NULL;
 
 --
 -- Các ràng buộc cho bảng `user_addresses`
 --
-ALTER TABLE `user_addresses`
-  ADD CONSTRAINT `user_addresses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+ALTER TABLE `user_addresses` ADD CONSTRAINT `user_addresses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `users`
+--
+ALTER TABLE `users` ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE SET NULL;
+
 SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;
 
