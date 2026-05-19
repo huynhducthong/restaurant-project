@@ -446,10 +446,10 @@ INSERT INTO `booking_details` (`id`, `booking_id`, `menu_id`, `item_type`, `quan
 (2, 2, 1, 'food', 1, 0.00, '2026-05-13 08:18:22'),
 (3, 3, 1, 'food', 1, 400000.00, '2026-05-14 10:00:00'),
 (4, 3, 2, 'food', 1, 120000.00, '2026-05-14 10:00:00'),
-(0, 5, 1, 'food', 1, 0.00, '2026-05-14 15:07:47'),
-(0, 5, 2, 'food', 1, 0.00, '2026-05-14 15:07:47'),
-(0, 5, 1, 'food', 1, 0.00, '2026-05-14 15:07:47'),
-(0, 5, 2, 'food', 1, 0.00, '2026-05-14 15:07:47');
+(5, 5, 1, 'food', 1, 0.00, '2026-05-14 15:07:47'),
+(6, 5, 2, 'food', 1, 0.00, '2026-05-14 15:07:47'),
+(7, 5, 1, 'food', 1, 0.00, '2026-05-14 15:07:47'),
+(8, 5, 2, 'food', 1, 0.00, '2026-05-14 15:07:47');
 
 -- --------------------------------------------------------
 
@@ -589,16 +589,26 @@ CREATE TABLE `chefs` (
   `id` int(11) NOT NULL,
   `name` varchar(100) DEFAULT NULL,
   `position` varchar(100) DEFAULT NULL,
-  `image` varchar(255) DEFAULT NULL
+  `image` varchar(255) DEFAULT NULL,
+  `experience` int(11) DEFAULT 0,
+  `specialty` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `quote` varchar(255) DEFAULT NULL,
+  `facebook` varchar(255) DEFAULT NULL,
+  `instagram` varchar(255) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `is_featured` tinyint(1) NOT NULL DEFAULT 0,
+  `sort_order` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `chefs`
 --
 
-INSERT INTO `chefs` (`id`, `name`, `position`, `image`) VALUES
-(1, 'Chef Minh', 'Bếp trưởng', NULL),
-(2, 'Chef Lan', 'Bếp phó', NULL);
+INSERT INTO `chefs` (`id`, `name`, `position`, `image`, `experience`, `specialty`, `description`, `quote`, `facebook`, `instagram`, `email`, `is_active`, `is_featured`, `sort_order`) VALUES
+(1, 'Chef Minh', 'Bếp trưởng', NULL, 10, 'Ẩm thực Việt Nam', 'Hơn 10 năm kinh nghiệm đứng bếp và sáng tạo ẩm thực truyền thống.', 'Mỗi món ăn là một câu chuyện.', '', '', 'minhchef@gmail.com', 1, 1, 1),
+(2, 'Chef Lan', 'Bếp phó', NULL, 8, 'Bánh & Tráng miệng', 'Chuyên gia thiết kế các món tráng miệng ngọt ngào, tinh tế.', 'Vị ngọt thanh tao chạm đến cảm xúc.', '', '', 'lanchef@gmail.com', 1, 0, 2);
 
 -- --------------------------------------------------------
 
@@ -1594,13 +1604,6 @@ INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `avatar`, `avata
 (6, 'Long Hoang', '', '', NULL, NULL, NULL, NULL, NULL, 'hoanglongduongle@gmail.com', '109729244014013210980', 'admin', 1, '2026-05-14 09:27:18', 3),
 (7, 'fatqua_65', '$2y$10$cxk4RfLDH/o.SwbYVnuE.OOPVrNbNvzG2cHEsAxELE7fV15612GF.', 'Le Huu Thuan Fat', NULL, NULL, NULL, '', NULL, 'fatqua@gmail.com', NULL, 'staff', 1, '2026-05-14 10:37:08', 1),
 (8, '28huynhducthong_10', '$2y$10$OLjEsWZxLXBx/uF6KU1PC.1.kDg1sO52SqzXUIdJwhllJe4ZOGdSW', 'Huynh Duc Thon', NULL, NULL, NULL, '0901 234 567', NULL, '28huynhducthong@gmail.com', NULL, 'chef', 1, '2026-05-14 13:51:48', 2);
-INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `avatar`, `phone`, `birthday`, `email`, `google_id`, `role`, `is_active`, `created_at`, `employee_id`) VALUES
-(2, 'Huỳnh Đức Thông', '$2y$10$yTpo6mWnwfw2msba4HE14udXlMi6DoB7Sv.G0S7qhVUFzHboPjzum', 'Quản trị viên', NULL, NULL, NULL, '28huynhducthong@gmail.com', '107664704264935131673', 'admin', 1, '2026-05-06 10:49:37', 2),
-(4, 'Thong Duc', '', '', NULL, NULL, NULL, 'thongd342@gmail.com', '100631379832642815829', '', 1, '2026-05-06 15:59:00', NULL),
-(5, 'Huỳnh Dương', '', '', NULL, NULL, NULL, 'www.huynhqduong@gmail.com', '112739013180770480868', 'admin', 1, '2026-05-09 21:03:14', 3),
-(6, 'Long Hoang', '', '', NULL, NULL, NULL, 'hoanglongduongle@gmail.com', '109729244014013210980', 'admin', 1, '2026-05-14 09:27:18', 3),
-(7, 'fatqua_65', '$2y$10$cxk4RfLDH/o.SwbYVnuE.OOPVrNbNvzG2cHEsAxELE7fV15612GF.', 'Le Huu Thuan Fat', NULL, '', NULL, 'fatqua@gmail.com', NULL, 'staff', 1, '2026-05-14 10:37:08', 1),
-(8, '28huynhducthong_10', '$2y$10$OLjEsWZxLXBx/uF6KU1PC.1.kDg1sO52SqzXUIdJwhllJe4ZOGdSW', 'Huynh Duc Thon', NULL, '0901 234 567', NULL, '28huynhducthong@gmail.com', NULL, 'chef', 1, '2026-05-14 13:51:48', 2);
 
 -- --------------------------------------------------------
 
