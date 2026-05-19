@@ -174,7 +174,7 @@ $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <th class="ps-4">Nhân sự</th>
                         <th>Liên hệ</th>
                         <th>Vị trí</th>
-                        <th>Mức lương</th>
+                        <th>Lương ngày</th>
                         <th>Trạng thái</th>
                         <th class="text-end pe-4">Thao tác</th>
                     </tr>
@@ -214,7 +214,7 @@ $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <div class="fw-medium"><?= htmlspecialchars($emp['position'] ?: 'Chưa cập nhật') ?></div>
                             </td>
                             <td>
-                                <div class="fw-bold text-success"><?= number_format($emp['salary']) ?>đ</div>
+                                <div class="fw-bold text-success"><?= number_format($emp['salary']) ?>đ/ngày</div>
                             </td>
                             <td>
                                 <?php if ($emp['status'] === 'working'): ?>
@@ -330,7 +330,7 @@ $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-bold">Mức lương cơ bản</label>
+                            <label class="form-label fw-bold">Mức lương theo ngày</label>
                             <div class="input-group">
                                 <input type="number" class="form-control" name="salary" id="empSalary" value="0">
                                 <span class="input-group-text">VNĐ</span>

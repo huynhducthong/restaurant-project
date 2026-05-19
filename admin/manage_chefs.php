@@ -1,466 +1,447 @@
 <?php
+ob_start();
 include '../public/admin_layout_header.php';
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../config/csrf.php'; // BỔ SUNG: Import thư viện chống CSRF
+require_once __DIR__ . '/../config/csrf.php';
 
 $db = (new Database())->getConnection();
-$message = "";
+$message_success = '';
+$message_error = '';
 
-// ============================================================
-// 2. XỬ LÝ XÓA
-// ============================================================
-if (isset($_GET['delete'])) {
-    $del_id = (int) $_GET['delete'];
-    $stmt_img = $db->prepare("SELECT image FROM chefs WHERE id = ?");
-    $stmt_img->execute([$del_id]);
-    $old_img = $stmt_img->fetchColumn();
-    if ($old_img && file_exists("../public/assets/img/chefs/" . $old_img)) {
-        unlink("../public/assets/img/chefs/" . $old_img);
-    }
-    $db->prepare("DELETE FROM chefs WHERE id = ?")->execute([$del_id]);
-    $message = "<div class='alert alert-success'><i class='fas fa-check-circle me-2'></i>Đã xóa hồ sơ đầu bếp thành công!</div>";
-}
-
-// ============================================================
-// 3. XỬ LÝ BẬT/TẮT HIỂN THỊ
-// ============================================================
-if (isset($_GET['toggle']) && isset($_GET['field'])) {
-    $tog_id = (int) $_GET['toggle'];
-    $tog_field = in_array($_GET['field'], ['is_active', 'is_featured']) ? $_GET['field'] : 'is_active';
-    $db->prepare("UPDATE chefs SET $tog_field = 1 - $tog_field WHERE id = ?")->execute([$tog_id]);
-    header("Location: manage_chefs.php");
-    exit;
-}
-
-// ============================================================
-// 4. LẤY DỮ LIỆU ĐỂ SỬA
-// ============================================================
-$edit_data = null;
-if (isset($_GET['edit'])) {
-    $edit_id = (int) $_GET['edit'];
-    $stmt_e = $db->prepare("SELECT * FROM chefs WHERE id = ?");
-    $stmt_e->execute([$edit_id]);
-    $edit_data = $stmt_e->fetch(PDO::FETCH_ASSOC);
-}
-
-// ============================================================
-// 5. XỬ LÝ LƯU (THÊM / SỬA)
-// ============================================================
-if (isset($_POST['btn_save'])) {
-    // BỔ SUNG: Kiểm tra CSRF Token
+// Handle POST actions
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf()) {
-        $message = "<div class='alert alert-danger'><i class='fas fa-shield-alt me-2'></i>Lỗi bảo mật (CSRF): Yêu cầu không hợp lệ! Vui lòng tải lại trang.</div>";
+        $message_error = "Lỗi bảo mật (CSRF): Yêu cầu không hợp lệ! Vui lòng tải lại trang.";
     } else {
-        $chef_id = !empty($_POST['chef_id']) ? (int) $_POST['chef_id'] : null;
-        $name = trim($_POST['name'] ?? '');
-        $position = trim($_POST['position'] ?? '');
-        $experience = (int) ($_POST['experience'] ?? 0);
-        $specialty = trim($_POST['specialty'] ?? '');
-        $description = trim($_POST['description'] ?? '');
-        $quote = trim($_POST['quote'] ?? '');
-        $facebook = trim($_POST['facebook'] ?? '');
-        $instagram = trim($_POST['instagram'] ?? '');
-        $email = trim($_POST['email'] ?? '');
-        $is_active = isset($_POST['is_active']) ? 1 : 0;
-        $is_featured = isset($_POST['is_featured']) ? 1 : 0;
-        $sort_order = (int) ($_POST['sort_order'] ?? 0);
-        $image_name = trim($_POST['old_image'] ?? '');
+        $action = $_POST['action'] ?? '';
+        
+        if ($action === 'create' || $action === 'edit') {
+            $id = $_POST['id'] ?? null;
+            $name = trim($_POST['name'] ?? '');
+            $position = trim($_POST['position'] ?? '');
+            $experience = (int)($_POST['experience'] ?? 0);
+            $specialty = trim($_POST['specialty'] ?? '');
+            $description = trim($_POST['description'] ?? '');
+            $quote = trim($_POST['quote'] ?? '');
+            $facebook = trim($_POST['facebook'] ?? '');
+            $instagram = trim($_POST['instagram'] ?? '');
+            $email = trim($_POST['email'] ?? '');
+            $sort_order = (int)($_POST['sort_order'] ?? 0);
+            $is_active = isset($_POST['is_active']) ? 1 : 0;
+            $is_featured = isset($_POST['is_featured']) ? 1 : 0;
 
-        // Upload ảnh
-        if (!empty($_FILES['chef_image']['name'])) {
-            $target_dir = "../public/assets/img/chefs/";
-            if (!is_dir($target_dir))
-                mkdir($target_dir, 0777, true);
-            $new_file = time() . '_' . basename($_FILES['chef_image']['name']);
-            if (move_uploaded_file($_FILES['chef_image']['tmp_name'], $target_dir . $new_file)) {
-                if ($image_name && file_exists($target_dir . $image_name))
-                    unlink($target_dir . $image_name);
-                $image_name = $new_file;
-            }
-        }
-
-        try {
-            if ($chef_id) {
-                $sql = "UPDATE chefs SET name=:n, position=:p, image=:img, experience=:exp,
-                            specialty=:sp, description=:desc, quote=:q, facebook=:fb, instagram=:ig,
-                            email=:em, is_active=:ia, is_featured=:if2, sort_order=:so WHERE id=:id";
-                $params = [
-                    ':n' => $name,
-                    ':p' => $position,
-                    ':img' => $image_name,
-                    ':exp' => $experience,
-                    ':sp' => $specialty,
-                    ':desc' => $description,
-                    ':q' => $quote,
-                    ':fb' => $facebook,
-                    ':ig' => $instagram,
-                    ':em' => $email,
-                    ':ia' => $is_active,
-                    ':if2' => $is_featured,
-                    ':so' => $sort_order,
-                    ':id' => $chef_id
-                ];
-                $db->prepare($sql)->execute($params);
-                $message = "<div class='alert alert-success'><i class='fas fa-check-circle me-2'></i>Cập nhật hồ sơ đầu bếp thành công!</div>";
+            if (empty($name)) {
+                $message_error = "Vui lòng nhập họ tên đầu bếp.";
             } else {
-                $sql = "INSERT INTO chefs (name,position,image,experience,specialty,description,quote,
-                            facebook,instagram,email,is_active,is_featured,sort_order)
-                        VALUES (:n,:p,:img,:exp,:sp,:desc,:q,:fb,:ig,:em,:ia,:if2,:so)";
-                $params = [
-                    ':n' => $name,
-                    ':p' => $position,
-                    ':img' => $image_name,
-                    ':exp' => $experience,
-                    ':sp' => $specialty,
-                    ':desc' => $description,
-                    ':q' => $quote,
-                    ':fb' => $facebook,
-                    ':ig' => $instagram,
-                    ':em' => $email,
-                    ':ia' => $is_active,
-                    ':if2' => $is_featured,
-                    ':so' => $sort_order
-                ];
-                $db->prepare($sql)->execute($params);
-                $message = "<div class='alert alert-success'><i class='fas fa-check-circle me-2'></i>Thêm đầu bếp mới thành công!</div>";
+                try {
+                    // Xử lý upload ảnh
+                    $image_name = null;
+                    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                        $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+                        if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                            $target_dir = "../public/assets/img/chefs/";
+                            if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
+                            $image_name = time() . '_' . uniqid() . '.' . $ext;
+                            move_uploaded_file($_FILES['image']['tmp_name'], $target_dir . $image_name);
+                        }
+                    }
+
+                    if ($action === 'create') {
+                        $stmt = $db->prepare("INSERT INTO chefs (name, position, image, experience, specialty, description, quote, facebook, instagram, email, is_active, is_featured, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        if ($stmt->execute([$name, $position, $image_name, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order])) {
+                            $message_success = "Đã thêm đầu bếp thành công.";
+                        } else {
+                            $message_error = "Có lỗi xảy ra khi thêm đầu bếp: " . implode(" - ", $stmt->errorInfo());
+                        }
+                    } else {
+                        if ($image_name) {
+                            $stmt = $db->prepare("UPDATE chefs SET name=?, position=?, image=?, experience=?, specialty=?, description=?, quote=?, facebook=?, instagram=?, email=?, is_active=?, is_featured=?, sort_order=? WHERE id=?");
+                            $success = $stmt->execute([$name, $position, $image_name, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $id]);
+                        } else {
+                            $stmt = $db->prepare("UPDATE chefs SET name=?, position=?, experience=?, specialty=?, description=?, quote=?, facebook=?, instagram=?, email=?, is_active=?, is_featured=?, sort_order=? WHERE id=?");
+                            $success = $stmt->execute([$name, $position, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $id]);
+                        }
+                        if ($success) {
+                            $message_success = "Cập nhật thông tin đầu bếp thành công.";
+                        } else {
+                            $message_error = "Có lỗi xảy ra khi cập nhật: " . implode(" - ", $stmt->errorInfo());
+                        }
+                    }
+                } catch (PDOException $e) {
+                    $message_error = "Lỗi Database: " . $e->getMessage();
+                }
             }
-            $edit_data = null;
-        } catch (Exception $e) {
-            $message = "<div class='alert alert-danger'><i class='fas fa-exclamation-circle me-2'></i>Lỗi: " . $e->getMessage() . "</div>";
+        } elseif ($action === 'delete') {
+            $id = $_POST['id'] ?? null;
+            if ($id) {
+                $stmt = $db->prepare("DELETE FROM chefs WHERE id = ?");
+                if ($stmt->execute([$id])) {
+                    $message_success = "Đã xóa đầu bếp thành công.";
+                } else {
+                    $message_error = "Lỗi khi xóa đầu bếp.";
+                }
+            }
         }
     }
 }
 
-// ============================================================
-// 6. LẤY DANH SÁCH HIỂN THỊ
-// ============================================================
-$chefs = $db->query("SELECT * FROM chefs ORDER BY is_featured DESC, sort_order ASC, id DESC")->fetchAll(PDO::FETCH_ASSOC);
+// Filter & Pagination
+$search = $_GET['search'] ?? '';
+$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$limit = 10;
+$offset = ($page - 1) * $limit;
+
+$where = ["1=1"];
+$params = [];
+
+if ($search) {
+    $where[] = "(name LIKE ? OR position LIKE ? OR specialty LIKE ?)";
+    $search_param = "%$search%";
+    $params = array_fill(0, 3, $search_param);
+}
+
+$where_clause = implode(" AND ", $where);
+
+// Count records
+$stmt_count = $db->prepare("SELECT COUNT(*) FROM chefs WHERE $where_clause");
+$stmt_count->execute($params);
+$total_records = $stmt_count->fetchColumn();
+$total_pages = ceil($total_records / $limit);
+
+// Fetch data
+$sql = "SELECT * FROM chefs WHERE $where_clause ORDER BY sort_order ASC, id DESC LIMIT $limit OFFSET $offset";
+$stmt = $db->prepare($sql);
+$stmt->execute($params);
+$chefs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <style>
-    .chef-card-thumb {
-        width: 54px;
-        height: 54px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #cda45e;
-    }
-
-    .chef-placeholder {
-        width: 54px;
-        height: 54px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #2c3e50, #cda45e);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        font-size: 1.4rem;
-    }
-
-    .badge-featured {
-        background: #cda45e;
-        color: #fff;
-    }
-
-    .table th {
-        background: #2c3e50;
-        color: #ecf0f1;
-    }
-
-    .section-card {
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, .08);
-        padding: 28px;
-    }
-
-    .form-label {
-        font-weight: 600;
-        color: #2c3e50;
-    }
-
-    .btn-gold {
-        background: #cda45e;
-        border-color: #cda45e;
-        color: #fff;
-    }
-
-    .btn-gold:hover {
-        background: #b8903e;
-        color: #fff;
-    }
+    .table-hover tbody tr:hover { background-color: #f8fafc; }
+    .badge-status { font-weight: 500; padding: 0.4em 0.8em; }
+    .avatar-placeholder { width: 45px; height: 45px; background-color: #e2e8f0; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #64748b; }
+    .card-custom { border-radius: 10px; }
+    
+    /* Ensure the admin section ignores the frontend body style completely to maintain white background */
+    body { background: #f4f6f9 !important; color: #333 !important; }
 </style>
 
-<div class="main-content" style="padding-top:10px;">
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <div>
-            <h3 class="mb-0"><i class="fas fa-user-tie me-2" style="color:#cda45e"></i>Quản lý Đội ngũ Đầu bếp</h3>
-            <small class="text-muted">Thêm, chỉnh sửa và quản lý hồ sơ đầu bếp hiển thị trên website</small>
-        </div>
-        <?php if ($edit_data): ?>
-            <a href="manage_chefs.php" class="btn btn-secondary"><i class="fas fa-plus me-1"></i>Thêm mới</a>
-        <?php endif; ?>
+<div class="container-fluid py-4 min-vh-100">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold m-0"><i class="fas fa-user-tie me-2 text-primary"></i> Quản lý Đầu Bếp</h4>
+        <button class="btn btn-primary shadow-sm" onclick="openModal('create')">
+            <i class="fas fa-plus me-2"></i> Thêm Đầu Bếp
+        </button>
     </div>
 
-    <?= $message ?>
+    <?php if ($message_success): ?>
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-check-circle me-2"></i> <?= htmlspecialchars($message_success) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
+    <?php if ($message_error): ?>
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i> <?= htmlspecialchars($message_error) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
 
-    <div class="row g-4">
-        <div class="col-xl-5 col-lg-5">
-            <div class="section-card h-100">
-                <h5 class="mb-4" style="color:#2c3e50; border-bottom:2px solid #cda45e; padding-bottom:10px;">
-                    <i class="fas fa-<?= $edit_data ? 'edit' : 'user-plus' ?> me-2"></i>
-                    <?= $edit_data ? 'Chỉnh sửa hồ sơ' : 'Thêm đầu bếp mới' ?>
-                </h5>
-                <form method="POST" enctype="multipart/form-data">
-                    <?= csrf_field() ?>
-
-                    <input type="hidden" name="chef_id" value="<?= $edit_data['id'] ?? '' ?>">
-                    <input type="hidden" name="old_image" value="<?= $edit_data['image'] ?? '' ?>">
-
-                    <div class="row g-3 mb-3">
-                        <div class="col-7">
-                            <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control" placeholder="VD: Nguyễn Văn An"
-                                value="<?= htmlspecialchars($edit_data['name'] ?? '') ?>" required>
-                        </div>
-                        <div class="col-5">
-                            <label class="form-label">Chức vụ <span class="text-danger">*</span></label>
-                            <select name="position" class="form-select">
-                                <?php
-                                $positions = ['Bếp trưởng', 'Bếp phó', 'Bếp chính', 'Đầu bếp', 'Bếp bánh', 'Bếp phụ', 'Phụ bếp'];
-                                $cur_pos = $edit_data['position'] ?? 'Đầu bếp';
-                                foreach ($positions as $pos):
-                                    $sel = ($cur_pos === $pos) ? 'selected' : '';
-                                    ?>
-                                    <option value="<?= $pos ?>" <?= $sel ?>><?= $pos ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Ảnh đại diện</label>
-                        <?php if (!empty($edit_data['image'])): ?>
-                            <div class="mb-2 d-flex align-items-center gap-2">
-                                <img src="../public/assets/img/chefs/<?= htmlspecialchars($edit_data['image']) ?>"
-                                    class="chef-card-thumb" alt="Avatar">
-                                <small class="text-success">Đã có ảnh. Tải lên ảnh mới để thay thế.</small>
-                            </div>
-                        <?php endif; ?>
-                        <input type="file" name="chef_image" class="form-control" accept="image/*">
-                        <small class="text-muted">Nên dùng ảnh vuông, kích thước tối thiểu 300×300px.</small>
-                    </div>
-
-                    <div class="row g-3 mb-3">
-                        <div class="col-4">
-                            <label class="form-label">Kinh nghiệm (năm)</label>
-                            <input type="number" name="experience" class="form-control" min="0" max="60"
-                                value="<?= $edit_data['experience'] ?? 0 ?>">
-                        </div>
-                        <div class="col-8">
-                            <label class="form-label">Chuyên môn ẩm thực</label>
-                            <input type="text" name="specialty" class="form-control"
-                                placeholder="VD: Ẩm thực Nhật, Âu, Việt..."
-                                value="<?= htmlspecialchars($edit_data['specialty'] ?? '') ?>">
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Mô tả chi tiết</label>
-                        <textarea name="description" class="form-control" rows="3"
-                            placeholder="Giới thiệu hành trình, thành tích của đầu bếp..."><?= htmlspecialchars($edit_data['description'] ?? '') ?></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label"><i class="fas fa-quote-left me-1 text-warning"></i>Câu nói nổi
-                            bật</label>
-                        <input type="text" name="quote" class="form-control"
-                            placeholder="VD: Nấu ăn là ngôn ngữ của tình yêu..."
-                            value="<?= htmlspecialchars($edit_data['quote'] ?? '') ?>">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label"><i class="fas fa-share-alt me-1"></i>Mạng xã hội & Liên hệ</label>
-                        <div class="input-group mb-2">
-                            <span class="input-group-text bg-primary text-white"><i
-                                    class="fab fa-facebook-f"></i></span>
-                            <input type="text" name="facebook" class="form-control"
-                                placeholder="Link Facebook hoặc username"
-                                value="<?= htmlspecialchars($edit_data['facebook'] ?? '') ?>">
-                        </div>
-                        <div class="input-group mb-2">
-                            <span class="input-group-text" style="background:#e1306c;color:#fff"><i
-                                    class="fab fa-instagram"></i></span>
-                            <input type="text" name="instagram" class="form-control"
-                                placeholder="Link Instagram hoặc @username"
-                                value="<?= htmlspecialchars($edit_data['instagram'] ?? '') ?>">
-                        </div>
-                        <div class="input-group">
-                            <span class="input-group-text bg-secondary text-white"><i
-                                    class="fas fa-envelope"></i></span>
-                            <input type="email" name="email" class="form-control" placeholder="Email liên hệ"
-                                value="<?= htmlspecialchars($edit_data['email'] ?? '') ?>">
-                        </div>
-                    </div>
-
-                    <div class="row g-3 mb-4">
-                        <div class="col-4">
-                            <label class="form-label">Thứ tự</label>
-                            <input type="number" name="sort_order" class="form-control" min="0"
-                                value="<?= $edit_data['sort_order'] ?? 0 ?>">
-                        </div>
-                        <div class="col-8 d-flex align-items-end gap-3 pb-1">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="chk_active" name="is_active"
-                                    <?= (!isset($edit_data) || !empty($edit_data['is_active'])) ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="chk_active">Hiển thị</label>
-                            </div>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="chk_feat" name="is_featured"
-                                    <?= !empty($edit_data['is_featured']) ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="chk_feat">Ghim nổi bật</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex gap-2">
-                        <button type="submit" name="btn_save" class="btn btn-gold flex-grow-1">
-                            <i class="fas fa-save me-2"></i><?= $edit_data ? 'Lưu thay đổi' : 'Thêm đầu bếp' ?>
-                        </button>
-                        <?php if ($edit_data): ?>
-                            <a href="manage_chefs.php" class="btn btn-outline-secondary">Hủy</a>
-                        <?php endif; ?>
-                    </div>
-                </form>
+    <!-- Toolbar -->
+    <div class="card card-custom p-3 mb-4 shadow-sm border-0">
+        <form method="GET" class="row g-3 align-items-center">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" name="search" class="form-control border-start-0" placeholder="Tìm tên, chức vụ, chuyên môn..." value="<?= htmlspecialchars($search) ?>">
+                    <button type="submit" class="btn btn-outline-secondary">Tìm kiếm</button>
+                </div>
             </div>
+            <div class="col-md-6 text-end">
+                <a href="manage_chefs.php" class="btn btn-light"><i class="fas fa-sync-alt"></i> Làm mới</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Data Table -->
+    <div class="card card-custom p-0 shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-dark">
+                <thead class="bg-light text-muted" style="font-size: 0.85rem; text-transform: uppercase;">
+                    <tr>
+                        <th class="ps-4">Thứ tự</th>
+                        <th>Đầu bếp</th>
+                        <th>Chuyên môn / Kinh nghiệm</th>
+                        <th>Nổi bật</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end pe-4">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (count($chefs) === 0): ?>
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-5">
+                                <i class="fas fa-user-slash fa-3x mb-3 text-light"></i>
+                                <h5>Chưa có dữ liệu đầu bếp</h5>
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+                    
+                    <?php foreach ($chefs as $chef): ?>
+                        <tr>
+                            <td class="ps-4">
+                                <span class="badge bg-secondary"><?= $chef['sort_order'] ?></span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <?php if ($chef['image']): ?>
+                                        <img src="/restaurant-project/public/assets/img/chefs/<?= htmlspecialchars($chef['image']) ?>" class="shadow-sm" style="width: 45px; height: 45px; object-fit: cover; border-radius: 10px;" alt="Avatar">
+                                    <?php else: ?>
+                                        <div class="avatar-placeholder">
+                                            <?= strtoupper(mb_substr($chef['name'], 0, 1)) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <div>
+                                        <div class="fw-bold text-dark"><?= htmlspecialchars($chef['name']) ?></div>
+                                        <div class="text-muted small"><?= htmlspecialchars($chef['position']) ?></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="small fw-medium text-dark"><?= htmlspecialchars($chef['specialty'] ?: 'Chưa cập nhật') ?></div>
+                                <div class="small text-muted"><?= $chef['experience'] ?> năm kinh nghiệm</div>
+                            </td>
+                            <td>
+                                <?php if ($chef['is_featured']): ?>
+                                    <span class="badge bg-warning text-dark badge-status"><i class="fas fa-star text-warning"></i> Nổi bật</span>
+                                <?php else: ?>
+                                    <span class="text-muted">-</span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php if ($chef['is_active']): ?>
+                                    <span class="badge bg-success badge-status">Đang hiển thị</span>
+                                <?php else: ?>
+                                    <span class="badge bg-secondary badge-status">Đã ẩn</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="text-end pe-4">
+                                <button class="btn btn-sm btn-outline-info rounded-circle me-1" title="Chỉnh sửa"
+                                    onclick='openModal("edit", <?= htmlspecialchars(json_encode($chef, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS)) ?>)'>
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <form method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đầu bếp này? Dữ liệu không thể khôi phục.');">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="id" value="<?= $chef['id'] ?>">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
 
-        <div class="col-xl-7 col-lg-7">
-            <div class="section-card">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h5 class="mb-0"
-                        style="color:#2c3e50; border-bottom:2px solid #cda45e; padding-bottom:10px; width:100%">
-                        <i class="fas fa-list me-2"></i>Danh sách đầu bếp
-                        <span class="badge bg-secondary ms-2"><?= count($chefs) ?></span>
-                    </h5>
-                </div>
-
-                <?php if (empty($chefs)): ?>
-                    <div class="text-center py-5 text-muted">
-                        <i class="fas fa-user-slash fa-3x mb-3 d-block"></i>
-                        Chưa có hồ sơ đầu bếp nào. Hãy thêm ngay!
-                    </div>
-                <?php else: ?>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0" style="font-size:.9rem">
-                            <thead>
-                                <tr>
-                                    <th>Đầu bếp</th>
-                                    <th>Chức vụ</th>
-                                    <th class="text-center">KN</th>
-                                    <th class="text-center">HT</th>
-                                    <th class="text-center">NB</th>
-                                    <th class="text-center">TT</th>
-                                    <th class="text-center">Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($chefs as $chef): ?>
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center gap-2">
-                                                <?php if (!empty($chef['image'])): ?>
-                                                    <img src="../public/assets/img/chefs/<?= htmlspecialchars($chef['image']) ?>"
-                                                        class="chef-card-thumb" alt="<?= htmlspecialchars($chef['name']) ?>">
-                                                <?php else: ?>
-                                                    <div class="chef-placeholder">
-                                                        <i class="fas fa-user"></i>
-                                                    </div>
-                                                <?php endif; ?>
-                                                <div>
-                                                    <div class="fw-semibold"><?= htmlspecialchars($chef['name']) ?></div>
-                                                    <?php if (!empty($chef['specialty'])): ?>
-                                                        <small
-                                                            class="text-muted"><?= htmlspecialchars($chef['specialty']) ?></small>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <?php
-                                            $pos_colors = [
-                                                'Bếp trưởng' => 'danger',
-                                                'Bếp phó' => 'warning',
-                                                'Bếp chính' => 'info',
-                                            ];
-                                            $bc = $pos_colors[$chef['position']] ?? 'secondary';
-                                            ?>
-                                            <span class="badge bg-<?= $bc ?>"><?= htmlspecialchars($chef['position']) ?></span>
-                                        </td>
-                                        <td class="text-center">
-                                            <?php if ($chef['experience'] > 0): ?>
-                                                <span class="badge bg-light text-dark border"><?= $chef['experience'] ?>n</span>
-                                            <?php else: ?>
-                                                <span class="text-muted">—</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="manage_chefs.php?toggle=<?= $chef['id'] ?>&field=is_active"
-                                                title="<?= $chef['is_active'] ? 'Đang hiện – Click để ẩn' : 'Đang ẩn – Click để hiện' ?>">
-                                                <i class="fas fa-<?= $chef['is_active'] ? 'eye' : 'eye-slash' ?> fa-lg"
-                                                    style="color:<?= $chef['is_active'] ? '#28a745' : '#aaa' ?>"></i>
-                                            </a>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="manage_chefs.php?toggle=<?= $chef['id'] ?>&field=is_featured"
-                                                title="<?= $chef['is_featured'] ? 'Đang ghim – Click để bỏ ghim' : 'Click để ghim nổi bật' ?>">
-                                                <i class="fas fa-star fa-lg"
-                                                    style="color:<?= $chef['is_featured'] ? '#cda45e' : '#ddd' ?>"></i>
-                                            </a>
-                                        </td>
-                                        <td class="text-center">
-                                            <span class="badge bg-light text-dark border">#<?= $chef['sort_order'] ?></span>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="manage_chefs.php?edit=<?= $chef['id'] ?>"
-                                                class="btn btn-sm btn-outline-primary me-1" title="Sửa">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="manage_chefs.php?delete=<?= $chef['id'] ?>"
-                                                class="btn btn-sm btn-outline-danger" title="Xóa"
-                                                onclick="return confirm('Bạn có chắc muốn xóa đầu bếp này không?')">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                <?php endif; ?>
+        <!-- Pagination -->
+        <?php if ($total_pages > 1): ?>
+            <div class="card-footer bg-white p-3 border-top d-flex justify-content-end">
+                <ul class="pagination pagination-sm m-0">
+                    <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?page=<?= $page - 1 ?>&search=<?= urlencode($search) ?>">Trước</a>
+                    </li>
+                    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                        <li class="page-item <?= $i == $page ? 'active' : '' ?>">
+                            <a class="page-link" href="?page=<?= $i ?>&search=<?= urlencode($search) ?>"><?= $i ?></a>
+                        </li>
+                    <?php endfor; ?>
+                    <li class="page-item <?= $page >= $total_pages ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?page=<?= $page + 1 ?>&search=<?= urlencode($search) ?>">Sau</a>
+                    </li>
+                </ul>
             </div>
+        <?php endif; ?>
+    </div>
+</div>
 
-            <div class="section-card mt-4"
-                style="background: linear-gradient(135deg,#f8f9fa,#fff8ee); border-left: 4px solid #cda45e;">
-                <h6 class="mb-3" style="color:#cda45e"><i class="fas fa-lightbulb me-2"></i>Hướng dẫn nhanh</h6>
-                <div class="row g-2" style="font-size:.85rem; color:#555">
-                    <div class="col-6">
-                        <i class="fas fa-eye text-success me-1"></i> Click biểu tượng mắt để bật/tắt hiển thị
+<!-- Modal Thêm/Sửa -->
+<div class="modal fade" id="chefModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="background:#fff;">
+            <div class="modal-header bg-primary text-white border-0">
+                <h5 class="modal-title" id="modalTitle"><i class="fas fa-user-plus me-2"></i> Thêm Đầu Bếp</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-dark">
+                <form method="POST" id="chefForm" enctype="multipart/form-data">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="action" id="formAction" value="create">
+                    <input type="hidden" name="id" id="chefId">
+                    
+                    <div class="row g-3">
+                        <div class="col-md-12 text-center mb-3">
+                            <label class="form-label fw-bold d-block text-dark">Ảnh đại diện (Avatar)</label>
+                            <img id="previewImage" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display: none; margin: 0 auto 10px auto; border: 3px solid #cda45e;">
+                            <input type="file" class="form-control form-control-sm mx-auto" style="max-width: 300px;" name="image" id="chefImage" accept="image/*" onchange="previewFile(this)">
+                            <small class="text-muted">Định dạng hỗ trợ: JPG, PNG, GIF</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark">Họ và Tên <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="name" id="chefName" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark">Chức vụ <span class="text-danger">*</span></label>
+                            <select name="position" id="chefPosition" class="form-select" required>
+                                <option value="Bếp trưởng">Bếp trưởng</option>
+                                <option value="Bếp phó">Bếp phó</option>
+                                <option value="Bếp chính">Bếp chính</option>
+                                <option value="Đầu bếp">Đầu bếp</option>
+                                <option value="Phụ bếp">Phụ bếp</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-dark">Kinh nghiệm (năm)</label>
+                            <input type="number" class="form-control" name="experience" id="chefExperience" min="0" value="0">
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold text-dark">Chuyên môn</label>
+                            <input type="text" class="form-control" name="specialty" id="chefSpecialty" placeholder="VD: Ẩm thực Âu, Á, Fusion...">
+                        </div>
+                        
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-dark">Mô tả chi tiết</label>
+                            <textarea class="form-control" name="description" id="chefDescription" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-dark">Câu nói nổi bật</label>
+                            <input type="text" class="form-control" name="quote" id="chefQuote" placeholder="VD: Nấu ăn là một nghệ thuật...">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-dark"><i class="fab fa-facebook text-primary"></i> Facebook</label>
+                            <input type="text" class="form-control" name="facebook" id="chefFacebook" placeholder="Link Facebook">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-dark"><i class="fab fa-instagram text-danger"></i> Instagram</label>
+                            <input type="text" class="form-control" name="instagram" id="chefInstagram" placeholder="Link Instagram">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-dark"><i class="fas fa-envelope text-success"></i> Email liên hệ</label>
+                            <input type="email" class="form-control" name="email" id="chefEmail" placeholder="Email">
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-dark">Thứ tự hiển thị</label>
+                            <input type="number" class="form-control" name="sort_order" id="chefSortOrder" value="0">
+                        </div>
+                        
+                        <div class="col-md-8 d-flex align-items-center gap-4 mt-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="is_active" id="chefIsActive" checked value="1">
+                                <label class="form-check-label fw-bold text-dark" for="chefIsActive">Hiển thị trên web</label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="is_featured" id="chefIsFeatured" value="1">
+                                <label class="form-check-label fw-bold text-dark" for="chefIsFeatured">Ghim nổi bật</label>
+                            </div>
+                        </div>
+
                     </div>
-                    <div class="col-6">
-                        <i class="fas fa-star me-1" style="color:#cda45e"></i> Click ngôi sao để ghim đầu bếp nổi bật
+                    
+                    <hr class="my-4">
+                    <div class="text-end">
+                        <button type="button" class="btn btn-light me-2 text-dark" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary" id="btnSubmit">Lưu Thông Tin</button>
                     </div>
-                    <div class="col-6">
-                        <i class="fas fa-sort-numeric-up text-info me-1"></i> Thứ tự nhỏ hơn sẽ xuất hiện trước
-                    </div>
-                    <div class="col-6">
-                        <i class="fas fa-crown text-warning me-1"></i> Đầu bếp được ghim luôn xuất hiện đầu trang
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let myModal;
+
+    function openModal(mode, data = null) {
+        if (!myModal) {
+            myModal = new bootstrap.Modal(document.getElementById('chefModal'));
+        }
+        document.getElementById('formAction').value = mode;
+        
+        if (mode === 'create') {
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-plus me-2"></i> Thêm Đầu Bếp Mới';
+            document.getElementById('btnSubmit').innerText = 'Thêm Đầu Bếp';
+            document.getElementById('chefForm').reset();
+            document.getElementById('chefId').value = '';
+            document.getElementById('previewImage').style.display = 'none';
+            document.getElementById('chefIsActive').checked = true;
+            document.getElementById('chefIsFeatured').checked = false;
+        } else {
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-edit me-2"></i> Cập nhật Thông tin Đầu Bếp';
+            document.getElementById('btnSubmit').innerText = 'Cập Nhật';
+            
+            document.getElementById('chefId').value = data.id;
+            document.getElementById('chefName').value = data.name;
+            
+            // Set position select
+            let posSelect = document.getElementById('chefPosition');
+            let found = false;
+            for(let i=0; i<posSelect.options.length; i++) {
+                if(posSelect.options[i].value === data.position) {
+                    posSelect.selectedIndex = i;
+                    found = true;
+                    break;
+                }
+            }
+            if(!found && data.position) {
+                let opt = document.createElement('option');
+                opt.value = data.position;
+                opt.innerHTML = data.position;
+                posSelect.appendChild(opt);
+                posSelect.value = data.position;
+            }
+
+            document.getElementById('chefExperience').value = data.experience;
+            document.getElementById('chefSpecialty').value = data.specialty;
+            document.getElementById('chefDescription').value = data.description;
+            document.getElementById('chefQuote').value = data.quote;
+            document.getElementById('chefFacebook').value = data.facebook;
+            document.getElementById('chefInstagram').value = data.instagram;
+            document.getElementById('chefEmail').value = data.email;
+            document.getElementById('chefSortOrder').value = data.sort_order;
+            
+            document.getElementById('chefIsActive').checked = data.is_active == 1;
+            document.getElementById('chefIsFeatured').checked = data.is_featured == 1;
+
+            let preview = document.getElementById('previewImage');
+            if(data.image) {
+                preview.src = '/restaurant-project/public/assets/img/chefs/' + data.image;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+        
+        myModal.show();
+    }
+
+    function previewFile(input) {
+        var file = input.files[0];
+        if(file){
+            var reader = new FileReader();
+            reader.onload = function(){
+                var preview = document.getElementById('previewImage');
+                preview.src = reader.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+
+</div> <!-- Đóng content-area -->
+</div> <!-- Đóng main-wrapper -->
+</body>
+</html>

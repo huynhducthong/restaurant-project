@@ -4,6 +4,7 @@
 --
 -- Máy chủ: 127.0.0.1
 -- Thời gian đã tạo: Th5 18, 2026 lúc 05:45 PM
+-- Thời gian đã tạo: Th5 18, 2026 lúc 07:44 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -448,6 +449,7 @@ INSERT INTO `booking_details` (`id`, `booking_id`, `menu_id`, `item_type`, `quan
 (0, 5, 2, 'food', 1, 0.00, '2026-05-14 15:07:47'),
 (0, 5, 1, 'food', 1, 0.00, '2026-05-14 15:07:47'),
 (0, 5, 2, 'food', 1, 0.00, '2026-05-14 15:07:47');
+(2, 2, 1, 'food', 1, 0.00, '2026-05-13 08:18:22');
 
 -- --------------------------------------------------------
 
@@ -472,6 +474,62 @@ CREATE TABLE `booking_inventory_deductions` (
 INSERT INTO `booking_inventory_deductions` (`id`, `booking_id`, `ingredient_id`, `warehouse_id`, `quantity`, `created_at`) VALUES
 (1, 1, 3, 2, 0.50, '2026-05-13 08:17:20'),
 (2, 2, 3, 2, 0.50, '2026-05-13 08:18:30');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `books`
+--
+
+DROP TABLE IF EXISTS `books`;
+CREATE TABLE `books` (
+  `id` int(11) NOT NULL,
+  `title` varchar(200) NOT NULL,
+  `author` varchar(150) DEFAULT '',
+  `description` text DEFAULT NULL,
+  `price` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `image` varchar(255) DEFAULT '',
+  `stock` int(11) NOT NULL DEFAULT 0,
+  `category` varchar(100) DEFAULT 'Sách nấu ăn',
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `books`
+--
+
+INSERT INTO `books` (`id`, `title`, `author`, `description`, `price`, `image`, `stock`, `category`, `is_active`, `created_at`) VALUES
+(1, 'Sách nấu ăn chuyên nghiệp', 'nguyên văn b', 'dfbgfnhnz', 500000.00, 'b1080097d12f0c035d4c.png', 96, 'Sách nấu ăn', 1, '2026-05-05 12:32:25');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `book_orders`
+--
+
+DROP TABLE IF EXISTS `book_orders`;
+CREATE TABLE `book_orders` (
+  `id` int(11) NOT NULL,
+  `order_code` varchar(20) NOT NULL,
+  `customer_name` varchar(100) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `address` text DEFAULT NULL,
+  `delivery_method` enum('ship','pickup') NOT NULL DEFAULT 'pickup',
+  `note` text DEFAULT NULL,
+  `total_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `status` enum('new','confirmed','shipping','done','cancelled') NOT NULL DEFAULT 'new',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `book_orders`
+--
+
+INSERT INTO `book_orders` (`id`, `order_code`, `customer_name`, `phone`, `address`, `delivery_method`, `note`, `total_amount`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'BK260505D504', 'Huỳnh đức thông', '0901 234 567', '', 'pickup', 'ngbv', 500000.00, 'new', '2026-05-05 12:33:32', '2026-05-05 12:33:32'),
+(2, 'BK260505C331', 'Test User', '0912345678', '', 'pickup', '', 1500000.00, 'new', '2026-05-05 12:49:50', '2026-05-05 12:49:50');
 
 -- --------------------------------------------------------
 
@@ -631,6 +689,15 @@ CREATE TABLE `employees` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `employees`
+--
+
+INSERT INTO `employees` (`id`, `full_name`, `phone`, `email`, `identity_card`, `address`, `dob`, `gender`, `position`, `salary`, `status`, `avatar`, `created_at`) VALUES
+(1, 'Le Huu Thuan Fat', '0867081911', 'fatqua@gmail.com', '', '', '2026-05-30', 'male', 'Thu ngân', 1.00, 'working', NULL, '2026-05-14 03:37:08'),
+(2, 'Huynh Duc Thon', '12345667890', '28huynhducthong@gmail.com', '102910382038141', '123 Đường ABC, Quận 1, TP. HCM', '2026-04-28', 'male', 'Pha chế', 0.00, 'working', NULL, '2026-05-14 06:51:48'),
+(3, '', NULL, 'www.huynhqduong@gmail.com', NULL, NULL, NULL, 'other', 'admin', 0.00, 'working', NULL, '2026-05-14 07:05:27');
+
 -- --------------------------------------------------------
 
 --
@@ -642,7 +709,6 @@ CREATE TABLE `foods` (
   `id` int(11) NOT NULL,
   `category_id` int(11) DEFAULT NULL,
   `name` varchar(255) NOT NULL,
-  `unit_name` varchar(50) DEFAULT NULL,
   `price` decimal(15,2) NOT NULL,
   `image` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
@@ -654,9 +720,8 @@ CREATE TABLE `foods` (
 -- Đang đổ dữ liệu cho bảng `foods`
 --
 
-INSERT INTO `foods` (`id`, `category_id`, `name`, `unit_name`, `price`, `image`, `description`, `status`, `is_active`) VALUES
-(1, 2, 'Bít tết', 'phần', 400000.00, '7d76786780be41b26cea039d.jpg', 'Đậm đà, thịt nhập khẩu', 1, 1),
-(2, 1, 'Salad Caesar', 'phần', 120000.00, NULL, 'Rau tươi, sốt Caesar', 1, 1);
+INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`, `is_active`) VALUES
+(1, 2, 'bit tết', 400000.00, '7d76786780be41b26cea039d.jpg', 'đạm đà', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -678,8 +743,7 @@ CREATE TABLE `food_recipes` (
 --
 
 INSERT INTO `food_recipes` (`id`, `food_id`, `ingredient_id`, `quantity_required`, `unit`) VALUES
-(1, 1, 3, 0.500, 'kg'),
-(2, 2, 2, 0.200, 'kg');
+(1, 1, 3, 0.500, 'kg');
 
 -- --------------------------------------------------------
 
@@ -768,11 +832,7 @@ CREATE TABLE `inventory` (
 --
 
 INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `cost_price`, `supplier_id`, `entry_date`, `expiry_date`, `revenue`, `updated_at`, `min_stock`, `is_active`, `storage_zone`) VALUES
-(1, 'Gạo ST25', 'Gia vị', 'kg', 25000.00, 1, NULL, NULL, 0.00, '2026-05-09 06:40:22', 10, 1, 'Kho khô'),
-(2, 'Rau xà lách', 'Rau củ', 'kg', 35000.00, 1, NULL, '2026-06-15', 0.00, '2026-05-09 14:17:21', 5, 1, 'Kho lạnh'),
-(3, 'Thịt bò', 'Thịt', 'kg', 200000.00, NULL, NULL, '2026-06-30', 0.00, '2026-05-09 07:18:03', 5, 1, 'Kho lạnh'),
-(4, 'Gia vị đặc biệt', 'Gia vị', 'kg', 50000.00, 1, NULL, '2026-12-31', 0.00, '2026-05-07 09:50:36', 1, 1, 'Kho khô'),
-(6, 'Nguyên liệu nhập PO', 'Gia vị', 'kg', 100000.00, 1, NULL, '2026-08-01', 0.00, '2026-05-07 07:38:15', 0, 1, 'Kho khô');
+(3, 'thịt bò', 'Thịt', 'kg', 2000000.00, NULL, NULL, '2026-05-13', 0.00, '2026-05-09 07:18:03', 5, 1, 'Kho khô');
 
 -- --------------------------------------------------------
 
@@ -1157,6 +1217,18 @@ CREATE TABLE `payrolls` (
   `status` enum('draft','approved') DEFAULT 'draft'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `payrolls`
+--
+
+INSERT INTO `payrolls` (`id`, `employee_id`, `month`, `year`, `base_salary`, `work_days`, `allowance`, `bonus`, `deduction`, `net_salary`, `status`) VALUES
+(1, 1, 4, 2026, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'draft'),
+(2, 2, 4, 2026, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'draft'),
+(3, 3, 4, 2026, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'draft'),
+(4, 1, 5, 2026, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'draft'),
+(5, 2, 5, 2026, 0.00, 1.00, 0.00, 0.00, 0.00, 0.00, 'draft'),
+(6, 3, 5, 2026, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'approved');
+
 -- --------------------------------------------------------
 
 --
@@ -1340,6 +1412,7 @@ INSERT INTO `service_bookings` (`id`, `user_id`, `customer_name`, `customer_phon
 (3, 2, 'Khách demo', '0909123456', '2026-05-20 18:00:00', 'table', 2, 1, 4, 'Đặt combo gia đình', 850000.00, 255000.00, 'Pending', NULL, NULL, 0, 0, 0, '2026-05-14 10:00:00'),
 (4, NULL, 'Ẩn danh', '0911222333', '2026-05-25 12:00:00', 'birthday', 19, 0, 8, 'Tiệc sinh nhật', 2000000.00, 600000.00, 'Confirmed', 'birthday', 'premium', 1, 1, 0, '2026-05-14 10:05:00'),
 (5, 5, 'Huỳnh Dương', '0122222222', '2026-05-22 09:30:00', 'chef', 0, 1, 20, '', 1370000.00, 411000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-05-14 15:07:47');
+(2, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-23 15:18:00', 'table', 1, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-13 08:18:22');
 
 -- --------------------------------------------------------
 
@@ -1365,9 +1438,7 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 ('footer_text', '© 2024 Restaurantly. All Rights Reserved.'),
 ('hotline', '0456789124'),
 ('inv_auto_deduct', '1'),
-('inv_expiry_days', '7'),
 ('inv_expiry_warning_days', '30'),
-('inv_low_stock', '5'),
 ('inv_low_stock_threshold', '5'),
 ('logo_url', 'assets/img/logo.png'),
 ('logo_ver', '1778058575'),
@@ -1430,7 +1501,8 @@ CREATE TABLE `shift_assignments` (
 --
 
 INSERT INTO `shift_assignments` (`id`, `employee_id`, `shift_id`, `work_date`, `check_in`, `check_out`, `status`, `approval_status`) VALUES
-(4, 2, 4, '2026-05-14', '2026-05-14 14:14:43', '2026-05-14 14:14:46', 'present', 'pending');
+(4, 2, 4, '2026-05-14', '2026-05-14 14:14:43', '2026-05-14 14:14:46', 'present', 'pending'),
+(5, 2, 4, '2026-05-18', '2026-05-18 12:32:37', NULL, 'present', 'approved');
 
 -- --------------------------------------------------------
 
@@ -1523,6 +1595,13 @@ INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `avatar`, `avata
 (6, 'Long Hoang', '', '', NULL, NULL, NULL, NULL, NULL, 'hoanglongduongle@gmail.com', '109729244014013210980', 'admin', 1, '2026-05-14 09:27:18', 3),
 (7, 'fatqua_65', '$2y$10$cxk4RfLDH/o.SwbYVnuE.OOPVrNbNvzG2cHEsAxELE7fV15612GF.', 'Le Huu Thuan Fat', NULL, NULL, NULL, '', NULL, 'fatqua@gmail.com', NULL, 'staff', 1, '2026-05-14 10:37:08', 1),
 (8, '28huynhducthong_10', '$2y$10$OLjEsWZxLXBx/uF6KU1PC.1.kDg1sO52SqzXUIdJwhllJe4ZOGdSW', 'Huynh Duc Thon', NULL, NULL, NULL, '0901 234 567', NULL, '28huynhducthong@gmail.com', NULL, 'chef', 1, '2026-05-14 13:51:48', 2);
+INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `avatar`, `phone`, `birthday`, `email`, `google_id`, `role`, `is_active`, `created_at`, `employee_id`) VALUES
+(2, 'Huỳnh Đức Thông', '$2y$10$yTpo6mWnwfw2msba4HE14udXlMi6DoB7Sv.G0S7qhVUFzHboPjzum', 'Quản trị viên', NULL, NULL, NULL, '28huynhducthong@gmail.com', '107664704264935131673', 'admin', 1, '2026-05-06 10:49:37', 2),
+(4, 'Thong Duc', '', '', NULL, NULL, NULL, 'thongd342@gmail.com', '100631379832642815829', '', 1, '2026-05-06 15:59:00', NULL),
+(5, 'Huỳnh Dương', '', '', NULL, NULL, NULL, 'www.huynhqduong@gmail.com', '112739013180770480868', 'admin', 1, '2026-05-09 21:03:14', 3),
+(6, 'Long Hoang', '', '', NULL, NULL, NULL, 'hoanglongduongle@gmail.com', '109729244014013210980', 'admin', 1, '2026-05-14 09:27:18', 3),
+(7, 'fatqua_65', '$2y$10$cxk4RfLDH/o.SwbYVnuE.OOPVrNbNvzG2cHEsAxELE7fV15612GF.', 'Le Huu Thuan Fat', NULL, '', NULL, 'fatqua@gmail.com', NULL, 'staff', 1, '2026-05-14 10:37:08', 1),
+(8, '28huynhducthong_10', '$2y$10$OLjEsWZxLXBx/uF6KU1PC.1.kDg1sO52SqzXUIdJwhllJe4ZOGdSW', 'Huynh Duc Thon', NULL, '0901 234 567', NULL, '28huynhducthong@gmail.com', NULL, 'chef', 1, '2026-05-14 13:51:48', 2);
 
 -- --------------------------------------------------------
 
@@ -1597,6 +1676,15 @@ INSERT INTO `warehouses` (`id`, `name`, `type`, `status`) VALUES
 -- Chỉ mục cho bảng `about_comments`
 --
 ALTER TABLE `about_comments`
+-- Chỉ mục cho bảng `about_categories`
+--
+ALTER TABLE `about_categories`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `about_content`
+--
+ALTER TABLE `about_content`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_content` (`content_id`),
   ADD KEY `idx_author_ip` (`author_ip`);
@@ -1605,6 +1693,27 @@ ALTER TABLE `about_comments`
 -- Chỉ mục cho bảng `about_comment_bans`
 --
 ALTER TABLE `about_comment_bans`
+-- Chỉ mục cho bảng `admins`
+--
+ALTER TABLE `admins`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `banners`
+--
+ALTER TABLE `banners`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `bookings`
+--
+ALTER TABLE `bookings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `booking_details`
+--
+ALTER TABLE `booking_details`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_ip_ban` (`user_ip`),
   ADD UNIQUE KEY `unique_user_ban` (`user_id`);
@@ -1613,11 +1722,27 @@ ALTER TABLE `about_comment_bans`
 -- Chỉ mục cho bảng `about_comment_likes`
 --
 ALTER TABLE `about_comment_likes`
+-- Chỉ mục cho bảng `booking_inventory_deductions`
+--
+ALTER TABLE `booking_inventory_deductions`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `books`
+--
+ALTER TABLE `books`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `book_orders`
+--
+ALTER TABLE `book_orders`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_like` (`comment_id`,`user_id`);
 
 --
 -- Chỉ mục cho bảng `about_comment_reports`
+-- Chỉ mục cho bảng `book_order_items`
 --
 ALTER TABLE `about_comment_reports`
   ADD PRIMARY KEY (`id`);
@@ -1631,6 +1756,7 @@ ALTER TABLE `about_likes`
 
 --
 -- Chỉ mục cho bảng `about_saved_posts`
+-- Chỉ mục cho bảng `categories`
 --
 ALTER TABLE `about_saved_posts`
   ADD PRIMARY KEY (`id`),
@@ -1638,10 +1764,29 @@ ALTER TABLE `about_saved_posts`
 
 --
 -- Chỉ mục cho bảng `about_shares`
+-- Chỉ mục cho bảng `chefs`
 --
 ALTER TABLE `about_shares`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_content` (`content_id`);
+
+--
+-- Chỉ mục cho bảng `combos`
+--
+ALTER TABLE `combos`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `combo_items`
+--
+ALTER TABLE `combo_items`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `contacts`
+--
+ALTER TABLE `contacts`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `employees`
@@ -1863,6 +2008,7 @@ ALTER TABLE `warehouses`
 
 --
 -- AUTO_INCREMENT cho bảng `about_comments`
+-- AUTO_INCREMENT cho bảng `about_categories`
 --
 ALTER TABLE `about_comments`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
@@ -1913,25 +2059,25 @@ ALTER TABLE `employees`
 -- AUTO_INCREMENT cho bảng `foods`
 --
 ALTER TABLE `foods`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `food_recipes`
 --
 ALTER TABLE `food_recipes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `footer_links`
 --
 ALTER TABLE `footer_links`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `inventory_audits`
@@ -1991,7 +2137,7 @@ ALTER TABLE `inventory_units`
 -- AUTO_INCREMENT cho bảng `navigation_menu`
 --
 ALTER TABLE `navigation_menu`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `newsletters`
@@ -2015,7 +2161,7 @@ ALTER TABLE `order_items`
 -- AUTO_INCREMENT cho bảng `payrolls`
 --
 ALTER TABLE `payrolls`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT cho bảng `positions`
@@ -2045,7 +2191,7 @@ ALTER TABLE `restaurant_tables`
 -- AUTO_INCREMENT cho bảng `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `service_bookings`
@@ -2063,7 +2209,7 @@ ALTER TABLE `shifts`
 -- AUTO_INCREMENT cho bảng `shift_assignments`
 --
 ALTER TABLE `shift_assignments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT cho bảng `suppliers`
@@ -2104,6 +2250,13 @@ ALTER TABLE `warehouses`
 --
 -- Các ràng buộc cho các bảng đã đổ
 --
+
+--
+-- Các ràng buộc cho bảng `book_order_items`
+--
+ALTER TABLE `book_order_items`
+  ADD CONSTRAINT `book_order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `book_orders` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `book_order_items_ibfk_2` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`);
 
 --
 -- Các ràng buộc cho bảng `payrolls`

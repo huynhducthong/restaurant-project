@@ -459,6 +459,7 @@ $transfers = $db->query("
     JOIN warehouses w2 ON t.to_warehouse_id = w2.id
     ORDER BY t.transfer_date DESC LIMIT 50
 ")->fetchAll(PDO::FETCH_ASSOC);
+$pending_transfers_count = (int)$db->query("SELECT COUNT(*) FROM inventory_transfers WHERE status = 'pending'")->fetchColumn();
 $chart_raw = $db->query("SELECT DATE_FORMAT(created_at, '%Y-%m') as mo, SUM(CASE WHEN type='import' THEN quantity ELSE 0 END) as ti, SUM(CASE WHEN type='export' THEN quantity ELSE 0 END) as te, SUM(CASE WHEN type='loss' THEN quantity ELSE 0 END) as tl FROM inventory_history WHERE created_at >= DATE_SUB(NOW(), INTERVAL 5 MONTH) GROUP BY mo ORDER BY mo ASC")->fetchAll(PDO::FETCH_ASSOC);
 
 // BÁO CÁO GIÁ TRỊ TỒN KHO THEO TỪNG KHO (VALUE PER WAREHOUSE)

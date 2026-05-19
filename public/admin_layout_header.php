@@ -4,59 +4,33 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
-/* =========================================================
-   KIỂM TRA ĐĂNG NHẬP & PHÂN QUYỀN
-========================================================= */
-
-$user_id   = $_SESSION['user_id'] ?? null;
+// 1. KIỂM TRA PHÂN QUYỀN TRUY CẬP (Cho phép Admin và Nhân viên)
+$user_id = $_SESSION['user_id'] ?? null;
 $user_role = $_SESSION['role'] ?? '';
 
+// Các vai trò được phép vào Backend (Admin = 1/'admin', Staff = 2/'staff', etc.)
 $allowed_roles = ['admin', 'staff', 'waiter', 'chef', 'cashier', 1, 2];
 
 if (!$user_id || !in_array($user_role, $allowed_roles)) {
-    header("Location: /restaurant-project/login.php?error=access_denied");
+    header("Location: /restaurant-project/public/login.php?error=access_denied");
     exit();
 }
 
+// 2. Biến kiểm tra Admin để ẩn/hiện menu Cấu hình
 $is_admin = ($user_role === 'admin' || $user_role == 1);
 
-/* =========================================================
-   PAGE
-========================================================= */
-
+// 3. Khai báo $current_page sớm để dùng trong sidebar
 $current_page = basename($_SERVER['PHP_SELF']);
 
+// Hàm hỗ trợ active menu hiện tại
 if (!function_exists('isActive')) {
     function isActive($path)
     {
-        $current_page = basename($_SERVER['PHP_SELF']);
-        return $current_page === $path ? 'active' : '';
+        return strpos($_SERVER['REQUEST_URI'], $path) !== false ? 'active' : '';
     }
 }
 
-$page_titles = [
-    'admin_dashboard.php'      => 'Bảng Điều Khiển Tổng Quan',
-    'FoodController.php'       => 'Quản Lý Món Ăn',
-    'ComboController.php'      => 'Quản Lý Combo',
-    'list_combos.php'          => 'Quản Lý Combo',
-    'manage_services.php'      => 'Quản Lý Dịch Vụ',
-    'InventoryController.php'  => 'Quản Lý Kho Nguyên Liệu',
-    'POController.php'         => 'Đặt Hàng & Nhập Kho',
-    'ReportController.php'     => 'Báo Cáo & Thống Kê',
-    'manage_banners.php'       => 'Quản Lý Banner',
-    'manage_videos.php'        => 'Quản Lý Video',
-    'manage_about.php'         => 'Quản Lý Tin Tức',
-    'manage_chefs.php'         => 'Quản Lý Đầu Bếp',
-    'settings.php'             => 'Cài Đặt Hệ Thống',
-    'footer_settings.php'      => 'Cấu Hình Footer',
-    'UserController.php'       => 'Quản Lý Người Dùng',
-    'manage_users.php'         => 'Quản Lý Nhân Sự',
-    'manage_contacts.php'      => 'Quản Lý Liên Hệ',
-];
-
-$page_title = $page_titles[$current_page] ?? 'Khu Vực Quản Trị';
-
-// Fetch pending transfers count for badge
+// Fetch pending counts and alerts
 $pending_transfers_count = 0;
 $pending_services_count = 0;
 try {
@@ -71,11 +45,11 @@ try {
         $stmt_ps = $db->query("SELECT COUNT(*) FROM service_bookings WHERE status = 'Pending'");
         $pending_services_count = (int)$stmt_ps->fetchColumn();
 
-        // THÊM: Cảnh báo tồn kho thấp
+        // Cảnh báo tồn kho thấp
         $stmt_low = $db->query("SELECT COUNT(*) FROM inventory i WHERE i.is_active = 1 AND i.min_stock > 0 AND IFNULL((SELECT SUM(s.quantity) FROM inventory_stocks s WHERE s.ingredient_id = i.id), 0) <= i.min_stock");
         $low_stock_count = (int)$stmt_low->fetchColumn();
 
-        // THÊM: Cảnh báo hết hạn (7 ngày tới)
+        // Cảnh báo hết hạn (7 ngày tới)
         $stmt_exp = $db->query("SELECT COUNT(*) FROM inventory WHERE is_active = 1 AND expiry_date IS NOT NULL AND expiry_date <= DATE_ADD(CURDATE(), INTERVAL 7 DAY) AND expiry_date >= CURDATE()");
         $expiry_count = (int)$stmt_exp->fetchColumn();
 
@@ -91,28 +65,27 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title><?= $page_title ?> - Restaurantly</title>
-
-    <!-- BOOTSTRAP -->
+    <title>Quản trị hệ thống - Restaurantly</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- FONT AWESOME -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <!-- GOOGLE FONT -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    
+    <!-- BOOTSTRAP JS REQUIRED FOR MODALS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <style>
         :root {
             --sidebar-bg: #ffffff;
-            --sidebar-border: #ececec;
-            --accent: #b8862e;
-            --accent-light: #fff7e9;
-            --text-dark: #222;
-            --text-muted: #777;
-            --main-bg: #f5f5f5;
-
+            --sidebar-border: #f0ebe3;
+            --accent-color: #b8862e;
+            --accent-light: #fdf6e9;
+            --accent-mid: #f5e8c8;
+            --text-dark: #1a1612;
+            --text-muted: #8a7f72;
+            --bg-main: #f7f5f2;
+            --topbar-bg: #ffffff;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.07);
         }
 
         * {
@@ -120,121 +93,159 @@ try {
         }
 
         body {
-            margin: 0;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--main-bg);
+            background-color: var(--bg-main);
+            overflow-x: hidden;
+            color: var(--text-dark);
         }
 
-        /* =======================
-           SIDEBAR
-        ======================= */
-
+        /* ── SIDEBAR ── */
         .admin-sidebar {
-            width: 270px;
+            width: 268px;
             height: 100vh;
-            background: #fff;
             position: fixed;
-            left: 0;
             top: 0;
+            left: 0;
+            background-color: var(--sidebar-bg);
             border-right: 1px solid var(--sidebar-border);
-            overflow-y: auto;
-            z-index: 999;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-md);
         }
 
+        /* Brand */
         .sidebar-brand {
-            padding: 25px;
+            padding: 28px 24px 22px;
             border-bottom: 1px solid var(--sidebar-border);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
         }
 
         .brand-icon {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, #b8862e, #dca94e);
-            border-radius: 12px;
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #b8862e, #e0b060);
+            border-radius: 10px;
             display: flex;
-            justify-content: center;
             align-items: center;
-            color: white;
+            justify-content: center;
+            color: #fff;
             font-size: 18px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(184, 134, 46, 0.35);
         }
 
         .brand-text h2 {
-            margin: 0;
             font-size: 15px;
             font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
+            letter-spacing: 1.2px;
         }
 
         .brand-text span {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 0.3px;
         }
 
-        /* =======================
-           MENU
-        ======================= */
+        /* Nav */
+        .menu-scroll {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 16px 0 8px;
+        }
 
-        .menu-header {
-            padding: 18px 25px 8px;
-            font-size: 11px;
-            color: #999;
-            text-transform: uppercase;
-            font-weight: 700;
+        .menu-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .menu-scroll::-webkit-scrollbar-thumb {
+            background: var(--accent-mid);
+            border-radius: 4px;
         }
 
         .menu-list {
             list-style: none;
+            padding: 0 14px;
             margin: 0;
-            padding: 0 12px 20px;
-        }
-
-        .menu-list li {
-            margin-bottom: 4px;
         }
 
         .menu-list li a {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 14px;
+            padding: 11px 14px;
+            color: var(--text-muted);
             text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 500;
             border-radius: 10px;
-            color: #666;
+            transition: all 0.2s ease;
+            margin-bottom: 2px;
+            gap: 11px;
+        }
+
+        .menu-list li a i {
+            width: 18px;
+            text-align: center;
             font-size: 14px;
-            transition: 0.2s;
+            flex-shrink: 0;
         }
 
         .menu-list li a:hover {
-            background: var(--accent-light);
-            color: var(--accent);
+            background-color: var(--accent-light);
+            color: var(--accent-color);
         }
 
         .menu-list li.active a {
-            background: var(--accent-light);
-            color: var(--accent);
-            border-left: 3px solid var(--accent);
-            border-radius: 0 10px 10px 0;
-            margin-left: -12px;
-            padding-left: 23px;
+            background: linear-gradient(135deg, var(--accent-light), #fcefd4);
+            color: var(--accent-color);
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(184, 134, 46, 0.12);
         }
 
-        .menu-list li a {
-            transition: background 0.2s, color 0.2s;
+        .menu-list li.active a i {
+            color: var(--accent-color);
         }
 
+        /* View Homepage pill */
         .view-home-btn {
-            margin: 15px 12px;
-            border: 1px dashed var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 14px 8px;
+            padding: 10px 14px;
+            background: var(--accent-light);
+            border: 1.5px dashed #d4aa5a;
+            border-radius: 10px;
+            color: var(--accent-color) !important;
+            font-size: 12.5px;
+            font-weight: 600;
+            text-decoration: none;
+            letter-spacing: 0.3px;
+            transition: all 0.2s;
         }
 
-        /* =======================
-           LOGOUT
-        ======================= */
+        .view-home-btn:hover {
+            background: var(--accent-mid);
+        }
 
+        /* Menu section header */
+        .menu-header {
+            padding: 14px 28px 5px;
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #c4b89e;
+            letter-spacing: 1.4px;
+        }
+
+        /* Logout */
         .logout-area {
-            padding: 15px;
+            padding: 14px 14px 20px;
             border-top: 1px solid var(--sidebar-border);
         }
 
@@ -242,86 +253,119 @@ try {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 10px 12px;
-            border-radius: 6px;
-            color: #d33 !important;
+            padding: 11px 14px;
+            border-radius: 10px;
+            background: #fff5f5;
+            color: #d64545 !important;
             text-decoration: none;
             font-size: 13.5px;
-            background: #fff0f0;
-            transition: 0.2s;
+            font-weight: 600;
+            border: 1px solid #fdd;
+            transition: all 0.2s;
         }
 
         .logout-btn:hover {
-            background: #fef2f2;
+            background: #ffe8e8;
+            border-color: #f5b8b8;
         }
 
-        /* =======================
-           MAIN
-        ======================= */
-
-
+        /* ── MAIN WRAPPER ── */
         .main-wrapper {
-            margin-left: 270px;
+            margin-left: 268px;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
+        /* Topbar */
         .topbar {
-            height: 70px;
-            background: white;
-            border-bottom: 1px solid #eee;
-            padding: 0 30px;
+            height: 68px;
+            background: var(--topbar-bg);
+            padding: 0 32px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #ede8e0;
+            box-shadow: var(--shadow-sm);
             position: sticky;
             top: 0;
             z-index: 100;
         }
 
         .topbar-title {
-            margin: 0;
-            font-size: 20px;
+            font-size: 17px;
             font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
+        .topbar-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(180deg, #b8862e, #e0b060);
+            border-radius: 4px;
+        }
+
+        /* User info */
         .user-profile {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 14px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-info strong {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .badge-admin {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #b8862e, #e0b060);
+            color: #fff;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-staff {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: #e6f4ea;
+            color: #2d7a3a;
+            letter-spacing: 0.3px;
         }
 
         .user-avatar {
             width: 42px;
             height: 42px;
-            background: linear-gradient(135deg, #b8862e, #dca94e);
-            color: white;
+            background: linear-gradient(135deg, #b8862e, #e0b060);
             border-radius: 50%;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            color: #fff;
             font-size: 16px;
+            box-shadow: 0 3px 10px rgba(184, 134, 46, 0.3);
         }
 
-        .badge-admin,
-        .badge-staff {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .badge-admin {
-            background: #b8862e;
-            color: white;
-        }
-
-        .badge-staff {
-            background: #e7f7ea;
-            color: #238a3b;
-        }
-
+        /* Content */
         .content-area {
-            padding: 30px;
+            padding: 28px 32px;
+            flex-grow: 1;
         }
 
         /* Badge Style */
@@ -342,13 +386,14 @@ try {
             70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
             100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
         }
+        
         /* --- NOTIFICATION BELL --- */
         .notification-wrapper { position: relative; margin-right: 20px; }
         .notification-btn { 
-            background: none; border: none; font-size: 20px; color: #555; position: relative; cursor: pointer;
+            background: none; border: none; font-size: 20px; color: #8a7f72; position: relative; cursor: pointer;
             transition: all 0.3s; padding: 5px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
         }
-        .notification-btn:hover { background: rgba(0,0,0,0.05); color: var(--accent); }
+        .notification-btn:hover { background: rgba(0,0,0,0.05); color: var(--accent-color); }
         .notification-badge {
             position: absolute; top: -2px; right: -2px; background: #ff4757; color: white;
             font-size: 10px; min-width: 16px; height: 16px; border-radius: 50%;
@@ -390,191 +435,197 @@ try {
 
     <!-- SIDEBAR -->
     <aside class="admin-sidebar">
-
+        <!-- Brand -->
         <div class="sidebar-brand">
-            <div class="brand-icon">
-                <i class="fas fa-utensils"></i>
-            </div>
+            <div class="brand-icon"><i class="fas fa-utensils"></i></div>
             <div class="brand-text">
                 <h2>RESTAURANTLY</h2>
-                <span>Admin Panel</span>
+                <span>Admin Control Panel</span>
             </div>
         </div>
 
-        <ul class="menu-list">
+        <div class="menu-scroll">
+            <ul class="menu-list">
 
-            <li>
-                <a href="/restaurant-project/index.php" target="_blank" class="view-home-btn">
-                    <i class="fas fa-home"></i>
-                    Xem Trang Chủ
-                </a>
-            </li>
-
-            <div class="menu-header">Vận hành Nhà hàng</div>
-
-            <li class="<?= isActive('admin_dashboard.php') ?>">
-                <a href="/restaurant-project/admin/admin_dashboard.php">
-                    <i class="fas fa-chart-pie"></i>
-                    Tổng Quan
-                </a>
-            </li>
-
-            <li class="<?= isActive('FoodController.php') ?>">
-                <a href="/restaurant-project/admin/controllers/FoodController.php">
-                    <i class="fas fa-utensils"></i>
-                    Quản lý Món ăn
-                </a>
-            </li>
-
-            <li class="<?= isActive('ComboController.php') ?>">
-                <a href="/restaurant-project/admin/controllers/ComboController.php">
-                    <i class="fas fa-layer-group"></i>
-                    Quản lý Combo
-                </a>
-            </li>
-
-            <li class="<?= isActive('manage_services.php') ?>">
-                <a href="/restaurant-project/admin/controllers/manage_services.php">
-                    <i class="fas fa-concierge-bell"></i>
-                    <span>Quản lý Dịch vụ</span>
-                    <?php if ($pending_services_count > 0): ?>
-                        <span class="badge-notify"><?= $pending_services_count ?></span>
-                    <?php endif; ?>
-                </a>
-            </li>
-
-            <li class="<?= isActive('InventoryController.php') ?>">
-                <a href="/restaurant-project/admin/controllers/InventoryController.php">
-                    <i class="fas fa-warehouse"></i>
-                    <span>Quản lý Kho</span>
-                    <?php if ($pending_transfers_count > 0): ?>
-                        <span class="badge-notify"><?= $pending_transfers_count ?></span>
-                    <?php endif; ?>
-                </a>
-            </li>
-
-            <li class="<?= isActive('ReportController.php') ?>">
-                <a href="/restaurant-project/admin/controllers/ReportController.php">
-                    <i class="fas fa-chart-line"></i>
-                    Báo cáo &amp; Thống kê
-                </a>
-            </li>
-
-            <li class="<?= isActive('manage_contacts.php') ?>">
-                <a href="/restaurant-project/admin/manage_contacts.php">
-                    <i class="fas fa-envelope"></i>
-                    Quản lý Liên hệ
-                </a>
-            </li>
-
-
-
-            <?php if ($is_admin): ?>
-
-                <div class="menu-header">Quản trị Hệ thống</div>
-
-                <li class="<?= isActive('manage_banners.php') ?>">
-                    <a href="/restaurant-project/admin/controllers/manage_banners.php">
-                        <i class="fas fa-image"></i>
-                        Quản lý Banner
+                <!-- View Homepage -->
+                <li style="list-style:none;">
+                    <a href="/restaurant-project/index.php" target="_blank" class="view-home-btn">
+                        <i class="fas fa-external-link-alt"></i> Xem Trang Chủ
                     </a>
                 </li>
 
-                <li class="<?= isActive('manage_videos.php') ?>">
-                    <a href="/restaurant-project/admin/controllers/manage_videos.php">
-                        <i class="fas fa-video"></i>
-                        Quản lý Video
+                <!-- Vận hành Nhà hàng -->
+                <div class="menu-header">Vận hành Nhà hàng</div>
+
+                <li class="<?= isActive('admin_dashboard.php') ?>">
+                    <a href="/restaurant-project/admin/admin_dashboard.php">
+                        <i class="fas fa-chart-pie"></i> Tổng Quan
+                    </a>
+                </li>
+
+                <li class="<?= isActive('FoodController.php') ?>">
+                    <a href="/restaurant-project/admin/controllers/FoodController.php">
+                        <i class="fas fa-utensils"></i> Quản lý Món ăn
+                    </a>
+                </li>
+
+                <li class="<?= ($current_page == 'list_combos.php' || $current_page == 'add_combo.php' || $current_page == 'edit_combo.php') ? 'active' : '' ?>">
+                    <a href="/restaurant-project/admin/list_combos.php">
+                        <i class="fas fa-layer-group"></i> Quản lý Combo
+                    </a>
+                </li>
+
+                <li class="<?= isActive('manage_services.php') ?>">
+                    <a href="/restaurant-project/admin/controllers/manage_services.php">
+                        <i class="fas fa-concierge-bell"></i>
+                        <span>Quản lý Dịch vụ</span>
+                        <?php if ($pending_services_count > 0): ?>
+                            <span class="badge-notify"><?= $pending_services_count ?></span>
+                        <?php endif; ?>
+                    </a>
+                </li>
+
+                <li class="<?= ($current_page == 'manage_inventory.php') ? 'active' : isActive('InventoryController.php') ?>">
+                    <a href="/restaurant-project/admin/controllers/InventoryController.php">
+                        <i class="fas fa-warehouse"></i>
+                        <span>Quản lý Kho</span>
+                        <?php if ($pending_transfers_count > 0): ?>
+                            <span class="badge-notify"><?= $pending_transfers_count ?></span>
+                        <?php endif; ?>
+                    </a>
+                </li>
+
+                <li class="<?= isActive('ReportController.php') ?>">
+                    <a href="/restaurant-project/admin/controllers/ReportController.php">
+                        <i class="fas fa-chart-line"></i> Báo cáo & Thống kê
+                    </a>
+                </li>
+
+                <li class="<?= ($current_page == 'manage_videos.php') ? 'active' : '' ?>">
+                    <a href="/restaurant-project/admin/manage_videos.php">
+                        <i class="fas fa-video"></i> Quản lý Video
+                    </a>
+                </li>
+
+                <li class="<?= isActive('manage_chefs.php') ?>">
+                    <a href="/restaurant-project/admin/manage_chefs.php">
+                        <i class="fas fa-users"></i> Quản lý Đầu bếp
+                    </a>
+                </li>
+
+                <li class="<?= isActive('manage_contacts.php') ?>">
+                    <a href="/restaurant-project/admin/manage_contacts.php">
+                        <i class="fas fa-envelope"></i> Quản lý Liên hệ
+                    </a>
+                </li>
+
+                <!-- Chỉ Admin mới thấy phần Cấu hình -->
+                <?php if ($is_admin): ?>
+                <div class="menu-header">Cấu hình</div>
+
+                <li class="<?= isActive('manage_users.php') ?>">
+                    <a href="/restaurant-project/admin/manage_users.php">
+                        <i class="fas fa-users-cog"></i> Quản lý Nhân sự
+                    </a>
+                </li>
+
+                <li class="<?= isActive('manage_banners.php') ?>">
+                    <a href="/restaurant-project/admin/controllers/manage_banners.php">
+                        <i class="fas fa-image"></i> Quản lý Banner
                     </a>
                 </li>
 
                 <li class="<?= isActive('manage_about.php') ?>">
                     <a href="/restaurant-project/admin/manage_about.php">
-                        <i class="fas fa-newspaper"></i>
-                        Quản lý Tin tức
-                    </a>
+                        <i class="fas fa-newspaper"></i> Quản lý Tin tức                    </a>
                 </li>
 
                 <li class="<?= isActive('settings.php') ?>">
                     <a href="/restaurant-project/admin/controllers/settings.php">
-                        <i class="fas fa-cog"></i>
-                        Cài Đặt Chung
+                        <i class="fas fa-cog"></i> Cài Đặt Chung
                     </a>
                 </li>
 
                 <li class="<?= isActive('footer_settings.php') ?>">
                     <a href="/restaurant-project/admin/footer_settings.php">
-                        <i class="fas fa-palette"></i>
-                        Cấu hình Footer
-                    </a>
-                </li>
-
-                <li class="<?= isActive('manage_users.php') ?>">
-                    <a href="/restaurant-project/admin/manage_users.php">
-                        <i class="fas fa-id-card"></i>
-                        Quản lý Nhân sự
+                        <i class="fas fa-palette"></i> Cấu hình Footer
                     </a>
                 </li>
 
                 <li class="<?= isActive('manage_shifts.php') ?>">
                     <a href="/restaurant-project/admin/manage_shifts.php">
-                        <i class="fas fa-calendar-alt"></i>
-                        Chia lịch làm việc
+                        <i class="fas fa-calendar-alt"></i> Chia lịch làm việc
                     </a>
                 </li>
 
                 <li class="<?= isActive('manage_attendance.php') ?>">
                     <a href="/restaurant-project/admin/views/attendance/manage_attendance.php">
-                        <i class="fas fa-user-check"></i>
-                        Kiểm tra Chấm công
+                        <i class="fas fa-user-check"></i> Kiểm tra Chấm công
                     </a>
                 </li>
 
                 <li class="<?= isActive('manage_payroll.php') ?>">
                     <a href="/restaurant-project/admin/manage_payroll.php">
-                        <i class="fas fa-file-invoice-dollar"></i>
-                        Quản lý Bảng lương
+                        <i class="fas fa-file-invoice-dollar"></i> Quản lý Bảng lương
                     </a>
                 </li>
 
                 <li class="<?= isActive('UserController.php') ?>">
                     <a href="/restaurant-project/admin/controllers/UserController.php">
-                        <i class="fas fa-users-cog"></i>
-                        Quản lý Người dùng
+                        <i class="fas fa-users-cog"></i> Quản lý Người dùng
                     </a>
                 </li>
+                <?php endif; ?>
 
-            <?php endif; ?>
-
-            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'staff'): ?>
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'staff'): ?>
                 <div class="menu-header">Nhân sự & Chấm công</div>
-                <li>
+                <li class="<?= isActive('employee_dashboard.php') ?>">
                     <a href="/restaurant-project/views/client/employee_dashboard.php">
-                        <i class="fas fa-clock"></i>
-                        Lịch làm & Chấm công
+                        <i class="fas fa-clock"></i> Lịch làm & Chấm công
                     </a>
                 </li>
-            <?php endif; ?>
+                <?php endif; ?>
 
         </ul>
 
         <!-- Logout -->
-
         <div class="logout-area">
-            <a href="/restaurant-project/admin/logout.php" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i>
-                Đăng xuất
+            <a href="/restaurant-project/public/logout.php" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Đăng xuất
             </a>
         </div>
-
     </aside>
 
-    <!-- MAIN -->
+    <!-- MAIN WRAPPER -->
     <div class="main-wrapper">
-
         <header class="topbar">
-
             <h4 class="topbar-title">
-                <?= $page_title ?>
+                <?php
+                $page_titles = [
+                    'admin_dashboard.php'     => 'Bảng Điều Khiển Tổng Quan',
+                    'FoodController.php'      => 'Quản Lý Thực Đơn',
+                    'list_combos.php'         => 'Quản Lý Combo',
+                    'add_combo.php'           => 'Thêm Combo',
+                    'edit_combo.php'          => 'Chỉnh Sửa Combo',
+                    'manage_services.php'     => 'Quản Lý Dịch Vụ',
+                    'InventoryController.php' => 'Quản Lý Kho Nguyên Liệu',
+                    'manage_inventory.php'    => 'Quản Lý Kho Nguyên Liệu',
+                    'ReportController.php'    => 'Báo Cáo & Thống Kê Kho',
+                    'manage_chefs.php'        => 'Quản Lý Đầu Bếp',
+                    'manage_banners.php'      => 'Quản Lý Banner',
+                    'manage_videos.php'       => 'Quản Lý Video',
+                    'settings.php'            => 'Cài Đặt Hệ Thống Chung',
+                    'footer_settings.php'     => 'Cấu Hình Giao Diện Footer',
+                    'manage_users.php'        => 'Quản Lý Nhân Sự',
+                    'manage_about.php'        => 'Quản Lý Tin Tức',
+                    'manage_contacts.php'     => 'Quản Lý Liên Hệ',
+                    'manage_shifts.php'       => 'Chia Lịch Làm Việc',
+                    'manage_attendance.php'   => 'Kiểm Tra Chấm Công',
+                    'manage_payroll.php'      => 'Quản Lý Bảng Lương',
+                    'UserController.php'      => 'Quản Lý Người Dùng',
+                ];
+                echo $page_titles[$current_page] ?? 'Khu Vực Quản Trị';
+                ?>
             </h4>
 
             <div class="d-flex align-items-center">
@@ -635,37 +686,34 @@ try {
                     </div>
                 </div>
 
-            <div class="user-profile">
-                <div class="user-info">
-                    <strong>
-                        <?= htmlspecialchars($_SESSION['username'] ?? ($_SESSION['user_name'] ?? 'Tài khoản')) ?>
-                    </strong>
-                    <?php if ($is_admin): ?>
-                        <div class="badge-admin">Quản trị viên</div>
-                    <?php else: ?>
-                        <div class="badge-staff">Nhân viên</div>
-                    <?php endif; ?>
-                </div>
-                <div class="user-avatar">
-                    <i class="fas fa-user-shield"></i>
+                <div class="user-profile">
+                    <div class="user-info">
+                        <strong><?= htmlspecialchars($_SESSION['username'] ?? ($_SESSION['user_name'] ?? 'Tài khoản')) ?></strong>
+                        <?php if ($is_admin): ?>
+                            <span class="badge-admin">Quản trị viên</span>
+                        <?php else: ?>
+                            <span class="badge-staff">Nhân viên</span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="user-avatar">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
                 </div>
             </div>
-
         </header>
 
         <div class="content-area">
-
-    <script>
-        function toggleNotify() {
-            const dropdown = document.getElementById('notifyDropdown');
-            dropdown.classList.toggle('show');
-        }
-        window.addEventListener('click', function(event) {
-            if (!event.target.closest('.notification-wrapper')) {
-                const dropdown = document.getElementById('notifyDropdown');
-                if (dropdown && dropdown.classList.contains('show')) {
-                    dropdown.classList.remove('show');
+            <script>
+                function toggleNotify() {
+                    const dropdown = document.getElementById('notifyDropdown');
+                    dropdown.classList.toggle('show');
                 }
-            }
-        });
-    </script>
+                window.addEventListener('click', function(event) {
+                    if (!event.target.closest('.notification-wrapper')) {
+                        const dropdown = document.getElementById('notifyDropdown');
+                        if (dropdown && dropdown.classList.contains('show')) {
+                            dropdown.classList.remove('show');
+                        }
+                    }
+                });
+            </script>

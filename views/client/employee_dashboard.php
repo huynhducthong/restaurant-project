@@ -4,7 +4,7 @@ require_once __DIR__ . '/../../config/database.php';
 $db = (new Database())->getConnection();
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: /restaurant-project/admin/login.php');
+    header('Location: /restaurant-project/public/login.php');
     exit;
 }
 
@@ -33,57 +33,27 @@ $stmt->execute([$emp_id]);
 $my_shift = $stmt->fetch(PDO::FETCH_ASSOC);
 ?>
 
-<div class="alert alert-info py-2 small">
+<div class="alert alert-info py-2 small mb-4">
     <i class="fas fa-info-circle me-2"></i> 
     Đang đăng nhập: <strong><?= htmlspecialchars($user_data['full_name']) ?></strong> 
     (Mã NV: <?= $emp_id ?>) - Ngày hệ thống: <?= date('d/m/Y') ?>
 </div>
 
-<div class="card text-center p-4 shadow-sm">
-    <?php if ($my_shift): ?>
-        <h5>Ca làm hiện tại: <span class="text-primary">
-                <?= $my_shift['shift_name'] ?>
-            </span></h5>
-        <p class="text-muted">
-            <?= $my_shift['start_time'] ?> -
-            <?= $my_shift['end_time'] ?>
-        </p>
-
-        <div id="countdown-timer" class="display-4 fw-bold mb-3 text-warning">00:00:00</div>
-
-        <?php if (!$my_shift['check_in']): ?>
-            <button class="btn btn-lg btn-success w-100 py-4 shadow-lg" onclick="doAttendance(<?= $my_shift['id'] ?>, 'check_in')" style="font-size: 1.5rem; font-weight: 800;">
-                <i class="fas fa-sign-in-alt me-3"></i> BẤM VÀO ĐÂY ĐỂ CHECK-IN
-            </button>
-        <?php else: ?>
-            <button class="btn btn-lg btn-danger w-100 py-4 shadow-lg" onclick="doAttendance(<?= $my_shift['id'] ?>, 'check_out')" style="font-size: 1.5rem; font-weight: 800;">
-                <i class="fas fa-sign-out-alt me-3"></i> BẤM VÀO ĐÂY ĐỂ CHECK-OUT
-            </button>
-        <?php endif; ?>
-    <?php else: ?>
-        <p class="text-muted">Hôm nay bạn không có lịch phân công ca làm việc.</p>
-    <?php endif; ?>
+<div class="card p-5 text-center shadow-sm border-0 bg-white" style="border-radius: 15px;">
+    <div class="mb-4">
+        <i class="fas fa-id-badge fa-4x text-primary animate-bounce"></i>
+    </div>
+    <h3 class="fw-bold text-dark mb-2">Xin chào, <?= htmlspecialchars($user_data['full_name']) ?>!</h3>
+    <p class="text-muted fs-6 mb-4">Chào mừng bạn đến với Cổng thông tin nội bộ của **Reastaurant Reastaurantly**.</p>
+    
+    <div class="alert alert-light border d-inline-block py-3 px-4 mb-0" style="border-radius: 10px; max-width: 600px; margin: 0 auto;">
+        <p class="mb-2 fw-medium text-dark"><i class="fas fa-info-circle text-info me-2"></i> Thông báo Chấm công</p>
+        <span class="small text-muted d-block text-start">
+            Hệ thống chấm công trực tuyến tự động đã được chuyển sang chế độ <strong>Quản lý Nội bộ trực tiếp bởi Quản lý/Chủ nhà hàng</strong>. 
+            Bạn không cần tự check-in trên website nữa. Mọi thông tin ngày công và bảng lương của bạn sẽ được tính toán trực tiếp và hiển thị đầy đủ trong phiếu lương cuối kỳ.
+        </span>
+    </div>
 </div>
-
-<script>
-    function doAttendance(id, action) {
-        const formData = new FormData();
-        formData.append('assignment_id', id);
-        formData.append('action', action);
-
-        fetch('../../admin/ajax/ajax_attendance.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(res => {
-            alert(res.message);
-            if (res.status === 'success') location.reload();
-        })
-        .catch(err => {
-            alert("Lỗi kết nối hệ thống hoặc phiên đăng nhập hết hạn!");
-            console.error(err);
-        });
-    }
-    // Logic đếm ngược đơn giản dựa trên my_shift.start_time có thể thêm tại đây
-</script>
+</div>
+</body>
+</html>
