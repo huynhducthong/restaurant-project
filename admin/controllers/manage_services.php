@@ -290,6 +290,9 @@ $filter = $_GET['filter'] ?? 'all';
 if ($filter == 'all') {
     $stmt = $db->prepare("SELECT * FROM service_bookings WHERE is_archived = 0 ORDER BY created_at DESC");
     $stmt->execute();
+} elseif ($filter == 'bespoke') {
+    $stmt = $db->prepare("SELECT * FROM service_bookings WHERE chef_requirements IS NOT NULL AND chef_requirements != '' AND is_archived = 0 ORDER BY created_at DESC");
+    $stmt->execute();
 } else {
     $stmt = $db->prepare("SELECT * FROM service_bookings WHERE service_type = :type AND is_archived = 0 ORDER BY created_at DESC");
     $stmt->execute([':type' => $filter]);
@@ -362,7 +365,7 @@ include '../../public/admin_layout_header.php';
             <h4 class="fw-bold m-0"><i class="fas fa-clipboard-list me-2" style="color: var(--gold);"></i>Danh sách yêu
                 cầu dịch vụ</h4>
             <div class="btn-group">
-                <?php foreach (['all' => 'Tất cả', 'table' => 'Đặt bàn', 'birthday' => 'Sinh nhật', 'chef' => 'Đầu bếp'] as $k => $v): ?>
+                <?php foreach (['all' => 'Tất cả', 'table' => 'Đặt bàn', 'birthday' => 'Sinh nhật', 'chef' => 'Đầu bếp', 'bespoke' => '✨ Thiết kế riêng'] as $k => $v): ?>
                     <a href="?filter=<?= $k ?>"
                         class="btn filter-btn <?= $filter == $k ? 'btn-dark' : 'btn-outline-gold' ?>"><?= $v ?></a>
                 <?php endforeach; ?>
@@ -395,8 +398,13 @@ include '../../public/admin_layout_header.php';
                                     </div>
                                 </div>
                             </td>
-                            <td><span
-                                    class="badge bg-light text-dark border"><?= htmlspecialchars(ucfirst($s['service_type'])) ?></span>
+                            <td>
+                                <span class="badge bg-light text-dark border"><?= htmlspecialchars(ucfirst($s['service_type'])) ?></span>
+                                <?php if (!empty($s['chef_requirements'])): ?>
+                                    <div class="mt-1">
+                                        <span class="badge bg-warning text-dark border-gold" style="font-size: 10px; border: 1px solid var(--gold); background: #fff5e6;"><i class="fas fa-scroll me-1" style="color:#b38600;"></i>Thiết kế riêng</span>
+                                    </div>
+                                <?php endif; ?>
                             </td>
                             <td>
                                 <strong><?= date('d/m/Y H:i', strtotime($s['booking_date'])) ?></strong>
@@ -488,25 +496,34 @@ include '../../public/admin_layout_header.php';
                         <div class="col-7 fw-bold text-dark" id="m-combo"></div>
                     </div>
 
-                    <!-- ANNIVERSARY SPECIAL FIELDS -->
-                    <div id="anniversary-details" style="display:none;" class="mt-2 pt-2 border-top">
-                        <div class="row mb-2">
-                            <div class="col-5 text-muted small">Loại kỷ niệm:</div>
+                    <!-- BESPOKE SPECIAL FIELDS -->
+                    <div id="bespoke-details" style="display:none;" class="mt-2 pt-2 border-top">
+                        <h6 class="fw-bold mb-2" style="color:var(--gold); font-size:13px;"><i class="fas fa-magic me-1"></i> Trải nghiệm Cá nhân hóa</h6>
+                        <div class="row mb-2" id="row-event-type" style="display:none;">
+                            <div class="col-5 text-muted small">Dịp đặc biệt:</div>
                             <div class="col-7 fw-bold text-primary" id="m-event-type"></div>
                         </div>
-                        <div class="row mb-2">
+                        <div class="row mb-2" id="row-decor" style="display:none;">
                             <div class="col-5 text-muted small">Gói trang trí:</div>
                             <div class="col-7 fw-bold" id="m-decor"></div>
                         </div>
-                        <div class="row mb-2">
+                        <div class="row mb-2" id="row-addons" style="display:none;">
                             <div class="col-5 text-muted small">Dịch vụ thêm:</div>
                             <div class="col-7" id="m-addons"></div>
+                        </div>
+                        <div class="row mb-2" id="row-vip" style="display:none;">
+                            <div class="col-5 text-muted small">Cấu hình VIP:</div>
+                            <div class="col-7 fw-bold" id="m-vip"></div>
                         </div>
                     </div>
 
                     <div class="row mb-2">
                         <div class="col-5 text-muted">Món ăn:</div>
                         <div class="col-7" id="m-foods"></div>
+                    </div>
+                    <div class="row mb-2" id="row-chef-req" style="display:none;">
+                        <div class="col-5 text-muted" style="color:#e6a817;"><i class="fas fa-scroll me-1"></i>Y/c Bếp trưởng:</div>
+                        <div class="col-7 fst-italic text-warning fw-semibold" id="m-chef-req" style="white-space: pre-wrap;"></div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-5 text-muted">Ghi chú:</div>
@@ -702,18 +719,46 @@ include '../../public/admin_layout_header.php';
                     $('#m-guests').text(data.guests + ' người');
                     $('#m-combo').text(data.combo_name ? data.combo_name : 'Không');
                     
-                    // Xử lý thông tin kỷ niệm
-                    if (data.service_type === 'birthday') {
-                        $('#anniversary-details').show();
-                        $('#m-event-type').text(data.event_type || 'Kỷ niệm / Sinh nhật');
-                        $('#m-decor').text(data.decor_package || 'Mặc định');
-                        
-                        let addons = [];
-                        if (parseInt(data.has_cake)) addons.push('<span class="badge bg-light text-dark border me-1"><i class="fas fa-birthday-cake text-danger me-1"></i>Bánh kem</span>');
-                        if (parseInt(data.has_flower)) addons.push('<span class="badge bg-light text-dark border"><i class="fas fa-seedling text-success me-1"></i>Hoa tươi</span>');
-                        $('#m-addons').html(addons.length > 0 ? addons.join('') : '<span class="text-muted small">Không có</span>');
+                    // Xử lý thông tin Bespoke / Kỷ niệm
+                    let showBespoke = false;
+                    
+                    if (data.event_type) {
+                        $('#row-event-type').show();
+                        $('#m-event-type').text(data.event_type);
+                        showBespoke = true;
+                    } else { $('#row-event-type').hide(); }
+                    
+                    if (data.decor_package) {
+                        $('#row-decor').show();
+                        $('#m-decor').text(data.decor_package);
+                        showBespoke = true;
+                    } else { $('#row-decor').hide(); }
+                    
+                    let addons = [];
+                    if (parseInt(data.has_cake)) addons.push('<span class="badge bg-light text-dark border me-1 mb-1"><i class="fas fa-birthday-cake text-danger me-1"></i>Bánh kem</span>');
+                    if (parseInt(data.has_flower)) addons.push(`<span class="badge bg-light text-dark border me-1 mb-1" title="${data.flower_preference || ''}"><i class="fas fa-seedling text-success me-1"></i>Hoa tươi${data.flower_preference ? ' (' + data.flower_preference + ')' : ''}</span>`);
+                    if (parseInt(data.has_candle)) addons.push('<span class="badge bg-light text-dark border me-1 mb-1"><i class="fas fa-fire text-warning me-1"></i>Nến thơm</span>');
+                    if (parseInt(data.has_handwritten_card)) addons.push(`<span class="badge bg-light text-dark border me-1 mb-1" title="${data.card_message || ''}"><i class="fas fa-envelope text-primary me-1"></i>Thiệp tay${data.card_message ? ' (' + data.card_message + ')' : ''}</span>`);
+                    
+                    if (addons.length > 0) {
+                        $('#row-addons').show();
+                        $('#m-addons').html(addons.join(''));
+                        showBespoke = true;
+                    } else { $('#row-addons').hide(); }
+                    
+                    if (data.music_playlist || data.light_tone) {
+                        $('#row-vip').show();
+                        let vipConfig = [];
+                        if (data.music_playlist) vipConfig.push('<i class="fas fa-music me-1"></i> ' + data.music_playlist);
+                        if (data.light_tone) vipConfig.push('<i class="fas fa-lightbulb me-1"></i> ' + data.light_tone);
+                        $('#m-vip').html(vipConfig.join('<br>'));
+                        showBespoke = true;
+                    } else { $('#row-vip').hide(); }
+                    
+                    if (showBespoke) {
+                        $('#bespoke-details').show();
                     } else {
-                        $('#anniversary-details').hide();
+                        $('#bespoke-details').hide();
                     }
                     
                     let foodsHtml = '';
@@ -727,6 +772,15 @@ include '../../public/admin_layout_header.php';
                     $('#m-foods').html(foodsHtml);
 
                     $('#m-msg').text(data.message || 'Không có ghi chú.');
+                    
+                    // --- YÊU CẦU BẾP TRƯỞNG ---
+                    if (data.chef_requirements) {
+                        $('#row-chef-req').show();
+                        $('#m-chef-req').text(data.chef_requirements);
+                    } else {
+                        $('#row-chef-req').hide();
+                    }
+
                     
                     let formatter = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
                     $('#m-total').text(formatter.format(data.total_amount || 0));

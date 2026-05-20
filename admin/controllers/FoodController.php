@@ -95,6 +95,9 @@ if ($action === 'add') {
         $old['category_id'] = trim($_POST['category_id'] ?? '');
         $old['price'] = trim($_POST['price'] ?? '');
         $old['description'] = trim($_POST['description'] ?? '');
+        $old['allergens'] = trim($_POST['allergens'] ?? '');
+        $old['wine_pairing_id'] = !empty($_POST['wine_pairing_id']) ? (int)$_POST['wine_pairing_id'] : null;
+        $old['chef_note'] = trim($_POST['chef_note'] ?? '');
 
         if ($old['name'] === '')
             $errors[] = 'Tên món ăn không được để trống.';
@@ -117,14 +120,18 @@ if ($action === 'add') {
             $db->beginTransaction();
             try {
                 $db->prepare(
-                    "INSERT INTO foods (name, category_id, price, description, image, is_active)
-                     VALUES (?, ?, ?, ?, ?, 1)"
+                    "INSERT INTO foods (name, category_id, price, description, allergens, wine_pairing_id, chef_note, image, is_active, is_chef_recommended)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)"
                 )->execute([
                             $old['name'],
                             (int) $old['category_id'],
                             $price_val,
                             $old['description'],
+                            $old['allergens'],
+                            $old['wine_pairing_id'],
+                            $old['chef_note'],
                             $image_name,
+                            isset($_POST['is_chef_recommended']) ? 1 : 0
                         ]);
                 saveRecipes($db, (int) $db->lastInsertId());
                 $db->commit();
@@ -141,6 +148,7 @@ if ($action === 'add') {
     $categories = $db->query("SELECT * FROM categories ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
     $ingredients = $db->query("SELECT id, item_name, unit_name FROM inventory ORDER BY item_name ASC")->fetchAll(PDO::FETCH_ASSOC);
     $all_units = $db->query("SELECT name FROM inventory_units ORDER BY name ASC")->fetchAll(PDO::FETCH_COLUMN);
+    $drinks = $db->query("SELECT id, name FROM foods WHERE is_active = 1 AND category_id IN (SELECT id FROM categories WHERE name LIKE '%uống%') ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
 
     require_once __DIR__ . '/../views/food/formfood.php';
     exit;
@@ -179,6 +187,10 @@ if ($action === 'edit') {
         'category_id' => $food['category_id'],
         'price' => $food['price'],
         'description' => $food['description'],
+        'allergens' => $food['allergens'],
+        'wine_pairing_id' => $food['wine_pairing_id'],
+        'chef_note' => $food['chef_note'],
+        'is_chef_recommended' => $food['is_chef_recommended'],
     ];
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -186,6 +198,9 @@ if ($action === 'edit') {
         $old['category_id'] = trim($_POST['category_id'] ?? '');
         $old['price'] = trim($_POST['price'] ?? '');
         $old['description'] = trim($_POST['description'] ?? '');
+        $old['allergens'] = trim($_POST['allergens'] ?? '');
+        $old['wine_pairing_id'] = !empty($_POST['wine_pairing_id']) ? (int)$_POST['wine_pairing_id'] : null;
+        $old['chef_note'] = trim($_POST['chef_note'] ?? '');
 
         if ($old['name'] === '')
             $errors[] = 'Tên món ăn không được để trống.';
@@ -205,14 +220,18 @@ if ($action === 'edit') {
             $db->beginTransaction();
             try {
                 $db->prepare(
-                    "UPDATE foods SET name=?, category_id=?, price=?, description=?, image=? WHERE id=?"
+                    "UPDATE foods SET name=?, category_id=?, price=?, description=?, allergens=?, wine_pairing_id=?, chef_note=?, image=?, is_chef_recommended=? WHERE id=?"
                 )->execute([
                             $old['name'],
                             (int) $old['category_id'],
                             $price_val,
                             $old['description'],
+                            $old['allergens'],
+                            $old['wine_pairing_id'],
+                            $old['chef_note'],
                             $final_image,
-                            $id,
+                            isset($_POST['is_chef_recommended']) ? 1 : 0,
+                            $id
                         ]);
                 saveRecipes($db, $id);
                 $db->commit();
@@ -228,6 +247,9 @@ if ($action === 'edit') {
                     'category_id' => $food['category_id'],
                     'price' => $food['price'],
                     'description' => $food['description'],
+                    'allergens' => $food['allergens'],
+                    'wine_pairing_id' => $food['wine_pairing_id'],
+                    'chef_note' => $food['chef_note'],
                 ];
             } catch (Exception $e) {
                 $db->rollBack();
@@ -240,6 +262,7 @@ if ($action === 'edit') {
     $categories = $db->query("SELECT * FROM categories ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
     $ingredients = $db->query("SELECT id, item_name, unit_name FROM inventory ORDER BY item_name ASC")->fetchAll(PDO::FETCH_ASSOC);
     $all_units = $db->query("SELECT name FROM inventory_units ORDER BY name ASC")->fetchAll(PDO::FETCH_COLUMN);
+    $drinks = $db->query("SELECT id, name FROM foods WHERE is_active = 1 AND category_id IN (SELECT id FROM categories WHERE name LIKE '%uống%') ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
 
     require_once __DIR__ . '/../views/food/formfood.php';
     exit;

@@ -909,6 +909,56 @@ if ($is_success) {
                 <?php endif; ?>
             </div>
 
+            <?php 
+                $has_bespoke = !empty($booking['has_candle']) || !empty($booking['has_handwritten_card']) || !empty($booking['has_flower']) || !empty($booking['event_type']) || !empty($booking['music_playlist']);
+                if ($has_bespoke): 
+            ?>
+            <div style="margin-bottom: 40px;">
+                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--g1); margin-bottom: 15px;"><i class="fas fa-magic me-2" style="color:var(--gold);"></i> Trải Nghiệm Cá Nhân Hóa (Bespoke)</h4>
+                <div style="background: rgba(205, 164, 94, 0.05); border: 1px solid rgba(205, 164, 94, 0.2); border-radius: 12px; padding: 25px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                        <?php if (!empty($booking['event_type'])): ?>
+                            <div>
+                                <span style="font-size: 11px; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Dịp Đặc Biệt</span>
+                                <span style="font-size: 14px; font-weight: 600; color: var(--g1);"><?= htmlspecialchars($booking['event_type']) ?></span>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($booking['has_candle'])): ?>
+                            <div>
+                                <span style="font-size: 11px; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Trang Trí</span>
+                                <span style="font-size: 14px; font-weight: 600; color: var(--g1);">🕯 Nến thơm</span>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($booking['has_handwritten_card'])): ?>
+                            <div>
+                                <span style="font-size: 11px; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Thiệp Viết Tay</span>
+                                <span style="font-size: 14px; font-weight: 600; color: var(--g1);">✉️ <?= htmlspecialchars($booking['card_message'] ?: 'Chúc mừng') ?></span>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($booking['has_flower'])): ?>
+                            <div>
+                                <span style="font-size: 11px; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Hoa Tươi Thiết Kế</span>
+                                <span style="font-size: 14px; font-weight: 600; color: var(--g1);">💐 <?= htmlspecialchars($booking['flower_preference'] ?: 'Hoa theo mùa') ?></span>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($booking['music_playlist']) || !empty($booking['light_tone'])): ?>
+                            <div>
+                                <span style="font-size: 11px; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Cấu Hình Phòng VIP</span>
+                                <span style="font-size: 14px; font-weight: 600; color: var(--g1);">
+                                    <?= htmlspecialchars($booking['music_playlist'] ?: 'Không nhạc') ?> 
+                                    <?= !empty($booking['light_tone']) ? ' · ' . htmlspecialchars($booking['light_tone']) : '' ?>
+                                </span>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+
             <div style="background: var(--g0); color: #fff; padding: 25px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5);">Tiền tạm tính</div>

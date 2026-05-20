@@ -469,8 +469,8 @@ try {
                     </a>
                 </li>
 
-                <li class="<?= ($current_page == 'list_combos.php' || $current_page == 'add_combo.php' || $current_page == 'edit_combo.php') ? 'active' : '' ?>">
-                    <a href="/restaurant-project/admin/list_combos.php">
+                <li class="<?= ($current_page == 'ComboController.php' || $current_page == 'add_combo.php' || $current_page == 'edit_combo.php') ? 'active' : '' ?>">
+                    <a href="/restaurant-project/admin/controllers/ComboController.php">
                         <i class="fas fa-layer-group"></i> Quản lý Combo
                     </a>
                 </li>
@@ -502,7 +502,7 @@ try {
                 </li>
 
                 <li class="<?= ($current_page == 'manage_videos.php') ? 'active' : '' ?>">
-                    <a href="/restaurant-project/admin/manage_videos.php">
+                    <a href="/restaurant-project/admin/controllers/manage_videos.php">
                         <i class="fas fa-video"></i> Quản lý Video
                     </a>
                 </li>
@@ -604,6 +604,7 @@ try {
                 $page_titles = [
                     'admin_dashboard.php'     => 'Bảng Điều Khiển Tổng Quan',
                     'FoodController.php'      => 'Quản Lý Thực Đơn',
+                    'ComboController.php'     => 'Quản Lý Combo',
                     'list_combos.php'         => 'Quản Lý Combo',
                     'add_combo.php'           => 'Thêm Combo',
                     'edit_combo.php'          => 'Chỉnh Sửa Combo',

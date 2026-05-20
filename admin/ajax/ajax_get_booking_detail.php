@@ -33,7 +33,7 @@ try {
 
     // 2. Lấy danh sách món ăn đã đặt
     $stmt_items = $db->prepare("
-        SELECT bd.*, f.name as food_name, f.unit_name as food_unit, f.price
+        SELECT bd.*, f.name as food_name, f.price
         FROM booking_details bd
         JOIN foods f ON bd.menu_id = f.id
         WHERE bd.booking_id = ?

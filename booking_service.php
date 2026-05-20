@@ -9,7 +9,7 @@ $type = $_GET['type'] ?? 'table';
 $svc  = [
     'table'    => ['title'=>'Đặt Chỗ Cao Cấp','sub'=>'Ẩm thực đỉnh cao chuẩn Michelin','icon'=>'table'],
     'birthday' => ['title'=>'Không Gian Kỷ Niệm','sub'=>'Riêng tư, sang trọng và đẳng cấp','icon'=>'birthday'],
-    'chef'     => ['title'=>'Đầu Bếp Tại Gia','sub'=>'Mang tinh hoa 5 sao về gian bếp nhà bạn','icon'=>'chef'],
+    'chef'     => ['title'=>'Đầu Bếp Tại Gia','sub'=>'Trải nghiệm ẩm thực thượng lưu phục vụ tại tư gia','icon'=>'chef'],
 ];
 $cfg   = $svc[$type] ?? $svc['table'];
 $combos = $db->query(
@@ -174,11 +174,25 @@ body {
 .input-lux::placeholder { color: transparent; }
 .label-lux {
     position: absolute; top: 16px; left: 20px; color: var(--text-muted); font-size: 14px;
-    pointer-events: none; transition: 0.3s ease;
+    pointer-events: none; transition: 0.3s ease; z-index: 2;
 }
-.input-lux:focus ~ .label-lux, .input-lux:not(:placeholder-shown) ~ .label-lux {
+.input-lux:focus ~ .label-lux, 
+.input-lux:not(:placeholder-shown) ~ .label-lux,
+select.input-lux ~ .label-lux {
     top: -8px; left: 15px; font-size: 11px; color: var(--gold);
     background: var(--forest); padding: 0 5px; letter-spacing: 1px; text-transform: uppercase;
+    z-index: 2;
+}
+select.input-lux {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4B06A'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 18px;
+    padding-right: 45px;
+    cursor: pointer;
 }
 .input-lux option { background: var(--bg-dark); color: #fff; }
 
@@ -395,35 +409,84 @@ body {
                     <select id="tsel" class="input-lux" style="display:none;" onchange="fromDrop(this)">
                         <option value="" data-price="0"></option>
                         <?php foreach($t_open as $t): ?>
-                            <option value="<?= $t['id'] ?>" data-price="<?= $t['price'] ?>" data-code="<?= $t['table_code'] ?>"></option>
+                            <option value="<?= $t['id'] ?>" data-price="<?= $t['price'] ?>" data-code="<?= $t['table_code'] ?>" data-loc="<?= htmlspecialchars($t['table_location']??'') ?>" data-cat="open"></option>
                         <?php endforeach; ?>
                         <?php foreach($t_room as $r): ?>
-                            <option value="<?= $r['id'] ?>" data-price="<?= $r['price'] ?>" data-code="VIP <?= $r['table_code'] ?>"></option>
+                            <option value="<?= $r['id'] ?>" data-price="<?= $r['price'] ?>" data-code="VIP <?= $r['table_code'] ?>" data-loc="<?= htmlspecialchars($r['table_location']??'') ?>" data-cat="room"></option>
                         <?php endforeach; ?>
                     </select>
                 <?php else: ?>
-                    <div class="input-group-lux">
-                        <textarea name="service_address" id="saddr" class="input-lux" rows="2" placeholder=" " required oninput="us()"></textarea>
-                        <label class="label-lux">Địa chỉ chi tiết nơi Đầu bếp đến *</label>
+                    <!-- Địa điểm phục vụ (Địa chỉ) -->
+                    <div class="input-group-lux mb-4">
+                        <select id="saddr_select" class="input-lux" onchange="toggleAddrInput(); us();">
+                            <?php if (empty($user_addresses)): ?>
+                                <option value="custom">Nhập địa chỉ mới...</option>
+                            <?php else: ?>
+                                <?php foreach ($user_addresses as $addr): 
+                                    $full_addr = $addr['address_details'] . ', ' . $addr['ward'] . ', ' . $addr['district'] . ', ' . $addr['province'];
+                                ?>
+                                    <option value="<?= htmlspecialchars($full_addr) ?>">
+                                        <?= htmlspecialchars(($addr['address_name'] ?? 'Địa chỉ') . ': ' . $full_addr) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                                <option value="custom">Nhập địa chỉ mới...</option>
+                            <?php endif; ?>
+                        </select>
+                        <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: var(--forest); padding: 0 5px; letter-spacing: 1px; text-transform: uppercase;">Địa điểm phục vụ</label>
                     </div>
-                    <?php if (!empty($user_addresses)): ?>
-                        <div class="mt-1 d-flex flex-wrap gap-2">
-                            <?php foreach ($user_addresses as $addr): ?>
-                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0" 
-                                        onclick="document.getElementById('saddr').value='<?= addslashes($addr['address_detail']) ?>'; us();"
-                                        style="font-size: 10px; border-color: rgba(212, 176, 106, 0.3); color: var(--gold);">
-                                    <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($addr['address_type']) ?>
-                                </button>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
+
+                    <div class="input-group-lux mb-4" id="custom-addr-wrap" style="display: <?= empty($user_addresses) ? 'block' : 'none' ?>;">
+                        <input type="text" id="custom_saddr" class="input-lux" placeholder=" " oninput="updateSaddrVal(); us();">
+                        <label class="label-lux">Địa chỉ phục vụ chi tiết *</label>
+                    </div>
+
+                    <!-- Hidden input to hold the final address and match saddr ID -->
+                    <input type="hidden" name="service_address" id="saddr" value="">
+
+                    <script>
+                    function toggleAddrInput() {
+                        var select = document.getElementById('saddr_select');
+                        var wrap = document.getElementById('custom-addr-wrap');
+                        var customInput = document.getElementById('custom_saddr');
+                        if (select) {
+                            if (select.value === 'custom') {
+                                if (wrap) wrap.style.display = 'block';
+                                if (customInput) customInput.setAttribute('required', 'required');
+                            } else {
+                                if (wrap) wrap.style.display = 'none';
+                                if (customInput) customInput.removeAttribute('required');
+                            }
+                        }
+                        updateSaddrVal();
+                        if (typeof updateChefReq === 'function') updateChefReq();
+                    }
+                    function updateSaddrVal() {
+                        var select = document.getElementById('saddr_select');
+                        var customInput = document.getElementById('custom_saddr');
+                        var finalAddr = document.getElementById('saddr');
+                        if (finalAddr) {
+                            if (select && select.value === 'custom') {
+                                finalAddr.value = customInput ? customInput.value : '';
+                            } else if (select) {
+                                finalAddr.value = select.value;
+                            }
+                        }
+                        if (typeof updateChefReq === 'function') updateChefReq();
+                    }
+                    // Run once on load
+                    window.addEventListener('DOMContentLoaded', function() {
+                        toggleAddrInput();
+                    });
+                    </script>
                 <?php endif; ?>
             </div>
+
+
 
             <div class="panel-section">
                 <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold);">Tinh Hoa Ẩm Thực</h3>
                 <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">Gói Combo Đặc Biệt</p>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom: 25px;">
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:15px; margin-bottom: 25px;">
                     <div class="card-select cc active" data-price="0" onclick="selCombo(0,this)">
                         <div style="color:var(--gold); font-size:15px; margin-bottom:5px;">Gọi Món Tự Do</div>
                         <div style="font-size:11px; color:var(--text-muted)">A la Carte</div>
@@ -434,26 +497,66 @@ body {
                             <div style="font-size:12px; color:var(--text-main)"><?= number_format($cb['price']) ?> đ</div>
                         </div>
                     <?php endforeach; ?>
+                    <div class="card-select cc" id="opt-bespoke-menu" data-price="0" onclick="selCombo(-1,this)" style="border: 1px dashed var(--gold); background: linear-gradient(135deg, rgba(212,176,106,0.08), rgba(20,59,54,0.3));">
+                        <div style="color:var(--gold); font-size:15px; margin-bottom:5px;"><i class="fas fa-scroll me-1"></i> Thiết Kế Riêng</div>
+                        <div style="font-size:11px; color:var(--gold)">Bespoke Tasting Menu</div>
+                    </div>
                 </div>
 
-                <?php if(!empty($foods)): ?>
-                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px; letter-spacing:1px; text-transform:uppercase;">Thực Đơn Chọn Trước (Add-on)</p>
-                    <div style="max-height: 250px; overflow-y: auto; padding-right:10px;">
-                        <?php foreach($foods as $fd): ?>
-                        <div class="menu-item-lux" id="mr<?= $fd['id'] ?>">
-                            <div style="display:flex; align-items:center; gap:15px;">
-                                <input type="checkbox" class="menu-checkbox" name="menu_items[]" value="<?= $fd['id'] ?>" onchange="togMrow(this,<?= $fd['id'] ?>,<?= (float)$fd['price'] ?>)">
-                                <div>
-                                    <div style="font-size:14px;"><?= htmlspecialchars($fd['name']) ?></div>
-                                    <div style="font-size:12px; color:var(--gold)"><?= number_format($fd['price']) ?> đ</div>
-                                </div>
-                            </div>
-                            <input type="number" class="menu-qty-input" name="quantity[<?= $fd['id'] ?>]" id="q<?= $fd['id'] ?>" value="1" min="1" onchange="us()">
+                <div id="bespoke-menu-fields" style="display:none; margin-top:20px; border: 1px solid rgba(212,176,106,0.2); padding:20px; border-radius:8px; background:rgba(20,59,54,0.15);">
+                    <h4 style="font-family:'Cormorant Garamond',serif; color:var(--gold); font-size:1.2rem; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px;"><i class="fas fa-scroll me-2"></i> Yêu cầu Thiết kế Thực đơn riêng</h4>
+                    <div class="row-lux mb-3">
+                        <div class="input-group-lux">
+                            <select name="chef_budget" id="chef_budget" class="input-lux" onchange="updateChefReq(); us();">
+                                <option value="Thỏa thuận sau khi thiết kế thực đơn">Thỏa thuận sau khi thiết kế</option>
+                                <option value="Dưới 1.500.000 đ / khách">Dưới 1.500.000 đ / khách</option>
+                                <option value="1.500.000 đ - 3.000.000 đ / khách">1.500.000 đ - 3.000.000 đ / khách</option>
+                                <option value="3.000.000 đ - 5.000.000 đ / khách">3.000.000 đ - 5.000.000 đ / khách</option>
+                                <option value="Trên 5.000.000 đ / khách (Siêu cao cấp)">Trên 5.000.000 đ / khách (Siêu cao cấp)</option>
+                            </select>
+                            <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: var(--forest); padding: 0 5px; letter-spacing: 1px; text-transform: uppercase;">Ngân sách dự kiến</label>
                         </div>
-                        <?php endforeach; ?>
+                        <div class="input-group-lux">
+                            <select name="chef_style" id="chef_style" class="input-lux" onchange="updateChefReq(); us();">
+                                <option value="Tùy Bếp trưởng đề xuất">Tùy Bếp trưởng đề xuất</option>
+                                <option value="Ẩm thực Việt Nam Đương Đại (Contemporary Vietnamese)">Ẩm thực Việt Nam Đương Đại</option>
+                                <option value="Ẩm thực Việt Nam Cổ Điển (Traditional Vietnamese)">Ẩm thực Việt Nam Cổ Điển</option>
+                                <option value="Ẩm thực Pháp - Việt Đông Dương (Indochine Fusion)">Ẩm thực Pháp - Việt Đông Dương</option>
+                                <option value="Hải sản Cao cấp (Premium Seafood)">Hải sản Cao cấp</option>
+                                <option value="Thực dưỡng & Chay Thượng hạng (Fine Vegetarian)">Thực dưỡng & Chay Thượng hạng</option>
+                            </select>
+                            <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: var(--forest); padding: 0 5px; letter-spacing: 1px; text-transform: uppercase;">Phong cách ẩm thực</label>
+                        </div>
                     </div>
-                <?php endif; ?>
+                    <div class="input-group-lux mb-0">
+                        <textarea name="chef_requirements_detail" id="creq_detail" class="input-lux" rows="3" placeholder=" " oninput="updateChefReq(); us();"></textarea>
+                        <label class="label-lux">Yêu cầu chi tiết (Nguyên liệu đặc biệt, dị ứng, khẩu vị ưa thích...)</label>
+                    </div>
+                </div>
+                <textarea name="chef_requirements" id="creq" style="display:none;"></textarea>
+
+                <div id="addon-foods-section">
+                    <?php if(!empty($foods)): ?>
+                        <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px; letter-spacing:1px; text-transform:uppercase;">Thực Đơn Chọn Trước (Add-on)</p>
+                        <div style="max-height: 250px; overflow-y: auto; padding-right:10px;">
+                            <?php foreach($foods as $fd): ?>
+                            <div class="menu-item-lux" id="mr<?= $fd['id'] ?>">
+                                <div style="display:flex; align-items:center; gap:15px;">
+                                    <input type="checkbox" class="menu-checkbox" name="menu_items[]" value="<?= $fd['id'] ?>" onchange="togMrow(this,<?= $fd['id'] ?>,<?= (float)$fd['price'] ?>)">
+                                    <div>
+                                        <div style="font-size:14px;"><?= htmlspecialchars($fd['name']) ?></div>
+                                        <div style="font-size:12px; color:var(--gold)"><?= number_format($fd['price']) ?> đ</div>
+                                    </div>
+                                </div>
+                                <input type="number" class="menu-qty-input" name="quantity[<?= $fd['id'] ?>]" id="q<?= $fd['id'] ?>" value="1" min="1" onchange="us()">
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
+
+
 
             <div class="panel-section">
                 <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold);">Yêu Cầu Đặc Biệt</h3>
@@ -483,6 +586,8 @@ body {
                 <div class="sum-row"><span>Loại kỷ niệm</span> <span class="sum-val highlight" id="m-event-sum">Sinh nhật</span></div>
                 <div class="sum-row"><span>Dịch vụ tiệc</span> <span class="sum-val" id="m-addon-sum">Mặc định</span></div>
             <?php endif; ?>
+            
+
             
             <div class="sum-row"><span>Combo / Món</span> <span class="sum-val" id="sm">0 đ</span></div>
             
@@ -515,9 +620,9 @@ body {
                         <p style="color:var(--gold); font-size:12px; letter-spacing:2px; text-transform:uppercase; margin-bottom:20px; text-align:center;">Khu Vực Sảnh Chính</p>
                         <div class="map-grid">
                             <?php foreach($t_open as $t): $st=$t['is_available']?'available':'booked'; ?>
-                            <div class="seat-lux <?= $st ?>" data-id="<?= $t['id'] ?>" data-price="<?= $t['price'] ?>" data-code="Bàn <?= htmlspecialchars($t['table_code']) ?>">
+                            <div class="seat-lux <?= $st ?>" data-id="<?= $t['id'] ?>" data-price="<?= $t['price'] ?>" data-code="Bàn <?= htmlspecialchars($t['table_code']) ?>" data-cat="open">
                                 <span class="seat-code"><?= htmlspecialchars($t['table_code']) ?></span>
-                                <span class="seat-info">Tối đa 6 khách<br><?= number_format($t['price']) ?>đ</span>
+                                <span class="seat-info"><?= htmlspecialchars($t['table_location']??'') ?><br>Tối đa 6 khách<br><?= number_format($t['price']) ?>đ</span>
                             </div>
                             <?php endforeach; ?>
                         </div>
@@ -527,9 +632,9 @@ body {
                         <p style="color:var(--gold); font-size:12px; letter-spacing:2px; text-transform:uppercase; margin-bottom:20px; text-align:center;">Hệ Thống Phòng VIP</p>
                         <div class="<?= $type === 'birthday' ? 'map-grid' : 'vip-grid' ?>">
                             <?php foreach($t_room as $r): $st=$r['is_available']?'available':'booked'; ?>
-                            <div class="seat-lux <?= $st ?>" style="padding: 25px 10px;" data-id="<?= $r['id'] ?>" data-price="<?= $r['price'] ?>" data-code="Phòng VIP <?= htmlspecialchars($r['table_code']) ?>">
+                            <div class="seat-lux <?= $st ?>" style="padding: 25px 10px;" data-id="<?= $r['id'] ?>" data-price="<?= $r['price'] ?>" data-code="Phòng VIP <?= htmlspecialchars($r['table_code']) ?>" data-cat="room">
                                 <span class="seat-code">VIP <?= htmlspecialchars($r['table_code']) ?></span>
-                                <span class="seat-info">Tối đa 16 khách<br><?= number_format($r['price']) ?>đ</span>
+                                <span class="seat-info"><?= htmlspecialchars($r['table_location']??'') ?><br>Tối đa 16 khách<br><?= number_format($r['price']) ?>đ</span>
                             </div>
                             <?php endforeach; ?>
                         </div>
@@ -557,7 +662,12 @@ body {
 // ==========================================
 // KỊCH BẢN JAVASCRIPT GIỮ NGUYÊN HOÀN TOÀN
 // ==========================================
-var selId=0, selCode='', selPrice=0, selComboPr=0, menuPr={};
+var selId=0, selCode='', selPrice=0, selCat='', selComboPr=0, menuPr={};
+
+function togBespoke(cb) {
+    var extra = cb.closest('.menu-item-lux').querySelector('.bespoke-extra');
+    if (extra) { extra.style.display = cb.checked ? 'block' : 'none'; }
+}
 
 function cg(d){
     var i=document.getElementById('gi');
@@ -570,7 +680,50 @@ function selCombo(id,el){
     el.classList.add('active');
     document.getElementById('sid').value=id;
     selComboPr=parseFloat(el.dataset.price||0);
+
+    var bespokeFields = document.getElementById('bespoke-menu-fields');
+    var addonSection = document.getElementById('addon-foods-section');
+    var detailInput = document.getElementById('creq_detail');
+
+    if (id === -1) {
+        if (bespokeFields) bespokeFields.style.display = 'block';
+        if (addonSection) addonSection.style.display = 'none';
+        if (detailInput) detailInput.setAttribute('required', 'required');
+    } else {
+        if (bespokeFields) bespokeFields.style.display = 'none';
+        if (addonSection) addonSection.style.display = 'block';
+        if (detailInput) detailInput.removeAttribute('required');
+    }
+    updateChefReq();
     us();
+}
+
+function updateChefReq() {
+    var select = document.getElementById('saddr_select');
+    var customInput = document.getElementById('custom_saddr');
+    var budget = document.getElementById('chef_budget') ? document.getElementById('chef_budget').value : '';
+    var style = document.getElementById('chef_style') ? document.getElementById('chef_style').value : '';
+    var detail = document.getElementById('creq_detail') ? document.getElementById('creq_detail').value : '';
+
+    var address = '';
+    if (select) {
+        address = (select.value === 'custom') ? (customInput ? customInput.value : '') : select.value;
+    }
+
+    var parts = [];
+    if (address) parts.push("Địa điểm phục vụ: " + address);
+
+    var sid = document.getElementById('sid') ? parseInt(document.getElementById('sid').value) : 0;
+    if (sid === -1) {
+        if (budget) parts.push("Ngân sách: " + budget);
+        if (style) parts.push("Phong cách: " + style);
+        if (detail) parts.push("Chi tiết: " + detail);
+    }
+
+    var finalInput = document.getElementById('creq');
+    if (finalInput) {
+        finalInput.value = parts.join("\n");
+    }
 }
 
 function togMrow(cb,id,pr){
@@ -586,7 +739,7 @@ if (document.querySelectorAll('.seat-lux.available').length > 0) {
         s.addEventListener('click',function(){
             document.querySelectorAll('.seat-lux').forEach(function(x){x.classList.remove('selected');});
             s.classList.add('selected');
-            selId=s.dataset.id; selCode=s.dataset.code; selPrice=parseFloat(s.dataset.price||0);
+            selId=s.dataset.id; selCode=s.dataset.code; selPrice=parseFloat(s.dataset.price||0); selCat=s.dataset.cat||'';
         });
     });
 
@@ -601,6 +754,7 @@ function fromDrop(sel){
     selId=sel.value;
     selPrice=parseFloat(opt.dataset.price||0);
     selCode=opt.dataset.code||opt.text.split('—')[0].trim();
+    selCat=opt.dataset.cat||'';
     document.getElementById('tid').value=selId;
     document.querySelectorAll('.seat-lux').forEach(function(x){x.classList.remove('selected');});
     var m=document.querySelector('.seat-lux[data-id="'+selId+'"]');
@@ -625,10 +779,13 @@ function showPill(){
         document.getElementById('sp-code').textContent = selCode;
         document.getElementById('sp-price').textContent = selPrice.toLocaleString('vi-VN')+' đ';
     }
+    
+    var vipSec = document.getElementById('vip-config-section');
+    if (vipSec) { vipSec.style.display = (selCat === 'room') ? 'block' : 'none'; }
 }
 
 function clrSeat(){
-    selId=''; selCode=''; selPrice=0;
+    selId=''; selCode=''; selPrice=0; selCat='';
     document.getElementById('tid').value='';
     if(document.getElementById('tsel')) document.getElementById('tsel').value='';
     
@@ -637,6 +794,9 @@ function clrSeat(){
     
     var btnMap = document.querySelector('.map-btn-lux');
     if(btnMap) btnMap.style.display = 'block';
+    
+    var vipSec = document.getElementById('vip-config-section');
+    if (vipSec) vipSec.style.display = 'none';
     
     document.querySelectorAll('.seat-lux').forEach(function(x){x.classList.remove('selected');});
     us();
@@ -668,13 +828,20 @@ function us(){
         document.getElementById('sp2').textContent = selPrice.toLocaleString('vi-VN')+' đ';
     }
 
-    var mt=0;
-    for(var id in menuPr){
-        var qe=document.getElementById('q'+id);
-        mt+=menuPr[id]*(qe?parseInt(qe.value)||1:1);
+    var sid = document.getElementById('sid') ? parseInt(document.getElementById('sid').value) : 0;
+    var food = 0;
+    if (sid === -1) {
+        document.getElementById('sm').textContent = "Thiết kế riêng (Liên hệ báo giá)";
+        food = 0;
+    } else {
+        var mt=0;
+        for(var id in menuPr){
+            var qe=document.getElementById('q'+id);
+            mt+=menuPr[id]*(qe?parseInt(qe.value)||1:1);
+        }
+        food=selComboPr>0?selComboPr:mt;
+        document.getElementById('sm').textContent=food.toLocaleString('vi-VN')+' đ';
     }
-    var food=selComboPr>0?selComboPr:mt;
-    document.getElementById('sm').textContent=food.toLocaleString('vi-VN')+' đ';
   
     var evType = document.querySelector('[name="event_type"]');
     var decorPrice = 0;
@@ -701,15 +868,28 @@ function us(){
     var total = food + (typeof selPrice !== 'undefined' ? selPrice : 0) + decorPrice;
     
     // Cập nhật số tiền đặt cọc 30%
-    var deposit = Math.ceil(total * 0.3);
-    document.getElementById('sdep').innerHTML = deposit.toLocaleString('vi-VN')+'<span style="font-size:1.2rem; color:#fff;"> đ</span>';
-    
-    // Thêm thông báo thanh toán vào bên dưới nút xác nhận nếu chưa có
     var btnGo = document.getElementById('btn-go');
-    if (btnGo) {
-        var btnTxt = document.getElementById('btn-txt');
-        if (btnTxt) {
-            btnTxt.innerHTML = 'Xác nhận & Thanh toán cọc (' + deposit.toLocaleString('vi-VN') + ' đ)';
+    if (sid === -1 && total === 0) {
+        document.getElementById('sdep').innerHTML = '<span style="font-size:1.2rem; color:var(--gold);">Liên hệ báo giá cọc</span>';
+        if (btnGo) {
+            var btnTxt = document.getElementById('btn-txt');
+            if (btnTxt) {
+                btnTxt.innerHTML = 'Gửi Yêu Cầu Thiết Kế Thực Đơn';
+            }
+        }
+    } else {
+        var deposit = Math.ceil(total * 0.3);
+        document.getElementById('sdep').innerHTML = deposit.toLocaleString('vi-VN')+'<span style="font-size:1.2rem; color:#fff;"> đ</span>';
+        
+        if (btnGo) {
+            var btnTxt = document.getElementById('btn-txt');
+            if (btnTxt) {
+                if (deposit > 0) {
+                    btnTxt.innerHTML = 'Xác nhận & Thanh toán cọc (' + deposit.toLocaleString('vi-VN') + ' đ)';
+                } else {
+                    btnTxt.innerHTML = 'Gửi Yêu Cầu Đặt Chỗ';
+                }
+            }
         }
     }
 }

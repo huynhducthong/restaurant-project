@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../../../config/database.php';
 $db = (new Database())->getConnection();
 
@@ -7,8 +7,22 @@ $ft = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) { $ft[$row['setting_key']] = $row['setting_value']; }
 
 $links      = $db->query("SELECT * FROM footer_links ORDER BY priority ASC")->fetchAll(PDO::FETCH_ASSOC) ?? [];
-$bgImg      = !empty($ft['footer_bg_image']) ? 'public/assets/img/' . $ft['footer_bg_image'] : '';
-$logo       = !empty($ft['footer_logo']) ? 'public/assets/img/' . $ft['footer_logo'] : '';
+
+// Đảm bảo $path_prefix và safe_url tồn tại
+$path_prefix = $path_prefix ?? '';
+if (!function_exists('safe_url')) {
+    function safe_url($url, $prefix) {
+        if (empty($url)) return '';
+        // Nếu URL là tuyệt đối (bắt đầu bằng http, https, // hoặc /)
+        if (preg_match('/^(https?:|\/\/|\/)/i', $url)) {
+            return $url;
+        }
+        return $prefix . $url;
+    }
+}
+
+$bgImg      = !empty($ft['footer_bg_image']) ? safe_url('public/assets/img/' . $ft['footer_bg_image'], $path_prefix) : '';
+$logo       = !empty($ft['footer_logo']) ? safe_url('public/assets/img/' . $ft['footer_logo'], $path_prefix) : '';
 $showSocial = ($ft['show_social'] ?? '0') == '1';
 $showMap    = ($ft['show_map'] ?? '0') == '1';
 $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
@@ -142,7 +156,7 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
                 <h4>Khám phá</h4>
                 <div class="explore-links">
                     <?php foreach ($links as $l): ?>
-                        <a href="<?= htmlspecialchars($l['url']) ?>"><?= htmlspecialchars($l['title']) ?></a>
+                        <a href="<?= htmlspecialchars(safe_url($l['url'], $path_prefix)) ?>"><?= htmlspecialchars($l['title']) ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -171,7 +185,7 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
                 <?php endif; ?>
                 <?php if ($showNews): ?>
                     <h4 class="mt-3">Đăng ký nhận tin</h4>
-                    <form action="newsletter_subscribe.php" method="POST" class="newsletter-form">
+                    <form action="<?= safe_url('newsletter_subscribe.php', $path_prefix) ?>" method="POST" class="newsletter-form">
                         <?= csrf_field() ?>
                         <input type="email" name="email" placeholder="Nhập email của bạn" required>
                         <button type="submit">Gửi</button>

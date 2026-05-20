@@ -132,6 +132,49 @@ $form_action = $is_edit
                             <textarea name="description" class="form-control bg-light border-0" rows="3"
                                       placeholder="Hương vị, thành phần chính..."><?= htmlspecialchars($old['description']) ?></textarea>
                         </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-muted">Thành phần dễ dị ứng (Allergens) <span class="badge bg-light text-muted border ms-1" style="font-size:10px;font-weight:400">Tùy chọn</span></label>
+                            <textarea name="allergens" class="form-control bg-light border-0" rows="2"
+                                      placeholder="Ví dụ: Đậu phộng, Hải sản, Sữa..."><?= htmlspecialchars($old['allergens'] ?? '') ?></textarea>
+                            <div class="form-text small">Nhập tên các thành phần cách nhau bằng dấu phẩy. Hệ thống sẽ cảnh báo khách hàng nếu họ có tiền sử dị ứng với các thành phần này.</div>
+                        </div>
+
+                        <!-- Trải nghiệm Fine Dining (Wine Pairing & Chef Note) -->
+                        <p class="fw-bold small text-uppercase text-muted mb-3 border-bottom pb-2 mt-4">
+                            <i class="fas fa-glass-cheers me-1 text-warning"></i>Trải nghiệm Fine Dining
+                        </p>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold small text-muted">Gợi ý Rượu vang (Wine Pairing)</label>
+                                <select name="wine_pairing_id" class="form-select bg-light border-0 py-2">
+                                    <option value="">-- Không chọn --</option>
+                                    <?php if(!empty($drinks)): foreach ($drinks as $drink): ?>
+                                    <option value="<?= htmlspecialchars($drink['id']) ?>"
+                                        <?= (($old['wine_pairing_id'] ?? '') == $drink['id']) ? 'selected' : '' ?>>
+                                        🍷 <?= htmlspecialchars($drink['name']) ?>
+                                    </option>
+                                    <?php endforeach; endif; ?>
+                                </select>
+                                <div class="form-text small">Chọn 1 loại đồ uống để đề xuất dùng kèm.</div>
+                            </div>
+                            <div class="col-md-7">
+                                <label class="form-label fw-bold small text-muted">Ghi chú của Bếp trưởng (Chef Note)</label>
+                                <textarea name="chef_note" class="form-control bg-light border-0" rows="2"
+                                          placeholder="Ví dụ: Món ăn sẽ ngon nhất khi thưởng thức cùng vang đỏ Cabernet Sauvignon..."><?= htmlspecialchars($old['chef_note'] ?? '') ?></textarea>
+                            </div>
+                            
+                            <div class="col-12 mt-3">
+                                <div class="form-check form-switch p-0 d-flex align-items-center gap-2">
+                                    <input class="form-check-input ms-0 mt-0" type="checkbox" role="switch" id="is_chef_recommended" name="is_chef_recommended" value="1" <?= (!empty($old['is_chef_recommended'])) ? 'checked' : '' ?> style="width:40px;height:20px;cursor:pointer;">
+                                    <label class="form-check-label fw-bold text-dark" for="is_chef_recommended" style="cursor:pointer; padding-left:10px;">
+                                        ⭐ Đánh dấu là "Gợi ý từ Bếp trưởng"
+                                    </label>
+                                </div>
+                                <div class="form-text small" style="margin-left: 50px;">Bật tùy chọn này để hiển thị món ăn lên phần nổi bật trên Menu.</div>
+                            </div>
+                        </div>
 
                         <!-- Ảnh -->
                         <p class="fw-bold small text-uppercase text-muted mb-3 border-bottom pb-2">
