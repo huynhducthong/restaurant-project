@@ -158,12 +158,27 @@ include __DIR__ . '/views/client/layouts/header.php';
 ?>
 
 <style>
+:root {
+    --news-bg: #0d2b27;         /* Matches var(--F2) from menu.php */
+    --news-card-bg: #ffffff;    /* WHITE background for frames/cards/widgets */
+    --news-dark-bg: #f8fafc;    /* Light slate background for inputs/inner boxes */
+    --news-gold: #e5a93b;       /* More vibrant premium gold highlights */
+    --news-gold-hover: #c88e27; /* Saturated hover state for gold links */
+    --news-gold-muted: rgba(229, 169, 59, 0.1);
+    --news-text: #ffffff;       /* Bright pure white text for outside cards */
+    --news-text-dark: #111827;  /* High contrast dark text for inside white cards */
+    --news-text-muted: #e2e8f0; /* Bright light gray text for outside cards */
+    --news-text-muted-dark: #4b5563; /* High contrast medium dark gray for tóm tắt/meta inside white cards */
+    --news-border: rgba(229, 169, 59, 0.15);
+    --news-border-light: #e2e8f0; /* Light gray border for white cards */
+}
+
 /* Base Reset and Layout */
 .news-page-wrap {
-    background: #0c0b09;
-    color: #fff;
+    background: var(--news-bg);
+    color: var(--news-text);
     min-height: 85vh;
-    padding: 130px 0 60px 0; /* Clear header space */
+    padding: 180px 0 60px 0; /* Clear header space */
     font-family: "Poppins", sans-serif;
 }
 
@@ -175,7 +190,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 /* Breadcrumbs */
 .news-breadcrumbs {
     font-size: 13px;
-    color: #888;
+    color: var(--news-text-muted);
     margin-bottom: 25px;
     display: flex;
     align-items: center;
@@ -183,7 +198,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     gap: 8px;
 }
 .news-breadcrumbs a {
-    color: #cda45e;
+    color: var(--news-gold);
     text-decoration: none;
     transition: color 0.2s;
 }
@@ -192,24 +207,26 @@ include __DIR__ . '/views/client/layouts/header.php';
     text-decoration: underline;
 }
 .news-breadcrumbs span {
-    color: #444;
+    color: var(--news-border);
 }
 
 /* Sidebar Widgets */
 .sidebar-widget {
-    background: #1a1814;
+    background: var(--news-card-bg);
     border-radius: 12px;
-    border: 1px solid #2c2924;
+    border: 1px solid var(--news-border-light);
+    border-top: 4px solid var(--news-gold);
     padding: 22px;
     margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
 }
 .widget-title {
     font-family: 'Playfair Display', serif;
     font-size: 16px;
     font-weight: 700;
-    color: #fff;
+    color: var(--news-text-dark);
     text-transform: uppercase;
-    border-left: 3px solid #cda45e;
+    border-left: 3px solid var(--news-gold);
     padding-left: 10px;
     margin-bottom: 20px;
     letter-spacing: 0.5px;
@@ -226,7 +243,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     align-items: flex-start;
     gap: 15px;
     text-decoration: none;
-    border-bottom: 1px dashed #2c2924;
+    border-bottom: 1px dashed var(--news-border-light);
     padding-bottom: 15px;
     transition: border-color 0.2s;
 }
@@ -238,9 +255,9 @@ include __DIR__ . '/views/client/layouts/header.php';
     font-family: 'Playfair Display', serif;
     font-size: 38px;
     font-weight: 700;
-    color: #cda45e;
+    color: var(--news-gold);
     line-height: 0.8;
-    opacity: 0.5;
+    opacity: 0.7;
     transition: opacity 0.2s, transform 0.2s;
     width: 25px;
     text-align: center;
@@ -254,18 +271,18 @@ include __DIR__ . '/views/client/layouts/header.php';
 }
 .popular-title {
     font-size: 14px;
-    color: #ddd;
+    color: var(--news-text-dark);
     font-weight: 500;
     line-height: 1.4;
     margin: 0 0 4px 0;
     transition: color 0.2s;
 }
 .popular-sidebar-item:hover .popular-title {
-    color: #cda45e;
+    color: var(--news-gold);
 }
 .popular-meta {
     font-size: 11px;
-    color: #666;
+    color: var(--news-text-muted-dark);
 }
 
 /* Sidebar Categories list */
@@ -281,7 +298,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: #bbb;
+    color: var(--news-text-muted-dark);
     text-decoration: none;
     font-size: 13px;
     padding: 8px 12px;
@@ -289,155 +306,190 @@ include __DIR__ . '/views/client/layouts/header.php';
     transition: background 0.2s, color 0.2s;
 }
 .cat-sidebar-item a:hover, .cat-sidebar-item.active a {
-    background: rgba(205, 164, 94, 0.1);
-    color: #cda45e;
+    background: var(--news-gold-muted);
+    color: var(--news-gold);
 }
 
 /* Newsletter Widget */
 .newsletter-sidebar {
-    background: linear-gradient(145deg, #1a1814, #12110e);
-    border: 1px solid #cda45e33;
+    background: var(--news-card-bg);
+    border: 1px solid var(--news-border-light);
+    border-top: 4px solid var(--news-gold);
     padding: 22px;
     border-radius: 12px;
     margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
 }
 .newsletter-sidebar-title {
     font-family: 'Playfair Display', serif;
     font-size: 18px;
     font-weight: 700;
-    color: #cda45e;
+    color: var(--news-gold);
     margin-bottom: 10px;
 }
 .newsletter-sidebar-desc {
     font-size: 12px;
-    color: #999;
+    color: var(--news-text-muted-dark);
     line-height: 1.5;
     margin-bottom: 15px;
 }
 .newsletter-sidebar .form-control {
-    background: #0c0b09;
-    border: 1px solid #2c2924;
-    color: #fff;
+    background: var(--news-dark-bg);
+    border: 1px solid var(--news-border-light);
+    color: var(--news-text-dark);
     font-size: 13px;
     padding: 10px;
     border-radius: 6px;
     box-shadow: none;
 }
 .newsletter-sidebar .form-control:focus {
-    border-color: #cda45e;
+    border-color: var(--news-gold);
 }
 .newsletter-sidebar .btn-subscribe {
-    background: #cda45e;
-    color: #0c0b09;
+    background: linear-gradient(135deg, var(--news-gold), #b89248);
+    color: #ffffff;
     border: none;
     width: 100%;
     font-size: 13px;
     font-weight: 700;
     padding: 10px;
     border-radius: 6px;
-    transition: background 0.2s;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(212, 176, 106, 0.2);
 }
 .newsletter-sidebar .btn-subscribe:hover {
-    background: #dcb371;
+    background: linear-gradient(135deg, #edd9a3, var(--news-gold));
+    box-shadow: 0 6px 20px rgba(212, 176, 106, 0.35);
+    transform: translateY(-1px);
 }
 
 /* LIST VIEW STYLES */
 .news-list-left-col {
-    max-width: 600px;
+    max-width: 100%;
     width: 100%;
 }
-/* Featured Card & Row Card Styles (Replaced with Compact Portrait Grid) */
-.news-grid-card {
-    background: #1a1814;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid #2c2924;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+.news-horizontal-list {
     display: flex;
     flex-direction: column;
+    gap: 20px;
+}
+.news-row-card {
+    background: var(--news-card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--news-border-light);
+    border-top: 4px solid var(--news-gold);
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    display: flex;
+    flex-direction: row;
+    height: 180px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+.news-row-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(224, 179, 84, 0.2);
+    border-color: var(--news-gold);
+}
+.news-row-img {
+    width: 260px;
     height: 100%;
-}
-.news-grid-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(205, 164, 94, 0.15);
-}
-.news-grid-img {
-    height: 130px;
     overflow: hidden;
     position: relative;
-    background: #0c0b09;
+    background: var(--news-dark-bg);
+    flex-shrink: 0;
 }
-.news-grid-img img {
+.news-row-img img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.4s;
 }
-.news-grid-card:hover .news-grid-img img {
+.news-row-card:hover .news-row-img img {
     transform: scale(1.05);
 }
-.news-grid-badge {
+.news-row-badge {
     position: absolute;
     top: 10px;
     left: 10px;
-    background: #cda45e;
-    color: #0c0b09;
+    background: linear-gradient(135deg, var(--news-gold), #b89248);
+    color: #ffffff;
     font-size: 9px;
     font-weight: 700;
     padding: 3px 8px;
     border-radius: 3px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
-.news-grid-body {
-    padding: 12px;
+.news-row-body {
+    padding: 20px;
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
-.news-grid-title {
+.news-row-title {
     font-family: 'Playfair Display', serif;
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 700;
-    color: #fff;
+    color: var(--news-text-dark);
     line-height: 1.4;
-    margin: 0 0 6px 0;
+    margin: 0 0 8px 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     transition: color 0.2s;
 }
-.news-grid-card:hover .news-grid-title {
-    color: #cda45e;
+.news-row-card:hover .news-row-title {
+    color: var(--news-gold);
 }
-.news-grid-excerpt {
-    color: #999;
-    font-size: 11px;
-    line-height: 1.4;
+.news-row-excerpt {
+    color: var(--news-text-muted-dark);
+    font-size: 13px;
+    line-height: 1.6;
     margin-bottom: 8px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
-.news-grid-meta {
+.news-row-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 10px;
-    color: #555;
-    border-top: 1px solid #22201c;
+    font-size: 12px;
+    color: var(--news-text-muted-dark);
+    border-top: 1px solid var(--news-border-light);
     padding-top: 8px;
     margin-top: auto;
 }
+@media (max-width: 768px) {
+    .news-row-card {
+        flex-direction: column;
+        height: auto;
+    }
+    .news-row-img {
+        width: 100%;
+        height: 200px;
+    }
+}
 
 /* READ VIEW STYLES */
+.article-read-card {
+    background: var(--news-card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--news-border-light);
+    border-top: 5px solid var(--news-gold);
+    padding: 35px;
+    margin-bottom: 25px;
+    color: var(--news-text-dark);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.03);
+}
 .article-category-label {
     display: inline-block;
-    color: #cda45e;
+    color: var(--news-gold);
     font-weight: 600;
     font-size: 12px;
     text-transform: uppercase;
@@ -449,7 +501,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     font-size: 34px;
     font-weight: 700;
     line-height: 1.35;
-    color: #ffffff;
+    color: var(--news-text-dark);
     margin-bottom: 12px;
 }
 .article-meta-bar {
@@ -457,8 +509,8 @@ include __DIR__ . '/views/client/layouts/header.php';
     justify-content: space-between;
     align-items: center;
     font-size: 12px;
-    color: #777;
-    border-bottom: 1px solid #2c2924;
+    color: #666;
+    border-bottom: 1px solid var(--news-border-light);
     padding-bottom: 12px;
     margin-bottom: 20px;
 }
@@ -471,8 +523,8 @@ include __DIR__ . '/views/client/layouts/header.php';
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid #2c2924;
-    border-bottom: 1px solid #2c2924;
+    border-top: 1px solid var(--news-border-light);
+    border-bottom: 1px solid var(--news-border-light);
     padding: 10px 0;
     margin-bottom: 25px;
 }
@@ -481,9 +533,9 @@ include __DIR__ . '/views/client/layouts/header.php';
     gap: 12px;
 }
 .article-action-btn {
-    background: transparent;
-    border: 1px solid #3a3834;
-    color: #b0b3b8;
+    background: #f8fafc;
+    border: 1px solid var(--news-border-light);
+    color: #555555;
     border-radius: 4px;
     padding: 6px 14px;
     font-size: 13px;
@@ -495,9 +547,9 @@ include __DIR__ . '/views/client/layouts/header.php';
     transition: all 0.2s;
 }
 .article-action-btn:hover {
-    background: rgba(205, 164, 94, 0.1);
-    color: #cda45e;
-    border-color: #cda45e;
+    background: rgba(20, 59, 54, 0.05);
+    color: var(--news-gold);
+    border-color: var(--news-gold);
 }
 .article-action-btn.liked {
     color: #f33e58;
@@ -510,34 +562,34 @@ include __DIR__ . '/views/client/layouts/header.php';
     border-color: #f33e58;
 }
 .article-action-btn.saved {
-    color: #cda45e;
-    border-color: #cda45e44;
-    background: rgba(205, 164, 94, 0.05);
+    color: var(--news-gold);
+    border-color: var(--news-gold-muted);
+    background: rgba(20, 59, 54, 0.05);
 }
 .article-action-btn.saved:hover {
-    background: rgba(205, 164, 94, 0.1);
-    color: #cda45e;
-    border-color: #cda45e;
+    background: rgba(20, 59, 54, 0.1);
+    color: var(--news-gold);
+    border-color: var(--news-gold);
 }
 .article-comment-anchor {
     font-size: 13px;
-    color: #aaa;
+    color: #555555;
     text-decoration: none;
     display: flex;
     align-items: center;
     gap: 6px;
 }
 .article-comment-anchor:hover {
-    color: #cda45e;
+    color: var(--news-gold);
 }
 .article-sapo {
     font-size: 17px;
     font-weight: 600;
     line-height: 1.6;
-    color: #eee;
+    color: #333333;
     margin-bottom: 25px;
     font-style: italic;
-    border-left: 3px solid #cda45e;
+    border-left: 3px solid var(--news-gold);
     padding-left: 15px;
 }
 .article-featured-img {
@@ -545,7 +597,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     border-radius: 8px;
     overflow: hidden;
     margin-bottom: 8px;
-    border: 1px solid #2c2924;
+    border: 1px solid var(--news-border-light);
 }
 .article-featured-img img {
     width: 100%;
@@ -554,7 +606,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 }
 .article-caption {
     font-size: 12px;
-    color: #777;
+    color: #666;
     text-align: center;
     margin-bottom: 30px;
     font-style: italic;
@@ -562,18 +614,18 @@ include __DIR__ . '/views/client/layouts/header.php';
 .article-body-content {
     font-size: 17px;
     line-height: 1.8;
-    color: #e4e6eb;
+    color: var(--news-text-dark);
 }
 .article-body-content p {
     margin-bottom: 20px;
 }
 .article-body-content blockquote {
-    background: rgba(205, 164, 94, 0.04);
-    border-left: 4px solid #cda45e;
+    background: #f8fafc;
+    border-left: 4px solid var(--news-gold);
     padding: 15px 20px;
     margin: 25px 0;
     font-style: italic;
-    color: #ddd;
+    color: #4a5568;
     font-size: 16px;
 }
 .article-body-content figure {
@@ -584,12 +636,12 @@ include __DIR__ . '/views/client/layouts/header.php';
     max-width: 100%;
     height: auto;
     border-radius: 6px;
-    border: 1px solid #2c2924;
+    border: 1px solid var(--news-border-light);
 }
 .article-author-tag {
     text-align: right;
     font-weight: 600;
-    color: #cda45e;
+    color: var(--news-gold);
     margin-top: 30px;
     font-size: 14px;
     font-style: italic;
@@ -598,22 +650,22 @@ include __DIR__ . '/views/client/layouts/header.php';
 /* Related articles section */
 .related-articles-section {
     margin-top: 40px;
-    border-top: 1px solid #2c2924;
+    border-top: 1px solid var(--news-border-light);
     padding-top: 30px;
 }
 .related-title {
     font-family: 'Playfair Display', serif;
     font-size: 18px;
     font-weight: 700;
-    color: #fff;
+    color: var(--news-text-dark);
     margin-bottom: 20px;
     text-transform: uppercase;
 }
 .related-card {
-    background: #1a1814;
+    background: #ffffff;
     border-radius: 8px;
     overflow: hidden;
-    border: 1px solid #2c2924;
+    border: 1px solid var(--news-border-light);
     text-decoration: none;
     transition: transform 0.2s;
     height: 100%;
@@ -637,7 +689,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 .related-card-title {
     font-family: 'Playfair Display', serif;
     font-size: 14px;
-    color: #eee;
+    color: var(--news-text-dark);
     font-weight: 600;
     line-height: 1.4;
     margin: 0;
@@ -647,20 +699,20 @@ include __DIR__ . '/views/client/layouts/header.php';
     overflow: hidden;
 }
 .related-card:hover .related-card-title {
-    color: #cda45e;
+    color: var(--news-gold);
 }
 
 /* VnExpress Comment System */
 .vne-comments-section {
     margin-top: 45px;
-    border-top: 1px solid #2c2924;
+    border-top: 1px solid var(--news-border-light);
     padding-top: 30px;
 }
 .vne-comments-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #2c2924;
+    border-bottom: 2px solid var(--news-border-light);
     padding-bottom: 12px;
     margin-bottom: 20px;
 }
@@ -668,7 +720,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     font-family: 'Playfair Display', serif;
     font-size: 20px;
     font-weight: 700;
-    color: #fff;
+    color: var(--news-text-dark);
     margin: 0;
 }
 .vne-comments-tabs {
@@ -677,7 +729,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 }
 .vne-comments-tab {
     font-size: 13px;
-    color: #777;
+    color: #888888;
     text-decoration: none;
     font-weight: 600;
     padding-bottom: 12px;
@@ -685,7 +737,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     transition: color 0.2s;
 }
 .vne-comments-tab.active, .vne-comments-tab:hover {
-    color: #cda45e;
+    color: var(--news-gold);
 }
 .vne-comments-tab.active::after {
     content: '';
@@ -694,11 +746,11 @@ include __DIR__ . '/views/client/layouts/header.php';
     left: 0;
     right: 0;
     height: 2px;
-    background: #cda45e;
+    background: var(--news-gold);
 }
 .vne-comment-form {
-    background: #1a1814;
-    border: 1px solid #2c2924;
+    background: #f8fafc;
+    border: 1px solid var(--news-border-light);
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 25px;
@@ -707,7 +759,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     width: 100%;
     background: transparent;
     border: none;
-    color: #fff;
+    color: var(--news-text-dark);
     font-size: 14px;
     resize: none;
     outline: none;
@@ -718,7 +770,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid #2c2924;
+    border-top: 1px solid var(--news-border-light);
     padding-top: 10px;
 }
 .vne-comment-user-box {
@@ -728,35 +780,38 @@ include __DIR__ . '/views/client/layouts/header.php';
 }
 .vne-comment-user-box label {
     font-size: 12px;
-    color: #bbb;
+    color: #555555;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 4px;
 }
 .vne-comment-inp-name {
-    background: #0c0b09;
-    border: 1px solid #2c2924;
+    background: #ffffff;
+    border: 1px solid var(--news-border-light);
     border-radius: 4px;
     padding: 4px 8px;
-    color: #fff;
+    color: var(--news-text-dark);
     font-size: 12px;
     width: 130px;
     outline: none;
 }
 .vne-comment-btn {
-    background: #cda45e;
-    color: #0c0b09;
+    background: linear-gradient(135deg, var(--news-gold), #b89248);
+    color: #ffffff;
     border: none;
     border-radius: 4px;
     padding: 6px 18px;
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(212, 176, 106, 0.2);
 }
 .vne-comment-btn:hover {
-    background: #dcb371;
+    background: linear-gradient(135deg, #edd9a3, var(--news-gold));
+    box-shadow: 0 6px 20px rgba(212, 176, 106, 0.35);
+    transform: translateY(-1px);
 }
 .vne-comments-list {
     display: flex;
@@ -771,12 +826,12 @@ include __DIR__ . '/views/client/layouts/header.php';
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: #2a2824;
+    background: #e2e8f0;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    color: #cda45e;
+    color: var(--news-gold);
     font-size: 13px;
     flex-shrink: 0;
 }
@@ -797,12 +852,12 @@ include __DIR__ . '/views/client/layouts/header.php';
 }
 .vne-comment-author {
     font-weight: 600;
-    color: #cda45e;
+    color: var(--news-gold);
     font-size: 13px;
 }
 .vne-comment-text {
     font-size: 14px;
-    color: #ddd;
+    color: #333333;
     line-height: 1.5;
     word-break: break-word;
     margin-bottom: 6px;
@@ -822,12 +877,12 @@ include __DIR__ . '/views/client/layouts/header.php';
     transition: color 0.2s;
 }
 .vne-comment-action-link:hover {
-    color: #cda45e;
+    color: var(--news-gold);
 }
 .vne-replies-list {
     margin-left: 48px;
     margin-top: 12px;
-    border-left: 2px solid #22201c;
+    border-left: 2px solid var(--news-border-light);
     padding-left: 12px;
     display: flex;
     flex-direction: column;
@@ -869,22 +924,21 @@ include __DIR__ . '/views/client/layouts/header.php';
 }
 .news-overlay.active {
     display: flex;
-}
-.news-modal {
-    background: #1a1814;
+}.news-modal {
+    background: var(--news-card-bg);
     border-radius: 12px;
     width: 100%;
     max-width: 400px;
     max-height: 450px;
     display: flex;
     flex-direction: column;
-    border: 1px solid #2c2924;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    border: 1px solid var(--news-border-light);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
     overflow: hidden;
 }
 .news-modal-head {
     padding: 15px;
-    border-bottom: 1px solid #2c2924;
+    border-bottom: 1px solid var(--news-border-light);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -893,7 +947,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     margin: 0;
     font-size: 16px;
     font-weight: 700;
-    color: #fff;
+    color: var(--news-text-dark);
     font-family: 'Playfair Display', serif;
 }
 .news-modal-close {
@@ -904,7 +958,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     cursor: pointer;
 }
 .news-modal-close:hover {
-    color: #fff;
+    color: var(--news-text-dark);
 }
 .news-modal-body {
     flex: 1;
@@ -919,14 +973,14 @@ include __DIR__ . '/views/client/layouts/header.php';
     transition: background 0.2s;
 }
 .liker-row:hover {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(0, 0, 0, 0.03);
 }
 .liker-avatar {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: #cda45e;
-    color: #0c0b09;
+    background: var(--news-gold);
+    color: var(--news-dark-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -934,7 +988,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     font-size: 12px;
 }
 .liker-name {
-    color: #eee;
+    color: var(--news-text-dark);
     font-size: 13px;
     font-weight: 500;
 }
@@ -942,16 +996,16 @@ include __DIR__ . '/views/client/layouts/header.php';
 /* Inline Reply Input styling */
 .vne-inline-reply-box {
     margin-top: 8px;
-    background: #151411;
-    border: 1px solid #2c2924;
-    border-radius: 6px;
+    background: var(--news-dark-bg);
+    border: 1px solid var(--news-border-light);
     padding: 10px;
+    border-radius: 6px;
 }
 .vne-inline-reply-textarea {
     width: 100%;
     background: transparent;
     border: none;
-    color: #fff;
+    color: var(--news-text-dark);
     font-size: 13px;
     resize: none;
     outline: none;
@@ -962,11 +1016,11 @@ include __DIR__ . '/views/client/layouts/header.php';
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid #2c2924;
+    border-top: 1px solid var(--news-border-light);
     padding-top: 6px;
 }
 .vne-comment-action-sep {
-    color: #333;
+    color: var(--news-border-light);
     font-size: 10px;
     user-select: none;
 }
@@ -977,7 +1031,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(5px);
     display: none;
     align-items: center;
@@ -989,17 +1043,17 @@ include __DIR__ . '/views/client/layouts/header.php';
     display: flex;
 }
 .vne-report-modal-box {
-    background: #1a1814;
-    border: 1px solid #2c2924;
+    background: var(--news-card-bg);
+    border: 1px solid var(--news-border-light);
     border-radius: 12px;
     width: 90%;
     max-width: 480px;
     overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 .vne-report-modal-header {
-    background: #151411;
-    border-bottom: 1px solid #2c2924;
+    background: var(--news-dark-bg);
+    border-bottom: 1px solid var(--news-border-light);
     padding: 15px 20px;
     display: flex;
     justify-content: space-between;
@@ -1015,7 +1069,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     transition: color 0.2s;
 }
 .vne-report-modal-close-btn:hover {
-    color: #fff;
+    color: var(--news-text-dark);
 }
 .vne-report-modal-body {
     padding: 20px;
@@ -1023,10 +1077,10 @@ include __DIR__ . '/views/client/layouts/header.php';
 .vne-report-textarea {
     width: 100%;
     height: 110px;
-    background: #0c0b09;
-    border: 1px solid #2c2924;
+    background: #ffffff;
+    border: 1px solid var(--news-border-light);
     border-radius: 6px;
-    color: #fff;
+    color: var(--news-text-dark);
     padding: 12px;
     font-size: 13px;
     resize: none;
@@ -1034,11 +1088,11 @@ include __DIR__ . '/views/client/layouts/header.php';
     transition: border-color 0.2s;
 }
 .vne-report-textarea:focus {
-    border-color: #cda45e;
+    border-color: var(--news-gold);
 }
 .vne-report-modal-footer {
-    background: #151411;
-    border-top: 1px solid #2c2924;
+    background: var(--news-dark-bg);
+    border-top: 1px solid var(--news-border-light);
     padding: 15px 20px;
     display: flex;
     justify-content: flex-end;
@@ -1068,7 +1122,8 @@ include __DIR__ . '/views/client/layouts/header.php';
             <div class="row g-4">
                 <!-- Main Reading Column -->
                 <div class="col-lg-8">
-                    <span class="article-category-label"><?= htmlspecialchars($article['cat_name']) ?></span>
+                    <div class="article-read-card">
+                        <span class="article-category-label"><?= htmlspecialchars($article['cat_name']) ?></span>
                     <h1 class="article-headline font-playfair"><?= htmlspecialchars($article['title']) ?></h1>
                     
                     <div class="article-meta-bar">
@@ -1299,13 +1354,14 @@ include __DIR__ . '/views/client/layouts/header.php';
                         <?php endif; ?>
                         </div>
                     </div>
+                    </div>
                 </div>
 
                 <!-- Report Comment Modal (VnExpress styled) -->
                 <div class="vne-report-modal-overlay" id="report-modal-overlay" onclick="closeReportModalOutside(event)">
                     <div class="vne-report-modal-box animate__animated animate__zoomIn">
                         <div class="vne-report-modal-header">
-                            <h4 class="font-playfair text-white mb-0" style="font-size: 16px;"><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i> Báo cáo bình luận vi phạm</h4>
+                            <h4 class="font-playfair text-dark mb-0" style="font-size: 16px;"><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i> Báo cáo bình luận vi phạm</h4>
                             <button class="vne-report-modal-close-btn" onclick="closeReportModal()">&times;</button>
                         </div>
                         <div class="vne-report-modal-body">
@@ -1350,37 +1406,35 @@ include __DIR__ . '/views/client/layouts/header.php';
                 <div class="col-lg-8">
                     <div class="news-list-left-col">
                         <?php if (empty($all_posts)): ?>
-                        <div style="background: #1a1814; border-radius: 12px; border: 1px solid #2c2924; padding: 40px; text-align: center; color: #888;">
-                            <i class="bi bi-journal-x" style="font-size: 3rem; color: #cda45e;"></i>
-                            <h3 class="font-playfair mt-3 text-white">Chưa có bài viết nào</h3>
+                        <div style="background: var(--news-card-bg); border-radius: 12px; border: 1px solid var(--news-border-light); padding: 40px; text-align: center; color: var(--news-text-muted-dark);">
+                            <i class="bi bi-journal-x" style="font-size: 3rem; color: var(--news-gold);"></i>
+                            <h3 class="font-playfair mt-3 text-dark">Chưa có bài viết nào</h3>
                             <p class="mb-0">Vui lòng quay lại sau để cập nhật thông tin mới nhất.</p>
                         </div>
                     <?php else: ?>
-                        <!-- Compact 3-Column News Grid (VnExpress styled) -->
-                        <div class="row g-3">
+                        <!-- Horizontal News Row List (VnExpress styled) -->
+                        <div class="news-horizontal-list">
                             <?php foreach ($all_posts as $post): 
                                 $excerpt = strip_tags(html_entity_decode($post['content'] ?? '', ENT_QUOTES, 'UTF-8'));
                                 $post_time = $post['created_at'] ? date('d/m/Y', strtotime($post['created_at'])) : '';
                             ?>
-                                <div class="col-md-4 col-sm-6">
-                                    <div class="news-grid-card" onclick="window.location.href='Aboutus.php?id=<?= $post['id'] ?>'">
-                                        <div class="news-grid-img">
-                                            <?php if ($post['thumbnail']): ?>
-                                                <img src="public/assets/img/about/<?= htmlspecialchars($post['thumbnail']) ?>" alt="<?= htmlspecialchars($post['title']) ?>">
-                                            <?php else: ?>
-                                                <div style="background: #2a2824; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #666;"><i class="bi bi-image" style="font-size: 1.5rem;"></i></div>
-                                            <?php endif; ?>
-                                            <div class="news-grid-badge"><?= htmlspecialchars($post['cat_name']) ?></div>
+                                <div class="news-row-card" onclick="window.location.href='Aboutus.php?id=<?= $post['id'] ?>'">
+                                    <div class="news-row-img">
+                                        <?php if ($post['thumbnail']): ?>
+                                            <img src="public/assets/img/about/<?= htmlspecialchars($post['thumbnail']) ?>" alt="<?= htmlspecialchars($post['title']) ?>">
+                                        <?php else: ?>
+                                            <div class="no-img-placeholder"><i class="bi bi-image" style="font-size: 1.5rem;"></i></div>
+                                        <?php endif; ?>
+                                        <div class="news-row-badge"><?= htmlspecialchars($post['cat_name']) ?></div>
+                                    </div>
+                                    <div class="news-row-body">
+                                        <div>
+                                            <h3 class="news-row-title font-playfair"><?= htmlspecialchars($post['title']) ?></h3>
+                                            <p class="news-row-excerpt"><?= mb_strimwidth($excerpt, 0, 180, "...") ?></p>
                                         </div>
-                                        <div class="news-grid-body">
-                                            <div>
-                                                <h3 class="news-grid-title font-playfair"><?= htmlspecialchars($post['title']) ?></h3>
-                                                <p class="news-grid-excerpt"><?= mb_strimwidth($excerpt, 0, 80, "...") ?></p>
-                                            </div>
-                                            <div class="news-grid-meta">
-                                                <span>📅 <?= $post_time ?></span>
-                                                <span>❤️ <?= $post['like_count'] ?> • 💬 <?= $post['comment_count'] ?></span>
-                                            </div>
+                                        <div class="news-row-meta">
+                                            <span>📅 <?= $post_time ?></span>
+                                            <span>❤️ <?= $post['like_count'] ?> • 💬 <?= $post['comment_count'] ?></span>
                                         </div>
                                     </div>
                                 </div>
