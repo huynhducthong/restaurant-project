@@ -6,6 +6,7 @@ $db = $database->getConnection();
 $all_categories = $db->query("SELECT * FROM categories ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
 $all_combos     = $db->query("SELECT * FROM combos WHERE is_active = 1 ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
 $all_foods      = $db->query("SELECT f.*, c.name as cat_name FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
+$chef_foods     = $db->query("SELECT f.*, c.name as cat_name FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND f.is_chef_recommended = 1 ORDER BY f.id DESC LIMIT 3")->fetchAll(PDO::FETCH_ASSOC);
 
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
@@ -424,7 +425,7 @@ img{display:block;}
 <?php endif; ?>
 
 <!-- CHEF RECOMMENDATION -->
-<?php if(count($all_foods)>=3): ?>
+<?php if(count($chef_foods) > 0): ?>
 <section class="chef-wrap sec-pad" id="sec-chef">
   <div class="wrap">
     <div data-aos="fade-up">
@@ -432,7 +433,7 @@ img{display:block;}
       <h2 class="sec-h"><em>Chef's</em> Recommendation</h2>
     </div>
     <div class="chef-grid" data-aos="fade-up" data-aos-delay="100">
-      <?php $cp=$all_foods; $c0=$cp[0]??null; $c1=$cp[1]??null; $c2=$cp[2]??null; ?>
+      <?php $c0=$chef_foods[0]??null; $c1=$chef_foods[1]??null; $c2=$chef_foods[2]??null; ?>
       <?php if($c0): ?>
       <div class="chef-hero" onclick="openModal(<?= htmlspecialchars(json_encode([
         'type'=>'food','name'=>$c0['name'],'desc'=>$c0['description'],

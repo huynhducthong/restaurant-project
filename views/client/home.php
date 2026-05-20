@@ -18,7 +18,7 @@
       <p style="font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700;">Giữ chỗ cho bữa tối của bạn</p>
     </div>
 
-    <form action="index.php?action=book" method="post" class="php-email-form">
+    <form action="<?= ($path_prefix ?? '') ?>index.php?action=book" method="post" class="php-email-form">
       <div class="row">
         <div class="col-lg-4 col-md-6 form-group">
           <input type="text" name="name" class="form-control" placeholder="Tên của bạn" required style="background: #0c0b09; border: 1px solid #625b4b; color: #fff; padding: 10px;">

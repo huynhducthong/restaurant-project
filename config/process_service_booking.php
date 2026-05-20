@@ -18,10 +18,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $combo_id = $_POST['selected_combo_id'] ?? 0;
     
     // Anniversary fields
-    $event_type = $_POST['event_type'] ?? null;
+    $event_type = $_POST['event_type'] ?? $_POST['bespoke_occasion'] ?? null;
     $decor_package = $_POST['decor_package'] ?? null;
     $has_cake = isset($_POST['has_cake']) ? 1 : 0;
-    $has_flower = isset($_POST['has_flower']) ? 1 : 0;
+    $has_flower = (isset($_POST['has_flower']) || isset($_POST['has_bespoke_flower'])) ? 1 : 0;
+    
+    // Bespoke fields
+    $has_candle = isset($_POST['has_candle']) ? 1 : 0;
+    $has_handwritten_card = isset($_POST['has_handwritten_card']) ? 1 : 0;
+    $card_message = $_POST['card_message'] ?? null;
+    $flower_preference = $_POST['flower_preference'] ?? null;
+    $music_playlist = $_POST['music_playlist'] ?? null;
+    $light_tone = $_POST['light_tone'] ?? null;
+    $chef_requirements = $_POST['chef_requirements'] ?? null;
+    if (isset($_POST['chef_budget']) || isset($_POST['chef_style']) || isset($_POST['chef_requirements_detail'])) {
+        $budget = $_POST['chef_budget'] ?? '';
+        $style = $_POST['chef_style'] ?? '';
+        $detail = $_POST['chef_requirements_detail'] ?? '';
+        if (!empty($budget) || !empty($style) || !empty($detail)) {
+            $chef_requirements = "Ngân sách: $budget\nPhong cách: $style\nChi tiết: $detail";
+        }
+    }
+
 
     if (empty($name) || empty($phone) || empty($date)) {
         echo "<script>alert('Vui lòng điền đầy đủ các thông tin bắt buộc!'); window.history.back();</script>";
@@ -68,13 +86,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($has_cake) $total_amount += 300000;
             if ($has_flower) $total_amount += 200000;
         }
+        
+        // Tính tiền dịch vụ Bespoke
+        if ($has_candle) $total_amount += 50000;
+        if ($has_handwritten_card) $total_amount += 30000;
+        if (isset($_POST['has_bespoke_flower'])) $total_amount += 200000;
 
         // Tính 30% cọc
         $deposit_amount = $total_amount * 0.3;
 
         // 2. Lưu đơn đặt bàn chính vào service_bookings (Bổ sung user_id và deposit_amount)
-        $stmt_booking = $db->prepare("INSERT INTO service_bookings (user_id, service_type, customer_name, customer_phone, booking_date, guests, message, table_id, combo_id, total_amount, deposit_amount, status, event_type, decor_package, has_cake, has_flower) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?, ?, ?)");
-        $stmt_booking->execute([$user_id, $type, $name, $phone, $date, $guests, $msg, $table_id, $combo_id, $total_amount, $deposit_amount, $event_type, $decor_package, $has_cake, $has_flower]);
+        $stmt_booking = $db->prepare("INSERT INTO service_bookings (user_id, service_type, customer_name, customer_phone, booking_date, guests, message, table_id, combo_id, total_amount, deposit_amount, status, event_type, decor_package, has_cake, has_flower, has_candle, has_handwritten_card, card_message, flower_preference, music_playlist, light_tone, chef_requirements) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt_booking->execute([$user_id, $type, $name, $phone, $date, $guests, $msg, $table_id, $combo_id, $total_amount, $deposit_amount, $event_type, $decor_package, $has_cake, $has_flower, $has_candle, $has_handwritten_card, $card_message, $flower_preference, $music_playlist, $light_tone, $chef_requirements]);
         $last_id = $db->lastInsertId();
 
         // 3. Lưu chi tiết các món ăn khách chọn lẻ
@@ -116,6 +139,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $booking_msg .= "⏰ Lúc: $time_str\n";
         $booking_msg .= "👥 Khách: $guests người\n";
         $booking_msg .= "🏷 Loại: " . ucfirst($type) . $event_str . "\n";
+        if ($has_candle) $booking_msg .= "🕯 Bespoke: Nến thơm\n";
+        if ($has_handwritten_card) $booking_msg .= "✉️ Bespoke: Thiệp viết tay ($card_message)\n";
+        if (isset($_POST['has_bespoke_flower'])) $booking_msg .= "💐 Bespoke: Hoa ($flower_preference)\n";
+        if ($chef_requirements) $booking_msg .= "👨‍🍳 Yêu cầu Bếp trưởng: <i>$chef_requirements</i>\n";
         if ($msg) $booking_msg .= "📝 Ghi chú: <i>$msg</i>\n\n";
         $booking_msg .= "💰 Dự kiến: " . number_format($total_amount) . " VNĐ\n";
         $booking_msg .= "👉 Vui lòng duyệt đơn trên Admin.";

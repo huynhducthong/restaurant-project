@@ -133,8 +133,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
+    // 5. Cập nhật Gastronomy Profile
+    if (isset($_POST['update_gastronomy'])) {
+        $allergies = trim($_POST['allergies'] ?? '');
+        $taste = trim($_POST['taste_preferences'] ?? '');
+        $db->prepare("UPDATE users SET allergies = ?, taste_preferences = ? WHERE id = ?")
+           ->execute([$allergies, $taste, $user_id]);
+        $message = "Đã cập nhật Hồ sơ Ẩm thực VIP!";
+    }
 }
-
 // --- LẤY DỮ LIỆU ---
 $user = $db->prepare("SELECT * FROM users WHERE id = ?");
 $user->execute([$user_id]);
@@ -488,6 +495,9 @@ body{
         <a href="?tab=profile"   class="<?= $tab=='profile'   ? 'on':'' ?>">
           <i class="bi bi-person-circle"></i> Hồ sơ của tôi
         </a>
+        <a href="?tab=gastronomy" class="<?= $tab=='gastronomy' ? 'on':'' ?>">
+          <i class="bi bi-star"></i> Hồ sơ Ẩm thực VIP
+        </a>
         <a href="?tab=bookings"  class="<?= $tab=='bookings'  ? 'on':'' ?>">
           <i class="bi bi-calendar2-check"></i> Lịch sử đặt bàn
         </a>
@@ -531,8 +541,8 @@ body{
       <!-- Head -->
       <div class="prof-card-head">
         <?php
-          $icons = ['profile'=>'bi-person','bookings'=>'bi-calendar2-check','addresses'=>'bi-geo-alt','security'=>'bi-shield-lock'];
-          $titles = ['profile'=>'Thông tin cá nhân','bookings'=>'Lịch sử đặt bàn','addresses'=>'Sổ địa chỉ','security'=>'Bảo mật & Mật khẩu'];
+          $icons = ['profile'=>'bi-person','gastronomy'=>'bi-star','bookings'=>'bi-calendar2-check','addresses'=>'bi-geo-alt','security'=>'bi-shield-lock'];
+          $titles = ['profile'=>'Thông tin cá nhân','gastronomy'=>'Hồ sơ Ẩm thực VIP','bookings'=>'Lịch sử đặt bàn','addresses'=>'Sổ địa chỉ','security'=>'Bảo mật & Mật khẩu'];
         ?>
         <div class="pc-icon"><i class="bi <?= $icons[$tab]??'bi-person' ?>"></i></div>
         <h4 class="pc-title"><?= $titles[$tab]??'Thông tin' ?></h4>
@@ -599,6 +609,87 @@ body{
             </div>
           </div>
         </form>
+
+        <!-- ── TAB: GASTRONOMY PROFILE ── -->
+        <?php elseif($tab=='gastronomy'): ?>
+        <div class="sec-tip mb-4">
+          <i class="bi bi-info-circle-fill"></i>
+          <div>Thiết lập Hồ sơ Ẩm thực để nhà hàng có thể phục vụ bạn một cách tinh tế và cá nhân hóa nhất. Các món ăn chứa thành phần dị ứng sẽ được tự động cảnh báo khi bạn xem thực đơn.</div>
+        </div>
+        <form method="POST">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <label class="fl">Dị ứng thực phẩm (Allergies)</label>
+              <textarea name="allergies" class="fi" rows="3" placeholder="Ví dụ: Đậu phộng, Hải sản, Hành lá..."><?= htmlspecialchars($current_user['allergies'] ?? '') ?></textarea>
+              <small class="text-muted mt-1 d-block" style="font-size:12px">Nhập tên thành phần cách nhau bằng dấu phẩy.</small>
+            </div>
+            <div class="col-md-6">
+              <label class="fl">Sở thích ẩm thực (Taste Preferences)</label>
+              <textarea name="taste_preferences" class="fi" rows="3" placeholder="Ví dụ: Thích bò Medium Rare, vang đỏ, ít ngọt..."><?= htmlspecialchars($current_user['taste_preferences'] ?? '') ?></textarea>
+              <small class="text-muted mt-1 d-block" style="font-size:12px">Sở thích về độ chín, gia vị, đồ uống yêu thích.</small>
+            </div>
+            <div class="col-12 text-end">
+              <button type="submit" name="update_gastronomy" class="btn-prim">
+                <i class="bi bi-check2 me-1"></i>Lưu Hồ sơ Ẩm thực
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <hr style="border-color:var(--border); margin:40px 0;">
+        <h5 style="font-family:'Playfair Display',serif; color:var(--F); font-weight:600; margin-bottom:20px;">
+          <i class="bi bi-journal-bookmark me-2"></i>Nhật ký Ẩm thực (Gastronomy Journal)
+        </h5>
+        
+        <div style="border-left:2px solid var(--F-pale); padding-left:20px; margin-left:10px;">
+          <?php
+            // Lấy danh sách các đơn đã hoàn thành
+            $journal_stmt = $db->prepare("SELECT sb.*, rt.table_number, c.name as combo_name 
+                                          FROM service_bookings sb 
+                                          LEFT JOIN restaurant_tables rt ON sb.table_id = rt.id 
+                                          LEFT JOIN combos c ON sb.combo_id = c.id 
+                                          WHERE sb.user_id = ? AND sb.status = 'Completed' 
+                                          ORDER BY sb.booking_date DESC");
+            $journal_stmt->execute([$user_id]);
+            $journals = $journal_stmt->fetchAll();
+            
+            if (empty($journals)):
+          ?>
+            <p class="text-muted" style="font-size:13px; margin:0;">Bạn chưa có trải nghiệm dùng bữa nào được ghi lại.</p>
+          <?php else: foreach($journals as $j): ?>
+            <div style="position:relative; margin-bottom:25px;">
+              <!-- Timeline dot -->
+              <div style="position:absolute; left:-27px; top:0; width:12px; height:12px; border-radius:50%; background:var(--F); border:2px solid #fff; box-shadow:0 0 0 2px var(--F-pale);"></div>
+              
+              <div style="font-size:12px; font-weight:600; color:var(--F); margin-bottom:5px;">
+                <?= date('d/m/Y - H:i', strtotime($j['booking_date'])) ?>
+              </div>
+              <div class="bk-card" style="margin:0; border-left:none; padding:15px; background:var(--bg2);">
+                <div style="font-size:14px; color:var(--ink); font-weight:500; margin-bottom:6px;">
+                  Trải nghiệm tại <?= $j['table_id'] ? 'Bàn '.$j['table_number'] : 'Nhà hàng' ?>
+                </div>
+                <ul style="margin:0; padding-left:15px; font-size:13px; color:var(--ink2);">
+                  <?php if($j['combo_id']): ?>
+                    <li>Thưởng thức: <strong><?= htmlspecialchars($j['combo_name']) ?></strong></li>
+                  <?php endif; ?>
+                  <?php if($j['guests']): ?>
+                    <li>Đi cùng: <?= $j['guests'] ?> người</li>
+                  <?php endif; ?>
+                  <?php if($j['event_type']): ?>
+                    <li>Dịp: <?= htmlspecialchars($j['event_type']) ?></li>
+                  <?php endif; ?>
+                  <?php if($j['decor_package']): ?>
+                    <li>Không gian: <?= htmlspecialchars($j['decor_package']) ?></li>
+                  <?php endif; ?>
+                  <?php if($j['has_cake'] || $j['has_flower']): ?>
+                    <li>Dịch vụ kèm: <?= implode(', ', array_filter([$j['has_cake']?'Bánh kem':null, $j['has_flower']?'Hoa tươi':null])) ?></li>
+                  <?php endif; ?>
+                  <li>Mã đặt bàn: #BK-<?= $j['id'] ?></li>
+                </ul>
+              </div>
+            </div>
+          <?php endforeach; endif; ?>
+        </div>
 
         <!-- ── TAB: ĐẶT BÀN ── -->
         <?php elseif($tab=='bookings'): ?>

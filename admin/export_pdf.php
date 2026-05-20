@@ -110,31 +110,59 @@ $html = '
         </table>
     </div>';
 
-// KHỐI CHI TIẾT SỰ KIỆN (CHỈ HIỆN KHI LÀ SINH NHẬT/KỶ NIỆM)
-if ($s['service_type'] === 'birthday') {
-    $addons = [];
-    if ($s['has_cake']) $addons[] = 'Bánh kem';
-    if ($s['has_flower']) $addons[] = 'Hoa tươi';
-    $addon_str = !empty($addons) ? implode(', ', $addons) : 'Không';
+// KHỐI TRẢI NGHIỆM CÁ NHÂN HÓA (BESPOKE)
+$has_bespoke = !empty($s['has_candle']) || !empty($s['has_handwritten_card']) || !empty($s['has_flower']) || !empty($s['event_type']) || !empty($s['music_playlist']);
 
+if ($has_bespoke) {
     $html .= '
     <div style="border:1px solid #e8e2d9; background:#fafafa; border-radius:8px; padding:16px; margin-bottom:20px;">
         <div style="font-size:11px; font-weight:bold; letter-spacing:.15em; text-transform:uppercase; color:#cda45e; margin-bottom:12px; border-bottom:1px solid #f0ece4; padding-bottom:6px;">
-            Chi tiết tiệc kỷ niệm
+            Trải nghiệm Cá nhân hóa (Bespoke)
         </div>
-        <table style="width:100%; font-size:13px; border-collapse:collapse;">
+        <table style="width:100%; font-size:13px; border-collapse:collapse;">';
+
+    if (!empty($s['event_type'])) {
+        $html .= '
             <tr>
-                <td style="padding:5px 0; width:40%; color:#888;">Loại kỷ niệm:</td>
-                <td style="padding:5px 0; font-weight:bold;">' . htmlspecialchars($s['event_type'] ?: 'Sinh nhật') . '</td>
-            </tr>
+                <td style="padding:5px 0; width:40%; color:#888;">Dịp đặc biệt:</td>
+                <td style="padding:5px 0; font-weight:bold;">' . htmlspecialchars($s['event_type']) . '</td>
+            </tr>';
+    }
+
+    if (!empty($s['has_candle'])) {
+        $html .= '
             <tr>
-                <td style="padding:5px 0; color:#888;">Gói trang trí:</td>
-                <td style="padding:5px 0;">' . htmlspecialchars($s['decor_package'] ?: 'Gói mặc định') . '</td>
-            </tr>
+                <td style="padding:5px 0; width:40%; color:#888;">Trang trí:</td>
+                <td style="padding:5px 0; font-weight:bold;">Nến thơm</td>
+            </tr>';
+    }
+
+    if (!empty($s['has_handwritten_card'])) {
+        $html .= '
             <tr>
-                <td style="padding:5px 0; color:#888;">Dịch vụ đặt thêm:</td>
-                <td style="padding:5px 0; font-weight:bold; color:#d63384;">' . $addon_str . '</td>
-            </tr>
+                <td style="padding:5px 0; width:40%; color:#888;">Thiệp viết tay:</td>
+                <td style="padding:5px 0; font-weight:bold;">' . htmlspecialchars($s['card_message'] ?: 'Có') . '</td>
+            </tr>';
+    }
+
+    if (!empty($s['has_flower'])) {
+        $html .= '
+            <tr>
+                <td style="padding:5px 0; width:40%; color:#888;">Hoa tươi thiết kế:</td>
+                <td style="padding:5px 0; font-weight:bold;">' . htmlspecialchars($s['flower_preference'] ?: 'Có') . '</td>
+            </tr>';
+    }
+    
+    if (!empty($s['music_playlist']) || !empty($s['light_tone'])) {
+        $vipInfo = trim(htmlspecialchars($s['music_playlist'] . (!empty($s['light_tone']) ? ' - ' . $s['light_tone'] : '')));
+        $html .= '
+            <tr>
+                <td style="padding:5px 0; width:40%; color:#888;">Cấu hình VIP:</td>
+                <td style="padding:5px 0; font-weight:bold;">' . $vipInfo . '</td>
+            </tr>';
+    }
+
+    $html .= '
         </table>
     </div>';
 }
