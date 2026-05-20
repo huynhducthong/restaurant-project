@@ -367,7 +367,7 @@ include __DIR__ . '/views/client/layouts/header.php';
         <?php endif; ?>
       </div>
       <div class="text-center mt-4">
-        <a href="views/client/chefs.php" class="btn-view-all-custom">Xem tất cả đầu bếp</a>
+        <a href="chefs.php" class="btn-view-all-custom">Xem tất cả đầu bếp</a>
       </div>
     </div>
   </section>
