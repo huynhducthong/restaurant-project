@@ -49,6 +49,16 @@ $settings['logo_position']   = $settings['name_position'] ?? 'left';
 
 $current_page = basename($_SERVER['PHP_SELF']);
 
+if (!function_exists('safe_url')) {
+    function safe_url($url, $prefix = '') {
+        if (empty($url)) return '';
+        if (preg_match('/^(https?:|\/\/|\/)/i', $url)) {
+            return $url;
+        }
+        return $prefix . $url;
+    }
+}
+
 /* =========================================================
    ROLE
 ========================================================= */
@@ -559,11 +569,40 @@ if (!empty($logo_path)) {
                 class="navbar order-last order-lg-0">
 
                 <ul>
-                    <li><a class="<?= ($current_page === 'index.php')   ? 'active' : '' ?>" href="index.php">Trang chủ</a></li>
-                    <li><a class="<?= ($current_page === 'Aboutus.php') ? 'active' : '' ?>" href="Aboutus.php">Tin Tức</a></li>
-                    <li><a class="<?= ($current_page === 'menu.php')    ? 'active' : '' ?>" href="menu.php">Thực đơn</a></li>
-                    <li><a class="<?= ($current_page === 'chefs.php')   ? 'active' : '' ?>" href="chefs.php">Đội bếp</a></li>
-                    <li><a class="<?= ($current_page === 'contact.php') ? 'active' : '' ?>" href="contact.php">Liên hệ</a></li>
+                    <li>
+                        <a class="<?= ($current_page == 'index.php') ? 'active' : '' ?>"
+                            href="index.php">
+                            Trang chủ
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="<?= ($current_page == 'Aboutus.php') ? 'active' : '' ?>"
+                            href="Aboutus.php">
+                            Tin Tức
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="<?= ($current_page == 'menu.php') ? 'active' : '' ?>"
+                            href="menu.php">
+                            Thực đơn
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="<?= ($current_page == 'chefs.php' || ($current_page == 'Aboutus.php' && strpos($_SERVER['REQUEST_URI'], 'chef') !== false)) ? 'active' : '' ?>"
+                            href="<?= safe_url('chefs.php', $path_prefix ?? '') ?>">
+                            Đội Bếp
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="<?= ($current_page == 'contact.php') ? 'active' : '' ?>"
+                            href="contact.php">
+                            Liên hệ
+                        </a>
+                    </li>
                 </ul>
 
             </nav>
@@ -582,11 +621,6 @@ if (!empty($logo_path)) {
                         </div>
                         
                         <div class="oriental-panel" id="orientalPanel">
-                            <a href="index.php"                        class="oriental-item <?= ($current_page === 'index.php')   ? 'active' : '' ?>"><i class="bi bi-house-door"></i> Trang chủ</a>
-                            <a href="Aboutus.php"                      class="oriental-item <?= ($current_page === 'Aboutus.php') ? 'active' : '' ?>"><i class="bi bi-info-circle"></i> Tin tức</a>
-                            <a href="menu.php"                         class="oriental-item <?= ($current_page === 'menu.php')    ? 'active' : '' ?>"><i class="bi bi-card-list"></i> Thực đơn</a>
-                            <a href="chefs.php"                        class="oriental-item <?= ($current_page === 'chefs.php')   ? 'active' : '' ?>"><i class="bi bi-people"></i> Đội bếp</a>
-                            <a href="contact.php"                      class="oriental-item <?= ($current_page === 'contact.php') ? 'active' : '' ?>"><i class="bi bi-envelope"></i> Liên hệ</a>
                             <a href="booking_service.php?type=table"   class="oriental-item"><i class="bi bi-calendar-check"></i> Đặt bàn</a>
 
                             <?php if (isset($_SESSION['user_id'])): ?>
@@ -612,7 +646,7 @@ if (!empty($logo_path)) {
                                 </a>
                             <?php else: ?>
                                 <!-- ĐĂNG KÝ -->
-                                <a href="public/register.php" class="oriental-item">
+                                <a href="<?= safe_url('public/register.php', $path_prefix ?? '') ?>" class="oriental-item">
                                     <i class="bi bi-person-plus"></i> Đăng ký
                                 </a>
 
