@@ -485,7 +485,7 @@ select.input-lux {
 
             <div class="panel-section">
                 <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold);">Tinh Hoa Ẩm Thực</h3>
-                <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">Gói Combo Đặc Biệt</p>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">Bộ Sưu Tập Hương Vị</p>
                 <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:15px; margin-bottom: 25px;">
                     <div class="card-select cc active" data-price="0" onclick="selCombo(0,this)">
                         <div style="color:var(--gold); font-size:15px; margin-bottom:5px;">Gọi Món Tự Do</div>
@@ -589,7 +589,7 @@ select.input-lux {
             
 
             
-            <div class="sum-row"><span>Combo / Món</span> <span class="sum-val" id="sm">0 đ</span></div>
+            <div class="sum-row"><span>Bộ Sưu Tập Hương Vị / Món</span> <span class="sum-val" id="sm">0 đ</span></div>
             
             <div class="total-box">
                 <div class="deposit-label">TIỀN CỌC TRƯỚC (30%)</div>

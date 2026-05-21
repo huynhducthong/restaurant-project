@@ -379,7 +379,7 @@ img{display:block;}
 <nav class="cat-bar" id="menu-section">
   <div class="cat-inner">
     <button class="cat-btn on" data-cat="all">Tất cả</button>
-    <button class="cat-btn" data-cat="combo">Combo</button>
+    <button class="cat-btn" data-cat="combo">Bộ Sưu Tập Hương Vị</button>
     <?php foreach($all_categories as $cat): ?>
     <button class="cat-btn" data-cat="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></button>
     <?php endforeach; ?>
@@ -391,7 +391,7 @@ img{display:block;}
 <section class="sec-pad" id="sec-combo">
   <div class="wrap">
     <div data-aos="fade-up">
-      <div class="sec-tag">Combo đặc biệt</div>
+      <div class="sec-tag">Bộ Sưu Tập Hương Vị</div>
       <h2 class="sec-h">Gói trải nghiệm <em>được tuyển chọn</em></h2>
     </div>
     <div class="combo-bento <?= count($all_combos)===1?'few1':(count($all_combos)===2?'few2':'') ?>" data-aos="fade-up" data-aos-delay="100">
@@ -399,11 +399,11 @@ img{display:block;}
       <div class="cb-card" onclick="openModal(<?= htmlspecialchars(json_encode([
         'type'=>'combo','name'=>$cb['name'],'desc'=>$cb['description'],
         'price'=>$cb['price'],'img'=>'public/assets/img/combos/'.$cb['image'],
-        'cat'=>'Combo Đặc Biệt'
+        'cat'=>'Bộ Sưu Tập Hương Vị'
       ])) ?>)">
         <div class="cb-img" style="background-image:url('public/assets/img/combos/<?= htmlspecialchars($cb['image']) ?>')"></div>
         <div class="cb-body">
-          <span class="cb-badge">Combo <?= $i+1 ?> · Ưu đãi</span>
+          <span class="cb-badge">Bộ Sưu Tập <?= $i+1 ?> · Ưu đãi</span>
           <h3 class="cb-name"><?= htmlspecialchars($cb['name']) ?></h3>
           <p class="cb-desc"><?= htmlspecialchars(mb_strimwidth($cb['description'],0,90,'…')) ?></p>
           <div class="cb-price"><?= number_format($cb['price'],0,',','.') ?> đ</div>

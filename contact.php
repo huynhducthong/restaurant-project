@@ -18,8 +18,18 @@ $messageSent = false;
 $errorMsg = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Kiểm tra CSRF token
-    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
+    // 1. Kiểm tra Honey Pot (Spam prevention)
+    if (!empty($_POST['website'])) {
+        // Nếu bot điền vào field này, im lặng dừng lại hoặc trả về lỗi
+        if (isset($_POST['is_ajax'])) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Spam detected.']);
+            exit;
+        }
+        $errorMsg = 'Yêu cầu không hợp lệ.';
+    } 
+    // 2. Kiểm tra CSRF token
+    elseif (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
         $errorMsg = 'Yêu cầu không hợp lệ. Vui lòng thử lại.';
     } else {
         $name = trim($_POST['name'] ?? '');
@@ -33,27 +43,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errorMsg = 'Địa chỉ email không hợp lệ.';
         } else {
             try {
-                // Tạo bảng contacts nếu chưa có
-                $db->exec("CREATE TABLE IF NOT EXISTS `contacts` (
-                    `id` int(11) NOT NULL AUTO_INCREMENT,
-                    `name` varchar(100) NOT NULL,
-                    `email` varchar(100) NOT NULL,
-                    `subject` varchar(255) DEFAULT NULL,
-                    `message` text NOT NULL,
-                    `status` enum('new','read') DEFAULT 'new',
-                    `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-                    PRIMARY KEY (`id`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
-
                 // Lưu vào CSDL Contacts
-                $stmt = $db->prepare("INSERT INTO contacts (name, email, subject, message) VALUES (?, ?, ?, ?)");
+                $stmt = $db->prepare("INSERT INTO contacts (name, email, subject, message, status) VALUES (?, ?, ?, ?, 'new')");
                 $stmt->execute([$name, $email, $subject, $message]);
 
                 $messageSent = true;
             } catch (Exception $e) {
-                $errorMsg = 'Không thể lưu tin nhắn. Lỗi hệ thống: ' . $e->getMessage();
+                $errorMsg = 'Lỗi hệ thống: ' . $e->getMessage();
             }
         }
+    }
+
+    // Trả về JSON nếu là AJAX
+    if (isset($_POST['is_ajax'])) {
+        header('Content-Type: application/json');
+        if ($messageSent) {
+            echo json_encode(['success' => true, 'message' => 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất.']);
+        } else {
+            echo json_encode(['success' => false, 'message' => $errorMsg]);
+        }
+        exit;
     }
 }
 
@@ -63,129 +72,247 @@ $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 include 'views/client/layouts/header.php';
 ?>
 
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
 <style>
+    :root {
+        --bg-dark: #0a1715;
+        --forest: #143B36;
+        --forest-light: #1d5750;
+        --forest-glow: rgba(20, 59, 54, 0.5);
+        --gold: #cda45e;
+        --gold-glow: rgba(205, 164, 94, 0.3);
+        --glass-bg: rgba(20, 59, 54, 0.25);
+        --glass-border: rgba(205, 164, 94, 0.15);
+        --ease: cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
     .contact-page {
-        background: #0c0b09;
+        background: var(--bg-dark);
         color: #fff;
-        font-family: 'Poppins', sans-serif;
+        font-family: 'Inter', sans-serif;
     }
 
     .contact-hero {
-        padding: 150px 0 80px;
+        padding: 180px 0 100px;
         text-align: center;
-        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('public/assets/img/hero-bg.jpg') center center / cover no-repeat;
-        border-bottom: 1px solid rgba(205, 164, 94, 0.2);
+        position: relative;
+        background: url('public/assets/img/hero-bg.jpg') center center / cover no-repeat fixed;
+        border-bottom: 1px solid var(--glass-border);
+    }
+    
+    .contact-hero::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: linear-gradient(0deg, var(--bg-dark) 0%, rgba(10,23,21,0.6) 100%);
+    }
+
+    .contact-hero .container {
+        position: relative;
+        z-index: 2;
     }
 
     .contact-hero h2 {
         font-family: 'Playfair Display', serif;
-        font-size: 3.5rem;
-        color: #cda45e;
-        margin-bottom: 15px;
+        font-size: clamp(3rem, 5vw, 4.5rem);
+        color: var(--gold);
+        margin-bottom: 20px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-shadow: 0 5px 15px rgba(0,0,0,0.5);
     }
 
     .contact-hero p {
-        color: #eee;
+        color: rgba(255,255,255,0.8);
         font-style: italic;
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
     }
 
     .contact-section {
-        padding: 80px 0;
+        padding: 100px 0;
+        position: relative;
+        z-index: 10;
+        margin-top: -60px;
     }
 
     .info-item {
-        background: #1a1814;
-        border: 1px solid #37332a;
-        border-radius: 12px;
-        padding: 20px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 25px;
         margin-bottom: 20px;
-        transition: 0.3s;
+        transition: all 0.4s var(--ease);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .info-item::before {
+        content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+        transition: 0.5s;
     }
 
     .info-item:hover {
-        border-color: #cda45e;
+        border-color: var(--gold);
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.4), 0 0 15px var(--forest-glow);
+        background: rgba(20, 59, 54, 0.4);
+    }
+    
+    .info-item:hover::before {
+        left: 200%;
     }
 
     .info-item i {
-        font-size: 1.8rem;
-        color: #cda45e;
-        margin-right: 15px;
+        font-size: 2rem;
+        color: var(--gold);
+        margin-right: 20px;
         float: left;
+        transition: 0.3s;
+    }
+
+    .info-item:hover i {
+        transform: scale(1.1);
     }
 
     .info-item h5 {
-        color: #cda45e;
-        margin-bottom: 5px;
+        color: #fff;
+        margin-bottom: 8px;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.25rem;
+        letter-spacing: 1px;
     }
 
     .info-item p {
         margin: 0;
-        color: #aaa;
+        color: rgba(255,255,255,0.6);
+        font-size: 0.95rem;
     }
 
     .map-mini {
-        border-radius: 12px;
+        border-radius: 16px;
         overflow: hidden;
-        border: 1px solid rgba(205, 164, 94, 0.3);
-        height: 200px;
-        margin-top: 20px;
+        border: 1px solid var(--glass-border);
+        height: 250px;
+        margin-top: 30px;
+        transition: 0.4s;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    .map-mini:hover {
+        border-color: var(--gold);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.5);
     }
 
     .map-mini iframe {
         width: 100%;
         height: 100%;
         border: none;
+        filter: invert(90%) hue-rotate(180deg) brightness(80%) contrast(80%);
+        transition: 0.5s;
+    }
+    
+    .map-mini:hover iframe {
+        filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%);
     }
 
     .form-wrapper {
-        background: #1a1814;
-        border: 1px solid #37332a;
-        border-radius: 16px;
-        padding: 40px;
+        background: var(--forest);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 50px 40px;
         height: 100%;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        position: relative;
     }
 
     .form-wrapper .form-label {
-        color: #cda45e;
-        font-weight: 600;
-        font-size: 14px;
+        color: var(--gold);
+        font-weight: 500;
+        font-size: 12px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
     }
 
     .form-control {
-        background: #0c0b09;
-        border: 1px solid #37332a;
+        background: rgba(0,0,0,0.25);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-bottom: 1px solid rgba(255,255,255,0.2);
         color: #fff;
-        padding: 12px 15px;
+        padding: 15px 20px;
         border-radius: 8px;
-        transition: 0.3s;
+        transition: all 0.3s ease;
+        font-size: 14px;
     }
 
     .form-control:focus {
-        border-color: #cda45e;
-        box-shadow: 0 0 0 0.2rem rgba(205, 164, 94, 0.25);
-        background: #0c0b09;
+        border-color: rgba(255,255,255,0.1);
+        border-bottom-color: var(--gold);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        background: rgba(212, 176, 106, 0.05);
         color: #fff;
+    }
+    
+    .form-control::placeholder {
+        color: rgba(255,255,255,0.3);
     }
 
     .btn-gold {
-        background: #cda45e;
-        color: #000;
+        background: linear-gradient(135deg, #E6C887 0%, #D4B06A 50%, #A5803A 100%);
+        color: var(--bg-dark);
         font-weight: 600;
-        padding: 12px 30px;
-        border-radius: 30px;
+        padding: 16px 30px;
+        border-radius: 50px;
         border: none;
-        transition: 0.3s;
+        transition: all 0.4s var(--ease);
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 1.5px;
         width: 100%;
+        font-size: 14px;
+        margin-top: 15px;
     }
 
     .btn-gold:hover {
-        background: #b8943f;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px var(--gold-glow);
+        background: linear-gradient(135deg, #f0d59e 0%, #e8c47b 50%, #b8943f 100%);
     }
 
     .alert {
-        border-radius: 8px;
+        border-radius: 12px;
+        border: none;
+        padding: 15px 20px;
+        font-size: 14px;
+    }
+
+    /* Animations & Polish */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .info-item, .form-wrapper, .map-mini {
+        opacity: 0;
+        animation: fadeInUp 0.8s var(--ease) forwards;
+    }
+
+    .info-item:nth-child(1) { animation-delay: 0.1s; }
+    .info-item:nth-child(2) { animation-delay: 0.2s; }
+    .info-item:nth-child(3) { animation-delay: 0.3s; }
+    .info-item:nth-child(4) { animation-delay: 0.4s; }
+    .map-mini { animation-delay: 0.5s; }
+    .form-wrapper { animation-delay: 0.3s; }
+
+    .btn-gold:disabled {
+        background: rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.3);
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
     }
 </style>
 
@@ -247,8 +374,14 @@ include 'views/client/layouts/header.php';
                             </div>
                         <?php endif; ?>
 
-                        <form action="contact.php" method="POST">
+                        <form id="contactForm" action="contact.php" method="POST">
                             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                            <input type="hidden" name="is_ajax" value="1">
+                            
+                            <!-- Honey Pot (Anti-spam) -->
+                            <div style="display:none !important;">
+                                <input type="text" name="website" tabindex="-1" autocomplete="off">
+                            </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Họ và tên</label>
@@ -269,13 +402,81 @@ include 'views/client/layouts/header.php';
                                 <textarea name="message" rows="5" class="form-control"
                                     placeholder="Viết nội dung bạn muốn gửi..." required></textarea>
                             </div>
-                            <button type="submit" class="btn btn-gold">Gửi lời nhắn</button>
+                            <button type="submit" id="btnSubmit" class="btn btn-gold d-flex align-items-center justify-content-center gap-2">
+                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                <span class="btn-text">Gửi lời nhắn</span>
+                            </button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+        <div id="contactToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
 </main>
+
+<script>
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    var form = this;
+    var btn = document.getElementById('btnSubmit');
+    var spinner = btn.querySelector('.spinner-border');
+    var btnText = btn.querySelector('.btn-text');
+    var toastEl = document.getElementById('contactToast');
+    var toast = new bootstrap.Toast(toastEl);
+    
+    // Disable form & show loading
+    btn.disabled = true;
+    spinner.classList.remove('d-none');
+    btnText.innerText = 'Đang gửi...';
+    
+    var formData = new FormData(form);
+    
+    fetch('contact.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(data) {
+        // Reset button
+        btn.disabled = false;
+        spinner.classList.add('d-none');
+        btnText.innerText = 'Gửi lời nhắn';
+        
+        // Configure toast
+        toastEl.classList.remove('bg-success', 'bg-danger');
+        toastEl.classList.add(data.success ? 'bg-success' : 'bg-danger');
+        toastEl.querySelector('.toast-body').innerText = data.message;
+        
+        toast.show();
+        
+        if (data.success) {
+            form.reset();
+        }
+    })
+    .catch(function(error) {
+        btn.disabled = false;
+        spinner.classList.add('d-none');
+        btnText.innerText = 'Gửi lời nhắn';
+        
+        toastEl.classList.remove('bg-success');
+        toastEl.classList.add('bg-danger');
+        toastEl.querySelector('.toast-body').innerText = 'Đã có lỗi xảy ra. Vui lòng thử lại sau.';
+        toast.show();
+    });
+});
+</script>
 
 <?php include 'views/client/layouts/footer.php'; ?>

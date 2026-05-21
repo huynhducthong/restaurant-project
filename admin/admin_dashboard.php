@@ -162,6 +162,9 @@ try {
         $trend_up  = $this_month_rev >= $prev_month_revenue;
     }
 
+    // Lấy số lượng liên hệ chưa đọc
+    $new_contacts_count = (int)$db->query("SELECT COUNT(*) FROM contacts WHERE status = 'new'")->fetchColumn();
+
 } catch (Exception $e) {
 }
 ?>
@@ -279,20 +282,20 @@ try {
         </form>
     </div>
 
-    <!-- ===== 4 STAT CARDS ===== -->
-    <div class="row g-3 mb-4">
+    <!-- ===== 5 STAT CARDS ===== -->
+    <div class="row g-3 mb-4 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-5">
 
         <!-- Doanh thu -->
-        <div class="col-md-3">
-            <div class="stat-card bg-white">
+        <div class="col">
+            <div class="stat-card bg-white h-100">
                 <div class="stat-icon" style="background:#fff3e0">💰</div>
                 <div>
-                    <div class="stat-label">Doanh thu</div>
-                    <div class="stat-val text-warning"><?= number_format($selected_revenue) ?>đ</div>
+                    <div class="stat-label small">Doanh thu</div>
+                    <div class="stat-val text-warning" style="font-size: 1.4rem;"><?= number_format($selected_revenue) ?>đ</div>
                     <?php if ($trend_pct > 0): ?>
                     <span class="trend-badge mt-1 d-inline-block
                                  <?= $trend_up ? 'bg-success bg-opacity-10 text-success' : 'bg-danger bg-opacity-10 text-danger' ?>">
-                        <?= $trend_up ? '▲' : '▼' ?> <?= $trend_pct ?>% so tháng trước
+                        <?= $trend_up ? '▲' : '▼' ?> <?= $trend_pct ?>%
                     </span>
                     <?php endif; ?>
                 </div>
@@ -300,36 +303,49 @@ try {
         </div>
 
         <!-- Món ăn -->
-        <div class="col-md-3">
-            <div class="stat-card bg-white">
+        <div class="col">
+            <div class="stat-card bg-white h-100">
                 <div class="stat-icon" style="background:#e8f5e9">🍽</div>
                 <div>
-                    <div class="stat-label">Món ăn đang hiển thị</div>
+                    <div class="stat-label small">Món ăn</div>
                     <div class="stat-val text-success"><?= $total_foods ?></div>
                 </div>
             </div>
         </div>
 
         <!-- Đặt bàn -->
-        <div class="col-md-3">
-            <div class="stat-card bg-white">
+        <div class="col">
+            <div class="stat-card bg-white h-100">
                 <div class="stat-icon" style="background:#e3f2fd">📅</div>
                 <div>
-                    <div class="stat-label">Lượt đặt bàn năm <?= $filter_year ?></div>
+                    <div class="stat-label small">Đặt bàn <?= $filter_year ?></div>
                     <div class="stat-val text-primary"><?= number_format($total_bookings) ?></div>
                 </div>
             </div>
         </div>
 
         <!-- Khách hàng -->
-        <div class="col-md-3">
-            <div class="stat-card bg-white">
+        <div class="col">
+            <div class="stat-card bg-white h-100">
                 <div class="stat-icon" style="background:#fce4ec">👤</div>
                 <div>
-                    <div class="stat-label">Khách hàng đã đăng ký</div>
+                    <div class="stat-label small">Khách hàng</div>
                     <div class="stat-val text-danger"><?= number_format($total_users) ?></div>
                 </div>
             </div>
+        </div>
+
+        <!-- Liên hệ mới -->
+        <div class="col">
+            <a href="manage_contacts.php" class="text-decoration-none">
+                <div class="stat-card bg-white h-100 border-start border-4 border-primary">
+                    <div class="stat-icon" style="background:#f3e5f5">✉️</div>
+                    <div>
+                        <div class="stat-label small">Liên hệ mới</div>
+                        <div class="stat-val" style="color: #9c27b0;"><?= $new_contacts_count ?></div>
+                    </div>
+                </div>
+            </a>
         </div>
 
     </div>

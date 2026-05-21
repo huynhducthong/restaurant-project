@@ -1,11 +1,14 @@
 <?php
 // File: admin/controllers/ajax_confirm_booking.php
+session_start();
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../config/inventory_helper.php';
+require_once __DIR__ . '/../../config/notification_helper.php';
 header('Content-Type: application/json');
 
 try {
     $db = (new Database())->getConnection();
+    $current_user = $_SESSION['username'] ?? ($_SESSION['user_name'] ?? 'Admin');
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['booking_id'])) {
         $booking_id = (int)$_POST['booking_id'];
@@ -21,6 +24,11 @@ try {
 
         // 2. Cập nhật trạng thái xác nhận đơn hàng
         $db->prepare("UPDATE service_bookings SET status = 'Confirmed' WHERE id = ?")->execute([$booking_id]);
+
+        // Thông tin đơn để gửi Telegram sau khi commit
+        $stmt_bk = $db->prepare("SELECT id, service_type, customer_name, customer_phone, booking_date, guests, total_amount, deposit_amount FROM service_bookings WHERE id = ?");
+        $stmt_bk->execute([$booking_id]);
+        $booking_info = $stmt_bk->fetch(PDO::FETCH_ASSOC) ?: null;
 
         // 3. Lấy danh sách tất cả các món ăn khách đã đặt
         $stmt_items = $db->prepare("SELECT menu_id, quantity FROM booking_details WHERE booking_id = ?");
@@ -110,6 +118,30 @@ try {
         }
 
         $db->commit();
+
+        // --- THÔNG BÁO TELEGRAM: ĐÃ XÁC NHẬN ĐƠN (endpoint AJAX cũ) ---
+        if ($booking_info) {
+            $time_str = date('H:i d/m/Y', strtotime($booking_info['booking_date']));
+            $svc = htmlspecialchars((string)$booking_info['service_type'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $name = htmlspecialchars((string)$booking_info['customer_name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $phone = htmlspecialchars((string)$booking_info['customer_phone'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $who = htmlspecialchars((string)$current_user, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $money_total = number_format((float)($booking_info['total_amount'] ?? 0), 0, ',', '.');
+            $money_dep = number_format((float)($booking_info['deposit_amount'] ?? 0), 0, ',', '.');
+
+            $msg = "✅ <b>ĐƠN DỊCH VỤ ĐÃ XÁC NHẬN</b>\n\n";
+            $msg .= "🧾 Mã đơn: <b>#{$booking_info['id']}</b>\n";
+            $msg .= "👤 Khách: <b>{$name}</b>\n";
+            $msg .= "📞 SĐT: {$phone}\n";
+            $msg .= "🏷 Loại: <b>{$svc}</b>\n";
+            $msg .= "⏰ Lúc: {$time_str}\n";
+            $msg .= "👥 Số khách: {$booking_info['guests']}\n";
+            $msg .= "💰 Tổng: <b>{$money_total} VNĐ</b>\n";
+            $msg .= "🧾 Cọc (30%): <b>{$money_dep} VNĐ</b>\n";
+            $msg .= "👤 Xác nhận bởi: <b>{$who}</b>\n";
+            @sendTelegramNotification($msg);
+        }
+
         echo json_encode(['status' => 'success', 'message' => 'Xác nhận đơn và trừ kho thành công!']);
 
 

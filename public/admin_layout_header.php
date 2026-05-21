@@ -26,7 +26,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
 if (!function_exists('isActive')) {
     function isActive($path)
     {
-        return strpos($_SERVER['REQUEST_URI'], $path) !== false ? 'active' : '';
+        // Tránh lỗi match theo chuỗi con (vd: footer_settings.php chứa "settings.php")
+        // - Nếu $path là tên file (không có "/") thì so khớp CHÍNH XÁC theo basename của URL
+        // - Nếu $path là đoạn path có "/" thì cho phép match theo contains như cũ
+        $uriPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '';
+        if (strpos($path, '/') === false) {
+            return (basename($uriPath) === $path) ? 'active' : '';
+        }
+        return (strpos($uriPath, $path) !== false) ? 'active' : '';
     }
 }
 

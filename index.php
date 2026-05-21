@@ -174,7 +174,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 </section>
 
 <main id="main">
-  <section id="about" class="about-section" style="background: #0c0b09; color: #fff; padding: 100px 0; overflow: hidden;">
+  <section id="about" class="about-section" style="background: #0A1C1A; color: #fff; padding: 140px 0; overflow: hidden;">
     <div class="container-fluid px-0">
       <div class="row g-0 align-items-center">
         <div class="col-lg-7" style="padding-left: 5%; padding-right: 30px;">
@@ -226,7 +226,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     </div>
   </section>
 
-  <section id="menu" class="menu section-bg" style="background: #0c0b09; padding: 80px 0;">
+  <section id="menu" class="menu section-bg" style="background: #143B36; padding: 140px 0;">
     <div class="container">
       <div class="section-title text-center mb-5">
         <h2 style="color: #cda45e; font-family: 'Playfair Display', serif;">Thực Đơn</h2>
@@ -301,10 +301,10 @@ include __DIR__ . '/views/client/layouts/header.php';
     </div>
   </section>
 
-  <section id="combos" style="background: #1a1814; padding: 80px 0; border-top: 1px solid #37332a; border-bottom: 1px solid #37332a;">
+  <section id="combos" style="background: #0A1C1A; padding: 140px 0; border-top: 1px solid rgba(212,176,106,0.15); border-bottom: 1px solid rgba(212,176,106,0.15);">
     <div class="container">
       <div class="section-title text-center mb-5">
-        <h2 style="color: #cda45e; font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700;">Combo Đặc Biệt</h2>
+        <h2 style="color: #cda45e; font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700;">Bộ Sưu Tập Hương Vị</h2>
         <p style="color: #fff; font-size: 18px; font-style: italic;">Lựa chọn hoàn hảo để chia sẻ niềm vui</p>
       </div>
 
@@ -334,7 +334,7 @@ include __DIR__ . '/views/client/layouts/header.php';
         <?php endif; ?>
       </div>
     </div>
-  <section id="chefs" class="chefs" style="background: #0c0b09; padding: 80px 0;">
+  <section id="chefs" class="chefs" style="background: #143B36; padding: 140px 0;">
     <div class="container">
       <div class="section-title text-center mb-5">
         <h2 class="chefs-subtitle">Đội ngũ đầu bếp</h2>
@@ -377,6 +377,30 @@ include __DIR__ . '/views/client/layouts/header.php';
 <?php include __DIR__ . '/views/client/layouts/footer.php'; ?>
 
 <style>
+  /* --- FINE DINING LUXURY ANIMATIONS --- */
+  @keyframes kenBurnsLux {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.08); }
+  }
+  .carousel-item.active {
+    animation: kenBurnsLux 20s ease-out forwards;
+  }
+  .carousel-item .container {
+    animation: reverseKenBurnsLux 20s ease-out forwards;
+  }
+  @keyframes reverseKenBurnsLux {
+    0% { transform: scale(1); }
+    100% { transform: scale(0.925); }
+  }
+  
+  .section-title h2, .section-title p {
+    animation: fadeInUpSlow 2s ease-out forwards;
+  }
+  @keyframes fadeInUpSlow {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  /* ------------------------------------- */
   .btn-menu-custom,
   .btn-book-custom,
   .btn-view-all-custom {
@@ -418,20 +442,20 @@ include __DIR__ . '/views/client/layouts/header.php';
   }
 
   .combo-card-custom {
-    background: #0c0b09;
-    border: 1px solid #37332a;
+    background: #143B36;
+    border: 1px solid rgba(212,176,106,0.2);
     padding: 25px;
     height: 100%;
     display: flex;
     flex-direction: column;
-    transition: 0.4s;
+    transition: 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
     border-radius: 10px;
   }
 
   .combo-card-custom:hover {
-    transform: translateY(-10px);
-    border-color: #cda45e;
-    box-shadow: 0 5px 20px rgba(205, 164, 94, 0.2);
+    transform: translateY(-5px);
+    border-color: rgba(205, 164, 94, 0.6);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   }
 
   .combo-img img {
@@ -439,11 +463,11 @@ include __DIR__ . '/views/client/layouts/header.php';
     height: 220px;
     object-fit: cover;
     border-radius: 5px;
-    transition: 0.5s;
+    transition: 1s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   .combo-img:hover img {
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
 
   .combo-name-custom {
@@ -468,7 +492,7 @@ include __DIR__ . '/views/client/layouts/header.php';
   }
 
   .combo-items-list {
-    border-top: 1px dashed #37332a;
+    border-top: 1px dashed rgba(212,176,106,0.2);
     padding-top: 15px;
     margin-bottom: 20px;
   }
@@ -522,11 +546,11 @@ include __DIR__ . '/views/client/layouts/header.php';
   }
 
   .chef-member-card {
-    background: #1a1814;
-    padding: 30px;
-    border: 1px solid #37332a;
+    background: #0A1C1A;
+    padding: 40px;
+    border: 1px solid rgba(212,176,106,0.2);
     text-align: center;
-    transition: 0.3s;
+    transition: 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
     border-radius: 5px;
   }
 

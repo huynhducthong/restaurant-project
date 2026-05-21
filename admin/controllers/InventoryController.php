@@ -11,6 +11,7 @@ $current_user = $_SESSION['username'] ?? 'Admin';
 
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../config/inventory_helper.php';
+require_once __DIR__ . '/../../config/notification_helper.php';
 $db = (new Database())->getConnection();
 
 // API: Lấy danh sách gợi ý nhập hàng (cho PO)
@@ -147,6 +148,9 @@ if (isset($_POST['action'])) {
     header('Content-Type: application/json');
     $db->beginTransaction();
     try {
+        // Chuẩn bị nội dung Telegram (nếu action là chuyển kho / duyệt chuyển kho)
+        $telegram_msg = null;
+
         if ($_POST['action'] === 'import') {
             $id = (int)$_POST['item_id'];
             $qty = (float)$_POST['quantity'];
@@ -230,6 +234,27 @@ if (isset($_POST['action'])) {
             $db->prepare("INSERT INTO transfer_details (transfer_id, ingredient_id, quantity) VALUES (?, ?, ?)")
                 ->execute([$transfer_id, $id, $qty]);
 
+            // Telegram: tạo yêu cầu chuyển kho
+            $w_from = $db->prepare("SELECT name FROM warehouses WHERE id = ?");
+            $w_to = $db->prepare("SELECT name FROM warehouses WHERE id = ?");
+            $w_from->execute([$from_id]);
+            $w_to->execute([$to_id]);
+            $from_name = (string)($w_from->fetchColumn() ?: ('Kho #' . $from_id));
+            $to_name = (string)($w_to->fetchColumn() ?: ('Kho #' . $to_id));
+
+            $stmt_ing = $db->prepare("SELECT item_name, unit_name FROM inventory WHERE id = ?");
+            $stmt_ing->execute([$id]);
+            $ing = $stmt_ing->fetch(PDO::FETCH_ASSOC) ?: ['item_name' => ('ID ' . $id), 'unit_name' => ''];
+            $qty_str = rtrim(rtrim(number_format($qty, 2, '.', ''), '0'), '.');
+
+            $who = htmlspecialchars((string)$current_user, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $telegram_msg = "📦 <b>YÊU CẦU CHUYỂN KHO</b>\n\n";
+            $telegram_msg .= "🧾 Phiếu: <b>#{$transfer_id}</b>\n";
+            $telegram_msg .= "👤 Tạo bởi: <b>{$who}</b>\n";
+            $telegram_msg .= "🏭 Từ: <b>" . htmlspecialchars($from_name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</b>\n";
+            $telegram_msg .= "➡️ Đến: <b>" . htmlspecialchars($to_name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</b>\n\n";
+            $telegram_msg .= "- " . htmlspecialchars((string)$ing['item_name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . ": {$qty_str}" . (!empty($ing['unit_name']) ? (" " . htmlspecialchars((string)$ing['unit_name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')) : "");
+
         } elseif ($_POST['action'] === 'transfer_multi') {
             // Action mới: Chuyển kho NHIỀU MẶT HÀNG cùng lúc
             $from_id = (int)$_POST['from_warehouse_id'];
@@ -262,6 +287,35 @@ if (isset($_POST['action'])) {
             foreach ($valid_items as $item) {
                 $stmt_detail->execute([$transfer_id, $item['id'], $item['qty']]);
             }
+
+            // Telegram: tạo yêu cầu chuyển kho nhiều mặt hàng
+            $w_from = $db->prepare("SELECT name FROM warehouses WHERE id = ?");
+            $w_to = $db->prepare("SELECT name FROM warehouses WHERE id = ?");
+            $w_from->execute([$from_id]);
+            $w_to->execute([$to_id]);
+            $from_name = (string)($w_from->fetchColumn() ?: ('Kho #' . $from_id));
+            $to_name = (string)($w_to->fetchColumn() ?: ('Kho #' . $to_id));
+
+            $stmt_ing = $db->prepare("SELECT item_name, unit_name FROM inventory WHERE id = ?");
+            $lines = [];
+            foreach ($valid_items as $it) {
+                $stmt_ing->execute([(int)$it['id']]);
+                $ing = $stmt_ing->fetch(PDO::FETCH_ASSOC) ?: ['item_name' => ('ID ' . (int)$it['id']), 'unit_name' => ''];
+                $qty_str = rtrim(rtrim(number_format((float)$it['qty'], 2, '.', ''), '0'), '.');
+                $line = "- " . htmlspecialchars((string)$ing['item_name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . ": {$qty_str}";
+                if (!empty($ing['unit_name'])) $line .= " " . htmlspecialchars((string)$ing['unit_name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+                $lines[] = $line;
+            }
+
+            $who = htmlspecialchars((string)$current_user, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $telegram_msg = "📦 <b>YÊU CẦU CHUYỂN KHO</b>\n\n";
+            $telegram_msg .= "🧾 Phiếu: <b>#{$transfer_id}</b>\n";
+            $telegram_msg .= "👤 Tạo bởi: <b>{$who}</b>\n";
+            $telegram_msg .= "🏭 Từ: <b>" . htmlspecialchars($from_name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</b>\n";
+            $telegram_msg .= "➡️ Đến: <b>" . htmlspecialchars($to_name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</b>\n";
+            $telegram_msg .= "📦 Số mặt hàng: <b>" . count($valid_items) . "</b>\n\n";
+            $telegram_msg .= implode("\n", array_slice($lines, 0, 30));
+            if (count($lines) > 30) $telegram_msg .= "\n<i>... (còn " . (count($lines) - 30) . " dòng)</i>";
         } elseif ($_POST['action'] === 'approve_transfer') {
             $t_id = (int)$_POST['transfer_id'];
 
@@ -309,6 +363,37 @@ if (isset($_POST['action'])) {
             // 3. Cập nhật trạng thái phiếu chuyển
             $db->prepare("UPDATE inventory_transfers SET status = 'completed', approved_by = ?, approved_at = NOW() WHERE id = ?")
                 ->execute([$current_user, $t_id]);
+
+            // Telegram: duyệt phiếu chuyển kho
+            $w_from = $db->prepare("SELECT name FROM warehouses WHERE id = ?");
+            $w_to = $db->prepare("SELECT name FROM warehouses WHERE id = ?");
+            $w_from->execute([(int)$transfer['from_warehouse_id']]);
+            $w_to->execute([(int)$transfer['to_warehouse_id']]);
+            $from_name = (string)($w_from->fetchColumn() ?: ('Kho #' . (int)$transfer['from_warehouse_id']));
+            $to_name = (string)($w_to->fetchColumn() ?: ('Kho #' . (int)$transfer['to_warehouse_id']));
+
+            $stmt_ing = $db->prepare("SELECT item_name, unit_name FROM inventory WHERE id = ?");
+            $lines = [];
+            foreach ($details as $d) {
+                $ing_id = (int)$d['ingredient_id'];
+                $qty = (float)$d['quantity'];
+                $stmt_ing->execute([$ing_id]);
+                $ing = $stmt_ing->fetch(PDO::FETCH_ASSOC) ?: ['item_name' => ('ID ' . $ing_id), 'unit_name' => ''];
+                $qty_str = rtrim(rtrim(number_format($qty, 2, '.', ''), '0'), '.');
+                $line = "- " . htmlspecialchars((string)$ing['item_name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . ": {$qty_str}";
+                if (!empty($ing['unit_name'])) $line .= " " . htmlspecialchars((string)$ing['unit_name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+                $lines[] = $line;
+            }
+
+            $who = htmlspecialchars((string)$current_user, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $telegram_msg = "✅ <b>DUYỆT CHUYỂN KHO</b>\n\n";
+            $telegram_msg .= "🧾 Phiếu: <b>#{$t_id}</b>\n";
+            $telegram_msg .= "👤 Duyệt bởi: <b>{$who}</b>\n";
+            $telegram_msg .= "🏭 Từ: <b>" . htmlspecialchars($from_name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</b>\n";
+            $telegram_msg .= "➡️ Đến: <b>" . htmlspecialchars($to_name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</b>\n";
+            $telegram_msg .= "📦 Số mặt hàng: <b>" . count($details) . "</b>\n\n";
+            $telegram_msg .= implode("\n", array_slice($lines, 0, 30));
+            if (count($lines) > 30) $telegram_msg .= "\n<i>... (còn " . (count($lines) - 30) . " dòng)</i>";
         } elseif ($_POST['action'] === 'cancel_transfer') {
             $t_id = (int)$_POST['transfer_id'];
             $db->prepare("UPDATE inventory_transfers SET status = 'cancelled' WHERE id = ?")->execute([$t_id]);
@@ -327,6 +412,9 @@ if (isset($_POST['action'])) {
         }
 
         $db->commit();
+        if ($telegram_msg) {
+            @sendTelegramNotification($telegram_msg);
+        }
         echo json_encode(['status' => 'success']);
     } catch (Exception $e) {
         $db->rollBack();
