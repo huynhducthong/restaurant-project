@@ -43,6 +43,22 @@ function sendTelegramNotification($message) {
     $context  = stream_context_create($options);
     $result = @file_get_contents($url, false, $context);
 
+    // Fallback: một số môi trường chặn allow_url_fopen hoặc https stream.
+    if ($result === false && function_exists('curl_init')) {
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => http_build_query($data),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 10,
+        ]);
+        $resp = curl_exec($ch);
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        return ($resp !== false) && ($httpCode >= 200 && $httpCode < 300);
+    }
+
     return $result !== false;
 }
 
