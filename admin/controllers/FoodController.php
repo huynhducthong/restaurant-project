@@ -69,10 +69,21 @@ if ($action === 'delete' && isset($_GET['id'])) {
 
     $db->beginTransaction();
     try {
+        $stmt = $db->prepare("SELECT name FROM foods WHERE id = ?");
+        $stmt->execute([$del_id]);
+        $foodName = $stmt->fetchColumn();
+
         $db->prepare("DELETE FROM combo_items  WHERE food_id = ?")->execute([$del_id]);
         $db->prepare("DELETE FROM food_recipes WHERE food_id = ?")->execute([$del_id]);
         $db->prepare("DELETE FROM foods         WHERE id = ?")->execute([$del_id]);
         $db->commit();
+
+        if ($foodName) {
+            require_once __DIR__ . '/../../config/notification_helper.php';
+            $who = htmlspecialchars((string)($_SESSION['username'] ?? 'Admin'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            sendTelegramNotification("🗑 <b>XÓA MÓN ĂN (MENU)</b>\n\n👤 Người xóa: <b>{$who}</b>\n🍔 Món ăn: <b>{$foodName}</b>");
+        }
+
         header("Location: FoodController.php?action=list&msg=deleted");
         exit;
     } catch (Exception $e) {

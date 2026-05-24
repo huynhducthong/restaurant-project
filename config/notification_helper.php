@@ -31,35 +31,21 @@ function sendTelegramNotification($message) {
         'text' => $message,
         'parse_mode' => 'HTML'
     ];
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+    
+    // Tắt kiểm tra SSL trên localhost XAMPP để tránh lỗi HTTPS
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 
-    $options = [
-        'http' => [
-            'method'  => 'POST',
-            'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
-            'content' => http_build_query($data),
-        ],
-    ];
-
-    $context  = stream_context_create($options);
-    $result = @file_get_contents($url, false, $context);
-
-    // Fallback: một số môi trường chặn allow_url_fopen hoặc https stream.
-    if ($result === false && function_exists('curl_init')) {
-        $ch = curl_init();
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $url,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => http_build_query($data),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 10,
-        ]);
-        $resp = curl_exec($ch);
-        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        return ($resp !== false) && ($httpCode >= 200 && $httpCode < 300);
-    }
-
-    return $result !== false;
+    $result = curl_exec($ch);
+    $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    return ($result !== false) && ($httpCode >= 200 && $httpCode < 300);
 }
 
 /**
@@ -89,7 +75,7 @@ function generateMorningReport() {
     ");
     $low_items = $stmt_low->fetchAll(PDO::FETCH_ASSOC);
 
-    // 3. Query Sắp hết hạn (Lấy từ bảng Lô hàng để chính xác nhất)
+    // 3. Query Sắp hết hạn (Còn hạn nhưng sắp hết)
     $stmt_exp = $db->query("
         SELECT i.item_name, MIN(b.expiry_date) as earliest_exp, i.unit_name 
         FROM inventory_batches b
@@ -103,7 +89,20 @@ function generateMorningReport() {
     ");
     $exp_items = $stmt_exp->fetchAll(PDO::FETCH_ASSOC);
 
-    if (empty($low_items) && empty($exp_items)) return null;
+    // 4. Query Đã hết hạn (Quá HSD)
+    $stmt_already_exp = $db->query("
+        SELECT i.item_name, MIN(b.expiry_date) as earliest_exp, i.unit_name 
+        FROM inventory_batches b
+        JOIN inventory i ON b.ingredient_id = i.id
+        WHERE i.is_active = 1 
+          AND b.quantity > 0 
+          AND b.expiry_date IS NOT NULL 
+          AND b.expiry_date < CURDATE()
+        GROUP BY i.id
+    ");
+    $already_exp_items = $stmt_already_exp->fetchAll(PDO::FETCH_ASSOC);
+
+    if (empty($low_items) && empty($exp_items) && empty($already_exp_items)) return null;
 
     $msg = "<b>☀️ BÁO CÁO KHO BUỔI SÁNG - " . date('d/m/Y') . "</b>\n\n";
 
@@ -111,6 +110,14 @@ function generateMorningReport() {
         $msg .= "⚠️ <b>CẦN NHẬP HÀNG (" . count($low_items) . "):</b>\n";
         foreach ($low_items as $item) {
             $msg .= "- " . $item['item_name'] . ": " . (float)$item['total_stock'] . " " . $item['unit_name'] . " (Min: " . (float)$item['min_stock'] . ")\n";
+        }
+        $msg .= "\n";
+    }
+
+    if (!empty($already_exp_items)) {
+        $msg .= "🔴 <b>ĐÃ HẾT HẠN - CẦN HỦY (" . count($already_exp_items) . "):</b>\n";
+        foreach ($already_exp_items as $item) {
+            $msg .= "- " . $item['item_name'] . " (HSD: " . date('d/m', strtotime($item['earliest_exp'])) . ")\n";
         }
         $msg .= "\n";
     }

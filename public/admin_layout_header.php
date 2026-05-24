@@ -559,23 +559,7 @@ try {
                     </a>
                 </li>
 
-                <li class="<?= isActive('manage_shifts.php') ?>">
-                    <a href="/restaurant-project/admin/manage_shifts.php">
-                        <i class="fas fa-calendar-alt"></i> Chia lịch làm việc
-                    </a>
-                </li>
 
-                <li class="<?= isActive('manage_attendance.php') ?>">
-                    <a href="/restaurant-project/admin/views/attendance/manage_attendance.php">
-                        <i class="fas fa-user-check"></i> Kiểm tra Chấm công
-                    </a>
-                </li>
-
-                <li class="<?= isActive('manage_payroll.php') ?>">
-                    <a href="/restaurant-project/admin/manage_payroll.php">
-                        <i class="fas fa-file-invoice-dollar"></i> Quản lý Bảng lương
-                    </a>
-                </li>
 
                 <li class="<?= isActive('UserController.php') ?>">
                     <a href="/restaurant-project/admin/controllers/UserController.php">
@@ -584,14 +568,7 @@ try {
                 </li>
                 <?php endif; ?>
 
-                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'staff'): ?>
-                <div class="menu-header">Nhân sự & Chấm công</div>
-                <li class="<?= isActive('employee_dashboard.php') ?>">
-                    <a href="/restaurant-project/views/client/employee_dashboard.php">
-                        <i class="fas fa-clock"></i> Lịch làm & Chấm công
-                    </a>
-                </li>
-                <?php endif; ?>
+
 
         </ul>
 
@@ -627,9 +604,7 @@ try {
                     'manage_users.php'        => 'Quản Lý Nhân Sự',
                     'manage_about.php'        => 'Quản Lý Tin Tức',
                     'manage_contacts.php'     => 'Quản Lý Liên Hệ',
-                    'manage_shifts.php'       => 'Chia Lịch Làm Việc',
-                    'manage_attendance.php'   => 'Kiểm Tra Chấm Công',
-                    'manage_payroll.php'      => 'Quản Lý Bảng Lương',
+
                     'UserController.php'      => 'Quản Lý Người Dùng',
                 ];
                 echo $page_titles[$current_page] ?? 'Khu Vực Quản Trị';

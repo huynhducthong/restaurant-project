@@ -6,7 +6,25 @@ $db = $database->getConnection();
 $all_categories = $db->query("SELECT * FROM categories ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
 $all_combos     = $db->query("SELECT * FROM combos WHERE is_active = 1 ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
 $all_foods      = $db->query("SELECT f.*, c.name as cat_name FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
-$chef_foods     = $db->query("SELECT f.*, c.name as cat_name FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND f.is_chef_recommended = 1 ORDER BY f.id DESC LIMIT 3")->fetchAll(PDO::FETCH_ASSOC);
+$chef_foods     = $db->query("SELECT f.*, c.name as cat_name FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND f.is_chef_recommended = 1 ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$user_allergies = [];
+if (isset($_SESSION['user_id'])) {
+    $stmt = $db->prepare("SELECT allergies FROM users WHERE id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $allergies_str = $stmt->fetchColumn();
+    if ($allergies_str) {
+        $user_allergies = array_map('trim', explode(',', mb_strtolower($allergies_str, 'UTF-8')));
+    }
+}
+function hasAllergen($food, $user_allergies) {
+    if (empty($user_allergies) || empty($food['allergens'])) return false;
+    $food_allergens = array_map('trim', explode(',', mb_strtolower($food['allergens'], 'UTF-8')));
+    return !empty(array_intersect($user_allergies, $food_allergens));
+}
 
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
@@ -228,7 +246,7 @@ img{display:block;}
   display:flex;flex-direction:column;justify-content:flex-end;
   background:linear-gradient(to top,rgba(9,30,27,.97) 0%,transparent 55%);
 }
-.chef-stack{display:grid;grid-template-rows:1fr 1fr;gap:3px;}
+.chef-stack{display:grid;grid-auto-rows:1fr;gap:3px;}
 .chef-sm{position:relative;overflow:hidden;cursor:pointer;min-height:240px;}
 .chef-sm-img{position:absolute;inset:0;background:center/cover no-repeat;transition:transform .65s var(--ease);filter:brightness(.32);}
 .chef-sm:hover .chef-sm-img{transform:scale(1.06);}
@@ -433,14 +451,19 @@ img{display:block;}
       <h2 class="sec-h"><em>Chef's</em> Recommendation</h2>
     </div>
     <div class="chef-grid" data-aos="fade-up" data-aos-delay="100">
-      <?php $c0=$chef_foods[0]??null; $c1=$chef_foods[1]??null; $c2=$chef_foods[2]??null; ?>
-      <?php if($c0): ?>
-      <div class="chef-hero" onclick="openModal(<?= htmlspecialchars(json_encode([
+      <?php $c0=$chef_foods[0]??null; ?>
+      <?php if($c0): 
+        $has_al = hasAllergen($c0, $user_allergies);
+      ?>
+      <div class="chef-hero" style="<?= $has_al ? 'opacity:0.6;filter:grayscale(60%);' : '' ?>" onclick="<?php if(!$has_al) echo htmlspecialchars("openModal(".json_encode([
         'type'=>'food','name'=>$c0['name'],'desc'=>$c0['description'],
         'price'=>$c0['price'],'img'=>'public/assets/img/menu/'.$c0['image'],
         'cat'=>$c0['cat_name']??''
-      ])) ?>)">
+      ]).")"); else echo "alert('⚠️ Cảnh báo: Món này có chứa thành phần bạn dị ứng!');"; ?>">
         <div class="chef-hero-img" style="background-image:url('public/assets/img/menu/<?= htmlspecialchars($c0['image']) ?>')"></div>
+        <?php if($has_al): ?>
+        <div style="position:absolute; top:20px; left:20px; background:#d64545; color:#fff; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:600; z-index:10;"><i class="bi bi-exclamation-triangle-fill"></i> Dị ứng</div>
+        <?php endif; ?>
         <div class="chef-hero-body">
           <div class="clabel">Signature Dish · Chef's Choice</div>
           <h3 class="cname"><?= htmlspecialchars($c0['name']) ?></h3>
@@ -450,13 +473,20 @@ img{display:block;}
       </div>
       <?php endif; ?>
       <div class="chef-stack">
-        <?php foreach([$c1,$c2] as $cs): if(!$cs) continue; ?>
-        <div class="chef-sm" onclick="openModal(<?= htmlspecialchars(json_encode([
+        <?php 
+        $small_chefs = array_slice($chef_foods, 1);
+        foreach($small_chefs as $cs): 
+          $has_al = hasAllergen($cs, $user_allergies);
+        ?>
+        <div class="chef-sm" style="<?= $has_al ? 'opacity:0.6;filter:grayscale(60%);' : '' ?>" onclick="<?php if(!$has_al) echo htmlspecialchars("openModal(".json_encode([
           'type'=>'food','name'=>$cs['name'],'desc'=>$cs['description'],
           'price'=>$cs['price'],'img'=>'public/assets/img/menu/'.$cs['image'],
           'cat'=>$cs['cat_name']??''
-        ])) ?>)">
+        ]).")"); else echo "alert('⚠️ Cảnh báo: Món này có chứa thành phần bạn dị ứng!');"; ?>">
           <div class="chef-sm-img" style="background-image:url('public/assets/img/menu/<?= htmlspecialchars($cs['image']) ?>')"></div>
+          <?php if($has_al): ?>
+          <div style="position:absolute; top:10px; right:10px; background:#d64545; color:#fff; padding:4px 8px; border-radius:4px; font-size:9px; font-weight:600; z-index:10;"><i class="bi bi-exclamation-triangle-fill"></i></div>
+          <?php endif; ?>
           <div class="chef-sm-body">
             <div class="clabel">Premium Selection</div>
             <h3 class="cname" style="font-size:1.2rem"><?= htmlspecialchars($cs['name']) ?></h3>
@@ -482,20 +512,27 @@ img{display:block;}
         $badges=[];
         if($i<3) $badges[]=['sig','Signature'];
         if(($f['price']??0)>300000) $badges[]=['prem','Premium'];
+        
+        $has_al = hasAllergen($f, $user_allergies);
       ?>
-      <div class="food-card" data-cat="<?= $f['category_id'] ?>"
-           onclick="openModal(<?= htmlspecialchars(json_encode([
+      <div class="food-card" data-cat="<?= $f['category_id'] ?>" style="<?= $has_al ? 'opacity:0.5;filter:grayscale(80%);' : '' ?>"
+           onclick="<?php if(!$has_al) echo htmlspecialchars("openModal(".json_encode([
              'type'=>'food','name'=>$f['name'],'desc'=>$f['description'],
              'price'=>$f['price'],'img'=>'public/assets/img/menu/'.$f['image'],
              'cat'=>$f['cat_name']??''
-           ])) ?>)"
+           ]).")"); else echo "alert('⚠️ Cảnh báo an toàn: Món ăn chứa thành phần dị ứng với bạn!');"; ?>"
            data-aos="fade-up" data-aos-delay="<?= ($i%4)*60 ?>">
         <div class="food-card-img">
           <img src="public/assets/img/menu/<?= htmlspecialchars($f['image']) ?>"
                onerror="this.src='public/assets/img/default.jpg'"
                alt="<?= htmlspecialchars($f['name']) ?>">
           <div class="food-img-overlay"></div>
-          <?php if(!empty($badges)): ?>
+          <?php if($has_al): ?>
+          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:10; background:rgba(214, 69, 69, 0.95); color:#fff; padding:6px 12px; border-radius:4px; font-size:11px; font-weight:600; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.5); width:85%;">
+             <i class="bi bi-exclamation-triangle-fill"></i> CHỨA THÀNH PHẦN DỊ ỨNG
+          </div>
+          <?php endif; ?>
+          <?php if(!empty($badges) && !$has_al): ?>
           <div class="food-badges">
             <?php foreach($badges as [$cls,$lbl]): ?>
             <span class="fb <?= $cls ?>"><?= $lbl ?></span>

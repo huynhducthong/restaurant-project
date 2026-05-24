@@ -264,6 +264,10 @@ include '../../public/admin_layout_header.php';
                         <i class="fas fa-clock me-1" style="pointer-events:none"></i>Sắp hết HSD
                         <?php if ($expiry_warn_count > 0) echo "<span class='badge bg-warning text-dark ms-1' style='pointer-events:none'>$expiry_warn_count</span>"; ?>
                     </button>
+                    <button class="btn btn-sm btn-outline-danger px-3 fw-bold" style="background-color: #ffebee;" onclick="filterWarning('expired', this)">
+                        <i class="fas fa-times-circle me-1" style="pointer-events:none"></i>Đã hết HSD
+                        <?php if ($expired_count > 0) echo "<span class='badge bg-danger ms-1' style='pointer-events:none'>$expired_count</span>"; ?>
+                    </button>
                 </div>
 
                 <!-- BỘ LỌC THEO KHO -->
@@ -325,7 +329,8 @@ include '../../public/admin_layout_header.php';
 
                                 // Logic phục vụ cho bộ lọc JS (Chỉ áp dụng cho món đang active)
                                 $isLow = ($min > 0 && $total <= $min && $i['is_active'] == 1) ? 1 : 0;
-                                $isExpiring = ($exp && $exp <= $warn_date && $i['is_active'] == 1) ? 1 : 0;
+                                $isExpired = ($exp && $exp < $today && $i['is_active'] == 1) ? 1 : 0;
+                                $isExpiring = ($exp && $exp >= $today && $exp <= $warn_date && $i['is_active'] == 1) ? 1 : 0;
                             ?>
                                 <?php
                                 // Tạo danh sách kho có hàng của dòng này
@@ -340,6 +345,7 @@ include '../../public/admin_layout_header.php';
                                     data-name="<?= strtolower(htmlspecialchars($i['item_name'])) ?>"
                                     data-low="<?= $isLow ?>"
                                     data-expiry="<?= $isExpiring ?>"
+                                    data-expired="<?= $isExpired ?>"
                                     data-wh-stock='<?= json_encode($wh_with_stock) ?>'
                                     data-stocks='<?= json_encode($i['stocks']) ?>'
                                     data-visible="1">
@@ -354,6 +360,7 @@ include '../../public/admin_layout_header.php';
                                         <?php
                                         $has_stock = false;
                                         foreach ($warehouses as $w):
+                                            if ($w['type'] == 'virtual') continue; // Ẩn kho ảo
                                             $qty = $i['stocks'][$w['id']] ?? 0;
                                             if ($qty > 0): $has_stock = true;
                                                 $badge_color = ($w['type'] == 'main') ? 'bg-primary' : (($w['type'] == 'kitchen') ? 'bg-danger' : 'bg-info text-dark');
@@ -363,15 +370,50 @@ include '../../public/admin_layout_header.php';
                                         endforeach; ?>
 
                                         <?php if (!$has_stock): ?>
-                                            <span class="badge bg-light text-muted border">Hết hàng</span>
+                                            <span class="text-muted small wh-empty">Chưa có hàng</span>
                                         <?php endif; ?>
 
-                                        <div class="mt-1 small text-success fw-bold">Tổng: <?= $total ?> <?= $i['unit_name'] ?></div>
+                                        <div class="text-success fw-bold small mt-2 wh-total">Tổng: <?= $total ?> <?= $i['unit_name'] ?></div>
+
+                                        <?php 
+                                        // Hiển thị chi tiết khối lượng lô sắp hết hạn
+                                        if (!empty($i['exp_details'])): 
+                                            foreach ($i['exp_details'] as $ed):
+                                                $wh_name = 'Không rõ kho';
+                                                foreach ($warehouses as $w) { if ($w['id'] == $ed['warehouse_id']) { $wh_name = $w['name']; break; } }
+                                        ?>
+                                            <div class="mt-1 px-2 py-1 bg-warning text-dark rounded small" style="font-size:0.8rem; border-left: 3px solid #ff9800;">
+                                                <i class="fas fa-exclamation-triangle"></i> Sắp hết hạn: <b><?= (float)$ed['qty'] ?></b> <?= $i['unit_name'] ?> tại <i><?= $wh_name ?></i>
+                                            </div>
+                                        <?php 
+                                            endforeach;
+                                        endif; 
+
+                                        // Hiển thị chi tiết khối lượng lô đã hết hạn
+                                        if (!empty($i['expired_details'])): 
+                                            foreach ($i['expired_details'] as $ed):
+                                                $wh_name = 'Không rõ kho';
+                                                foreach ($warehouses as $w) { if ($w['id'] == $ed['warehouse_id']) { $wh_name = $w['name']; break; } }
+                                        ?>
+                                            <div class="mt-1 px-2 py-1 bg-danger text-white rounded small" style="font-size:0.8rem; border-left: 3px solid #dc3545;">
+                                                <i class="fas fa-times-circle"></i> Đã hết hạn: <b><?= (float)$ed['qty'] ?></b> <?= $i['unit_name'] ?> tại <i><?= $wh_name ?></i>
+                                            </div>
+                                        <?php 
+                                            endforeach;
+                                        endif; 
+                                        ?>
                                     </td>
                                     <td>
                                         <?php if ($exp): ?>
-                                            <span class="<?= $isExpiring ? 'text-danger fw-bold' : 'text-muted' ?>"><?= $exp ?></span>
-                                            <?php else: ?>—<?php endif; ?>
+                                            <?php if ($isExpired): ?>
+                                                <span class="text-danger fw-bold text-decoration-underline"><?= $exp ?></span>
+                                                <div class="badge bg-danger mt-1">Đã hết hạn</div>
+                                            <?php elseif ($isExpiring): ?>
+                                                <span class="text-warning fw-bold"><?= $exp ?></span>
+                                            <?php else: ?>
+                                                <span class="text-muted"><?= $exp ?></span>
+                                            <?php endif; ?>
+                                        <?php else: ?>—<?php endif; ?>
                                     </td>
                                     <td class="text-success fw-bold small"><?= number_format($i['cost_price']) ?>đ</td>
                                     <td class="text-end">
@@ -1274,7 +1316,8 @@ include '../../public/admin_layout_header.php';
         document.querySelectorAll('#invBody .inv-row').forEach(r => {
             const nameMatch   = r.dataset.name.includes(q);
             const filterMatch = (activeFilter === 'all') ? true
-                              : (activeFilter === 'low' ? r.dataset.low === '1' : r.dataset.expiry === '1');
+                              : (activeFilter === 'low' ? r.dataset.low === '1' 
+                               : (activeFilter === 'expired' ? r.dataset.expired === '1' : r.dataset.expiry === '1'));
 
             // Filter theo kho: kiểm tra data-wh-stock có chứa ID kho đang chọn không
             let whMatch = true;
@@ -1288,16 +1331,27 @@ include '../../public/admin_layout_header.php';
             r.setAttribute('data-visible', (nameMatch && filterMatch && whMatch) ? '1' : '0');
 
             // --- ĐIỀU CHỈNH HIỂN THỊ CHI TIẾT KHO TRONG DÒNG ---
-            // Nếu chọn "Tất cả" hoặc "Kho Tổng" (ID 1) -> Hiện hết
-            // Nếu chọn kho cụ thể khác -> Chỉ hiện badge của kho đó
             const badges = r.querySelectorAll('.wh-badge');
-            badges.forEach(b => {
-                if (activeWarehouse === 'all' || activeWarehouse === '1') {
-                    b.style.display = '';
-                } else {
-                    b.style.display = (b.dataset.whId === activeWarehouse) ? '' : 'none';
-                }
-            });
+            const totalDiv = r.querySelector('.wh-total');
+            const emptyDiv = r.querySelector('.wh-empty');
+
+            if (activeFilter === 'expiry' || activeFilter === 'expired') {
+                // Nếu đang lọc Sắp hết hạn / Đã hết hạn -> Ẩn các badge kho bình thường và dòng Tổng
+                badges.forEach(b => b.style.display = 'none');
+                if (totalDiv) totalDiv.style.display = 'none';
+                if (emptyDiv) emptyDiv.style.display = 'none';
+            } else {
+                // Ngược lại, hiển thị bình thường dựa trên bộ lọc kho
+                if (totalDiv) totalDiv.style.display = '';
+                if (emptyDiv) emptyDiv.style.display = '';
+                badges.forEach(b => {
+                    if (activeWarehouse === 'all' || activeWarehouse === '1') {
+                        b.style.display = '';
+                    } else {
+                        b.style.display = (b.dataset.whId === activeWarehouse) ? '' : 'none';
+                    }
+                });
+            }
         });
         currentPage = 1;
         renderPagination();
