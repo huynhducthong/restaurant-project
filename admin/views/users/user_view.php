@@ -68,8 +68,15 @@
                         </td>
                         <td class="text-end">
                             <div class="btn-group shadow-sm">
+                                <button class="btn btn-sm btn-light border" onclick='openDnaModal(<?= htmlspecialchars(json_encode([
+                                    "doneness" => $u["doneness"] ?? "",
+                                    "flavor" => $u["flavor_profile"] ?? "",
+                                    "fav" => $u["fav_ingredients"] ?? "",
+                                    "dislike" => $u["disliked_ingredients"] ?? "",
+                                    "allergies" => $u["allergies"] ?? "",
+                                    "name" => $u["full_name"]
+                                ])) ?>)' title="Xem DNA Ẩm Thực"><i class="fas fa-utensils text-danger"></i> DNA</button>
                                 <button class="btn btn-sm btn-light border" onclick='openEditModal(<?= json_encode($u) ?>)' title="Sửa thông tin"><i class="fas fa-edit text-primary"></i> Sửa</button>
-                                
                                 <!-- Chặn Admin tự xóa tài khoản của chính mình -->
                                 <?php if ($u['id'] != $_SESSION['user_id']): ?>
                                     <a href="UserController.php?delete_id=<?= $u['id'] ?>" class="btn btn-sm btn-light border text-danger" onclick="return confirm('CẢNH BÁO: Bạn có chắc chắn muốn xóa nhân viên <?= htmlspecialchars($u['full_name']) ?> vĩnh viễn khỏi hệ thống không?')" title="Xóa người dùng"><i class="fas fa-trash"></i></a>
@@ -143,6 +150,28 @@
     </div>
 </div>
 
+<!-- Modal Xem Culinary DNA -->
+<div class="modal fade" id="modalDna" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-id-card-alt me-2"></i>Hồ sơ Khẩu vị (Culinary DNA)</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <h6 class="fw-bold text-primary mb-3" id="dna-name"></h6>
+                <table class="table table-bordered">
+                    <tr><td width="35%" class="bg-light fw-bold text-secondary">Độ chín bò</td><td id="dna-doneness"></td></tr>
+                    <tr><td class="bg-light fw-bold text-secondary">Hương vị</td><td id="dna-flavor"></td></tr>
+                    <tr><td class="bg-light fw-bold text-secondary">Yêu thích</td><td id="dna-fav"></td></tr>
+                    <tr><td class="bg-light fw-bold text-secondary">Không thích</td><td id="dna-dislike"></td></tr>
+                    <tr><td class="bg-light fw-bold text-danger">DỊ ỨNG Y TẾ</td><td id="dna-allergies" class="fw-bold text-danger"></td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -171,6 +200,16 @@
 
         $('#modal-title').text('Cập Nhật: ' + data.full_name);
         new bootstrap.Modal(document.getElementById('modalUser')).show();
+    }
+
+    function openDnaModal(data) {
+        $('#dna-name').text('Khách hàng: ' + data.name);
+        $('#dna-doneness').text(data.doneness || 'Chưa thiết lập');
+        $('#dna-flavor').text(data.flavor || 'Chưa thiết lập');
+        $('#dna-fav').text(data.fav || 'Chưa thiết lập');
+        $('#dna-dislike').text(data.dislike || 'Chưa thiết lập');
+        $('#dna-allergies').text(data.allergies || 'Không có');
+        new bootstrap.Modal(document.getElementById('modalDna')).show();
     }
 
     $('.toggle-status').change(function() {

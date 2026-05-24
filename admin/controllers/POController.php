@@ -171,6 +171,17 @@ if (isset($_POST['receive_po_final'])) {
         // Đổi trạng thái PO thành hoàn tất
         $db->prepare("UPDATE purchase_orders SET status = 'completed' WHERE id = ?")->execute([$po_id]);
 
+        // Gửi thông báo Telegram
+        require_once __DIR__ . '/../../config/notification_helper.php';
+        $po_code_res = $db->query("SELECT po_code FROM purchase_orders WHERE id = $po_id")->fetchColumn();
+        $who = htmlspecialchars((string)$current_user, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        
+        $msg = "✅ <b>NHẬN HÀNG (DUYỆT PO)</b>\n\n";
+        $msg .= "🧾 Mã phiếu: <b>{$po_code_res}</b>\n";
+        $msg .= "👤 Người nhận: <b>{$who}</b>\n";
+        $msg .= "🏭 Vào kho: <b>Kho Tổng (Tiếp nhận hàng)</b>\n";
+        sendTelegramNotification($msg);
+
         $db->commit();
         header("Location: POController.php?msg=success");
         exit;

@@ -135,11 +135,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     // 5. Cập nhật Gastronomy Profile
     if (isset($_POST['update_gastronomy'])) {
-        $allergies = trim($_POST['allergies'] ?? '');
-        $taste = trim($_POST['taste_preferences'] ?? '');
-        $db->prepare("UPDATE users SET allergies = ?, taste_preferences = ? WHERE id = ?")
-           ->execute([$allergies, $taste, $user_id]);
-        $message = "Đã cập nhật Hồ sơ Ẩm thực VIP!";
+        $doneness = $_POST['doneness'] ?? '';
+        $flavor_profile = isset($_POST['flavor_profile']) ? implode(', ', $_POST['flavor_profile']) : '';
+        $fav_ingredients = isset($_POST['fav_ingredients']) ? implode(', ', $_POST['fav_ingredients']) : '';
+        $disliked_ingredients = isset($_POST['disliked_ingredients']) ? implode(', ', $_POST['disliked_ingredients']) : '';
+        $allergies = isset($_POST['allergies']) ? implode(', ', $_POST['allergies']) : '';
+        
+        $db->prepare("UPDATE users SET doneness=?, flavor_profile=?, fav_ingredients=?, disliked_ingredients=?, allergies=? WHERE id=?")
+           ->execute([$doneness, $flavor_profile, $fav_ingredients, $disliked_ingredients, $allergies, $user_id]);
+        $message = "Đã cập nhật Hồ sơ Khẩu vị (Culinary DNA)!";
+
+        // Gửi thông báo Telegram cho nhà hàng
+        require_once 'config/notification_helper.php';
+        $uname = $_SESSION['username'] ?? 'Khách hàng';
+        $msg_tele = "<b>🍽 CẬP NHẬT HỒ SƠ ẨM THỰC (DNA)</b>\n\n";
+        $msg_tele .= "Khách hàng <b>@{$uname}</b> vừa cập nhật hồ sơ:\n";
+        if ($doneness) $msg_tele .= "- Độ chín: $doneness\n";
+        if ($flavor_profile) $msg_tele .= "- Hương vị: $flavor_profile\n";
+        if ($fav_ingredients) $msg_tele .= "- Yêu thích: $fav_ingredients\n";
+        if ($disliked_ingredients) $msg_tele .= "- Không thích: $disliked_ingredients\n";
+        if ($allergies) $msg_tele .= "- <b>DỊ ỨNG: $allergies</b>\n";
+        @sendTelegramNotification($msg_tele);
     }
 }
 // --- LẤY DỮ LIỆU ---
@@ -611,26 +627,82 @@ body{
         </form>
 
         <!-- ── TAB: GASTRONOMY PROFILE ── -->
-        <?php elseif($tab=='gastronomy'): ?>
+        <?php elseif($tab=='gastronomy'): 
+            $my_doneness = $current_user['doneness'] ?? '';
+            $my_flavors = explode(', ', $current_user['flavor_profile'] ?? '');
+            $my_favs = explode(', ', $current_user['fav_ingredients'] ?? '');
+            $my_dislikes = explode(', ', $current_user['disliked_ingredients'] ?? '');
+            $my_allergies = explode(', ', $current_user['allergies'] ?? '');
+        ?>
         <div class="sec-tip mb-4">
           <i class="bi bi-info-circle-fill"></i>
-          <div>Thiết lập Hồ sơ Ẩm thực để nhà hàng có thể phục vụ bạn một cách tinh tế và cá nhân hóa nhất. Các món ăn chứa thành phần dị ứng sẽ được tự động cảnh báo khi bạn xem thực đơn.</div>
+          <div>Thiết lập DNA Ẩm thực để nhà hàng phục vụ cá nhân hóa nhất. Các món chứa thành phần dị ứng sẽ hiển thị cảnh báo đỏ trên menu!</div>
         </div>
         <form method="POST">
           <div class="row g-4">
-            <div class="col-md-6">
-              <label class="fl">Dị ứng thực phẩm (Allergies)</label>
-              <textarea name="allergies" class="fi" rows="3" placeholder="Ví dụ: Đậu phộng, Hải sản, Hành lá..."><?= htmlspecialchars($current_user['allergies'] ?? '') ?></textarea>
-              <small class="text-muted mt-1 d-block" style="font-size:12px">Nhập tên thành phần cách nhau bằng dấu phẩy.</small>
+            <div class="col-md-12 mb-2">
+              <h6 style="color:var(--gold); font-family:'Playfair Display',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-fire me-2"></i>Mức độ chín của Bò (Meat Doneness)</h6>
+              <div class="d-flex flex-wrap gap-3 mt-3">
+                <?php $dopts = ['Rare', 'Medium Rare', 'Medium', 'Medium Well', 'Well Done']; 
+                foreach($dopts as $d): ?>
+                <label class="d-flex align-items-center gap-2" style="cursor:pointer; font-size:14px;">
+                  <input type="radio" name="doneness" value="<?= $d ?>" <?= ($my_doneness == $d) ? 'checked' : '' ?> style="accent-color:var(--F);"> <?= $d ?>
+                </label>
+                <?php endforeach; ?>
+              </div>
             </div>
-            <div class="col-md-6">
-              <label class="fl">Sở thích ẩm thực (Taste Preferences)</label>
-              <textarea name="taste_preferences" class="fi" rows="3" placeholder="Ví dụ: Thích bò Medium Rare, vang đỏ, ít ngọt..."><?= htmlspecialchars($current_user['taste_preferences'] ?? '') ?></textarea>
-              <small class="text-muted mt-1 d-block" style="font-size:12px">Sở thích về độ chín, gia vị, đồ uống yêu thích.</small>
+
+            <div class="col-md-6 mb-2">
+              <h6 style="color:var(--gold); font-family:'Playfair Display',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-palette me-2"></i>Phong cách Hương vị (Flavor Profile)</h6>
+              <div class="d-flex flex-column gap-2 mt-3">
+                <?php $fopts = ['Đậm vị (Bold/Rich)', 'Thanh nhẹ (Light/Fresh)', 'Umami (Ngọt tự nhiên)', 'Ít béo (Low Fat)', 'Ăn Cay (Spicy)']; 
+                foreach($fopts as $f): ?>
+                <label class="d-flex align-items-center gap-2" style="cursor:pointer; font-size:14px;">
+                  <input type="checkbox" name="flavor_profile[]" value="<?= $f ?>" <?= in_array($f, $my_flavors) ? 'checked' : '' ?> style="accent-color:var(--F);"> <?= $f ?>
+                </label>
+                <?php endforeach; ?>
+              </div>
             </div>
-            <div class="col-12 text-end">
+
+            <div class="col-md-6 mb-2">
+              <h6 style="color:var(--gold); font-family:'Playfair Display',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-star me-2"></i>Nguyên liệu yêu thích (Favorites)</h6>
+              <div class="d-flex flex-column gap-2 mt-3">
+                <?php $favopts = ['Bò Wagyu', 'Nấm Truffle', 'Gan ngỗng (Foie Gras)', 'Trứng cá tầm (Caviar)', 'Hải sản (Seafood)']; 
+                foreach($favopts as $fv): ?>
+                <label class="d-flex align-items-center gap-2" style="cursor:pointer; font-size:14px;">
+                  <input type="checkbox" name="fav_ingredients[]" value="<?= $fv ?>" <?= in_array($fv, $my_favs) ? 'checked' : '' ?> style="accent-color:var(--F);"> <?= $fv ?>
+                </label>
+                <?php endforeach; ?>
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-2">
+              <h6 style="color:var(--gold); font-family:'Playfair Display',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-x-circle me-2"></i>Không thích ăn (Dislikes)</h6>
+              <div class="d-flex flex-wrap gap-2 mt-3">
+                <?php $disopts = ['Hành lá', 'Rau mùi', 'Hành tây', 'Tỏi', 'Ớt chuông', 'Tiêu xanh', 'Thịt mỡ']; 
+                foreach($disopts as $dis): ?>
+                <label class="d-flex align-items-center gap-2" style="cursor:pointer; font-size:14px; width:45%;">
+                  <input type="checkbox" name="disliked_ingredients[]" value="<?= $dis ?>" <?= in_array($dis, $my_dislikes) ? 'checked' : '' ?> style="accent-color:var(--F);"> <?= $dis ?>
+                </label>
+                <?php endforeach; ?>
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-2">
+              <h6 style="color:#d64545; font-family:'Playfair Display',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-exclamation-triangle-fill me-2"></i>Dị ứng Y Tế (Allergies)</h6>
+              <div class="d-flex flex-wrap gap-2 mt-3">
+                <?php $algopts = ['Đậu phộng', 'Gluten', 'Sữa', 'Hải sản có vỏ', 'Trứng', 'Đậu nành']; 
+                foreach($algopts as $alg): ?>
+                <label class="d-flex align-items-center gap-2" style="cursor:pointer; font-size:14px; color:#d64545; width:45%; font-weight:500;">
+                  <input type="checkbox" name="allergies[]" value="<?= $alg ?>" <?= in_array($alg, $my_allergies) ? 'checked' : '' ?> style="accent-color:#d64545;"> <?= $alg ?>
+                </label>
+                <?php endforeach; ?>
+              </div>
+            </div>
+
+            <div class="col-12 text-end mt-4 pt-3" style="border-top:1px solid var(--border);">
               <button type="submit" name="update_gastronomy" class="btn-prim">
-                <i class="bi bi-check2 me-1"></i>Lưu Hồ sơ Ẩm thực
+                <i class="bi bi-check2-all me-1"></i>Lưu Hồ sơ Khẩu vị & Dị ứng
               </button>
             </div>
           </div>

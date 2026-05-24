@@ -37,18 +37,26 @@ if(isset($_POST['btn_save'])){
 $edit_data=null;
 if(isset($_GET['edit'])){ $s=$db->prepare("SELECT * FROM about_content WHERE id=?"); $s->execute([$_GET['edit']]); $edit_data=$s->fetch(PDO::FETCH_ASSOC); }
 
-$posts=$db->query("SELECT a.*,c.name as cat_name FROM about_content a JOIN about_categories c ON a.category_id=c.id ORDER BY is_pinned DESC,display_order ASC")->fetchAll(PDO::FETCH_ASSOC);
+$posts=$db->query("SELECT a.id, a.title, a.slug, a.thumbnail, a.is_pinned, a.display_order, a.status, c.name as cat_name FROM about_content a JOIN about_categories c ON a.category_id=c.id ORDER BY is_pinned DESC,display_order ASC")->fetchAll(PDO::FETCH_ASSOC);
 $categories=$db->query("SELECT * FROM about_categories")->fetchAll(PDO::FETCH_ASSOC);
+
+// Stats aggregation queries (tránh N+1)
+$likes_map = $db->query("SELECT content_id, COUNT(*) as cnt FROM about_likes GROUP BY content_id")->fetchAll(PDO::FETCH_KEY_PAIR);
+$views_map = $db->query("SELECT content_id, COUNT(*) as cnt FROM about_shares WHERE platform='view' GROUP BY content_id")->fetchAll(PDO::FETCH_KEY_PAIR);
+$shares_map = $db->query("SELECT content_id, COUNT(*) as cnt FROM about_shares WHERE platform!='view' GROUP BY content_id")->fetchAll(PDO::FETCH_KEY_PAIR);
+$comments_map = $db->query("SELECT content_id, COUNT(*) as cnt FROM about_comments WHERE status='approved' GROUP BY content_id")->fetchAll(PDO::FETCH_KEY_PAIR);
 
 // Stats per post
 $stats=[];
 foreach($posts as $p){
     $pid=$p['id'];
-    $s=$db->prepare("SELECT COUNT(*) FROM about_likes WHERE content_id=?"); $s->execute([$pid]); $lk=(int)$s->fetchColumn();
-    $s=$db->prepare("SELECT COUNT(*) FROM about_shares WHERE content_id=? AND platform='view'"); $s->execute([$pid]); $vw=(int)$s->fetchColumn();
-    $s=$db->prepare("SELECT COUNT(*) FROM about_shares WHERE content_id=? AND platform!='view'"); $s->execute([$pid]); $sh=(int)$s->fetchColumn();
-    $s=$db->prepare("SELECT COUNT(*) FROM about_comments WHERE content_id=? AND status='approved'"); $s->execute([$pid]); $cm=(int)$s->fetchColumn();
-    $stats[$pid]=['likes'=>$lk,'views'=>$vw,'shares'=>$sh,'comments'=>$cm,'title'=>$p['title']];
+    $stats[$pid]=[
+        'likes' => $likes_map[$pid] ?? 0,
+        'views' => $views_map[$pid] ?? 0,
+        'shares'=> $shares_map[$pid] ?? 0,
+        'comments'=> $comments_map[$pid] ?? 0,
+        'title' => $p['title']
+    ];
 }
 
 // All comments

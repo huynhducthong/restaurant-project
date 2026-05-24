@@ -226,80 +226,226 @@ include __DIR__ . '/views/client/layouts/header.php';
     </div>
   </section>
 
-  <section id="menu" class="menu section-bg" style="background: #143B36; padding: 140px 0;">
-    <div class="container">
-      <div class="section-title text-center mb-5">
-        <h2 style="color: #cda45e; font-family: 'Playfair Display', serif;">Thực Đơn</h2>
-        <p style="color: white; font-size: 24px;">Khám phá hương vị <?= htmlspecialchars($settings['restaurant_name'] ?? 'Restaurantly') ?></p>
-      </div>
+  <section id="menu" class="menu section-bg" style="background: #0d0d0d; padding: 100px 0; overflow: hidden;">
 
-      <?php
-      // Fix N+1: 1 query JOIN duy nhất thay vì query trong foreach
-      // Đồng bộ is_active với manage_foods.php
-      $all_foods_stmt = $db->prepare(
-        "SELECT f.*, c.id as cat_id
-           FROM foods f
-           JOIN categories c ON f.category_id = c.id
-           WHERE f.is_active = 1
-           ORDER BY c.name ASC, f.id ASC"
-      );
-      $all_foods_stmt->execute();
-      $foods_by_cat = [];
-      foreach ($all_foods_stmt->fetchAll(PDO::FETCH_ASSOC) as $frow) {
-        $foods_by_cat[$frow['cat_id']][] = $frow;
-      }
+    <?php
+    // Lấy tất cả món ăn active để hiển thị gallery
+    $all_foods_stmt = $db->prepare(
+      "SELECT f.*, c.id as cat_id, c.name as cat_name
+         FROM foods f
+         JOIN categories c ON f.category_id = c.id
+         WHERE f.is_active = 1
+         ORDER BY f.id ASC"
+    );
+    $all_foods_stmt->execute();
+    $all_foods = $all_foods_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-      $categories = $db->query("SELECT * FROM categories ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
-      foreach (array_chunk($categories, 3) as $chunk):
-      ?>
-        <div class="row mb-5">
-          <?php foreach ($chunk as $cat):
-            $cat_foods = array_slice($foods_by_cat[$cat['id']] ?? [], 0, 3);
-          ?>
-            <div class="col-lg-4 col-md-6 mb-4">
-              <div class="category-column-box">
-                <h3 class="category-title text-center" style="color: #cda45e; margin-bottom: 30px;">
-                  <?= htmlspecialchars(mb_convert_case($cat['name'], MB_CASE_UPPER, 'UTF-8')) ?>
-                </h3>
-                <div class="menu-list">
-                  <?php if (empty($cat_foods)): ?>
-                    <p class="text-muted text-center small fst-italic">Chưa có món</p>
-                  <?php else: ?>
-                    <?php foreach ($cat_foods as $f): ?>
-                      <div class="menu-item-horizontal d-flex align-items-center mb-4">
-                        <div class="item-img" style="width:70px;height:70px;margin-right:15px;flex-shrink:0;">
-                          <img src="public/assets/img/menu/<?= htmlspecialchars($f['image']) ?>"
-                            alt="<?= htmlspecialchars($f['name']) ?>"
-                            onerror="this.src='public/assets/img/menu/default.jpg'"
-                            style="width:100%;height:100%;object-fit:cover;border-radius:50%;border:3px solid #37332a;">
-                        </div>
-                        <div class="item-details flex-grow-1">
-                          <div class="d-flex justify-content-between align-items-baseline">
-                            <h5 class="food-name" style="color:#fff;font-size:18px;margin:0;">
-                              <?= htmlspecialchars($f['name']) ?>
-                            </h5>
-                            <span class="food-price" style="color:#cda45e;font-weight:600;">
-                              <?= number_format($f['price'], 0, ',', '.') ?>đ
-                            </span>
-                          </div>
-                          <p class="food-desc" style="color:#aaaaaa;font-size:14px;font-style:italic;margin:0;">
-                            <?= htmlspecialchars($f['description']) ?>
-                          </p>
-                        </div>
-                      </div>
-                    <?php endforeach; ?>
-                  <?php endif; ?>
-                </div>
+    // Chia thành 2 hàng
+    $total = count($all_foods);
+    $half  = (int)ceil($total / 2);
+    $row1  = array_slice($all_foods, 0, $half);
+    $row2  = array_slice($all_foods, $half);
+
+    // Nếu ít hơn 6 món, nhân đôi để đủ ảnh chạy đẹp
+    while (count($row1) < 6) $row1 = array_merge($row1, $row1);
+    while (count($row2) < 6) $row2 = array_merge($row2, $row2);
+    ?>
+
+    <!-- Tiêu đề -->
+    <div class="text-center mb-5" style="position:relative; z-index:2;">
+      <p style="color:#cda45e; font-family:'Poppins',sans-serif; font-size:13px; letter-spacing:4px; text-transform:uppercase; margin-bottom:12px;">Hương Vị Tinh Tế</p>
+      <h2 style="color:#fff; font-family:'Playfair Display',serif; font-size:clamp(2rem,5vw,3.2rem); font-weight:700; margin-bottom:16px;">Một Trải Nghiệm Độc Đáo</h2>
+      <div style="width:50px; height:2px; background:#cda45e; margin:0 auto 20px;"></div>
+      <p style="color:#aaaaaa; font-family:'Poppins',sans-serif; font-size:15px; max-width:560px; margin:0 auto; line-height:1.8;">
+        Khám phá bản giao hưởng hương vị nơi truyền thống cổ xưa hòa quyện với nghệ thuật hiện đại.<br>
+        Mỗi món ăn là một kiệt tác được tuyển chọn kỹ lưỡng, không chỉ để thưởng thức mà còn để cảm nhận.
+      </p>
+    </div>
+
+    <!-- GALLERY WRAPPER (2 hàng cuộn liên tục) -->
+    <div class="menu-gallery-wrapper" style="position:relative;">
+
+      <!-- Hàng 1 — cuộn sang trái -->
+      <div class="menu-marquee-track" style="margin-bottom:8px;">
+        <div class="menu-marquee-inner marquee-left">
+          <?php
+          // Nhân đôi để loop liền mạch
+          $display_row1 = array_merge($row1, $row1);
+          foreach ($display_row1 as $f): ?>
+            <div class="menu-gallery-item">
+              <img src="public/assets/img/menu/<?= htmlspecialchars($f['image']) ?>"
+                   alt="<?= htmlspecialchars($f['name']) ?>"
+                   onerror="this.src='public/assets/img/menu/default.jpg'">
+              <div class="menu-gallery-overlay">
+                <span class="menu-gallery-name"><?= htmlspecialchars($f['name']) ?></span>
+                <span class="menu-gallery-price"><?= number_format($f['price'], 0, ',', '.') ?>đ</span>
               </div>
             </div>
           <?php endforeach; ?>
         </div>
-      <?php endforeach; ?>
-      <div class="text-center mt-4">
-        <a href="menu.php" class="btn-view-all-custom">Xem toàn bộ thực đơn</a>
       </div>
-    </div>
+
+      <!-- NÚT Ở GIỮA (đè lên giữa 2 hàng) -->
+      <div class="menu-center-btn">
+        <a href="menu.php" class="menu-explore-btn">MENU</a>
+      </div>
+
+      <!-- Hàng 2 — cuộn sang phải (ngược chiều) -->
+      <div class="menu-marquee-track" style="margin-top:8px;">
+        <div class="menu-marquee-inner marquee-right">
+          <?php
+          $display_row2 = array_merge($row2, $row2);
+          foreach ($display_row2 as $f): ?>
+            <div class="menu-gallery-item">
+              <img src="public/assets/img/menu/<?= htmlspecialchars($f['image']) ?>"
+                   alt="<?= htmlspecialchars($f['name']) ?>"
+                   onerror="this.src='public/assets/img/menu/default.jpg'">
+              <div class="menu-gallery-overlay">
+                <span class="menu-gallery-name"><?= htmlspecialchars($f['name']) ?></span>
+                <span class="menu-gallery-price"><?= number_format($f['price'], 0, ',', '.') ?>đ</span>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      </div>
+
+    </div><!-- /gallery-wrapper -->
   </section>
+
+  <style>
+    /* ========== MENU GALLERY INFINITE SCROLL ========== */
+    .menu-gallery-wrapper {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .menu-marquee-track {
+      overflow: hidden;
+      width: 100%;
+      position: relative;
+    }
+
+    .menu-marquee-inner {
+      display: flex;
+      gap: 8px;
+      width: max-content;
+      will-change: transform;
+    }
+
+    /* Hàng 1: chạy sang trái */
+    .marquee-left {
+      animation: scrollLeft 40s linear infinite;
+    }
+    /* Hàng 2: chạy sang phải */
+    .marquee-right {
+      animation: scrollRight 40s linear infinite;
+    }
+
+    @keyframes scrollLeft {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes scrollRight {
+      0%   { transform: translateX(-50%); }
+      100% { transform: translateX(0); }
+    }
+
+    /* Dừng khi hover */
+    .menu-marquee-track:hover .menu-marquee-inner {
+      animation-play-state: paused;
+    }
+
+    /* Từng ô ảnh */
+    .menu-gallery-item {
+      position: relative;
+      width: 240px;
+      height: 200px;
+      flex-shrink: 0;
+      overflow: hidden;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .menu-gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+
+    .menu-gallery-item:hover img {
+      transform: scale(1.08);
+    }
+
+    /* Overlay tên + giá hiện khi hover */
+    .menu-gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 12px;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .menu-gallery-item:hover .menu-gallery-overlay {
+      opacity: 1;
+    }
+
+    .menu-gallery-name {
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      display: block;
+    }
+
+    .menu-gallery-price {
+      color: #cda45e;
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* ===== NÚT EXPLORE MENU Ở GIỮA ===== */
+    .menu-center-btn {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 0;           /* không chiếm chiều cao — đè lên khoảng cách giữa 2 hàng */
+      margin: 0;
+    }
+
+    .menu-explore-btn {
+      display: inline-block;
+      padding: 14px 44px;
+      background: rgba(13,13,13,0.85);
+      border: 1.5px solid #cda45e;
+      color: #cda45e;
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-decoration: none;
+      backdrop-filter: blur(6px);
+      transform: translateY(-50%);   /* Căn giữa đúng theo chiều dọc */
+      transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+
+    .menu-explore-btn:hover {
+      background: #cda45e;
+      color: #000;
+      box-shadow: 0 0 30px rgba(205,164,94,0.4);
+    }
+  </style>
 
   <section id="combos" style="background: #0A1C1A; padding: 140px 0; border-top: 1px solid rgba(212,176,106,0.15); border-bottom: 1px solid rgba(212,176,106,0.15);">
     <div class="container">

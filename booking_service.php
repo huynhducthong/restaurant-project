@@ -558,6 +558,77 @@ select.input-lux {
 
 
 
+            <div class="panel-section" id="bespoke-section">
+                <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold);"><i class="fas fa-gem me-2"></i> Trải nghiệm Cá nhân hóa</h3>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">Bespoke Booking Experience</p>
+                
+                <div class="d-flex flex-column gap-3">
+                    <label class="d-flex align-items-center gap-3 p-2 rounded" style="cursor:pointer; background:rgba(212,176,106,0.05); border:1px solid rgba(212,176,106,0.2); transition:0.3s;">
+                        <input type="checkbox" name="has_candle" id="bespoke-candle" class="menu-checkbox" onchange="us()">
+                        <div>
+                            <div style="font-size:14px; font-weight:600; color:var(--gold);"><i class="fas fa-fire me-2"></i>Chuẩn bị Nến thơm thư giãn</div>
+                            <div style="font-size:12px; color:var(--text-muted);">Tạo không gian lung linh, lãng mạn (+50.000 đ)</div>
+                        </div>
+                    </label>
+
+                    <div class="p-2 rounded" style="background:rgba(212,176,106,0.05); border:1px solid rgba(212,176,106,0.2); transition:0.3s;">
+                        <label class="d-flex align-items-center gap-3" style="cursor:pointer; margin-bottom:0;" onclick="document.getElementById('flower-input-wrap').style.display = document.getElementById('bespoke-flower').checked ? 'block' : 'none'; us();">
+                            <input type="checkbox" name="has_bespoke_flower" id="bespoke-flower" class="menu-checkbox">
+                            <div>
+                                <div style="font-size:14px; font-weight:600; color:var(--gold);"><i class="fas fa-seedling me-2"></i>Hoa tươi thiết kế riêng</div>
+                                <div style="font-size:12px; color:var(--text-muted);">Chuẩn bị loài hoa hoặc màu sắc bạn yêu thích (+200.000 đ)</div>
+                            </div>
+                        </label>
+                        <div id="flower-input-wrap" style="display:none; margin-top:15px; padding-left:35px;">
+                            <div class="input-group-lux mb-0">
+                                <input type="text" name="flower_preference" class="input-lux" placeholder=" " style="font-size:13px; padding:8px 12px;">
+                                <label class="label-lux" style="font-size:12px;">Loài hoa / Màu sắc yêu thích</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-2 rounded" style="background:rgba(212,176,106,0.05); border:1px solid rgba(212,176,106,0.2); transition:0.3s;">
+                        <label class="d-flex align-items-center gap-3" style="cursor:pointer; margin-bottom:0;" onclick="document.getElementById('card-input-wrap').style.display = document.getElementById('bespoke-card').checked ? 'block' : 'none'; us();">
+                            <input type="checkbox" name="has_handwritten_card" id="bespoke-card" class="menu-checkbox">
+                            <div>
+                                <div style="font-size:14px; font-weight:600; color:var(--gold);"><i class="fas fa-envelope-open-text me-2"></i>Viết Thiệp tay chúc mừng</div>
+                                <div style="font-size:12px; color:var(--text-muted);">Thiệp thiết kế cao cấp kèm lời chúc viết tay (+30.000 đ)</div>
+                            </div>
+                        </label>
+                        <div id="card-input-wrap" style="display:none; margin-top:15px; padding-left:35px;">
+                            <div class="input-group-lux mb-0">
+                                <textarea name="card_message" class="input-lux" rows="2" placeholder=" " style="font-size:13px; padding:8px 12px;"></textarea>
+                                <label class="label-lux" style="font-size:12px;">Nội dung lời chúc</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="vip-config-section" style="display:none; margin-top:10px; padding-top:15px; border-top:1px dashed rgba(212,176,106,0.3);">
+                        <h4 style="font-size:13px; color:var(--gold); margin-bottom:15px; text-transform:uppercase;"><i class="fas fa-sliders-h me-2"></i>Cấu hình Không gian (Dành cho Phòng VIP)</h4>
+                        <div class="row-lux mb-0">
+                            <div class="input-group-lux">
+                                <select name="music_playlist" class="input-lux" style="font-size:13px;">
+                                    <option value="Mặc định nhà hàng">Mặc định nhà hàng</option>
+                                    <option value="Classic Jazz (Cổ điển)">Classic Jazz (Cổ điển)</option>
+                                    <option value="Elegant Acoustic (Tinh tế)">Elegant Acoustic (Tinh tế)</option>
+                                    <option value="Romantic Instrumental">Romantic Instrumental (Lãng mạn)</option>
+                                    <option value="Không bật nhạc">Không bật nhạc (Cần yên tĩnh)</option>
+                                </select>
+                                <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: var(--forest); padding: 0 5px; text-transform: uppercase;">Playlist Âm nhạc</label>
+                            </div>
+                            <div class="input-group-lux">
+                                <select name="light_tone" class="input-lux" style="font-size:13px;">
+                                    <option value="Mặc định">Mặc định</option>
+                                    <option value="Warm (Ấm áp, Mờ ảo)">Warm (Ấm áp, Mờ ảo lãng mạn)</option>
+                                    <option value="Natural (Sáng tự nhiên)">Natural (Sáng tự nhiên)</option>
+                                </select>
+                                <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: var(--forest); padding: 0 5px; text-transform: uppercase;">Tông màu Ánh sáng</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="panel-section">
                 <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold);">Yêu Cầu Đặc Biệt</h3>
                 <div class="input-group-lux mb-0">
@@ -588,7 +659,7 @@ select.input-lux {
             <?php endif; ?>
             
 
-            
+            <div class="sum-row"><span>Bespoke Dịch vụ</span> <span class="sum-val highlight" id="s-bespoke">0 đ</span></div>
             <div class="sum-row"><span>Bộ Sưu Tập Hương Vị / Món</span> <span class="sum-val" id="sm">0 đ</span></div>
             
             <div class="total-box">
@@ -865,7 +936,19 @@ function us(){
         document.getElementById('m-addon-sum').textContent = addonTxt;
     }
 
-    var total = food + (typeof selPrice !== 'undefined' ? selPrice : 0) + decorPrice;
+    var bespokePrice = 0;
+    var cCandle = document.getElementById('bespoke-candle');
+    var cFlower = document.getElementById('bespoke-flower');
+    var cCard = document.getElementById('bespoke-card');
+    
+    if (cCandle && cCandle.checked) bespokePrice += 50000;
+    if (cFlower && cFlower.checked) bespokePrice += 200000;
+    if (cCard && cCard.checked) bespokePrice += 30000;
+    
+    var sBespoke = document.getElementById('s-bespoke');
+    if (sBespoke) sBespoke.textContent = bespokePrice > 0 ? bespokePrice.toLocaleString('vi-VN') + ' đ' : '0 đ';
+
+    var total = food + (typeof selPrice !== 'undefined' ? selPrice : 0) + decorPrice + bespokePrice;
     
     // Cập nhật số tiền đặt cọc 30%
     var btnGo = document.getElementById('btn-go');

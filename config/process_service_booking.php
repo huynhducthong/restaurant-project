@@ -40,6 +40,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
+    // Gắn thêm Hồ sơ Khẩu vị (Culinary DNA) nếu có
+    if ($user_id) {
+        $u_stmt = $db->prepare("SELECT doneness, flavor_profile, fav_ingredients, disliked_ingredients, allergies FROM users WHERE id = ?");
+        $u_stmt->execute([$user_id]);
+        $u_profile = $u_stmt->fetch(PDO::FETCH_ASSOC);
+        if ($u_profile) {
+            $dna_parts = [];
+            if (!empty($u_profile['doneness'])) $dna_parts[] = "- Độ chín: " . $u_profile['doneness'];
+            if (!empty($u_profile['flavor_profile'])) $dna_parts[] = "- Hương vị: " . $u_profile['flavor_profile'];
+            if (!empty($u_profile['fav_ingredients'])) $dna_parts[] = "- Yêu thích: " . $u_profile['fav_ingredients'];
+            if (!empty($u_profile['disliked_ingredients'])) $dna_parts[] = "- Không thích: " . $u_profile['disliked_ingredients'];
+            if (!empty($u_profile['allergies'])) $dna_parts[] = "- DỊ ỨNG: " . $u_profile['allergies'];
+            
+            if (!empty($dna_parts)) {
+                $culinary_dna = "--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n" . implode("\n", $dna_parts);
+                if ($chef_requirements) {
+                    $chef_requirements .= "\n\n" . $culinary_dna;
+                } else {
+                    $chef_requirements = $culinary_dna;
+                }
+            }
+        }
+    }
+
 
     if (empty($name) || empty($phone) || empty($date)) {
         echo "<script>alert('Vui lòng điền đầy đủ các thông tin bắt buộc!'); window.history.back();</script>";
@@ -149,10 +173,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         @sendTelegramNotification($booking_msg);
 
-        echo "<script>
-            alert('Đặt dịch vụ thành công! Nhà hàng sẽ liên hệ lại để xác nhận sớm nhất.');
-            window.location.href = '../booking_success.php?success=1&id=" . $last_id . "';
-        </script>";
+        if ($deposit_amount > 0) {
+            echo "<script>
+                window.location.href = '../booking_payment.php?id=" . $last_id . "';
+            </script>";
+        } else {
+            echo "<script>
+                alert('Đặt dịch vụ thành công! Nhà hàng sẽ liên hệ lại để xác nhận sớm nhất.');
+                window.location.href = '../booking_success.php?success=1&id=" . $last_id . "';
+            </script>";
+        }
         exit;
 
     } catch (Exception $e) {

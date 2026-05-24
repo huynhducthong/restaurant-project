@@ -505,6 +505,7 @@ foreach ($stocks_raw as $s) {
 
 $low_stock_count = 0;
 $expiry_warn_count = 0;
+$expired_count = 0;
 $today = date('Y-m-d');
 $warn_date = date('Y-m-d', strtotime('+' . $cfg_expiry_days . ' days'));
 
@@ -519,7 +520,13 @@ foreach ($inv_items as &$item) {
     // CHỈ TÍNH CẢNH BÁO CHO NHỮNG MÓN ĐANG HOẠT ĐỘNG (is_active = 1)
     if ($item['is_active'] == 1) {
         if ($item['total_stock'] <= $min) $low_stock_count++;
-        if (!empty($item['expiry_date']) && $item['expiry_date'] <= $warn_date) $expiry_warn_count++;
+        if (!empty($item['expiry_date'])) {
+            if ($item['expiry_date'] < $today) {
+                $expired_count++;
+            } elseif ($item['expiry_date'] <= $warn_date) {
+                $expiry_warn_count++;
+            }
+        }
     }
 }
 unset($item);

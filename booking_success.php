@@ -965,16 +965,28 @@ if ($is_success) {
                     <div style="font-size: 1.4rem; font-weight: 600; color: var(--gold);"><?= number_format($booking['total_amount']) ?>đ</div>
                 </div>
                 <div style="text-align: right;">
-                    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5);">Tiền cọc cần thanh toán (30%)</div>
-                    <div style="font-size: 1.4rem; font-weight: 600; color: #34d399;"><?= number_format($booking['total_amount'] * 0.3) ?>đ</div>
+                    <?php if ($booking['status'] === 'Confirmed'): ?>
+                        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #34d399;"><i class="fas fa-check-circle me-1"></i>Đã thanh toán cọc</div>
+                        <div style="font-size: 1.4rem; font-weight: 600; color: #34d399;"><?= number_format($booking['deposit_amount']) ?>đ</div>
+                    <?php else: ?>
+                        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5);">Tiền cọc cần thanh toán</div>
+                        <div style="font-size: 1.4rem; font-weight: 600; color: #e53e3e;"><?= number_format($booking['deposit_amount']) ?>đ</div>
+                    <?php endif; ?>
                 </div>
             </div>
             
             <div style="margin-top: 40px; padding-top: 30px; border-top: 1px dashed #e5dfd5; text-align: center;">
-                <p style="font-size: 13px; color: var(--txt-muted); line-height: 1.6;">
-                    Quý khách vui lòng kiểm tra email hoặc điện thoại để nhận thông tin thanh toán.<br>
-                    Cảm ơn quý khách đã tin tưởng lựa chọn <strong>Restaurantly</strong>.
-                </p>
+                <?php if ($booking['status'] === 'Confirmed'): ?>
+                    <p style="font-size: 14px; color: var(--g1); font-weight: 600; line-height: 1.6;">
+                        <i class="fas fa-glass-cheers me-2" style="color:var(--gold);"></i> Đơn đặt bàn đã được xác nhận thanh toán thành công.<br>
+                        Hẹn gặp lại quý khách tại <strong>Restaurantly</strong>.
+                    </p>
+                <?php else: ?>
+                    <p style="font-size: 13px; color: var(--txt-muted); line-height: 1.6;">
+                        Quý khách vui lòng kiểm tra email hoặc điện thoại để nhận thông tin thanh toán.<br>
+                        Cảm ơn quý khách đã tin tưởng lựa chọn <strong>Restaurantly</strong>.
+                    </p>
+                <?php endif; ?>
             </div>
         </div>
     </div>
