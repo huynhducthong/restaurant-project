@@ -21,6 +21,15 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     $id = (int) $_GET['id'];
     $action = $_GET['action'];
 
+    // A0. HÀNH ĐỘNG BÁO GIÁ (CẬP NHẬT TIỀN CHO THỰC ĐƠN RIÊNG)
+    if ($action == 'update_price' && isset($_GET['price'])) {
+        $price = (float)$_GET['price'];
+        $deposit = $price * 0.3; // Cọc 30%
+        $db->prepare("UPDATE service_bookings SET total_amount = ?, deposit_amount = ? WHERE id = ?")->execute([$price, $deposit, $id]);
+        header("Location: manage_services.php?msg=price_updated");
+        exit;
+    }
+
     // A. HÀNH ĐỘNG XÁC NHẬN (CONFIRM) & TRỪ KHO BẾP
     if ($action == 'confirm') {
         $db->beginTransaction();
@@ -488,6 +497,11 @@ include '../../public/admin_layout_header.php';
                                 </button>
 
                                 <?php if ($s['status'] == 'Pending'): ?>
+                                    <?php if ($s['total_amount'] == 0 || !empty($s['chef_requirements'])): ?>
+                                        <button class="btn btn-sm btn-outline-primary btn-quote-price" data-id="<?= $s['id'] ?>" data-name="<?= htmlspecialchars($s['customer_name']) ?>" title="Báo giá cho khách">
+                                            <i class="fas fa-file-invoice-dollar"></i> Báo giá
+                                        </button>
+                                    <?php endif; ?>
                                     <button class="btn btn-sm btn-outline-gold btn-confirm-ajax" data-id="<?= $s['id'] ?>"
                                         data-name="<?= htmlspecialchars($s['customer_name']) ?>">
                                         <i class="fas fa-check me-1"></i> Xác nhận
@@ -947,4 +961,20 @@ include '../../public/admin_layout_header.php';
             }
         }, 10000);
     });
+    
+    // --- BÁO GIÁ (QUOTATION) ---
+    $(document).on('click', '.btn-quote-price', function(e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        const name = $(this).data('name');
+        let price = prompt(`Nhập tổng tiền (VNĐ) muốn báo giá cho khách "${name}":\nHệ thống sẽ tự động tính ra 30% tiền cọc.`);
+        if (price !== null) {
+            price = price.replace(/\D/g, ''); // Xóa các ký tự không phải số
+            if (price !== '') {
+                window.location.href = `manage_services.php?action=update_price&id=${id}&price=${price}`;
+            }
+        }
+    });
 </script>
+</body>
+</html>

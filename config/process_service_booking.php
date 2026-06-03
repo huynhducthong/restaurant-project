@@ -126,10 +126,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // 3. Lưu chi tiết các món ăn khách chọn lẻ
         if (!empty($_POST['menu_items'])) {
-            $stmt_details = $db->prepare("INSERT INTO booking_details (booking_id, menu_id, item_type, quantity) VALUES (?, ?, 'food', ?)");
+            $stmt_details = $db->prepare("INSERT INTO booking_details (booking_id, menu_id, item_type, quantity, notes) VALUES (?, ?, 'food', ?, ?)");
             foreach ($_POST['menu_items'] as $menu_id) {
                 $qty = $_POST['quantity'][$menu_id] ?? 1;
-                $stmt_details->execute([$last_id, $menu_id, $qty]);
+                $note = $_POST['food_notes'][$menu_id] ?? '';
+                $stmt_details->execute([$last_id, $menu_id, $qty, $note]);
             }
         }
 
@@ -160,6 +161,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $booking_msg = "<b>🆕 ĐƠN ĐẶT BÀN MỚI</b>\n\n";
         $booking_msg .= "👤 Khách: <b>$name</b>\n";
         $booking_msg .= "📞 SĐT: $phone\n";
+        
+        // Fetch VIP DNA for Telegram
+        $vip_dna = "";
+        if (isset($_SESSION['user_id'])) {
+            try {
+                $stmt_dna = $db->prepare("SELECT allergies, doneness, flavor_profile FROM users WHERE id = ?");
+                $stmt_dna->execute([$_SESSION['user_id']]);
+                if ($dna_row = $stmt_dna->fetch(PDO::FETCH_ASSOC)) {
+                    if (!empty($dna_row['allergies'])) {
+                        $booking_msg .= "⚠️ Dị ứng y tế: <b>{$dna_row['allergies']}</b>\n";
+                    }
+                    if (!empty($dna_row['doneness']) || !empty($dna_row['flavor_profile'])) {
+                        $booking_msg .= "🧬 DNA: " . trim("{$dna_row['doneness']} | {$dna_row['flavor_profile']}", " |") . "\n";
+                    }
+                }
+            } catch(Exception $e) {}
+        }
+
         $booking_msg .= "⏰ Lúc: $time_str\n";
         $booking_msg .= "👥 Khách: $guests người\n";
         $booking_msg .= "🏷 Loại: " . ucfirst($type) . $event_str . "\n";

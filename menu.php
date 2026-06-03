@@ -12,19 +12,68 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 $user_allergies = [];
+$user_flavor = [];
+$user_fav = [];
 if (isset($_SESSION['user_id'])) {
-    $stmt = $db->prepare("SELECT allergies FROM users WHERE id = ?");
+    $stmt = $db->prepare("SELECT allergies, flavor_profile, fav_ingredients FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
-    $allergies_str = $stmt->fetchColumn();
-    if ($allergies_str) {
-        $user_allergies = array_map('trim', explode(',', mb_strtolower($allergies_str, 'UTF-8')));
+    $u = $stmt->fetch();
+    if ($u) {
+        if ($u['allergies']) $user_allergies = array_map('trim', explode(',', mb_strtolower($u['allergies'], 'UTF-8')));
+        if ($u['flavor_profile']) $user_flavor = array_map('trim', explode(',', mb_strtolower($u['flavor_profile'], 'UTF-8')));
+        if ($u['fav_ingredients']) $user_fav = array_map('trim', explode(',', mb_strtolower($u['fav_ingredients'], 'UTF-8')));
     }
 }
+
 function hasAllergen($food, $user_allergies) {
     if (empty($user_allergies) || empty($food['allergens'])) return false;
     $food_allergens = array_map('trim', explode(',', mb_strtolower($food['allergens'], 'UTF-8')));
     return !empty(array_intersect($user_allergies, $food_allergens));
 }
+
+// Hàm hỗ trợ loại bỏ dấu tiếng Việt để tìm kiếm thông minh hơn (Fuzzy Search)
+function removeVietnameseAccents($str) {
+    $str = mb_strtolower($str, 'UTF-8');
+    $str = preg_replace('/(à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ)/', 'a', $str);
+    $str = preg_replace('/(è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ)/', 'e', $str);
+    $str = preg_replace('/(ì|í|ị|ỉ|ĩ)/', 'i', $str);
+    $str = preg_replace('/(ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ)/', 'o', $str);
+    $str = preg_replace('/(ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ)/', 'u', $str);
+    $str = preg_replace('/(ỳ|ý|ỵ|ỷ|ỹ)/', 'y', $str);
+    $str = preg_replace('/(đ)/', 'd', $str);
+    return $str;
+}
+
+// THUẬT TOÁN LỌC NỘI DUNG & CHẤM ĐIỂM (Content-Based Filtering & Scoring)
+foreach ($all_foods as &$f) {
+    $score = 0;
+    $f_tags = removeVietnameseAccents($f['tags'] ?? '');
+    $f_ingr = removeVietnameseAccents($f['ingredients'] ?? '');
+    $f_name = removeVietnameseAccents($f['name'] ?? '');
+
+    // Chấm điểm dựa trên Khẩu vị (Ví dụ: Thích ăn "cay", món có chữ "cay" -> +2 điểm)
+    foreach ($user_flavor as $flav) {
+        $flav = removeVietnameseAccents($flav);
+        if (!empty($flav) && (strpos($f_tags, $flav) !== false || strpos($f_name, $flav) !== false || strpos($f_ingr, $flav) !== false)) {
+            $score += 2;
+        }
+    }
+    // Chấm điểm dựa trên Thành phần yêu thích (Ví dụ: Thích "cá hồi", món có "cá hồi" -> +3 điểm)
+    foreach ($user_fav as $fav) {
+        $fav = removeVietnameseAccents($fav);
+        if (!empty($fav) && (strpos($f_ingr, $fav) !== false || strpos($f_name, $fav) !== false || strpos($f_tags, $fav) !== false)) {
+            $score += 3;
+        }
+    }
+    $f['ai_score'] = $score;
+}
+unset($f);
+
+// Sắp xếp Menu: Món nào hợp khẩu vị (Điểm cao) sẽ bị đẩy lên đầu tiên
+usort($all_foods, function($a, $b) {
+    if ($a['ai_score'] == $b['ai_score']) return $b['id'] <=> $a['id'];
+    return $b['ai_score'] <=> $a['ai_score'];
+});
 
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
@@ -510,7 +559,12 @@ img{display:block;}
     <div class="food-grid" id="food-grid">
       <?php foreach($all_foods as $i=>$f):
         $badges=[];
-        if($i<3) $badges[]=['sig','Signature'];
+        // Nếu món ăn có điểm AI > 0 (Khớp khẩu vị), gắn badge Gợi Ý VIP
+        if(isset($f['ai_score']) && $f['ai_score'] > 0) {
+            $badges[]=['sig','<i class="fas fa-magic text-warning me-1"></i> Gợi ý VIP'];
+        } else if($i<3) {
+            $badges[]=['sig','Signature'];
+        }
         if(($f['price']??0)>300000) $badges[]=['prem','Premium'];
         
         $has_al = hasAllergen($f, $user_allergies);

@@ -667,10 +667,17 @@ body{
             <div class="col-md-6 mb-2">
               <h6 style="color:var(--gold); font-family:'Playfair Display',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-star me-2"></i>Nguyên liệu yêu thích (Favorites)</h6>
               <div class="d-flex flex-column gap-2 mt-3">
-                <?php $favopts = ['Bò Wagyu', 'Nấm Truffle', 'Gan ngỗng (Foie Gras)', 'Trứng cá tầm (Caviar)', 'Hải sản (Seafood)']; 
-                foreach($favopts as $fv): ?>
+                <?php 
+                $favopts = [
+                    'Bò' => 'Các loại Bò (Wagyu, Kobe...)', 
+                    'Nấm' => 'Các loại Nấm (Truffle...)', 
+                    'Gan ngỗng' => 'Gan ngỗng (Foie Gras)', 
+                    'Trứng cá' => 'Trứng cá tầm (Caviar)', 
+                    'Hải sản' => 'Hải sản (Seafood)'
+                ]; 
+                foreach($favopts as $val => $lbl): ?>
                 <label class="d-flex align-items-center gap-2" style="cursor:pointer; font-size:14px;">
-                  <input type="checkbox" name="fav_ingredients[]" value="<?= $fv ?>" <?= in_array($fv, $my_favs) ? 'checked' : '' ?> style="accent-color:var(--F);"> <?= $fv ?>
+                  <input type="checkbox" name="fav_ingredients[]" value="<?= $val ?>" <?= (in_array($val, $my_favs) || in_array('Bò Wagyu', $my_favs) && $val=='Bò') ? 'checked' : '' ?> style="accent-color:var(--F);"> <?= $lbl ?>
                 </label>
                 <?php endforeach; ?>
               </div>
@@ -709,58 +716,74 @@ body{
         </form>
 
         <hr style="border-color:var(--border); margin:40px 0;">
-        <h5 style="font-family:'Playfair Display',serif; color:var(--F); font-weight:600; margin-bottom:20px;">
-          <i class="bi bi-journal-bookmark me-2"></i>Nhật ký Ẩm thực (Gastronomy Journal)
-        </h5>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 style="font-family:'Playfair Display',serif; color:var(--F); font-weight:600; margin-bottom:0;">
+            <i class="bi bi-journal-bookmark me-2"></i>Nhật ký Ẩm thực (Gastronomy Journal)
+          </h5>
+          <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#journalCollapse" aria-expanded="false" aria-controls="journalCollapse" style="font-size: 13px; border-color: var(--gold); color: var(--gold);">
+            <i class="bi bi-chevron-down"></i> Mở xem Nhật ký
+          </button>
+        </div>
         
-        <div style="border-left:2px solid var(--F-pale); padding-left:20px; margin-left:10px;">
-          <?php
-            // Lấy danh sách các đơn đã hoàn thành
-            $journal_stmt = $db->prepare("SELECT sb.*, rt.table_number, c.name as combo_name 
-                                          FROM service_bookings sb 
-                                          LEFT JOIN restaurant_tables rt ON sb.table_id = rt.id 
-                                          LEFT JOIN combos c ON sb.combo_id = c.id 
-                                          WHERE sb.user_id = ? AND sb.status = 'Completed' 
-                                          ORDER BY sb.booking_date DESC");
-            $journal_stmt->execute([$user_id]);
-            $journals = $journal_stmt->fetchAll();
-            
-            if (empty($journals)):
-          ?>
-            <p class="text-muted" style="font-size:13px; margin:0;">Bạn chưa có trải nghiệm dùng bữa nào được ghi lại.</p>
-          <?php else: foreach($journals as $j): ?>
-            <div style="position:relative; margin-bottom:25px;">
-              <!-- Timeline dot -->
-              <div style="position:absolute; left:-27px; top:0; width:12px; height:12px; border-radius:50%; background:var(--F); border:2px solid #fff; box-shadow:0 0 0 2px var(--F-pale);"></div>
+        <div class="collapse" id="journalCollapse">
+          <div style="border-left:2px solid var(--F-pale); padding-left:20px; margin-left:10px; margin-bottom: 30px;">
+            <?php
+              // Lấy danh sách các đơn đã hoàn thành
+              $journal_stmt = $db->prepare("SELECT sb.*, rt.table_number, c.name as combo_name 
+                                            FROM service_bookings sb 
+                                            LEFT JOIN restaurant_tables rt ON sb.table_id = rt.id 
+                                            LEFT JOIN combos c ON sb.combo_id = c.id 
+                                            WHERE sb.user_id = ? AND sb.status = 'Completed' 
+                                            ORDER BY sb.booking_date DESC");
+              $journal_stmt->execute([$user_id]);
+              $journals = $journal_stmt->fetchAll();
               
-              <div style="font-size:12px; font-weight:600; color:var(--F); margin-bottom:5px;">
-                <?= date('d/m/Y - H:i', strtotime($j['booking_date'])) ?>
-              </div>
-              <div class="bk-card" style="margin:0; border-left:none; padding:15px; background:var(--bg2);">
-                <div style="font-size:14px; color:var(--ink); font-weight:500; margin-bottom:6px;">
-                  Trải nghiệm tại <?= $j['table_id'] ? 'Bàn '.$j['table_number'] : 'Nhà hàng' ?>
+              if (empty($journals)):
+            ?>
+              <p class="text-muted" style="font-size:13px; margin:0;">Bạn chưa có trải nghiệm dùng bữa nào được ghi lại.</p>
+            <?php else: foreach($journals as $j): ?>
+              <div style="position:relative; margin-bottom:25px;">
+                <!-- Timeline dot -->
+                <div style="position:absolute; left:-27px; top:0; width:12px; height:12px; border-radius:50%; background:var(--F); border:2px solid #fff; box-shadow:0 0 0 2px var(--F-pale);"></div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <div style="font-size:12px; font-weight:600; color:var(--F);">
+                    <?= date('d/m/Y - H:i', strtotime($j['booking_date'])) ?>
+                  </div>
                 </div>
-                <ul style="margin:0; padding-left:15px; font-size:13px; color:var(--ink2);">
-                  <?php if($j['combo_id']): ?>
-                    <li>Thưởng thức: <strong><?= htmlspecialchars($j['combo_name']) ?></strong></li>
-                  <?php endif; ?>
-                  <?php if($j['guests']): ?>
-                    <li>Đi cùng: <?= $j['guests'] ?> người</li>
-                  <?php endif; ?>
-                  <?php if($j['event_type']): ?>
-                    <li>Dịp: <?= htmlspecialchars($j['event_type']) ?></li>
-                  <?php endif; ?>
-                  <?php if($j['decor_package']): ?>
-                    <li>Không gian: <?= htmlspecialchars($j['decor_package']) ?></li>
-                  <?php endif; ?>
-                  <?php if($j['has_cake'] || $j['has_flower']): ?>
-                    <li>Dịch vụ kèm: <?= implode(', ', array_filter([$j['has_cake']?'Bánh kem':null, $j['has_flower']?'Hoa tươi':null])) ?></li>
-                  <?php endif; ?>
-                  <li>Mã đặt bàn: #BK-<?= $j['id'] ?></li>
-                </ul>
+                
+                <div class="bk-card" style="margin:0; border-left:none; padding:15px; background:var(--bg2);">
+                  <div style="font-size:14px; color:var(--ink); font-weight:500; margin-bottom:6px;">
+                    Trải nghiệm tại <?= $j['table_id'] ? 'Bàn '.$j['table_number'] : 'Nhà hàng' ?>
+                  </div>
+                  <ul style="margin:0; padding-left:15px; font-size:13px; color:var(--ink2);">
+                    <?php if($j['combo_id']): ?>
+                      <li>Thưởng thức: <strong><?= htmlspecialchars($j['combo_name']) ?></strong></li>
+                    <?php endif; ?>
+                    <?php if($j['guests']): ?>
+                      <li>Đi cùng: <?= $j['guests'] ?> người</li>
+                    <?php endif; ?>
+                    <?php if($j['event_type']): ?>
+                      <li>Dịp: <?= htmlspecialchars($j['event_type']) ?></li>
+                    <?php endif; ?>
+                    <?php if($j['decor_package']): ?>
+                      <li>Không gian: <?= htmlspecialchars($j['decor_package']) ?></li>
+                    <?php endif; ?>
+                    <?php if($j['has_cake'] || $j['has_flower']): ?>
+                      <li>Dịch vụ kèm: <?= implode(', ', array_filter([$j['has_cake']?'Bánh kem':null, $j['has_flower']?'Hoa tươi':null])) ?></li>
+                    <?php endif; ?>
+                    <li>Mã đặt bàn: #BK-<?= $j['id'] ?></li>
+                  </ul>
+                  
+                  <div class="mt-3">
+                    <button type="button" onclick="viewBookingDetails(<?= $j['id'] ?>)" class="btn btn-sm btn-outline-success" style="font-size: 11px; padding: 4px 10px;">
+                      <i class="bi bi-eye me-1"></i>Xem chi tiết đơn
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          <?php endforeach; endif; ?>
+            <?php endforeach; endif; ?>
+          </div>
         </div>
 
         <!-- ── TAB: ĐẶT BÀN ── -->
@@ -808,9 +831,9 @@ body{
             <span class="bk-badge <?= $badge_class ?>"><?= $badge_label ?></span>
           </div>
           <div class="d-flex gap-2 flex-wrap">
-            <a href="admin/export_pdf.php?id=<?= $b['id'] ?>" target="_blank" class="btn-out" style="font-size:12px;padding:7px 14px;">
-              <i class="bi bi-file-earmark-pdf"></i> Xem PDF
-            </a>
+            <button type="button" onclick="viewBookingDetails(<?= $b['id'] ?>)" class="btn-out" style="font-size:12px;padding:7px 14px;">
+              <i class="bi bi-eye"></i> Xem chi tiết
+            </button>
             <?php if($status_filter=='upcoming'): ?>
             <form method="POST" style="margin:0">
               <input type="hidden" name="booking_id" value="<?= $b['id'] ?>">
@@ -993,7 +1016,43 @@ body{
   </div>
 </div>
 
+<!-- MODAL XEM CHI TIẾT ĐƠN HÀNG -->
+<div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border:none; border-radius:12px; overflow:hidden;">
+      <div class="modal-header" style="background:var(--F); color:#fff; border-bottom:none;">
+        <h5 class="modal-title" style="font-family:'Playfair Display',serif;"><i class="bi bi-receipt me-2"></i>Chi Tiết Đơn Đặt Bàn</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="bookingDetailsContent" style="padding:25px; background:#fff;">
+        <div class="text-center p-4 text-muted"><i class="bi bi-arrow-repeat spin me-2"></i>Đang tải dữ liệu...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.spin { display:inline-block; animation:spin 1s linear infinite; }
+@keyframes spin { 100% { transform:rotate(360deg); } }
+</style>
+
 <script>
+function viewBookingDetails(id) {
+    var myModal = new bootstrap.Modal(document.getElementById('bookingDetailsModal'));
+    myModal.show();
+    
+    document.getElementById('bookingDetailsContent').innerHTML = '<div class="text-center p-4 text-muted"><i class="bi bi-arrow-repeat spin me-2"></i>Đang tải dữ liệu...</div>';
+    
+    fetch('ajax_get_booking_details.php?booking_id=' + id)
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('bookingDetailsContent').innerHTML = html;
+        })
+        .catch(err => {
+            document.getElementById('bookingDetailsContent').innerHTML = '<div class="text-danger text-center">Lỗi khi tải dữ liệu!</div>';
+        });
+}
+
 function previewImg(input) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();

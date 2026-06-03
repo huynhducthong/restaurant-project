@@ -263,10 +263,11 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
                         <thead class="table-light text-muted small text-uppercase">
                             <tr>
                                 <th class="ps-4">Nguyên Liệu</th>
-                                <th class="text-center" width="150">SL Đặt</th>
-                                <th class="text-center" width="180">SL Thực Nhận</th>
-                                <th class="text-center" width="180">Giá Nhập (đ)</th>
-                                <th class="text-center" width="180">Hạn sử dụng</th>
+                                <th class="text-center" width="100">SL Đặt</th>
+                                <th class="text-center" width="140">SL Thực Nhận</th>
+                                <th class="text-center" width="150">Giá Nhập (đ)</th>
+                                <th class="text-center" width="120">Nhiệt độ (°C)</th>
+                                <th class="text-center" width="150">Hạn sử dụng</th>
                             </tr>
                         </thead>
                         <tbody id="receive-po-body">
@@ -441,7 +442,7 @@ $(document).ready(function() {
                 res.data.forEach(item => {
                     let qty = parseFloat(item.expected_qty || 0);
                     let price = parseFloat(item.expected_price || 0);
-                    html += `<tr><td class="ps-4"><div class="fw-bold">${item.item_name}</div><input type="hidden" name="ingredient_id[]" value="${item.ingredient_id}"></td><td class="text-center text-muted">${qty} ${item.unit_name}</td><td><div class="input-group input-group-sm"><input type="number" name="received_qty[]" class="form-control text-center fw-bold" step="0.01" value="${qty}" required><span class="input-group-text">${item.unit_name}</span></div></td><td><input type="text" name="received_price[]" class="form-control form-control-sm text-end money-input" value="${price.toLocaleString('en-US')}" required></td><td class="pe-4"><input type="date" name="expiry_date[]" class="form-control form-control-sm"></td></tr>`;
+                    html += `<tr><td class="ps-4"><div class="fw-bold">${item.item_name}</div><input type="hidden" name="ingredient_id[]" value="${item.ingredient_id}"></td><td class="text-center text-muted">${qty} ${item.unit_name}</td><td><div class="input-group input-group-sm"><input type="number" name="received_qty[]" class="form-control text-center fw-bold" step="0.01" value="${qty}" required><span class="input-group-text">${item.unit_name}</span></div></td><td><input type="text" name="received_price[]" class="form-control form-control-sm text-end money-input" value="${price.toLocaleString('en-US')}" required></td><td><input type="text" name="receiving_temperature[]" class="form-control form-control-sm text-center" placeholder="VD: -18, 4"></td><td class="pe-4"><input type="date" name="expiry_date[]" class="form-control form-control-sm"></td></tr>`;
                 });
                 $('#receive-po-body').html(html);
             }

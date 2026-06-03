@@ -68,14 +68,17 @@
                         </td>
                         <td class="text-end">
                             <div class="btn-group shadow-sm">
-                                <button class="btn btn-sm btn-light border" onclick='openDnaModal(<?= htmlspecialchars(json_encode([
+                                <button class="btn btn-sm btn-info text-white border-0 shadow-sm" onclick='openCrmModal(<?= htmlspecialchars(json_encode([
+                                    "id" => $u["id"],
                                     "doneness" => $u["doneness"] ?? "",
                                     "flavor" => $u["flavor_profile"] ?? "",
                                     "fav" => $u["fav_ingredients"] ?? "",
                                     "dislike" => $u["disliked_ingredients"] ?? "",
                                     "allergies" => $u["allergies"] ?? "",
-                                    "name" => $u["full_name"]
-                                ])) ?>)' title="Xem DNA Ẩm Thực"><i class="fas fa-utensils text-danger"></i> DNA</button>
+                                    "name" => $u["full_name"],
+                                    "total_bookings" => $u["total_bookings"] ?? 0,
+                                    "total_spent" => $u["total_spent"] ?? 0
+                                ])) ?>)' title="Customer 360 View"><i class="fas fa-address-card"></i> Hồ Sơ 360</button>
                                 <button class="btn btn-sm btn-light border" onclick='openEditModal(<?= json_encode($u) ?>)' title="Sửa thông tin"><i class="fas fa-edit text-primary"></i> Sửa</button>
                                 <!-- Chặn Admin tự xóa tài khoản của chính mình -->
                                 <?php if ($u['id'] != $_SESSION['user_id']): ?>
@@ -150,23 +153,83 @@
     </div>
 </div>
 
-<!-- Modal Xem Culinary DNA -->
-<div class="modal fade" id="modalDna" tabindex="-1">
-    <div class="modal-dialog">
+<!-- Modal CRM 360 -->
+<div class="modal fade" id="modalCrm" tabindex="-1">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title"><i class="fas fa-id-card-alt me-2"></i>Hồ sơ Khẩu vị (Culinary DNA)</h5>
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title"><i class="fas fa-gem me-2 text-warning"></i>HỒ SƠ KHÁCH HÀNG 360°</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body p-4">
-                <h6 class="fw-bold text-primary mb-3" id="dna-name"></h6>
-                <table class="table table-bordered">
-                    <tr><td width="35%" class="bg-light fw-bold text-secondary">Độ chín bò</td><td id="dna-doneness"></td></tr>
-                    <tr><td class="bg-light fw-bold text-secondary">Hương vị</td><td id="dna-flavor"></td></tr>
-                    <tr><td class="bg-light fw-bold text-secondary">Yêu thích</td><td id="dna-fav"></td></tr>
-                    <tr><td class="bg-light fw-bold text-secondary">Không thích</td><td id="dna-dislike"></td></tr>
-                    <tr><td class="bg-light fw-bold text-danger">DỊ ỨNG Y TẾ</td><td id="dna-allergies" class="fw-bold text-danger"></td></tr>
-                </table>
+            <div class="modal-body p-4 bg-light">
+                <h4 class="fw-bold text-primary mb-4 text-center" id="crm-name"></h4>
+                
+                <!-- Business Metrics Row -->
+                <div class="row mb-4 text-center">
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h6 class="text-muted text-uppercase small">Tổng số lần đến</h6>
+                                <h3 class="fw-bold text-dark" id="crm-bookings">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h6 class="text-muted text-uppercase small">Tổng chi tiêu</h6>
+                                <h3 class="fw-bold text-success" id="crm-spent">0đ</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h6 class="text-muted text-uppercase small">Phân hạng</h6>
+                                <h3 class="fw-bold" id="crm-tier">-</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-header bg-white fw-bold"><i class="fas fa-dna text-danger me-2"></i>DNA ẨM THỰC (Gastronomy Profile)</div>
+                    <div class="card-body p-0">
+                        <table class="table table-bordered mb-0">
+                            <tr><td width="35%" class="bg-light fw-bold text-secondary">Độ chín bò</td><td id="crm-doneness"></td></tr>
+                            <tr><td class="bg-light fw-bold text-secondary">Hương vị</td><td id="crm-flavor"></td></tr>
+                            <tr><td class="bg-light fw-bold text-secondary">Yêu thích</td><td id="crm-fav"></td></tr>
+                            <tr><td class="bg-light fw-bold text-secondary">Không thích</td><td id="crm-dislike"></td></tr>
+                            <tr><td class="bg-light fw-bold text-danger">DỊ ỨNG Y TẾ</td><td id="crm-allergies" class="fw-bold text-danger"></td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-header bg-white fw-bold"><i class="fas fa-history text-primary me-2"></i>LỊCH SỬ GIAO DỊCH (Tối đa 10 đơn gần nhất)</div>
+                    <div class="card-body p-0" id="crm-history-content">
+                        <div class="text-center p-3 text-muted"><i class="fas fa-spinner fa-spin me-2"></i>Đang tải dữ liệu...</div>
+                    </div>
+                </div>
+                
+                <div class="text-center text-muted small mt-3">
+                    <i class="fas fa-info-circle"></i> Sử dụng dữ liệu này để tư vấn Menu Bespoke cá nhân hóa cho khách hàng.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chi Tiết Đơn (Admin) -->
+<div class="modal fade" id="modalBookingDetailsAdmin" tabindex="-1" style="z-index: 1060;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-receipt me-2"></i>Chi Tiết Đơn Đặt Bàn</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4" id="adminBookingDetailsContent">
+                <div class="text-center p-3 text-muted"><i class="fas fa-spinner fa-spin me-2"></i>Đang tải dữ liệu...</div>
             </div>
         </div>
     </div>
@@ -202,14 +265,65 @@
         new bootstrap.Modal(document.getElementById('modalUser')).show();
     }
 
-    function openDnaModal(data) {
-        $('#dna-name').text('Khách hàng: ' + data.name);
-        $('#dna-doneness').text(data.doneness || 'Chưa thiết lập');
-        $('#dna-flavor').text(data.flavor || 'Chưa thiết lập');
-        $('#dna-fav').text(data.fav || 'Chưa thiết lập');
-        $('#dna-dislike').text(data.dislike || 'Chưa thiết lập');
-        $('#dna-allergies').text(data.allergies || 'Không có');
-        new bootstrap.Modal(document.getElementById('modalDna')).show();
+    function openCrmModal(data) {
+        $('#crm-name').text(data.name.toUpperCase());
+        
+        // Cập nhật Chỉ số Kinh doanh
+        let spent = parseFloat(data.total_spent) || 0;
+        let bookings = parseInt(data.total_bookings) || 0;
+        
+        $('#crm-bookings').text(bookings + ' Lần');
+        $('#crm-spent').text(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(spent));
+        
+        // Tính toán Phân hạng (Tier)
+        let tier = 'Khách Mới';
+        let tierColor = 'text-secondary';
+        if (spent >= 10000000) {
+            tier = 'VIP DIAMOND <i class="fas fa-crown"></i>';
+            tierColor = 'text-warning';
+        } else if (spent >= 5000000) {
+            tier = 'GOLD MEMBER';
+            tierColor = 'text-warning';
+        } else if (bookings > 0) {
+            tier = 'SILVER MEMBER';
+            tierColor = 'text-info';
+        }
+        $('#crm-tier').html(tier).removeClass().addClass('fw-bold ' + tierColor);
+
+        // Cập nhật DNA
+        $('#crm-doneness').text(data.doneness || 'Chưa thiết lập');
+        $('#crm-flavor').text(data.flavor || 'Chưa thiết lập');
+        $('#crm-fav').text(data.fav || 'Chưa thiết lập');
+        $('#crm-dislike').text(data.dislike || 'Chưa thiết lập');
+        $('#crm-allergies').text(data.allergies || 'Không có');
+        
+        // Gọi AJAX lấy lịch sử giao dịch
+        $('#crm-history-content').html('<div class="text-center p-3 text-muted"><i class="fas fa-spinner fa-spin me-2"></i>Đang tải dữ liệu...</div>');
+        $.get('ajax_get_user_history.php', { user_id: data.id }, function(res) {
+            $('#crm-history-content').html(res);
+        });
+        
+        new bootstrap.Modal(document.getElementById('modalCrm')).show();
+    }
+
+    function viewBookingDetailsAdmin(id) {
+        // Mở modal
+        new bootstrap.Modal(document.getElementById('modalBookingDetailsAdmin')).show();
+        $('#adminBookingDetailsContent').html('<div class="text-center p-3 text-muted"><i class="fas fa-spinner fa-spin me-2"></i>Đang tải dữ liệu...</div>');
+        
+        // Gọi AJAX lấy chi tiết đơn
+        $.get('ajax_get_booking_details_admin.php', { booking_id: id }, function(res) {
+            $('#adminBookingDetailsContent').html(res);
+        }).fail(function() {
+            $('#adminBookingDetailsContent').html('<div class="text-danger text-center">Lỗi khi tải dữ liệu!</div>');
+        });
+    }
+
+    function loadAllHistory(userId) {
+        $('#crm-history-content').html('<div class="text-center p-3 text-muted"><i class="fas fa-spinner fa-spin me-2"></i>Đang tải dữ liệu...</div>');
+        $.get('ajax_get_user_history.php', { user_id: userId, show_all: 1 }, function(res) {
+            $('#crm-history-content').html(res);
+        });
     }
 
     $('.toggle-status').change(function() {

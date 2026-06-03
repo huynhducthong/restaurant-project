@@ -133,6 +133,10 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $settings[$row['key_name']] = $row['key_value'];
 }
 
+// Lấy danh sách gallery
+$stmt_gal = $db->query("SELECT * FROM galleries ORDER BY sort_order ASC, id DESC");
+$galleries = $stmt_gal->fetchAll(PDO::FETCH_ASSOC);
+
 // ĐÃ FIX: Hiển thị logo preview trong trang cài đặt admin
 $logo_src = '';
 if (!empty($settings['logo_url'])) {
@@ -162,11 +166,15 @@ include '../../public/admin_layout_header.php';
         .section-title { color: #cda45e; font-weight: 700; border-bottom: 2px solid #cda45e; padding-bottom: 10px; margin-bottom: 25px; }
         .btn-save { background: #cda45e; color: white; padding: 12px 30px; border-radius: 50px; font-weight: 600; transition: 0.3s; }
         .btn-save:hover { background: #b89252; transform: translateY(-2px); color: white; }
+        
+        /* FIX: Bootstrap 5 hides .tab-pane only if direct child of .tab-content. Since ours is in a form, we need to manually hide them */
+        .tab-content form .tab-pane { display: none; }
+        .tab-content form .tab-pane.active { display: block; }
     </style>
 </head>
 <body>
 
-<div class="container py-5">
+<div class="container py-3">
     <div class="row justify-content-center">
         <div class="col-lg-10">
 
@@ -178,160 +186,304 @@ include '../../public/admin_layout_header.php';
             </div>
             <?php endif; ?>
 
-            <div class="card settings-card p-4">
-                <h3 class="section-title"><i class="bi bi-gear-fill me-2"></i>CẤU HÌNH HỆ THỐNG</h3>
+            <div class="card settings-card">
+                <div class="card-body p-3">
+                    <h3 class="section-title"><i class="bi bi-gear-fill me-2"></i>CẤU HÌNH HỆ THỐNG</h3>
 
-                <form action="" method="POST" enctype="multipart/form-data">
+                    <?php $active_tab = $_GET['tab'] ?? 'general'; ?>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label fw-bold">Tên nhà hàng</label>
-                            <input type="text" name="restaurant_name" class="form-control"
-                                   value="<?= htmlspecialchars($settings['restaurant_name'] ?? '') ?>">
-                        </div>
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label fw-bold">Vị trí chữ Banner</label>
-                            <select name="name_position" class="form-select">
-                                <option value="left"   <?= ($settings['name_position'] ?? '') == 'left'   ? 'selected' : '' ?>>Trái</option>
-                                <option value="center" <?= ($settings['name_position'] ?? '') == 'center' ? 'selected' : '' ?>>Giữa</option>
-                                <option value="right"  <?= ($settings['name_position'] ?? '') == 'right'  ? 'selected' : '' ?>>Phải</option>
-                            </select>
-                        </div>
-                    </div>
+                    <!-- Tab Navigation -->
+                    <ul class="nav nav-pills mb-4 pb-2 border-bottom" id="settings-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link <?= $active_tab === 'general' ? 'active' : '' ?>" id="general-tab" data-bs-toggle="pill" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="<?= $active_tab === 'general' ? 'true' : 'false' ?>">
+                                <i class="bi bi-info-circle me-1"></i> Thông Tin Chung
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link <?= $active_tab === 'inventory' ? 'active' : '' ?>" id="inventory-tab" data-bs-toggle="pill" data-bs-target="#inventory" type="button" role="tab" aria-controls="inventory" aria-selected="<?= $active_tab === 'inventory' ? 'true' : 'false' ?>">
+                                <i class="bi bi-box-seam me-1"></i> Cấu Hình Kho
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link <?= $active_tab === 'telegram' ? 'active' : '' ?>" id="telegram-tab" data-bs-toggle="pill" data-bs-target="#telegram" type="button" role="tab" aria-controls="telegram" aria-selected="<?= $active_tab === 'telegram' ? 'true' : 'false' ?>">
+                                <i class="bi bi-telegram me-1"></i> Telegram
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link <?= $active_tab === 'gallery' ? 'active' : '' ?>" id="gallery-tab" data-bs-toggle="pill" data-bs-target="#gallery" type="button" role="tab" aria-controls="gallery" aria-selected="<?= $active_tab === 'gallery' ? 'true' : 'false' ?>">
+                                <i class="bi bi-images me-1"></i> Thư Viện Ảnh (Gallery)
+                            </button>
+                        </li>
+                    </ul>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label fw-bold">Giờ mở cửa</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-clock"></i></span>
-                                <input type="text" name="open_time" class="form-control"
-                                       value="<?= htmlspecialchars($settings['open_time'] ?? '09:00 AM - 11:00 PM') ?>"
-                                       placeholder="Ví dụ: 09:00 AM - 10:00 PM">
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="settings-tabContent">
+
+                        <!-- FORM BAO TRÙM CHO 3 TAB CÀI ĐẶT CHUNG -->
+                        <div class="tab-pane <?= in_array($active_tab, ['general', 'inventory', 'telegram']) ? 'show active' : '' ?>" id="settings-forms-wrapper">
+                            <form action="" method="POST" enctype="multipart/form-data">
+
+                                <!-- TAB GENERAL -->
+                                <div class="tab-pane <?= $active_tab === 'general' ? 'show active' : '' ?> pt-2" id="general" role="tabpanel" aria-labelledby="general-tab" tabindex="0">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <label class="form-label fw-bold">Tên nhà hàng</label>
+                                            <input type="text" name="restaurant_name" class="form-control"
+                                                   value="<?= htmlspecialchars($settings['restaurant_name'] ?? '') ?>">
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <label class="form-label fw-bold">Vị trí chữ Banner</label>
+                                            <select name="name_position" class="form-select">
+                                                <option value="left"   <?= ($settings['name_position'] ?? '') == 'left'   ? 'selected' : '' ?>>Trái</option>
+                                                <option value="center" <?= ($settings['name_position'] ?? '') == 'center' ? 'selected' : '' ?>>Giữa</option>
+                                                <option value="right"  <?= ($settings['name_position'] ?? '') == 'right'  ? 'selected' : '' ?>>Phải</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <label class="form-label fw-bold">Giờ mở cửa</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                                                <input type="text" name="open_time" class="form-control"
+                                                       value="<?= htmlspecialchars($settings['open_time'] ?? '09:00 AM - 11:00 PM') ?>"
+                                                       placeholder="Ví dụ: 09:00 AM - 10:00 PM">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <label class="form-label fw-bold">Ngày hoạt động</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
+                                                <input type="text" name="open_days" class="form-control"
+                                                       value="<?= htmlspecialchars($settings['open_days'] ?? 'Thứ 2 - Chủ Nhật') ?>">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <label class="form-label fw-bold">Hotline</label>
+                                            <input type="text" name="hotline" class="form-control"
+                                                   value="<?= htmlspecialchars($settings['hotline'] ?? '') ?>">
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <label class="form-label fw-bold">Địa chỉ</label>
+                                            <input type="text" name="address" class="form-control"
+                                                   value="<?= htmlspecialchars($settings['address'] ?? '') ?>">
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold">Logo hiện tại</label>
+                                        <div class="mb-2">
+                                            <?php if ($logo_src): ?>
+                                                <img src="<?= $logo_src ?>"
+                                                     style="max-height: 60px; background: #333; padding: 5px;"
+                                                     alt="Logo">
+                                            <?php endif; ?>
+                                        </div>
+                                        <input type="file" name="logo" class="form-control" accept=".jpg,.jpeg,.png,.webp">
+                                        <small class="text-muted">Chỉ chấp nhận JPG, PNG, WEBP — tối đa 2MB. Để trống nếu không thay đổi.</small>
+                                    </div>
+                                </div>
+
+                                <!-- TAB INVENTORY -->
+                                <div class="tab-pane <?= $active_tab === 'inventory' ? 'show active' : '' ?> pt-2" id="inventory" role="tabpanel" aria-labelledby="inventory-tab" tabindex="0">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-4">
+                                            <label class="form-label fw-bold small text-muted">Cảnh báo HSD trước (ngày)</label>
+                                            <input type="number" name="inv_expiry_days" class="form-control"
+                                                   value="<?= htmlspecialchars($settings['inv_expiry_days'] ?? '7') ?>">
+                                        </div>
+                                        <div class="col-md-4 mb-4">
+                                            <label class="form-label fw-bold small text-muted">Ngưỡng tồn thấp chung</label>
+                                            <input type="number" name="inv_low_stock" class="form-control"
+                                                   value="<?= htmlspecialchars($settings['inv_low_stock'] ?? '5') ?>">
+                                        </div>
+                                        <div class="col-md-4 mb-4">
+                                            <label class="form-label fw-bold small text-muted">Tự động trừ kho khi bán</label>
+                                            <select name="inv_auto_deduct" class="form-select">
+                                                <option value="1" <?= ($settings['inv_auto_deduct'] ?? '1') == '1' ? 'selected' : '' ?>>Bật (Khuyên dùng)</option>
+                                                <option value="0" <?= ($settings['inv_auto_deduct'] ?? '1') == '0' ? 'selected' : '' ?>>Tắt (Thủ công)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- TAB TELEGRAM -->
+                                <div class="tab-pane <?= $active_tab === 'telegram' ? 'show active' : '' ?> pt-2" id="telegram" role="tabpanel" aria-labelledby="telegram-tab" tabindex="0">
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <div class="alert alert-info small">
+                                                <i class="bi bi-info-circle me-1"></i> <b>Hướng dẫn:</b> Tạo Bot qua @BotFather để lấy <b>Token</b>. Gửi tin nhắn cho @userinfobot để lấy <b>Chat ID</b> của bạn.
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-4">
+                                            <label class="form-label fw-bold small text-muted">Trạng thái</label>
+                                            <select name="enable_telegram" class="form-select">
+                                                <option value="1" <?= ($settings['enable_telegram'] ?? '0') == '1' ? 'selected' : '' ?>>Bật thông báo</option>
+                                                <option value="0" <?= ($settings['enable_telegram'] ?? '0') == '0' ? 'selected' : '' ?>>Tắt</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-8 mb-4">
+                                            <label class="form-label fw-bold small text-muted">Bot Token</label>
+                                            <input type="text" name="telegram_bot_token" class="form-control" placeholder="123456789:ABCDefgh..."
+                                                   value="<?= htmlspecialchars($settings['telegram_bot_token'] ?? '') ?>">
+                                        </div>
+                                        <div class="col-md-12 mb-4">
+                                            <label class="form-label fw-bold small text-muted">Chat ID (Người nhận)</label>
+                                            <input type="text" name="telegram_chat_id" class="form-control" placeholder="Ví dụ: 987654321"
+                                                   value="<?= htmlspecialchars($settings['telegram_chat_id'] ?? '') ?>">
+                                            <small class="text-muted">Báo cáo kho buổi sáng (khi có cảnh báo) và báo cáo doanh thu cuối ngày đều gửi vào chat này.</small>
+                                        </div>
+                                        <div class="col-md-4 mb-4">
+                                            <label class="form-label fw-bold small text-muted">Giờ gửi báo cáo cuối ngày (0–23)</label>
+                                            <input type="number" name="telegram_eod_hour" class="form-control" min="0" max="23"
+                                                   value="<?= htmlspecialchars($settings['telegram_eod_hour'] ?? '22') ?>">
+                                            <small class="text-muted">Mặc định 22 (22h). Sau giờ này, lần đầu mở Dashboard trong ngày sẽ gửi Telegram.</small>
+                                        </div>
+                                        <div class="col-md-4 mb-4">
+                                            <label class="form-label fw-bold small text-muted">Báo cáo cuối ngày</label>
+                                            <select name="telegram_eod_enabled" class="form-select">
+                                                <option value="1" <?= ($settings['telegram_eod_enabled'] ?? '1') === '1' ? 'selected' : '' ?>>Bật</option>
+                                                <option value="0" <?= ($settings['telegram_eod_enabled'] ?? '1') === '0' ? 'selected' : '' ?>>Tắt</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center mt-2 mb-4 d-flex flex-wrap justify-content-center gap-2">
+                                        <button type="submit" name="test_telegram" class="btn btn-sm btn-outline-primary rounded-pill px-4">
+                                            <i class="bi bi-send me-1"></i> Gửi thử báo cáo kho
+                                        </button>
+                                        <button type="submit" name="test_telegram_eod" class="btn btn-sm btn-outline-secondary rounded-pill px-4">
+                                            <i class="bi bi-graph-up me-1"></i> Gửi thử báo cáo cuối ngày
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Nút lưu cho các tab trên -->
+                                <div class="text-center mt-4 border-top pt-4">
+                                    <button type="submit" class="btn btn-save">
+                                        <i class="bi bi-check-circle me-2"></i>LƯU THAY ĐỔI
+                                    </button>
+                                </div>
+
+                            </form>
+                        </div> <!-- End wrapper form settings -->
+
+                        <!-- TAB GALLERY (Không nằm trong form cài đặt chung) -->
+                        <div class="tab-pane fade <?= $active_tab === 'gallery' ? 'show active' : '' ?> pt-2" id="gallery" role="tabpanel" aria-labelledby="gallery-tab" tabindex="0">
+                            
+                            <div class="row">
+                                <!-- Form thêm mới Gallery -->
+                                <div class="col-md-4">
+                                    <div class="card shadow-sm border-0 bg-light mb-4">
+                                        <div class="card-body">
+                                            <h6 class="mb-3 text-uppercase fw-bold text-muted">Thêm Ảnh Atmosphere Mới</h6>
+                                            <form action="/restaurant-project/admin/controllers/GalleryController.php?action=store" method="POST" enctype="multipart/form-data">
+                                                <div class="mb-3">
+                                                    <label class="form-label small fw-bold">Tên hình ảnh (Tùy chọn)</label>
+                                                    <input type="text" name="title" class="form-control form-control-sm">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label small fw-bold">Chọn ảnh <span class="text-danger">*</span></label>
+                                                    <input type="file" name="image" class="form-control form-control-sm" accept="image/*" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label small fw-bold">Thứ tự ưu tiên (Sort Order)</label>
+                                                    <input type="number" name="sort_order" class="form-control form-control-sm" value="0">
+                                                    <small class="text-muted d-block mt-1" style="font-size:11px;">Trang chủ sẽ tự động ưu tiên lấy 4 bức ảnh mới nhất và đang bật để hiển thị lên lưới.</small>
+                                                </div>
+                                                <button type="submit" class="btn btn-sm btn-primary w-100">
+                                                    <i class="bi bi-upload"></i> Tải Lên
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Bảng danh sách Gallery -->
+                                <div class="col-md-8">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle mb-0 border">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th width="80">Ảnh</th>
+                                                    <th>Thông Tin</th>
+                                                    <th class="text-center">Thứ Tự</th>
+                                                    <th class="text-center">Hiển Thị</th>
+                                                    <th class="text-end">Hành Động</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php if (!empty($galleries)): ?>
+                                                    <?php foreach ($galleries as $gallery): ?>
+                                                        <tr>
+                                                            <td>
+                                                                <img src="/restaurant-project/public/assets/img/gallery/<?= htmlspecialchars($gallery['image_url']) ?>" 
+                                                                     alt="Gallery" 
+                                                                     class="img-thumbnail" 
+                                                                     style="width: 70px; height: 50px; object-fit: cover;">
+                                                            </td>
+                                                            <td>
+                                                                <strong class="d-block" style="font-size:14px;"><?= htmlspecialchars($gallery['title'] ?: 'Không có tên') ?></strong>
+                                                                <span class="text-muted" style="font-size:11px;">Thêm: <?= date('d/m/Y', strtotime($gallery['created_at'])) ?></span>
+                                                            </td>
+                                                            <td class="text-center"><?= $gallery['sort_order'] ?></td>
+                                                            <td class="text-center">
+                                                                <a href="/restaurant-project/admin/controllers/GalleryController.php?action=toggle&id=<?= $gallery['id'] ?>" class="btn btn-sm <?= $gallery['is_active'] ? 'btn-success' : 'btn-secondary' ?> py-0 px-2" style="font-size:11px;">
+                                                                    <?= $gallery['is_active'] ? 'Đang bật' : 'Đã ẩn' ?>
+                                                                </a>
+                                                            </td>
+                                                            <td class="text-end">
+                                                                <a href="/restaurant-project/admin/controllers/GalleryController.php?action=delete&id=<?= $gallery['id'] ?>" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="return confirm('Bạn có chắc chắn muốn xóa hình ảnh này không?');">
+                                                                    <i class="bi bi-trash"></i> Xóa
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    <tr>
+                                                        <td colspan="5" class="text-center py-4 text-muted">
+                                                            Chưa có hình ảnh nào trong thư viện.
+                                                        </td>
+                                                    </tr>
+                                                <?php endif; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label fw-bold">Ngày hoạt động</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
-                                <input type="text" name="open_days" class="form-control"
-                                       value="<?= htmlspecialchars($settings['open_days'] ?? 'Thứ 2 - Chủ Nhật') ?>">
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label fw-bold">Hotline</label>
-                            <input type="text" name="hotline" class="form-control"
-                                   value="<?= htmlspecialchars($settings['hotline'] ?? '') ?>">
-                        </div>
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label fw-bold">Địa chỉ</label>
-                            <input type="text" name="address" class="form-control"
-                                   value="<?= htmlspecialchars($settings['address'] ?? '') ?>">
-                        </div>
-                    </div>
-
-                    <h5 class="section-title mt-4" style="font-size: 1.1rem; border-color: #3498db; color: #3498db;">
-                        <i class="bi bi-box-seam me-2"></i>CẤU HÌNH KHO
-                    </h5>
-
-                    <div class="row">
-                        <div class="col-md-4 mb-4">
-                            <label class="form-label fw-bold small text-muted">Cảnh báo HSD trước (ngày)</label>
-                            <input type="number" name="inv_expiry_days" class="form-control"
-                                   value="<?= htmlspecialchars($settings['inv_expiry_days'] ?? '7') ?>">
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <label class="form-label fw-bold small text-muted">Ngưỡng tồn thấp chung</label>
-                            <input type="number" name="inv_low_stock" class="form-control"
-                                   value="<?= htmlspecialchars($settings['inv_low_stock'] ?? '5') ?>">
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <label class="form-label fw-bold small text-muted">Tự động trừ kho khi bán</label>
-                            <select name="inv_auto_deduct" class="form-select">
-                                <option value="1" <?= ($settings['inv_auto_deduct'] ?? '1') == '1' ? 'selected' : '' ?>>Bật (Khuyên dùng)</option>
-                                <option value="0" <?= ($settings['inv_auto_deduct'] ?? '1') == '0' ? 'selected' : '' ?>>Tắt (Thủ công)</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <h5 class="section-title mt-4" style="font-size: 1.1rem; border-color: #0088cc; color: #0088cc;">
-                        <i class="bi bi-telegram me-2"></i>THÔNG BÁO TELEGRAM (MOBILE)
-                    </h5>
-
-                    <div class="row">
-                        <div class="col-md-12 mb-3">
-                            <div class="alert alert-info small">
-                                <i class="bi bi-info-circle me-1"></i> <b>Hướng dẫn:</b> Tạo Bot qua @BotFather để lấy <b>Token</b>. Gửi tin nhắn cho @userinfobot để lấy <b>Chat ID</b> của bạn.
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <label class="form-label fw-bold small text-muted">Trạng thái</label>
-                            <select name="enable_telegram" class="form-select">
-                                <option value="1" <?= ($settings['enable_telegram'] ?? '0') == '1' ? 'selected' : '' ?>>Bật thông báo</option>
-                                <option value="0" <?= ($settings['enable_telegram'] ?? '0') == '0' ? 'selected' : '' ?>>Tắt</option>
-                            </select>
-                        </div>
-                        <div class="col-md-8 mb-4">
-                            <label class="form-label fw-bold small text-muted">Bot Token</label>
-                            <input type="text" name="telegram_bot_token" class="form-control" placeholder="123456789:ABCDefgh..."
-                                   value="<?= htmlspecialchars($settings['telegram_bot_token'] ?? '') ?>">
-                        </div>
-                        <div class="col-md-12 mb-4">
-                            <label class="form-label fw-bold small text-muted">Chat ID (Người nhận)</label>
-                            <input type="text" name="telegram_chat_id" class="form-control" placeholder="Ví dụ: 987654321"
-                                   value="<?= htmlspecialchars($settings['telegram_chat_id'] ?? '') ?>">
-                            <small class="text-muted">Báo cáo kho buổi sáng (khi có cảnh báo) và báo cáo doanh thu cuối ngày đều gửi vào chat này.</small>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <label class="form-label fw-bold small text-muted">Giờ gửi báo cáo cuối ngày (0–23)</label>
-                            <input type="number" name="telegram_eod_hour" class="form-control" min="0" max="23"
-                                   value="<?= htmlspecialchars($settings['telegram_eod_hour'] ?? '22') ?>">
-                            <small class="text-muted">Mặc định 22 (22h). Sau giờ này, lần đầu mở Dashboard trong ngày sẽ gửi Telegram.</small>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <label class="form-label fw-bold small text-muted">Báo cáo cuối ngày</label>
-                            <select name="telegram_eod_enabled" class="form-select">
-                                <option value="1" <?= ($settings['telegram_eod_enabled'] ?? '1') === '1' ? 'selected' : '' ?>>Bật</option>
-                                <option value="0" <?= ($settings['telegram_eod_enabled'] ?? '1') === '0' ? 'selected' : '' ?>>Tắt</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="text-center mt-2 mb-4 d-flex flex-wrap justify-content-center gap-2">
-                        <button type="submit" name="test_telegram" class="btn btn-sm btn-outline-primary rounded-pill px-4">
-                            <i class="bi bi-send me-1"></i> Gửi thử báo cáo kho
-                        </button>
-                        <button type="submit" name="test_telegram_eod" class="btn btn-sm btn-outline-secondary rounded-pill px-4">
-                            <i class="bi bi-graph-up me-1"></i> Gửi thử báo cáo cuối ngày
-                        </button>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">Logo hiện tại</label>
-                        <div class="mb-2">
-                            <?php if ($logo_src): ?>
-                                <img src="<?= $logo_src ?>"
-                                     style="max-height: 60px; background: #333; padding: 5px;"
-                                     alt="Logo">
-                            <?php endif; ?>
-                        </div>
-                        <input type="file" name="logo" class="form-control" accept=".jpg,.jpeg,.png,.webp">
-                        <small class="text-muted">Chỉ chấp nhận JPG, PNG, WEBP — tối đa 2MB. Để trống nếu không thay đổi.</small>
-                    </div>
-
-                    <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-save">
-                            <i class="bi bi-check-circle me-2"></i>LƯU THAY ĐỔI
-                        </button>
-                    </div>
-                </form>
+                    </div> <!-- End Tab Content -->
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Javascript để đồng bộ tabs (Tránh reload về tab mặc định)
+document.addEventListener("DOMContentLoaded", function() {
+    var triggerTabList = [].slice.call(document.querySelectorAll('#settings-tabs button'))
+    triggerTabList.forEach(function (triggerEl) {
+        var tabTrigger = new bootstrap.Tab(triggerEl)
+        triggerEl.addEventListener('click', function (event) {
+            tabTrigger.show();
+            // Ẩn form chính nếu tab là gallery
+            let activeTabId = event.target.getAttribute('data-bs-target');
+            let formWrapper = document.getElementById('settings-forms-wrapper');
+            if(activeTabId === '#gallery') {
+                formWrapper.classList.remove('show', 'active');
+            } else {
+                formWrapper.classList.add('show', 'active');
+            }
+        })
+    })
+});
+</script>
 </body>
 </html>

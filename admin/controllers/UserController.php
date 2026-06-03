@@ -105,7 +105,15 @@ if (isset($_POST['save_user'])) {
 }
 
 // 4. TRUY VẤN DANH SÁCH NGƯỜI DÙNG
-$users = $db->query("SELECT * FROM users ORDER BY created_at DESC")->fetchAll(PDO::FETCH_ASSOC);
+$users = $db->query("
+    SELECT u.*, 
+           COUNT(sb.id) as total_bookings, 
+           SUM(CASE WHEN sb.status = 'Completed' THEN sb.total_amount ELSE 0 END) as total_spent
+    FROM users u
+    LEFT JOIN service_bookings sb ON u.id = sb.user_id
+    GROUP BY u.id
+    ORDER BY u.created_at DESC
+")->fetchAll(PDO::FETCH_ASSOC);
 
 // Gọi View
 require_once __DIR__ . '/../views/users/user_view.php';

@@ -125,18 +125,19 @@ if (isset($_POST['receive_po_final'])) {
         $upd_stock   = $db->prepare("INSERT INTO inventory_stocks (warehouse_id, ingredient_id, quantity) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE quantity = quantity + ?");
         $ins_history = $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, 'import', ?, ?)");
         $upd_inv     = $db->prepare("UPDATE inventory SET cost_price = ?, expiry_date = ? WHERE id = ?");
-        $ins_batch   = $db->prepare("INSERT INTO inventory_batches (ingredient_id, warehouse_id, batch_code, quantity, expiry_date, cost_price) VALUES (?, ?, ?, ?, ?, ?)");
+        $ins_batch   = $db->prepare("INSERT INTO inventory_batches (ingredient_id, warehouse_id, batch_code, quantity, expiry_date, cost_price, receiving_temperature) VALUES (?, ?, ?, ?, ?, ?, ?)");
 
         foreach ($_POST['ingredient_id'] as $key => $ing_id) {
             $ing_id    = (int)$ing_id;
             $new_qty   = (float)$_POST['received_qty'][$key];
             $new_price = (float)str_replace(',', '', $_POST['received_price'][$key]);
             $hsd       = !empty($_POST['expiry_date'][$key]) ? $_POST['expiry_date'][$key] : null;
+            $temp      = !empty($_POST['receiving_temperature'][$key]) ? trim($_POST['receiving_temperature'][$key]) : null;
 
             if ($new_qty <= 0) continue;
 
             // 1. Tính giá vốn BQGQ
-            $stmt_old_stock = $db->prepare("SELECT IFNULL(SUM(quantity), 0) FROM inventory_stocks WHERE ingredient_id = ? AND warehouse_id IN (1,2,3,4,5)");
+            $stmt_old_stock = $db->prepare("SELECT IFNULL(SUM(quantity), 0) FROM inventory_stocks WHERE ingredient_id = ? AND warehouse_id IN (1,2,3,4,5,8)");
             $stmt_old_stock->execute([$ing_id]);
             $old_total_stock = (float)$stmt_old_stock->fetchColumn();
 
@@ -151,7 +152,7 @@ if (isset($_POST['receive_po_final'])) {
 
             // 2. Cập nhật lô hàng (Batch)
             $po_code_res = $db->query("SELECT po_code FROM purchase_orders WHERE id = $po_id")->fetchColumn();
-            $ins_batch->execute([$ing_id, $main_warehouse_id, $po_code_res, $new_qty, $hsd, $new_price]);
+            $ins_batch->execute([$ing_id, $main_warehouse_id, $po_code_res, $new_qty, $hsd, $new_price, $temp]);
 
             // 3. Cập nhật HSD tổng (Lấy ngày sớm nhất của các lô còn hàng)
             $stmt_min_hsd = $db->prepare("SELECT MIN(expiry_date) FROM inventory_batches WHERE ingredient_id = ? AND quantity > 0 AND expiry_date IS NOT NULL");

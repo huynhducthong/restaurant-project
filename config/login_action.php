@@ -30,26 +30,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['role']      = $user['role'];
 
             // 3. Điều hướng dựa trên quyền (role)
-            if ($user['role'] == 1 || $user['role'] == 'admin') {
+            if (in_array($user['role'], ['admin', 'staff', 'waiter', 'chef', 'cashier', 1, 2])) {
                 
-                // --- THÔNG BÁO BẢO MẬT ĐĂNG NHẬP ADMIN ---
+                // --- THÔNG BÁO BẢO MẬT ĐĂNG NHẬP ---
                 require_once 'notification_helper.php';
                 $ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'Unknown IP';
                 $login_time = date('H:i:s d/m/Y');
-                $admin_name = $user['username'];
+                $user_name = $user['username'];
                 
-                $security_msg = "🚨 <b>CẢNH BÁO BẢO MẬT</b>\n\n";
-                $security_msg .= "Tài khoản Quản trị viên vừa đăng nhập thành công.\n";
-                $security_msg .= "👤 User: <b>{$admin_name}</b>\n";
+                $role_name_vn = 'Nhân viên';
+                if ($user['role'] == 1 || $user['role'] == 'admin') $role_name_vn = 'Quản trị viên';
+                elseif ($user['role'] == 'chef') $role_name_vn = 'Bếp trưởng / Đầu bếp';
+                elseif ($user['role'] == 'cashier') $role_name_vn = 'Thu ngân';
+                elseif ($user['role'] == 'waiter') $role_name_vn = 'Phục vụ / Lễ tân';
+                
+                if ($user['role'] == 1 || $user['role'] == 'admin') {
+                    $security_msg = "🚨 <b>CẢNH BÁO BẢO MẬT</b>\n\n";
+                } else {
+                    $security_msg = "🟢 <b>THÔNG BÁO ĐĂNG NHẬP</b>\n\n";
+                }
+                
+                $security_msg .= "Tài khoản <b>{$role_name_vn}</b> vừa đăng nhập thành công.\n";
+                $security_msg .= "👤 User: <b>{$user_name}</b>\n";
                 $security_msg .= "⏰ Thời gian: {$login_time}\n";
-                $security_msg .= "🌐 Địa chỉ IP: <code>{$ip_address}</code>\n\n";
-                $security_msg .= "<i>Nếu không phải bạn, hãy kiểm tra hệ thống ngay lập tức!</i>";
+                $security_msg .= "🌐 Địa chỉ IP: <code>{$ip_address}</code>\n";
+                
+                if ($user['role'] == 1 || $user['role'] == 'admin') {
+                    $security_msg .= "\n<i>Nếu không phải bạn, hãy kiểm tra hệ thống ngay lập tức!</i>";
+                }
                 
                 @sendTelegramNotification($security_msg);
 
                 header("Location: ../admin/admin_dashboard.php");
-            } elseif ($user['role'] == 'staff') {
-                header("Location: ../views/client/employee_dashboard.php");
             } else {
                 header("Location: ../index.php");
             }

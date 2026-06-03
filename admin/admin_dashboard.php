@@ -8,35 +8,26 @@ $total_foods = $total_users = $total_bookings = $selected_revenue = 0;
 $chart_revenue = array_fill(0, 12, 0);
 $status_data = [0, 0, 0];
 
-$filter_date = $_GET['date'] ?? '';
-$filter_month = (int) ($_GET['month'] ?? 0);
-$filter_quarter = (int) ($_GET['quarter'] ?? 0);
-$filter_year = (int) ($_GET['year'] ?? date('Y'));
+$start_date = $_GET['start_date'] ?? date('Y-m-01');
+$end_date   = $_GET['end_date'] ?? date('Y-m-t');
 
-$year_revenue = (int) ($_GET['year_revenue'] ?? $filter_year);
-$year_booking = (int) ($_GET['year_booking'] ?? $filter_year);
+$year_revenue = (int) ($_GET['year_revenue'] ?? date('Y'));
+$year_booking = (int) ($_GET['year_booking'] ?? date('Y'));
 
-$conditions = ["YEAR(created_at) = ?"];
-$params = [$filter_year];
-if ($filter_date && preg_match('/^\d{4}-\d{2}-\d{2}$/', $filter_date)) {
-    $conditions[] = "DATE(created_at) = ?";
-    $params[] = $filter_date;
+// Validate and build WHERE clause for the date range
+$conditions = [];
+$params = [];
+
+if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $start_date)) {
+    $conditions[] = "DATE(created_at) >= ?";
+    $params[] = $start_date;
 }
-unset($y);
-
-if ($filter_month   < 0 || $filter_month   > 12) $filter_month   = 0;
-if ($filter_quarter < 0 || $filter_quarter > 4)  $filter_quarter = 0;
-
-// Xây dựng điều kiện WHERE cho query
-if ($filter_month >= 1 && $filter_month <= 12) {
-    $conditions[] = "MONTH(created_at) = ?";
-    $params[] = $filter_month;
+if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $end_date)) {
+    $conditions[] = "DATE(created_at) <= ?";
+    $params[] = $end_date;
 }
-if ($filter_quarter >= 1 && $filter_quarter <= 4) {
-    $conditions[] = "QUARTER(created_at) = ?";
-    $params[] = $filter_quarter;
-}
-$where_sql = implode(" AND ", $conditions);
+
+$where_sql = count($conditions) > 0 ? implode(" AND ", $conditions) : "1=1";
 
 // ============================================================
 // KHỞI TẠO
@@ -241,33 +232,15 @@ try {
     <!-- ===== FILTER CHUNG ===== -->
     <div class="card filter-card p-3 mb-4">
         <form method="GET" class="row g-2 align-items-end">
-            <div class="col-md-2">
-                <label class="form-label small fw-bold mb-1">Ngày</label>
-                <input type="date" name="date" class="form-control form-control-sm"
-                       value="<?= htmlspecialchars($filter_date) ?>">
+            <div class="col-md-3">
+                <label class="form-label small fw-bold mb-1">Từ ngày</label>
+                <input type="date" name="start_date" class="form-control form-control-sm"
+                       value="<?= htmlspecialchars($start_date) ?>" max="<?= date('Y-m-d') ?>">
             </div>
-            <div class="col-md-2">
-                <label class="form-label small fw-bold mb-1">Tháng</label>
-                <select name="month" class="form-select form-select-sm">
-                    <option value="">Tất cả</option>
-                    <?php for ($m = 1; $m <= 12; $m++): ?>
-                    <option value="<?= $m ?>" <?= $filter_month === $m ? 'selected' : '' ?>>Tháng <?= $m ?></option>
-                    <?php endfor; ?>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label class="form-label small fw-bold mb-1">Quý</label>
-                <select name="quarter" class="form-select form-select-sm">
-                    <option value="">Tất cả</option>
-                    <?php foreach ([1=>'Q1',2=>'Q2',3=>'Q3',4=>'Q4'] as $q=>$ql): ?>
-                    <option value="<?= $q ?>" <?= $filter_quarter === $q ? 'selected' : '' ?>><?= $ql ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label class="form-label small fw-bold mb-1">Năm</label>
-                <input type="number" name="year" class="form-control form-control-sm"
-                       value="<?= $filter_year ?>" min="2000" max="<?= $cur_year + 1 ?>">
+            <div class="col-md-3">
+                <label class="form-label small fw-bold mb-1">Đến ngày</label>
+                <input type="date" name="end_date" class="form-control form-control-sm"
+                       value="<?= htmlspecialchars($end_date) ?>" max="<?= date('Y-m-d') ?>">
             </div>
             <input type="hidden" name="year_revenue" value="<?= $year_revenue ?>">
             <input type="hidden" name="year_booking" value="<?= $year_booking ?>">
@@ -277,7 +250,7 @@ try {
                 </button>
             </div>
             <div class="col-md-2">
-                <a href="admin_dashboard.php" class="btn btn-outline-secondary btn-sm w-100">Reset</a>
+                <a href="admin_dashboard.php" class="btn btn-outline-secondary btn-sm w-100">Tháng này</a>
             </div>
         </form>
     </div>
@@ -318,7 +291,7 @@ try {
             <div class="stat-card bg-white h-100">
                 <div class="stat-icon" style="background:#e3f2fd">📅</div>
                 <div>
-                    <div class="stat-label small">Đặt bàn <?= $filter_year ?></div>
+                    <div class="stat-label small">Đặt bàn <?= $year_booking ?></div>
                     <div class="stat-val text-primary"><?= number_format($total_bookings) ?></div>
                 </div>
             </div>
@@ -359,10 +332,8 @@ try {
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <h5 class="fw-bold m-0">Doanh thu năm <?= $year_revenue ?></h5>
                     <form method="GET" class="d-flex gap-2 align-items-center">
-                        <input type="hidden" name="date"     value="<?= htmlspecialchars($filter_date) ?>">
-                        <input type="hidden" name="month"    value="<?= $filter_month ?>">
-                        <input type="hidden" name="quarter"  value="<?= $filter_quarter ?>">
-                        <input type="hidden" name="year"     value="<?= $filter_year ?>">
+                        <input type="hidden" name="start_date"   value="<?= htmlspecialchars($start_date) ?>">
+                        <input type="hidden" name="end_date"     value="<?= htmlspecialchars($end_date) ?>">
                         <input type="hidden" name="year_booking" value="<?= $year_booking ?>">
                         <input type="number" name="year_revenue"
                                class="form-control form-control-sm" style="width:90px"
@@ -380,10 +351,8 @@ try {
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <h5 class="fw-bold m-0">Đặt bàn <?= $year_booking ?></h5>
                     <form method="GET" class="d-flex gap-2 align-items-center">
-                        <input type="hidden" name="date"     value="<?= htmlspecialchars($filter_date) ?>">
-                        <input type="hidden" name="month"    value="<?= $filter_month ?>">
-                        <input type="hidden" name="quarter"  value="<?= $filter_quarter ?>">
-                        <input type="hidden" name="year"     value="<?= $filter_year ?>">
+                        <input type="hidden" name="start_date"   value="<?= htmlspecialchars($start_date) ?>">
+                        <input type="hidden" name="end_date"     value="<?= htmlspecialchars($end_date) ?>">
                         <input type="hidden" name="year_revenue" value="<?= $year_revenue ?>">
                         <input type="number" name="year_booking"
                                class="form-control form-control-sm" style="width:90px"

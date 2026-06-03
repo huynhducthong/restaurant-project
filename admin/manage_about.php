@@ -810,23 +810,9 @@ tinymce.init({
     language: 'vi',
     height: 600,
     plugins: [
-      // Core editing features
-      'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-      // Premium features
-      'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'advtemplate', 'tinymceai', 'uploadcare', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
+      'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount'
     ],
-    toolbar: 'undo redo | tinymceai-chat tinymceai-quickactions tinymceai-review | blocks fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | align lineheight | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography uploadcare | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-    tinycomments_mode: 'embedded',
-    tinycomments_author: 'Admin',
-    mergetags_list: [
-      { value: 'First.Name', title: 'First Name' },
-      { value: 'Email', title: 'Email' },
-    ],
-    tinymceai_token_provider: async () => {
-      await fetch(`https://demo.api.tiny.cloud/1/ehi6s1017gy2rgbgi7qg9fbj7ufj1ccc7lybxdnkb9u2w5tc/auth/random`, { method: "POST", credentials: "include" });
-      return { token: await fetch(`https://demo.api.tiny.cloud/1/ehi6s1017gy2rgbgi7qg9fbj7ufj1ccc7lybxdnkb9u2w5tc/jwt/tinymceai`, { credentials: "include" }).then(r => r.text()) };
-    },
-    uploadcare_public_key: 'ac86975b74ffcc1a7294',
+    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | align lineheight | link image media table | numlist bullist indent outdent | emoticons charmap | removeformat',
     font_family_formats: 'Arial=arial,helvetica,sans-serif; Courier New=courier new,courier,monospace; Akubra=alkubra; Poppins=poppins,sans-serif; Playfair Display=playfair display,serif; Times New Roman=times new roman,times,serif; Verdana=verdana,geneva,sans-serif',
     content_style: '@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap"); body { font-family: "Poppins", sans-serif; font-size: 14px; }',
     image_title: true,
