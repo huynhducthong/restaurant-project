@@ -16,6 +16,7 @@ $db = (new Database())->getConnection();
 
 // API: Lấy danh sách gợi ý nhập hàng (cho PO)
 if (isset($_POST['action']) && $_POST['action'] === 'get_reorder_list') {
+    session_write_close(); // FIX SESSION NGAY ĐÂY
     header('Content-Type: application/json');
     $settings_raw = $db->query("SELECT key_name, key_value FROM settings WHERE key_name IN ('inv_low_stock')")->fetchAll(PDO::FETCH_KEY_PAIR);
     $cfg_low_stock = (float)($settings_raw['inv_low_stock'] ?? 5);
@@ -412,6 +413,10 @@ if (isset($_POST['action'])) {
         }
 
         $db->commit();
+        
+        // FIX: Đóng Session lại để trình duyệt hết bị "treo" trước khi gọi Telegram API
+        session_write_close(); 
+
         if ($telegram_msg) {
             @sendTelegramNotification($telegram_msg);
         }

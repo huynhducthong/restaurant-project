@@ -29,11 +29,13 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
 ?>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+
 .footer {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Playfair Display', serif;
     position: relative;
-    padding: 70px 0 0;
-    background-color: <?= $ft['footer_bg_color'] ?? '#0c0b09' ?>;
+    padding: 80px 0 40px;
+    background-color: <?= !empty($ft['footer_bg_color']) && $ft['footer_bg_color'] !== '#0c0b09' ? $ft['footer_bg_color'] : '#113f36' ?>;
     color: <?= $ft['footer_text_color'] ?? '#ffffff' ?>;
     <?php if ($bgImg): ?>
     background: url('<?= $bgImg ?>') center/cover no-repeat fixed;
@@ -44,105 +46,122 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.85);
+    background: rgba(17, 63, 54, 0.9);
     z-index: 1;
 }
 <?php endif; ?>
 .footer .container { position: relative; z-index: 2; }
-.footer h4 { font-family: 'Playfair Display', serif; color: #cda45e; margin-bottom: 20px; }
-.footer a { color: inherit; text-decoration: none; transition: 0.3s; }
-.footer a:hover { color: #cda45e; }
-.footer-logo { max-height: 60px; margin-bottom: 15px; }
-
-.social-icons a {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 36px; height: 36px; background: rgba(255,255,255,0.1);
-    border-radius: 50%; margin: 0 5px 10px 0; font-size: 14px;
+.footer h4 { 
+    font-family: 'Inter', sans-serif; 
+    font-size: 11px; 
+    letter-spacing: 2px; 
+    text-transform: uppercase; 
+    color: rgba(255,255,255,0.6); 
+    margin-bottom: 25px; 
+    font-weight: 500;
 }
-.social-icons a:hover { background: #cda45e; color: #000; }
+.footer p, .footer a, .footer li { 
+    font-family: 'Playfair Display', serif; 
+    font-size: 15px; 
+    color: #ffffff; 
+    line-height: 1.8; 
+    text-decoration: none; 
+    transition: opacity 0.3s;
+    margin-bottom: 5px;
+}
+.footer a:hover { opacity: 0.7; color: #fff; }
+.footer-logo { max-height: 80px; margin-bottom: 25px; }
+
+.social-icons { margin-top: 25px; }
+.social-icons a {
+    display: inline-block;
+    margin-right: 15px;
+    font-size: 18px;
+}
 
 .explore-links a {
-    display: inline-block; margin: 0 6px 10px 0;
-    padding: 6px 18px; border: 1px solid rgba(205,164,94,0.3);
-    border-radius: 30px; font-size: 13px;
+    display: block; 
+    margin-bottom: 12px;
 }
-.explore-links a:hover { background: rgba(205,164,94,0.15); border-color: #cda45e; }
 
-.contact-info { list-style: none; padding: 0; }
-.contact-info li { margin-bottom: 12px; font-size: 14px; display: flex; align-items: flex-start; gap: 10px; }
-.contact-info i { width: 18px; color: #cda45e; margin-top: 2px; }
+.contact-info { margin-bottom: 25px; }
 
-/* Map Overlay cho LiveView */
+/* Map Overlay */
 .map-wrapper {
-    position: relative;
-    width: 100%;
-    height: 200px;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid rgba(205,164,94,0.2);
+    position: relative; width: 100%; height: 150px;
+    border-radius: 4px; overflow: hidden;
     margin-top: 10px;
 }
-.map-wrapper iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-}
+.map-wrapper iframe { width: 100%; height: 100%; border: none; filter: grayscale(100%) contrast(1.1); }
 .map-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(12, 11, 9, 0.6);
-    backdrop-filter: blur(2px);
-    z-index: 2;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: absolute; inset: 0; background: rgba(17, 63, 54, 0.7);
+    backdrop-filter: blur(2px); z-index: 2; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
     transition: opacity 0.3s ease;
 }
 .map-overlay-message {
-    background: rgba(0,0,0,0.7);
-    color: #cda45e;
-    padding: 10px 22px;
-    border-radius: 30px;
-    font-size: 14px;
-    font-weight: 600;
-    border: 1px solid rgba(205,164,94,0.5);
+    background: #fff; color: #113f36; padding: 10px 20px;
+    border-radius: 4px; font-size: 12px; font-family: 'Inter', sans-serif;
+    font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
     pointer-events: none;
 }
-.map-wrapper.active .map-overlay {
-    opacity: 0;
-    pointer-events: none;
-}
+.map-wrapper.active .map-overlay { opacity: 0; pointer-events: none; }
 
-.newsletter-form { position: relative; margin-top: 15px; }
+.newsletter-form { margin-top: 10px; }
 .newsletter-form input {
-    width: 100%; padding: 10px 50px 10px 15px; border: 1px solid rgba(205,164,94,0.3);
-    border-radius: 30px; background: transparent; color: #fff; outline: none;
+    width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid rgba(255,255,255,0.3);
+    background: transparent; color: #fff; outline: none; margin-bottom: 15px;
+    font-family: 'Playfair Display', serif; font-size: 15px;
 }
+.newsletter-form input::placeholder { color: rgba(255,255,255,0.5); }
 .newsletter-form button {
-    position: absolute; right: 3px; top: 3px; background: #cda45e; color: #000;
-    border: none; padding: 8px 20px; border-radius: 30px; font-weight: 600; cursor: pointer;
+    background: #ffffff; color: #113f36; width: 100%;
+    border: none; padding: 14px 20px; border-radius: 4px; 
+    font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;
+    text-transform: uppercase; letter-spacing: 1.5px; font-size: 12px;
+    transition: background 0.3s;
 }
-.copyright {
-    border-top: 1px solid rgba(205,164,94,0.15);
-    font-size: 13px; color: #aaa; padding: 20px 0; margin-top: 40px;
-    text-align: center; position: relative; z-index: 2;
+.newsletter-form button:hover { background: #e0e0e0; }
+
+.bottom-bar {
+    border-top: 1px solid rgba(255,255,255,0.2);
+    margin-top: 60px;
+    padding-top: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    color: rgba(255,255,255,0.8);
+}
+@media (max-width: 768px) {
+    .bottom-bar { flex-direction: column; gap: 15px; text-align: center; }
 }
 </style>
 
 <footer class="footer">
     <div class="container">
-        <div class="row gy-4">
-            <!-- Cột 1: Thương hiệu + Mạng xã hội -->
+        <div class="row gy-5">
+            <!-- Cột 1: Thông tin liên hệ -->
             <div class="col-lg-3 col-md-6">
                 <?php if ($logo): ?>
                     <img src="<?= htmlspecialchars($logo) ?>" alt="Logo" class="footer-logo">
                 <?php else: ?>
-                    <h4><?= htmlspecialchars($ft['restaurant_name'] ?? 'Restaurantly') ?></h4>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+                        <h4 style="margin: 0; font-family: 'Playfair Display', serif; font-size: 24px; text-transform: none; letter-spacing: normal; color: #fff; line-height: 1.2;">
+                            <?= htmlspecialchars($ft['restaurant_name'] ?? 'Restaurantly') ?>
+                        </h4>
+                    </div>
                 <?php endif; ?>
-                <p style="font-size:14px;line-height:1.7"><?= nl2br(htmlspecialchars($ft['footer_description'] ?? '')) ?></p>
+                
+                <div class="contact-info" style="margin-bottom: 25px;">
+                    <?php if (!empty($ft['address'])): ?><p style="font-size: 13px;"><?= htmlspecialchars($ft['address']) ?></p><?php endif; ?>
+                    <?php if (!empty($ft['phone'])): ?><p style="font-size: 13px; margin-top: 15px;"><?= htmlspecialchars($ft['phone']) ?></p><?php endif; ?>
+                    <?php if (!empty($ft['email'])): ?><p style="font-size: 13px;"><a href="mailto:<?= htmlspecialchars($ft['email']) ?>"><?= htmlspecialchars($ft['email']) ?></a></p><?php endif; ?>
+                </div>
+                
                 <?php if ($showSocial): ?>
-                <div class="social-icons mt-3">
+                <div class="social-icons" style="margin-top:0">
                     <?php if (!empty($ft['facebook_url'])): ?><a href="<?= htmlspecialchars($ft['facebook_url']) ?>" target="_blank"><i class="fab fa-facebook-f"></i></a><?php endif; ?>
                     <?php if (!empty($ft['instagram_url'])): ?><a href="<?= htmlspecialchars($ft['instagram_url']) ?>" target="_blank"><i class="fab fa-instagram"></i></a><?php endif; ?>
                     <?php if (!empty($ft['tiktok_url'])): ?><a href="<?= htmlspecialchars($ft['tiktok_url']) ?>" target="_blank"><i class="fab fa-tiktok"></i></a><?php endif; ?>
@@ -151,49 +170,73 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
                 <?php endif; ?>
             </div>
 
-            <!-- Cột 2: Khám phá -->
+            <!-- Cột 2: Quick Links & Thực Đơn -->
             <div class="col-lg-3 col-md-6">
-                <h4>Khám phá</h4>
-                <div class="explore-links">
+                <h4>LIÊN KẾT NHANH</h4>
+                <div class="explore-links" style="margin-bottom: 30px;">
                     <?php foreach ($links as $l): ?>
-                        <a href="<?= htmlspecialchars(safe_url($l['url'], $path_prefix)) ?>"><?= htmlspecialchars($l['title']) ?></a>
+                        <a href="<?= htmlspecialchars(safe_url($l['url'], $path_prefix)) ?>" style="font-size: 13px;"><?= htmlspecialchars($l['title']) ?></a>
                     <?php endforeach; ?>
+                    <?php if (empty($links)): ?>
+                        <a href="<?= safe_url('index.php', $path_prefix) ?>" style="font-size: 13px;">Trang chủ</a>
+                        <a href="<?= safe_url('about.php', $path_prefix) ?>" style="font-size: 13px;">Về chúng tôi</a>
+                        <a href="<?= safe_url('contact.php', $path_prefix) ?>" style="font-size: 13px;">Liên hệ</a>
+                    <?php endif; ?>
+                </div>
+                
+                <h4>THỰC ĐƠN</h4>
+                <div class="explore-links">
+                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#starters" style="font-size: 13px;">Món khai vị (Appetizers)</a>
+                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#main" style="font-size: 13px;">Món chính (Main Courses)</a>
+                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#seafood" style="font-size: 13px;">Hải sản tươi sống (Seafood)</a>
+                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#bbq" style="font-size: 13px;">Đồ nướng (BBQ & Grill)</a>
+                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#vegetarian" style="font-size: 13px;">Món chay (Vegetarian)</a>
+                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#desserts" style="font-size: 13px;">Tráng miệng (Desserts)</a>
+                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#drinks" style="font-size: 13px;">Đồ uống & Rượu vang (Drinks)</a>
                 </div>
             </div>
 
-            <!-- Cột 3: Liên hệ -->
+            <!-- Cột 3: Dịch vụ & Mô tả -->
             <div class="col-lg-3 col-md-6">
-                <h4>Liên hệ</h4>
-                <ul class="contact-info">
-                    <?php if (!empty($ft['address'])): ?><li><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($ft['address']) ?></li><?php endif; ?>
-                    <?php if (!empty($ft['phone'])): ?><li><i class="fas fa-phone-alt"></i> <?= htmlspecialchars($ft['phone']) ?></li><?php endif; ?>
-                    <?php if (!empty($ft['email'])): ?><li><i class="fas fa-envelope"></i> <?= htmlspecialchars($ft['email']) ?></li><?php endif; ?>
-                    <?php if (!empty($ft['opening_hours'])): ?><li><i class="fas fa-clock"></i> <?= htmlspecialchars($ft['opening_hours']) ?></li><?php endif; ?>
-                </ul>
+                <h4>DỊCH VỤ</h4>
+                <div class="explore-links" style="margin-bottom: 30px;">
+                    <a href="<?= safe_url('services.php', $path_prefix) ?>#private" style="font-size: 13px;">Đặt tiệc cá nhân (Private Dining)</a>
+                    <a href="<?= safe_url('services.php', $path_prefix) ?>#events" style="font-size: 13px;">Tiệc cưới & Sự kiện (Events)</a>
+                    <a href="<?= safe_url('services.php', $path_prefix) ?>#catering" style="font-size: 13px;">Phục vụ tận nơi (Catering)</a>
+                    <a href="<?= safe_url('services.php', $path_prefix) ?>#delivery" style="font-size: 13px;">Giao hàng (Delivery)</a>
+                </div>
+                
+                <h4>MÔ TẢ</h4>
+                <p style="font-size: 13px; line-height: 1.8; color: #fff;"><?= nl2br(htmlspecialchars($ft['footer_description'] ?? 'Trải nghiệm ẩm thực tuyệt vời với không gian sang trọng và các món ăn được chế biến từ nguyên liệu tươi ngon nhất.')) ?></p>
             </div>
 
-            <!-- Cột 4: Bản đồ (LiveView) & Newsletter -->
+            <!-- Cột 4: Giờ mở cửa & Đặt bàn -->
             <div class="col-lg-3 col-md-6">
-                <?php if ($showMap && !empty($ft['google_map_iframe'])): ?>
-                    <h4>Bản đồ</h4>
-                    <div class="map-wrapper" id="footerMapWrapper">
-                        <div class="map-overlay" id="footerMapOverlay" onclick="activateFooterMap()">
-                            <span class="map-overlay-message">🗺️ Nhấn để xem bản đồ</span>
-                        </div>
-                        <?= $ft['google_map_iframe'] ?>
-                    </div>
-                <?php endif; ?>
-                <?php if ($showNews): ?>
-                    <h4 class="mt-3">Đăng ký nhận tin</h4>
-                    <form action="<?= safe_url('newsletter_subscribe.php', $path_prefix) ?>" method="POST" class="newsletter-form">
-                        <?= csrf_field() ?>
-                        <input type="email" name="email" placeholder="Nhập email của bạn" required>
-                        <button type="submit">Gửi</button>
-                    </form>
-                <?php endif; ?>
+                <h4>GIỜ MỞ CỬA</h4>
+                <div class="contact-info" style="font-size: 13px; line-height: 2;">
+                    <?php if (!empty($ft['opening_hours'])): ?>
+                        <div style="white-space: pre-line;"><?= htmlspecialchars($ft['opening_hours']) ?></div>
+                    <?php else: ?>
+                        <div style="display: flex; justify-content: space-between;"><span>Thứ 2</span> <span>Nghỉ định kỳ</span></div>
+                        <div style="display: flex; justify-content: space-between;"><span>Thứ 3 - Thứ 6</span> <span>10:00 AM - 10:00 PM</span></div>
+                        <div style="display: flex; justify-content: space-between;"><span>Thứ 7 - CN</span> <span>09:00 AM - 11:00 PM</span></div>
+                        <div style="display: flex; justify-content: space-between;"><span>Ngày Lễ</span> <span>Theo lịch đặt trước</span></div>
+                    <?php endif; ?>
+                </div>
+                
+                <a href="<?= safe_url('book.php', $path_prefix) ?>" style="display: block; text-align: center; background: #fff; color: #113f36; padding: 12px; border-radius: 6px; font-family: 'Inter', sans-serif; font-weight: 600; margin-top: 30px; text-decoration: none; transition: background 0.3s;" onmouseover="this.style.background='#e0e0e0'" onmouseout="this.style.background='#fff'">
+                    Đặt Bàn Ngay (Book a Table)
+                </a>
             </div>
         </div>
-        <div class="copyright"><?= htmlspecialchars($ft['copyright_text'] ?? '© 2026 Restaurantly. All Rights Reserved.') ?></div>
+        <div class="bottom-bar">
+            <div><?= htmlspecialchars($ft['copyright_text'] ?? '© 2026 Restaurantly. All Rights Reserved.') ?></div>
+            <div>
+                <a href="#">Điều khoản sử dụng</a>
+                <span style="margin: 0 10px;">|</span>
+                <a href="#">Chính sách bảo mật</a>
+            </div>
+        </div>
     </div>
 </footer>
 

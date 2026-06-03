@@ -334,7 +334,7 @@ if ($action === 'food_cost') {
                 <td class="ps-4">
                     <div class="d-flex align-items-center gap-2">
                         <img src="../../public/assets/img/menu/<?= htmlspecialchars($fc['image']) ?>"
-                             onerror="this.src=''"
+                             onerror="this.style.display='none';"
                              style="width:38px;height:38px;object-fit:cover;border-radius:8px;">
                         <strong><?= htmlspecialchars($fc['food_name']) ?></strong>
                     </div>
