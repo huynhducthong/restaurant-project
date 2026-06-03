@@ -5,9 +5,9 @@ if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error'=>'Unauthorized']); 
     exit; 
 }
-// FIX 1: GIẢI PHÓNG SESSION NGAY LẬP TỨC
-session_write_close(); 
 
+// admin/ajax/ajax_get_booking_detail.php
+// admin/ajax/ajax_get_booking_detail.php
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../config/inventory_helper.php';
 header('Content-Type: application/json');
@@ -92,32 +92,21 @@ try {
             }
         }
         
-        // FIX 2: TRIỆT TIÊU LỖI N+1 QUERY BẰNG CÁCH CHỈ TRUY VẤN 1 LẦN
-        $ing_ids = array_keys($required_ingredients);
-        if (!empty($ing_ids)) {
-            $in_clause = implode(',', array_fill(0, count($ing_ids), '?'));
+        // 4. Kiểm tra số lượng tồn thực tế ở các kho
+        foreach ($required_ingredients as &$ing) {
+            // Tồn tại kho đích (Bếp/Bar)
+            $stmt_target = $db->prepare("SELECT quantity FROM inventory_stocks WHERE ingredient_id = ? AND warehouse_id = ?");
+            $stmt_target->execute([$ing['id'], $ing['target_warehouse_id']]);
+            $ing['stock_target'] = (float)($stmt_target->fetchColumn() ?: 0);
             
-            $stmt_stocks = $db->prepare("SELECT ingredient_id, warehouse_id, quantity FROM inventory_stocks WHERE ingredient_id IN ($in_clause)");
-            $stmt_stocks->execute($ing_ids);
-            $all_stocks = $stmt_stocks->fetchAll(PDO::FETCH_ASSOC);
+            // Tồn tại kho tổng (Warehouse 1)
+            $stmt_main = $db->prepare("SELECT quantity FROM inventory_stocks WHERE ingredient_id = ? AND warehouse_id = 1");
+            $stmt_main->execute([$ing['id']]);
+            $ing['stock_main'] = (float)($stmt_main->fetchColumn() ?: 0);
             
-            // Đưa dữ liệu kho vào mảng để ánh xạ tốc độ cao
-            $stock_map = [];
-            foreach ($all_stocks as $st) {
-                $stock_map[$st['ingredient_id']][$st['warehouse_id']] = (float)$st['quantity'];
-            }
-            
-            foreach ($required_ingredients as &$ing) {
-                $t_id = $ing['target_warehouse_id'];
-                
-                // Trích xuất trực tiếp từ mảng PHP, không cần gọi Database nữa
-                $ing['stock_target'] = $stock_map[$ing['id']][$t_id] ?? 0;
-                $ing['stock_main'] = $stock_map[$ing['id']][1] ?? 0;
-                
-                $ing['is_sufficient'] = ($ing['stock_target'] >= $ing['total_required']);
-                $ing['missing_qty'] = max(0, $ing['total_required'] - $ing['stock_target']);
-                $ing['can_transfer'] = ($ing['stock_main'] >= $ing['missing_qty']);
-            }
+            $ing['is_sufficient'] = ($ing['stock_target'] >= $ing['total_required']);
+            $ing['missing_qty'] = max(0, $ing['total_required'] - $ing['stock_target']);
+            $ing['can_transfer'] = ($ing['stock_main'] >= $ing['missing_qty']);
         }
     }
 
