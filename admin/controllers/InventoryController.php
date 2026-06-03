@@ -125,19 +125,21 @@ if (isset($_POST['manage_tag'])) {
 if (isset($_POST['save_inventory'])) {
     $supplier_id = !empty($_POST['supplier_id']) ? (int)$_POST['supplier_id'] : null;
     $min_stock = max(0, (float)($_POST['min_stock'] ?? 0));
+    $storage_temp = trim($_POST['storage_temperature'] ?? '');
 
     $data = [
         trim($_POST['item_name']),
         $_POST['category'],
         $_POST['unit_name'],
         $supplier_id,
-        $min_stock
+        $min_stock,
+        $storage_temp
     ];
 
     if (!empty($_POST['item_id'])) {
-        $db->prepare("UPDATE inventory SET item_name=?, category=?, unit_name=?, supplier_id=?, min_stock=? WHERE id=?")->execute([...$data, (int)$_POST['item_id']]);
+        $db->prepare("UPDATE inventory SET item_name=?, category=?, unit_name=?, supplier_id=?, min_stock=?, storage_temperature=? WHERE id=?")->execute([...$data, (int)$_POST['item_id']]);
     } else {
-        $db->prepare("INSERT INTO inventory (item_name, category, unit_name, supplier_id, min_stock) VALUES (?, ?, ?, ?, ?)")->execute($data);
+        $db->prepare("INSERT INTO inventory (item_name, category, unit_name, supplier_id, min_stock, storage_temperature) VALUES (?, ?, ?, ?, ?, ?)")->execute($data);
     }
     header("Location: InventoryController.php");
     exit;

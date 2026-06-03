@@ -354,7 +354,12 @@ include '../../public/admin_layout_header.php';
                                         <?php if ($i['is_active'] == 0): ?>
                                             <span class="badge bg-secondary ms-1">Đã ẩn</span>
                                         <?php endif; ?>
-                                        <div class="small text-muted"><?= htmlspecialchars($i['category']) ?> | Min: <?= $min ?></div>
+                                        <div class="small text-muted">
+                                            <?= htmlspecialchars($i['category']) ?> | Min: <?= $min ?>
+                                            <?php if (!empty($i['storage_temperature'])): ?>
+                                                | <span class="text-info fw-bold"><i class="fas fa-thermometer-half"></i> <?= htmlspecialchars($i['storage_temperature']) ?></span>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
                                     <td>
                                         <?php
@@ -776,7 +781,10 @@ include '../../public/admin_layout_header.php';
                     <div class="col-6"><label class="small fw-bold">Danh mục</label><select name="category" id="inv-cat" class="form-select"><?php foreach ($cats as $c) echo "<option value='{$c['name']}'>{$c['name']}</option>"; ?></select></div>
                     <div class="col-6"><label class="small fw-bold">Đơn vị</label><select name="unit_name" id="inv-unit" class="form-select"><?php foreach ($units as $u) echo "<option value='{$u['name']}'>{$u['name']}</option>"; ?></select></div>
                 </div>
-                <div class="mb-3"><label class="small fw-bold">Tồn tối thiểu</label><input type="number" name="min_stock" id="inv-min" class="form-control" value="0" min="0" step="0.01"></div>
+                <div class="row g-2 mb-3">
+                    <div class="col-6"><label class="small fw-bold">Tồn tối thiểu</label><input type="number" name="min_stock" id="inv-min" class="form-control" value="0" min="0" step="0.01"></div>
+                    <div class="col-6"><label class="small fw-bold">Nhiệt độ bảo quản</label><input type="text" name="storage_temperature" id="inv-temp" class="form-control" placeholder="VD: -18°C, 0-4°C"></div>
+                </div>
             </div>
             <div class="modal-footer"><button type="submit" class="btn btn-warning w-100 fw-bold">LƯU</button></div>
         </form>
@@ -878,11 +886,12 @@ include '../../public/admin_layout_header.php';
                                     <select name="trans_item_id[]" class="form-select form-select-sm trans-item-select" required>
                                         <option value="">-- Chọn nguyên liệu --</option>
                                         <?php foreach ($inv as $i): if ($i['is_active'] != 1) continue; ?>
-                                            <option value="<?= $i['id'] ?>" data-unit="<?= htmlspecialchars($i['unit_name']) ?>">
+                                            <option value="<?= $i['id'] ?>" data-unit="<?= htmlspecialchars($i['unit_name']) ?>" data-stocks='<?= json_encode($i['stocks']) ?>'>
                                                 <?= htmlspecialchars($i['item_name']) ?> (<?= $i['unit_name'] ?>)
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
+                                    <div class="trans-stock-info mt-1 text-end"></div>
                                 </td>
                                 <td>
                                     <div class="input-group input-group-sm">
@@ -989,6 +998,7 @@ include '../../public/admin_layout_header.php';
                                 <th class="ps-4">Mã lô (PO)</th>
                                 <th>Kho chứa</th>
                                 <th class="text-center">Số lượng tồn</th>
+                                <th class="text-center">Nhiệt độ lúc nhập</th>
                                 <th class="text-center">Hạn sử dụng</th>
                                 <th class="text-center">Trạng thái</th>
                             </tr>
@@ -1034,7 +1044,7 @@ include '../../public/admin_layout_header.php';
             if(res.status === 'success') {
                 let html = '';
                 if(res.data.length === 0) {
-                    html = '<tr><td colspan="5" class="text-center py-4 text-muted">Không còn lô hàng nào trong kho.</td></tr>';
+                    html = '<tr><td colspan="6" class="text-center py-4 text-muted">Không còn lô hàng nào trong kho.</td></tr>';
                 } else {
                     const today = new Date();
                     res.data.forEach(b => {
@@ -1045,7 +1055,8 @@ include '../../public/admin_layout_header.php';
                             if(diff < 0) { hsdClass = 'text-danger fw-bold'; statusText = '<span class="badge bg-danger">Hết hạn</span>'; }
                             else if(diff <= 7) { hsdClass = 'text-warning fw-bold'; statusText = '<span class="badge bg-warning text-dark">Sắp hết</span>'; }
                         }
-                        html += `<tr><td class="ps-4">#${b.batch_code || 'N/A'}</td><td>${b.warehouse_name}</td><td class="text-center fw-bold">${parseFloat(b.quantity)}</td><td class="text-center ${hsdClass}">${b.expiry_date || '-'}</td><td class="text-center">${statusText}</td></tr>`;
+                        let tempText = b.receiving_temperature ? b.receiving_temperature + '°C' : '-';
+                        html += `<tr><td class="ps-4">#${b.batch_code || 'N/A'}</td><td>${b.warehouse_name}</td><td class="text-center fw-bold">${parseFloat(b.quantity)}</td><td class="text-center text-info">${tempText}</td><td class="text-center ${hsdClass}">${b.expiry_date || '-'}</td><td class="text-center">${statusText}</td></tr>`;
                     });
                 }
                 $('#batch-list-body').html(html);
@@ -1075,7 +1086,7 @@ include '../../public/admin_layout_header.php';
 
     // ================= HÀM MỞ MODALS =================
     function openInventoryModal() {
-        $('#inv-id, #inv-name').val('');
+        $('#inv-id, #inv-name, #inv-temp').val('');
         new bootstrap.Modal(document.getElementById('modalInventory')).show();
     }
 
@@ -1085,6 +1096,7 @@ include '../../public/admin_layout_header.php';
         $('#inv-cat').val(data.category);
         $('#inv-unit').val(data.unit_name);
         $('#inv-min').val(data.min_stock || 0);
+        $('#inv-temp').val(data.storage_temperature || '');
         new bootstrap.Modal(document.getElementById('modalInventory')).show();
     }
 
@@ -1140,12 +1152,14 @@ include '../../public/admin_layout_header.php';
         $tbody.find('.trans-item-select').val(''); // Reset dòng đầu
         $tbody.find('input[name="trans_qty[]"]').val('');
         $tbody.find('.trans-unit-label').text('đơn vị');
+        $tbody.find('.trans-stock-info').html('');
 
         // Nếu mở từ nút cụ thể → pre-select mặt hàng đó
         if (id) {
             const $firstSelect = $tbody.find('.trans-item-select').first();
             $firstSelect.val(id);
             $tbody.find('.trans-unit-label').first().text(unit || 'đơn vị');
+            updateTransferStock($tbody.find('tr').first());
         }
         new bootstrap.Modal(document.getElementById('modalTransfer')).show();
     }
@@ -1156,6 +1170,7 @@ include '../../public/admin_layout_header.php';
         $firstRow.find('.trans-item-select').val('');
         $firstRow.find('input[name="trans_qty[]"]').val('');
         $firstRow.find('.trans-unit-label').text('đơn vị');
+        $firstRow.find('.trans-stock-info').html('');
         $('#transferBody').append($firstRow);
     });
 
@@ -1168,11 +1183,32 @@ include '../../public/admin_layout_header.php';
         }
     });
 
-    // Tự động cập nhật nhãn đơn vị khi chọn nguyên liệu
+    // Tự động cập nhật nhãn đơn vị và tồn kho khi chọn nguyên liệu
     $(document).on('change', '.trans-item-select', function () {
         const unit = $(this).find(':selected').data('unit') || 'đơn vị';
         $(this).closest('tr').find('.trans-unit-label').text(unit);
+        updateTransferStock($(this).closest('tr'));
     });
+
+    $(document).on('change', '#trans-from-wh', function() {
+        $('#transferBody tr').each(function() {
+            updateTransferStock($(this));
+        });
+    });
+
+    function updateTransferStock($row) {
+        const fromWhId = $('#trans-from-wh').val();
+        const $select = $row.find('.trans-item-select');
+        const $opt = $select.find(':selected');
+        if(!$opt.val() || !fromWhId) {
+            $row.find('.trans-stock-info').html('');
+            return;
+        }
+        const stocks = $opt.data('stocks') || {};
+        const qty = parseFloat(stocks[fromWhId]) || 0;
+        const unit = $opt.data('unit') || '';
+        $row.find('.trans-stock-info').html(`<small class="text-primary fw-bold"><i class="fas fa-box-open"></i> Tồn trong kho: ${qty} ${unit}</small>`);
+    }
 
     // Xử lý động đổi màu Modal Xuất/Hủy
     function openExport(id, name, type) {

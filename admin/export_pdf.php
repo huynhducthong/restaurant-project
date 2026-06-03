@@ -256,5 +256,5 @@ $dompdf->setPaper('A5', 'portrait');
 $dompdf->render();
 
 $filename = 'Phieu_Dich_Vu_SVR_' . $id . '.pdf';
-$dompdf->stream($filename, ['Attachment' => 1]);
+$dompdf->stream($filename, ['Attachment' => 0]);
 exit;

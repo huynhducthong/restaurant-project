@@ -85,8 +85,14 @@ try {
   $stmt_home_chefs = $db->prepare("SELECT * FROM chefs WHERE is_active = 1 ORDER BY is_featured DESC, sort_order ASC, id ASC LIMIT 3");
   $stmt_home_chefs->execute();
   $home_chefs = $stmt_home_chefs->fetchAll(PDO::FETCH_ASSOC);
+  // 5.5 Lấy danh sách ảnh Gallery cho trang chủ (4 ảnh)
+  $stmt_galleries = $db->prepare("SELECT * FROM galleries WHERE is_active = 1 ORDER BY sort_order ASC, id DESC LIMIT 4");
+  $stmt_galleries->execute();
+  $home_galleries = $stmt_galleries->fetchAll(PDO::FETCH_ASSOC);
+
 } catch (Exception $e) {
   $home_chefs = [];
+  $home_galleries = [];
 }
 
 // 6. Nhúng Header
@@ -447,73 +453,162 @@ include __DIR__ . '/views/client/layouts/header.php';
     }
   </style>
 
-  <section id="combos" style="background: #0A1C1A; padding: 140px 0; border-top: 1px solid rgba(212,176,106,0.15); border-bottom: 1px solid rgba(212,176,106,0.15);">
-    <div class="container">
-      <div class="section-title text-center mb-5">
-        <h2 style="color: #cda45e; font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700;">Bộ Sưu Tập Hương Vị</h2>
-        <p style="color: #fff; font-size: 18px; font-style: italic;">Lựa chọn hoàn hảo để chia sẻ niềm vui</p>
+  <section id="combos" style="background: #071A18; padding: 160px 0; border-top: 1px solid rgba(198,167,106,0.08); border-bottom: 1px solid rgba(198,167,106,0.08); position: relative;">
+    <!-- Radial subtle glow behind the whole section -->
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(198,167,106,0.03) 0%, transparent 70%); pointer-events: none; z-index: 0;"></div>
+    
+    <div class="container" style="position: relative; z-index: 1;">
+      <div class="section-title text-center mb-5" style="margin-bottom: 80px !important;">
+        <p style="color: #C6A76A; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Tuyển Chọn Thượng Hạng</p>
+        <h2 style="color: #F6F1E7; font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Bộ Sưu Tập Hương Vị</h2>
+        <div style="width: 1px; height: 40px; background: rgba(198,167,106,0.3); margin: 20px auto;"></div>
       </div>
 
-      <div class="row g-4 justify-content-center">
+      <div class="row g-5 justify-content-center">
         <?php if ($stmt_combos): ?>
-          <?php while ($row = $stmt_combos->fetch(PDO::FETCH_ASSOC)): ?>
+          <?php 
+          $badge_types = ['Signature Collection', 'Chef Curated', 'Limited Experience'];
+          $badge_idx = 0;
+          while ($row = $stmt_combos->fetch(PDO::FETCH_ASSOC)): 
+            $badge_text = $badge_types[$badge_idx % count($badge_types)];
+            $badge_idx++;
+          ?>
             <div class="col-lg-4 col-md-6">
               <div class="combo-card-custom">
-                <div class="combo-img mb-3">
+                <div class="combo-img-wrap">
+                  <div class="combo-badge"><?= $badge_text ?></div>
                   <img src="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>"
                     alt="<?= htmlspecialchars($row['name']) ?>"
                     onerror="this.src='public/assets/img/combos/default-combo.jpg'">
                 </div>
-                <div class="d-flex justify-content-between align-items-center mb-2">
+                
+                <div class="combo-content">
                   <h4 class="combo-name-custom"><?= htmlspecialchars($row['name']) ?></h4>
-                  <span class="combo-price-custom"><?= number_format($row['price'], 0, ',', '.') ?>đ</span>
+                  <p class="combo-desc-custom"><?= htmlspecialchars($row['description']) ?></p>
+                  
+                  <div class="combo-divider"></div>
+                  
+                  <div class="combo-items-list">
+                    <?php 
+                    $foods = explode(',', $row['list_foods']);
+                    foreach($foods as $f): 
+                      if(trim($f)):
+                    ?>
+                      <span><?= htmlspecialchars(trim($f)) ?></span>
+                    <?php 
+                      endif;
+                    endforeach; 
+                    ?>
+                  </div>
+                  
+                  <div class="combo-footer">
+                    <span class="combo-price-custom"><?= number_format($row['price'], 0, ',', '.') ?> VND</span>
+                    <button onclick="addToCart('combo', <?= $row['id'] ?>)" class="btn-combo-order">KHÁM PHÁ</button>
+                  </div>
                 </div>
-                <p class="combo-desc-custom"><?= htmlspecialchars($row['description']) ?></p>
-                <div class="combo-items-list">
-                  <small>Gồm các món:</small>
-                  <p><?= htmlspecialchars($row['list_foods']) ?></p>
-                </div>
-                <button onclick="addToCart('combo', <?= $row['id'] ?>)" class="btn-combo-order">Đặt ngay</button>
               </div>
             </div>
           <?php endwhile; ?>
         <?php endif; ?>
       </div>
     </div>
-  <section id="chefs" class="chefs" style="background: #143B36; padding: 140px 0;">
-    <div class="container">
-      <div class="section-title text-center mb-5">
-        <h2 class="chefs-subtitle">Đội ngũ đầu bếp</h2>
-        <p class="chefs-title">Những nghệ nhân ẩm thực hàng đầu</p>
+  <section id="chefs" class="chefs" style="background: #04100E; padding: 140px 0; position: relative;">
+    <div class="container" style="position: relative; z-index: 1;">
+      <div class="section-title text-center mb-5" style="margin-bottom: 70px !important;">
+        <p style="color: #C6A76A; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Đội Ngũ Đầu Bếp</p>
+        <h2 style="color: #F6F1E7; font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Những Nghệ Nhân Ẩm Thực Hàng Đầu</h2>
+        <div style="width: 1px; height: 40px; background: rgba(198,167,106,0.3); margin: 20px auto;"></div>
       </div>
-      <div class="row justify-content-center">
+      
+      <div class="row justify-content-center g-4">
         <?php if (!empty($home_chefs)): ?>
-          <?php foreach ($home_chefs as $hchef): ?>
+          <?php 
+          $quotes = [
+            "Ẩm thực không chỉ là hương vị, nó là sự tinh tế của ký ức.",
+            "Từng nguyên liệu đều có tiếng nói riêng của nó.",
+            "Nấu ăn là nghệ thuật kể chuyện không dùng lời."
+          ];
+          $idx = 0;
+          foreach ($home_chefs as $hchef): 
+            $quote = $quotes[$idx % count($quotes)];
+            $idx++;
+          ?>
             <div class="col-lg-4 col-md-6 mb-4">
-              <div class="chef-member-card">
-                <?php if (!empty($hchef['image'])): ?>
-                  <img src="public/assets/img/chefs/<?= htmlspecialchars($hchef['image']) ?>"
-                    class="img-fluid" alt="<?= htmlspecialchars($hchef['name']) ?>"
-                    onerror="this.style.display='none'"
-                    style="width:100%;height:220px;object-fit:cover;border-radius:5px;margin-bottom:15px;">
-                <?php else: ?>
-                  <div style="width:100%;height:220px;background:linear-gradient(135deg,#2c3e50,#1a252f);display:flex;align-items:center;justify-content:center;border-radius:5px;margin-bottom:15px;">
-                    <i class="bi bi-person" style="font-size:4rem;color:#cda45e;opacity:.5;"></i>
+              <div class="luxury-chef-card">
+                <div class="chef-img-wrapper">
+                  <?php if (!empty($hchef['image'])): ?>
+                    <img src="public/assets/img/chefs/<?= htmlspecialchars($hchef['image']) ?>"
+                      alt="<?= htmlspecialchars($hchef['name']) ?>"
+                      onerror="this.src='public/assets/img/chefs/default-chef.jpg'">
+                  <?php else: ?>
+                    <div class="chef-placeholder-img">
+                      <i class="bi bi-person"></i>
+                    </div>
+                  <?php endif; ?>
+                  
+                  <div class="chef-overlay">
+                    <p class="chef-quote">"<?= $quote ?>"</p>
+                    <div class="chef-info">
+                      <h4 class="chef-name"><?= htmlspecialchars($hchef['name']) ?></h4>
+                      <span class="chef-title"><?= htmlspecialchars($hchef['position']) ?></span>
+                    </div>
                   </div>
-                <?php endif; ?>
-                <div class="member-info">
-                  <h4><?= htmlspecialchars($hchef['name']) ?></h4>
-                  <span><?= htmlspecialchars($hchef['position']) ?></span>
                 </div>
               </div>
             </div>
           <?php endforeach; ?>
         <?php else: ?>
-          <p class="text-center" style="color:#666;">Chưa có thông tin đầu bếp.</p>
+          <p class="text-center" style="color:rgba(246,241,231,0.5); font-style: italic;">Chưa có thông tin đầu bếp.</p>
         <?php endif; ?>
       </div>
-      <div class="text-center mt-4">
-        <a href="chefs.php" class="btn-view-all-custom">Xem tất cả đầu bếp</a>
+      
+      <div class="text-center mt-5">
+        <a href="chefs.php" class="btn-combo-order" style="display:inline-block; width: auto; padding: 12px 36px;">TẤT CẢ ĐẦU BẾP</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ATMOSPHERE & GALLERY SECTION -->
+  <section id="atmosphere" style="background: #051412; padding: 140px 0; position: relative;">
+    <div class="container" style="position: relative; z-index: 1;">
+      <div class="section-title text-center mb-5" style="margin-bottom: 70px !important;">
+        <p style="color: #C6A76A; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Không Gian & Trải Nghiệm</p>
+        <h2 style="color: #F6F1E7; font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Kiệt Tác Kiến Trúc Tĩnh Lặng</h2>
+        <div style="width: 1px; height: 40px; background: rgba(198,167,106,0.3); margin: 20px auto;"></div>
+      </div>
+
+      <!-- Asymmetric Grid Gallery -->
+      <div class="atmosphere-grid">
+        <?php if (!empty($home_galleries)): ?>
+          <?php 
+          $item_class = 1;
+          foreach ($home_galleries as $gallery): 
+          ?>
+            <div class="atmo-item item-<?= $item_class ?>">
+              <img src="public/assets/img/gallery/<?= htmlspecialchars($gallery['image_url']) ?>" alt="<?= htmlspecialchars($gallery['title'] ?? 'Atmosphere') ?>">
+            </div>
+          <?php 
+            $item_class++;
+            // Nếu có hơn 4 ảnh, từ ảnh thứ 4 trở đi dùng class item-4 (thường bị ẩn hoặc xuống hàng mới)
+            if ($item_class > 4) $item_class = 4;
+          endforeach; 
+          ?>
+        <?php else: ?>
+          <!-- Dummy content nếu DB rỗng -->
+          <div class="atmo-item item-1">
+            <img src="public/assets/img/hero/1776687242_hero-bg.jpg" alt="Atmosphere" onerror="this.src='public/assets/img/about-bg.jpg'">
+          </div>
+          <div class="atmo-item item-2">
+            <img src="public/assets/img/hero/1776687610_hero-bg-2.jpg" alt="Atmosphere" onerror="this.src='public/assets/img/about-bg.jpg'">
+          </div>
+          <div class="atmo-item item-3">
+            <img src="public/assets/img/about-bg.jpg" alt="Atmosphere" onerror="this.src='public/assets/img/about.jpg'">
+          </div>
+        <?php endif; ?>
+      </div>
+
+      <div class="text-center mt-5 pt-4">
+        <a href="#" class="btn-combo-order" style="display:inline-block; width: auto; padding: 12px 36px;">KHÁM PHÁ KHÔNG GIAN TẠI ĐÂY</a>
       </div>
     </div>
   </section>
@@ -587,135 +682,355 @@ include __DIR__ . '/views/client/layouts/header.php';
     font-weight: 600;
   }
 
+  /* --- MICHELIN COMBO CARDS --- */
   .combo-card-custom {
-    background: #143B36;
-    border: 1px solid rgba(212,176,106,0.2);
-    padding: 25px;
+    background: #102825;
+    border: 1px solid rgba(198, 167, 106, 0.1);
     height: 100%;
     display: flex;
     flex-direction: column;
-    transition: 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-    border-radius: 10px;
+    transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   }
 
   .combo-card-custom:hover {
-    transform: translateY(-5px);
-    border-color: rgba(205, 164, 94, 0.6);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    transform: translateY(-8px);
+    border-color: rgba(198, 167, 106, 0.3);
+    box-shadow: 0 15px 45px rgba(0,0,0,0.4), 0 0 20px rgba(198, 167, 106, 0.05);
   }
 
-  .combo-img img {
+  .combo-img-wrap {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Gradient overlay to smoothly blend image into background */
+  .combo-img-wrap::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: linear-gradient(to top, #102825, transparent);
+    pointer-events: none;
+  }
+
+  .combo-img-wrap img {
     width: 100%;
-    height: 220px;
+    height: 280px;
     object-fit: cover;
-    border-radius: 5px;
-    transition: 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
-  .combo-img:hover img {
+  .combo-card-custom:hover .combo-img-wrap img {
     transform: scale(1.05);
   }
 
-  .combo-name-custom {
-    color: #fff;
-    margin: 0;
-    font-size: 22px;
-    font-family: 'Poppins', sans-serif;
+  .combo-badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(198, 167, 106, 0.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(198, 167, 106, 0.3);
+    color: #F6F1E7;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 6px 14px;
+    z-index: 2;
+    border-radius: 2px;
+    font-weight: 500;
   }
 
-  .combo-price-custom {
-    color: #cda45e;
-    font-weight: 700;
-    font-size: 18px;
+  .combo-content {
+    padding: 0 35px 35px 35px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    position: relative;
+    z-index: 1;
+    margin-top: -15px; /* Pull content up slightly */
+  }
+
+  .combo-name-custom {
+    color: #F6F1E7;
+    margin: 0 0 8px 0;
+    font-size: 26px;
+    font-weight: 400;
+    font-family: 'Playfair Display', serif;
+    letter-spacing: 1px;
+    line-height: 1.3;
   }
 
   .combo-desc-custom {
-    color: #aaaaaa;
-    font-size: 14px;
+    color: rgba(246, 241, 231, 0.65);
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.6;
+    margin-bottom: 20px;
     font-style: italic;
-    flex-grow: 1;
-    margin: 10px 0;
+  }
+
+  .combo-divider {
+    width: 40px;
+    height: 1px;
+    background: rgba(198, 167, 106, 0.3);
+    margin: 0 0 20px 0;
   }
 
   .combo-items-list {
-    border-top: 1px dashed rgba(212,176,106,0.2);
-    padding-top: 15px;
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 35px;
+    flex-grow: 1;
   }
 
-  .combo-items-list small {
-    color: #cda45e;
-    text-transform: uppercase;
+  .combo-items-list span {
+    color: rgba(246, 241, 231, 0.85);
+    font-size: 13.5px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .combo-items-list span::before {
+    content: '•';
+    color: #C6A76A;
+    margin-right: 12px;
+    font-size: 14px;
+  }
+
+  .combo-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 20px;
+  }
+
+  .combo-price-custom {
+    color: #C6A76A;
+    font-weight: 500;
+    font-size: 15px;
     letter-spacing: 1px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-
-  .combo-items-list p {
-    color: #ced4da;
-    font-size: 13px;
-    margin: 5px 0 0 0;
   }
 
   .btn-combo-order {
     background: transparent;
-    color: #fff;
-    border: 2px solid #cda45e;
-    width: 100%;
-    padding: 12px;
-    border-radius: 50px;
-    font-weight: 600;
-    transition: 0.3s;
+    color: #C6A76A;
+    border: 1px solid rgba(198, 167, 106, 0.3);
+    padding: 10px 24px;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 3px;
+    transition: all 0.4s ease;
     text-transform: uppercase;
   }
 
   .btn-combo-order:hover {
-    background: #cda45e !important;
-    color: #000 !important;
+    background: rgba(198, 167, 106, 0.1);
+    color: #F6F1E7;
+    border-color: #C6A76A;
   }
 
+  /* --- MICHELIN CHEFS SECTION --- */
   .chefs-subtitle {
-    font-size: 14px;
+    font-size: 11px;
     font-weight: 500;
-    letter-spacing: 2px;
+    letter-spacing: 4px;
     text-transform: uppercase;
-    color: #aaaaaa;
+    color: #C6A76A;
     font-family: 'Poppins', sans-serif;
   }
 
   .chefs-title {
     margin: 15px 0 0 0;
-    font-size: 36px;
-    font-weight: 700;
+    font-size: 42px;
+    font-weight: 400;
     font-family: 'Playfair Display', serif;
-    color: #cda45e;
+    color: #F6F1E7;
+    letter-spacing: 1px;
   }
 
-  .chef-member-card {
-    background: #0A1C1A;
-    padding: 40px;
-    border: 1px solid rgba(212,176,106,0.2);
+  .luxury-chef-card {
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+    background: #102825;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+  }
+
+  .chef-img-wrapper {
+    position: relative;
+    overflow: hidden;
+    height: 480px;
+  }
+
+  .chef-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .chef-placeholder-img {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0d211e, #071513);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .chef-placeholder-img i {
+    font-size: 5rem;
+    color: rgba(198, 167, 106, 0.3);
+  }
+
+  .luxury-chef-card:hover .chef-img-wrapper img {
+    transform: scale(1.06);
+  }
+
+  .chef-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 60px 30px 30px 30px;
+    background: linear-gradient(to top, rgba(4, 16, 14, 0.95) 0%, rgba(4, 16, 14, 0.8) 40%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
     text-align: center;
-    transition: 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-    border-radius: 5px;
+    transition: all 0.6s ease;
   }
 
-  .chef-member-card img {
-    border-radius: 5px;
-    margin-bottom: 15px;
-  }
-
-  .chef-member-card h4 {
-    font-weight: 700;
-    margin-bottom: 5px;
-    font-size: 18px;
-    color: #fff;
-  }
-
-  .chef-member-card span {
-    display: block;
-    font-size: 15px;
+  .chef-quote {
+    color: rgba(246, 241, 231, 0.8);
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
     font-style: italic;
-    color: #cda45e;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .luxury-chef-card:hover .chef-quote {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .chef-info {
+    position: relative;
+    padding-top: 20px;
+  }
+
+  .chef-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 1px;
+    background: #C6A76A;
+  }
+
+  .chef-name {
+    color: #F6F1E7;
+    font-size: 24px;
+    font-weight: 400;
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+  }
+
+  .chef-title {
+    color: #C6A76A;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  /* --- ATMOSPHERE & GALLERY --- */
+  .atmosphere-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: 250px;
+    gap: 20px;
+  }
+
+  .atmo-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 2px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+
+  .atmo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(0.4) brightness(0.7);
+    transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .atmo-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(198, 167, 106, 0);
+    transition: all 0.6s ease;
+    pointer-events: none;
+  }
+
+  .atmo-item:hover img {
+    filter: grayscale(0) brightness(1.05);
+    transform: scale(1.05);
+  }
+
+  .atmo-item:hover::after {
+    border-color: rgba(198, 167, 106, 0.4);
+    inset: 15px; /* Creates an inner border effect */
+  }
+
+  /* Asymmetric Placement */
+  .item-1 {
+    grid-column: span 7;
+    grid-row: span 2;
+  }
+
+  .item-2 {
+    grid-column: span 5;
+    grid-row: span 1;
+  }
+
+  .item-3 {
+    grid-column: span 5;
+    grid-row: span 1;
+  }
+
+  .item-4 {
+    /* Optional hidden or extra items */
+    display: none; 
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 991px) {
+    .atmosphere-grid {
+      display: flex;
+      flex-direction: column;
+    }
+    .atmo-item {
+      height: 300px;
+    }
   }
 </style>

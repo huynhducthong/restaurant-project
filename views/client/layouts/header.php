@@ -9,8 +9,17 @@ $database = new Database();
 $db = $database->getConnection();
 
 /* =========================================================
-   LẤY CẤU HÌNH WEBSITE
+   LẤY CẤU HÌNH WEBSITE & NGÀY SINH KHÁCH HÀNG
 ========================================================= */
+
+$user_birthday = null;
+if (isset($_SESSION['user_id'])) {
+    try {
+        $stmt_bd = $db->prepare("SELECT birthday FROM users WHERE id = ?");
+        $stmt_bd->execute([$_SESSION['user_id']]);
+        $user_birthday = $stmt_bd->fetchColumn();
+    } catch(Exception $e) {}
+}
 
 $settings = [];
 
@@ -480,10 +489,6 @@ if (!empty($logo_path)) {
             .navbar {
                 display: none;
             }
-
-            .mobile-nav-toggle {
-                display: block;
-            }
         }
 
     </style>
@@ -625,13 +630,9 @@ if (!empty($logo_path)) {
 
                             <?php if (isset($_SESSION['user_id'])): ?>
                                 <!-- TRANG QUẢN TRỊ / BẢNG CÔNG -->
-                                <?php if ($user_role === 'admin' || $user_role == 1): ?>
+                                <?php if (in_array($user_role, ['admin', 'staff', 'waiter', 'chef', 'cashier', 1, 2])): ?>
                                     <a href="admin/admin_dashboard.php" class="oriental-item" style="color: var(--primary-color);">
                                         <i class="bi bi-speedometer2"></i> Trang quản trị
-                                    </a>
-                                <?php elseif ($user_role !== 'admin' && $user_role !== 'customer' && !empty($user_role)): ?>
-                                    <a href="views/client/employee_dashboard.php" class="oriental-item" style="color: var(--primary-color);">
-                                        <i class="bi bi-clock-history"></i> Bảng công & Chấm công
                                     </a>
                                 <?php endif; ?>
 
@@ -675,7 +676,6 @@ if (!empty($logo_path)) {
     <script>
 
         window.addEventListener('scroll', function () {
-
             const header = document.querySelector('#header');
 
             const topbar = document.querySelector('#topbar');
@@ -696,6 +696,106 @@ if (!empty($logo_path)) {
         });
 
     </script>
+
+    <?php
+    $is_birthday = false;
+    if ($user_birthday) {
+        $bd_parts = explode('-', (string)$user_birthday);
+        if (count($bd_parts) == 3) {
+            $b_month = $bd_parts[1];
+            $b_day = $bd_parts[2];
+            // Compare month and day
+            if (date('m') == $b_month && date('d') == $b_day) {
+                $is_birthday = true;
+            }
+        }
+    }
+    if ($is_birthday):
+    ?>
+    <!-- BIRTHDAY SURPRISE EFFECT -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if(!sessionStorage.getItem('birthday_greeted')) {
+                var duration = 5000;
+                var end = Date.now() + duration;
+                (function frame() {
+                    confetti({
+                        particleCount: 5,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: ['#cda45e', '#ffffff']
+                    });
+                    confetti({
+                        particleCount: 5,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: ['#cda45e', '#ffffff']
+                    });
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
+                }());
+                // Create a custom Toast notification
+                var toastHTML = '<div id="bdToast" style="position:fixed;top:120px;right:20px;z-index:99999;background:rgba(9,30,27,0.98);border:1px solid #cda45e;padding:25px;border-radius:12px;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,0.6);transform:translateX(150%);transition:0.6s cubic-bezier(0.34, 1.56, 0.64, 1);max-width:320px;text-align:center;">'+
+                '<i class="fas fa-gift fa-3x mb-3" style="color:#cda45e"></i>'+
+                '<h4 style="font-family:\'Cormorant Garamond\',serif;color:#cda45e;margin-bottom:12px;font-size:1.5rem">Chúc Mừng Sinh Nhật!</h4>'+
+                '<p style="font-size:13px;margin:0;line-height:1.6;color:rgba(255,255,255,0.85)">Hệ thống ghi nhận hôm nay là sinh nhật của Quý khách. Nền tảng đã chuẩn bị sẵn đặc quyền ưu đãi dành riêng cho Đơn đặt bàn ngày hôm nay!</p>'+
+                '</div>';
+                document.body.insertAdjacentHTML('beforeend', toastHTML);
+                setTimeout(function(){ document.getElementById('bdToast').style.transform = 'translateX(0)'; }, 500);
+                setTimeout(function(){ document.getElementById('bdToast').style.transform = 'translateX(150%)'; }, 8000);
+                sessionStorage.setItem('birthday_greeted', '1');
+            }
+        });
+    </script>
+    <?php endif; ?>
+
+    <?php
+    // HOLIDAY LOGIC
+    $is_holiday = false;
+    $holiday_name = "";
+    $holiday_msg = "";
+    $h_month = date('m');
+    $h_day = date('d');
+
+    if ($h_month == '02' && $h_day == '14') {
+        $is_holiday = true;
+        $holiday_name = "Lễ Tình Nhân (Valentine's Day)";
+        $holiday_msg = "Chúc Quý khách một mùa Valentine ấm áp. Đừng quên thiết kế một bàn tiệc lãng mạn dành tặng người thương nhé!";
+        $holiday_icon = "fa-heart text-danger";
+    } elseif ($h_month == '03' && $h_day == '08') {
+        $is_holiday = true;
+        $holiday_name = "Quốc Tế Phụ Nữ 8/3";
+        $holiday_msg = "Tôn vinh phái đẹp! Hãy để chúng tôi mang đến trải nghiệm Fine Dining hoàn hảo nhất cho những người phụ nữ tuyệt vời của bạn.";
+        $holiday_icon = "fa-female text-danger";
+    } elseif ($h_month == '12' && $h_day == '24' || $h_day == '25') {
+        $is_holiday = true;
+        $holiday_name = "Giáng Sinh An Lành";
+        $holiday_msg = "Merry Christmas! Hệ thống đã mở các Gói thiết kế Không gian Mùa đông độc quyền. Chúc Quý khách một mùa lễ hội an lành!";
+        $holiday_icon = "fa-snowflake text-info";
+    }
+
+    if ($is_holiday && !$is_birthday): // Avoid showing 2 toasts if born on a holiday
+    ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if(!sessionStorage.getItem('holiday_greeted_' + '<?= $h_month.$h_day ?>')) {
+                var toastHTML = '<div id="holToast" style="position:fixed;top:120px;right:20px;z-index:99999;background:rgba(9,30,27,0.98);border:1px solid #cda45e;padding:25px;border-radius:12px;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,0.6);transform:translateX(150%);transition:0.6s cubic-bezier(0.34, 1.56, 0.64, 1);max-width:320px;text-align:center;">'+
+                '<i class="fas <?= $holiday_icon ?> fa-3x mb-3"></i>'+
+                '<h4 style="font-family:\'Cormorant Garamond\',serif;color:#cda45e;margin-bottom:12px;font-size:1.5rem"><?= $holiday_name ?></h4>'+
+                '<p style="font-size:13px;margin:0;line-height:1.6;color:rgba(255,255,255,0.85)"><?= $holiday_msg ?></p>'+
+                '</div>';
+                document.body.insertAdjacentHTML('beforeend', toastHTML);
+                setTimeout(function(){ document.getElementById('holToast').style.transform = 'translateX(0)'; }, 500);
+                setTimeout(function(){ document.getElementById('holToast').style.transform = 'translateX(150%)'; }, 8000);
+                sessionStorage.setItem('holiday_greeted_' + '<?= $h_month.$h_day ?>', '1');
+            }
+        });
+    </script>
+    <?php endif; ?>
 
 </body>
 

@@ -11,8 +11,8 @@ $booking_id = (int)$_GET['id'];
 
 // Xử lý POST (Xác nhận đã thanh toán)
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirm_payment'])) {
-    // Đổi trạng thái sang Confirmed
-    $db->prepare("UPDATE service_bookings SET status = 'Confirmed' WHERE id = ?")->execute([$booking_id]);
+    // Xóa cơ chế Auto-Confirm (Tự động Xác nhận). Hệ thống sẽ giữ nguyên trạng thái Pending để Admin duyệt.
+    // Lễ tân/Admin sẽ duyệt thủ công trên trang Quản lý.
     
     // Gửi thông báo Telegram
     require_once 'config/notification_helper.php';
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirm_payment'])) {
         $msg .= "🧾 Mã đơn: <b>#{$booking_id}</b>\n";
         $msg .= "👤 Khách hàng: <b>{$bk['customer_name']}</b>\n";
         $msg .= "💵 Số tiền: <b>" . number_format($bk['deposit_amount']) . " VNĐ</b>\n";
-        $msg .= "✅ Trạng thái đơn đã được tự động cập nhật sang Confirmed.";
+        $msg .= "✅ Hệ thống đang chờ Admin duyệt (Pending) trên hệ thống.";
         @sendTelegramNotification($msg);
     }
     

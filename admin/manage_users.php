@@ -27,6 +27,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $salary = floatval(str_replace(',', '', $_POST['salary'] ?? 0));
         $status = $_POST['status'] ?? 'working';
 
+        // Auto Role Mapping based on Position
+        $mapped_role = 'staff';
+        if (mb_stripos($position, 'Quản lý') !== false) {
+            $mapped_role = 'admin';
+        } elseif (mb_stripos($position, 'bếp') !== false) {
+            $mapped_role = 'chef';
+        } elseif (mb_stripos($position, 'Thu ngân') !== false) {
+            $mapped_role = 'cashier';
+        } elseif (mb_stripos($position, 'Phục vụ') !== false || mb_stripos($position, 'Pha chế') !== false || mb_stripos($position, 'Lễ tân') !== false) {
+            $mapped_role = 'waiter';
+        }
+
         if (empty($full_name)) {
             $message_error = "Vui lòng nhập họ tên nhân viên.";
         } else {
@@ -54,8 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             // Lấy phần trước @ của email làm username mặc định
                             $username = explode('@', $email)[0] . '_' . rand(10, 99); 
                             
-                            $stmt_user = $db->prepare("INSERT INTO users (username, email, password, full_name, role, employee_id) VALUES (?, ?, ?, ?, 'staff', ?)");
-                            $stmt_user->execute([$username, $email, $default_password, $full_name, $employee_id]);
+                            $stmt_user = $db->prepare("INSERT INTO users (username, email, password, full_name, role, employee_id) VALUES (?, ?, ?, ?, ?, ?)");
+                            $stmt_user->execute([$username, $email, $default_password, $full_name, $mapped_role, $employee_id]);
                         }
                     } else {
                         $message_error = "Có lỗi xảy ra khi thêm nhân sự: " . implode(" - ", $stmt->errorInfo());
@@ -69,6 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $success = $stmt->execute([$full_name, $phone, $email, $identity_card, $address, $dob, $gender, $position, $salary, $status, $id]);
                     }
                     if ($success) {
+                        // Update corresponding user's role and full_name if exists
+                        $db->prepare("UPDATE users SET role = ?, full_name = ? WHERE employee_id = ?")->execute([$mapped_role, $full_name, $id]);
                         $message_success = "Cập nhật thông tin nhân sự thành công.";
                     } else {
                         $message_error = "Có lỗi xảy ra khi cập nhật: " . implode(" - ", $stmt->errorInfo());

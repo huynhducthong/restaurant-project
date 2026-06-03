@@ -37,6 +37,14 @@ if (!function_exists('isActive')) {
     }
 }
 
+// Hàm kiểm tra quyền hiển thị menu
+if (!function_exists('checkMenuAccess')) {
+    function checkMenuAccess($user_role, $allowed_roles) {
+        if ($user_role === 'admin' || $user_role == 1) return true;
+        return in_array($user_role, $allowed_roles);
+    }
+}
+
 // Fetch pending counts and alerts
 $pending_transfers_count = 0;
 $pending_services_count = 0;
@@ -84,14 +92,23 @@ try {
         :root {
             --sidebar-bg: #ffffff;
             --sidebar-border: #f0ebe3;
-            --accent-color: #b8862e;
-            --accent-light: #fdf6e9;
-            --accent-mid: #f5e8c8;
-            --text-dark: #1a1612;
-            --text-muted: #8a7f72;
-            --bg-main: #f7f5f2;
             --topbar-bg: #ffffff;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+
+            --accent-color: #e0b876;
+            --accent-green: #1b5e20; /* Xanh lá rêu đậm chuẩn, không bị ngả xanh dương */
+            --accent-green-light: #2e7d32;
+            
+            /* Dành cho nền sáng (Sidebar, Topbar) */
+            --text-sidebar: #1a1612;
+            --text-sidebar-muted: #8a7f72;
+            
+            /* Dành cho nền sáng (Main Content) */
+            --text-main: #1a1612;
+            --text-muted: #8a7f72;
+            
+            --bg-main: #f4f6f5; /* Hơi ngả xanh xám cho đồng bộ */
+            
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
             --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.07);
         }
 
@@ -103,7 +120,7 @@ try {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg-main);
             overflow-x: hidden;
-            color: var(--text-dark);
+            color: var(--text-main);
         }
 
         /* ── SIDEBAR ── */
@@ -133,28 +150,28 @@ try {
         .brand-icon {
             width: 42px;
             height: 42px;
-            background: linear-gradient(135deg, #b8862e, #e0b060);
+            background: var(--accent-green);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
+            color: var(--accent-color);
             font-size: 18px;
             flex-shrink: 0;
-            box-shadow: 0 4px 12px rgba(184, 134, 46, 0.35);
+            border: 1px solid var(--accent-green-light);
         }
 
         .brand-text h2 {
             font-size: 15px;
             font-weight: 700;
-            color: var(--text-dark);
+            color: var(--text-sidebar);
             margin: 0;
             letter-spacing: 1.2px;
         }
 
         .brand-text span {
             font-size: 11px;
-            color: var(--text-muted);
+            color: var(--text-sidebar-muted);
             font-weight: 500;
             letter-spacing: 0.3px;
         }
@@ -185,11 +202,12 @@ try {
             display: flex;
             align-items: center;
             padding: 11px 14px;
-            color: var(--text-muted);
+            color: var(--text-sidebar-muted);
             text-decoration: none;
             font-size: 13.5px;
             font-weight: 500;
-            border-radius: 10px;
+            border-left: 3px solid transparent; /* Tránh giật layout khi thêm border */
+            border-radius: 0 10px 10px 0;
             transition: all 0.2s ease;
             margin-bottom: 2px;
             gap: 11px;
@@ -203,15 +221,16 @@ try {
         }
 
         .menu-list li a:hover {
-            background-color: var(--accent-light);
-            color: var(--accent-color);
+            background-color: var(--accent-green-light);
+            color: #ffffff;
         }
 
         .menu-list li.active a {
-            background: linear-gradient(135deg, var(--accent-light), #fcefd4);
-            color: var(--accent-color);
+            background: var(--accent-green);
+            color: #ffffff;
             font-weight: 600;
-            box-shadow: 0 2px 8px rgba(184, 134, 46, 0.12);
+            border-left: 3px solid var(--accent-color);
+            border-radius: 0 10px 10px 0;
         }
 
         .menu-list li.active a i {
@@ -225,8 +244,8 @@ try {
             gap: 10px;
             margin: 0 14px 8px;
             padding: 10px 14px;
-            background: var(--accent-light);
-            border: 1.5px dashed #d4aa5a;
+            background: transparent;
+            border: 1px solid var(--accent-mid);
             border-radius: 10px;
             color: var(--accent-color) !important;
             font-size: 12.5px;
@@ -237,7 +256,7 @@ try {
         }
 
         .view-home-btn:hover {
-            background: var(--accent-mid);
+            background: var(--accent-light);
         }
 
         /* Menu section header */
@@ -246,7 +265,7 @@ try {
             font-size: 10.5px;
             font-weight: 700;
             text-transform: uppercase;
-            color: #c4b89e;
+            color: #b0a491;
             letter-spacing: 1.4px;
         }
 
@@ -262,18 +281,17 @@ try {
             gap: 10px;
             padding: 11px 14px;
             border-radius: 10px;
-            background: #fff5f5;
-            color: #d64545 !important;
+            background: rgba(214, 69, 69, 0.1);
+            color: #ff6b6b !important;
             text-decoration: none;
             font-size: 13.5px;
             font-weight: 600;
-            border: 1px solid #fdd;
+            border: 1px solid rgba(214, 69, 69, 0.2);
             transition: all 0.2s;
         }
 
         .logout-btn:hover {
-            background: #ffe8e8;
-            border-color: #f5b8b8;
+            background: rgba(214, 69, 69, 0.2);
         }
 
         /* ── MAIN WRAPPER ── */
@@ -292,7 +310,7 @@ try {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid #ede8e0;
+            border-bottom: 1px solid var(--sidebar-border);
             box-shadow: var(--shadow-sm);
             position: sticky;
             top: 0;
@@ -302,7 +320,7 @@ try {
         .topbar-title {
             font-size: 17px;
             font-weight: 700;
-            color: var(--text-dark);
+            color: var(--text-sidebar);
             margin: 0;
             display: flex;
             align-items: center;
@@ -314,7 +332,7 @@ try {
             display: inline-block;
             width: 4px;
             height: 20px;
-            background: linear-gradient(180deg, #b8862e, #e0b060);
+            background: var(--accent-color);
             border-radius: 4px;
         }
 
@@ -333,7 +351,7 @@ try {
             display: block;
             font-size: 14px;
             font-weight: 600;
-            color: var(--text-dark);
+            color: var(--text-sidebar);
         }
 
         .badge-admin {
@@ -341,8 +359,9 @@ try {
             font-weight: 600;
             padding: 3px 10px;
             border-radius: 20px;
-            background: linear-gradient(135deg, #b8862e, #e0b060);
-            color: #fff;
+            background: var(--accent-light);
+            color: var(--accent-color);
+            border: 1px solid var(--accent-mid);
             letter-spacing: 0.3px;
         }
 
@@ -356,18 +375,16 @@ try {
             letter-spacing: 0.3px;
         }
 
-        .user-avatar {
             width: 42px;
             height: 42px;
-            background: linear-gradient(135deg, #b8862e, #e0b060);
+            background: var(--accent-light);
+            border: 1px solid var(--accent-mid);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
+            color: var(--accent-color);
             font-size: 16px;
-            box-shadow: 0 3px 10px rgba(184, 134, 46, 0.3);
-        }
 
         /* Content */
         .content-area {
@@ -470,6 +487,7 @@ try {
                     </a>
                 </li>
 
+                <?php if (checkMenuAccess($user_role, ['chef', 'waiter', 'cashier'])): ?>
                 <li class="<?= isActive('FoodController.php') ?>">
                     <a href="/restaurant-project/admin/controllers/FoodController.php">
                         <i class="fas fa-utensils"></i> Quản lý Món ăn
@@ -481,7 +499,9 @@ try {
                         <i class="fas fa-layer-group"></i> Quản lý Combo
                     </a>
                 </li>
+                <?php endif; ?>
 
+                <?php if (checkMenuAccess($user_role, ['waiter', 'cashier'])): ?>
                 <li class="<?= isActive('manage_services.php') ?>">
                     <a href="/restaurant-project/admin/controllers/manage_services.php">
                         <i class="fas fa-concierge-bell"></i>
@@ -491,7 +511,16 @@ try {
                         <?php endif; ?>
                     </a>
                 </li>
+                <?php endif; ?>
 
+                <?php if (checkMenuAccess($user_role, ['chef'])): ?>
+                <li class="<?= isActive('kds.php') ?>">
+                    <a href="/restaurant-project/kds.php" target="_blank" style="color: #e0b060; font-weight: 600;">
+                        <i class="fas fa-fire-burner"></i>
+                        <span>Màn Hình Bếp (KDS)</span>
+                    </a>
+                </li>
+                
                 <li class="<?= ($current_page == 'manage_inventory.php') ? 'active' : isActive('InventoryController.php') ?>">
                     <a href="/restaurant-project/admin/controllers/InventoryController.php">
                         <i class="fas fa-warehouse"></i>
@@ -501,12 +530,15 @@ try {
                         <?php endif; ?>
                     </a>
                 </li>
+                <?php endif; ?>
 
+                <?php if (checkMenuAccess($user_role, ['chef', 'cashier'])): ?>
                 <li class="<?= isActive('ReportController.php') ?>">
                     <a href="/restaurant-project/admin/controllers/ReportController.php">
                         <i class="fas fa-chart-line"></i> Báo cáo & Thống kê
                     </a>
                 </li>
+                <?php endif; ?>
 
                 <li class="<?= ($current_page == 'manage_videos.php') ? 'active' : '' ?>">
                     <a href="/restaurant-project/admin/controllers/manage_videos.php">
@@ -514,17 +546,21 @@ try {
                     </a>
                 </li>
 
+                <?php if (checkMenuAccess($user_role, ['chef'])): ?>
                 <li class="<?= isActive('manage_chefs.php') ?>">
                     <a href="/restaurant-project/admin/manage_chefs.php">
                         <i class="fas fa-users"></i> Quản lý Đầu bếp
                     </a>
                 </li>
+                <?php endif; ?>
 
+                <?php if (checkMenuAccess($user_role, ['waiter', 'cashier'])): ?>
                 <li class="<?= isActive('manage_contacts.php') ?>">
                     <a href="/restaurant-project/admin/manage_contacts.php">
                         <i class="fas fa-envelope"></i> Quản lý Liên hệ
                     </a>
                 </li>
+                <?php endif; ?>
 
                 <!-- Chỉ Admin mới thấy phần Cấu hình -->
                 <?php if ($is_admin): ?>
@@ -541,6 +577,8 @@ try {
                         <i class="fas fa-image"></i> Quản lý Banner
                     </a>
                 </li>
+
+
 
                 <li class="<?= isActive('manage_about.php') ?>">
                     <a href="/restaurant-project/admin/manage_about.php">
