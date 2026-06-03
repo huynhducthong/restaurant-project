@@ -480,8 +480,6 @@ include __DIR__ . '/views/client/layouts/header.php';
         <?php endif; ?>
       </div>
     </div>
-  </section>
-
   <section id="chefs" class="chefs" style="background: #143B36; padding: 140px 0;">
     <div class="container">
       <div class="section-title text-center mb-5">
