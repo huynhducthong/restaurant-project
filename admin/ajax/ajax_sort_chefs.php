@@ -26,6 +26,9 @@ if (!verify_csrf()) {
     exit;
 }
 
+// FIX: Giải phóng session sau khi xác thực thành công để cho phép request khác chạy song song
+session_write_close();
+
 // Đọc dữ liệu JSON
 $input  = json_decode(file_get_contents('php://input'), true);
 $orders = $input['orders'] ?? [];
@@ -55,3 +58,4 @@ try {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
+?>

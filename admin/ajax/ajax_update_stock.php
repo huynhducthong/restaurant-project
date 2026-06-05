@@ -1,4 +1,12 @@
 <?php
+// FIX: Phải khởi tạo session mới lấy được $_SESSION['username']
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+// Lấy username ra biến riêng rồi đóng session ngay
+$current_user = $_SESSION['username'] ?? 'Admin';
+session_write_close();
+
 require_once __DIR__ . '/../../config/database.php';
 
 // 1. Thiết lập phản hồi trả về dạng JSON
@@ -25,10 +33,10 @@ try {
         $stmt_update = $db->prepare($query_update);
         $stmt_update->execute([$item_id, $quantity, $quantity]);
 
-        // Bước B: Ghi lại lịch sử nhập kho vào bảng inventory_history
+        // Bước B: Ghi lại lịch sử nhập kho vào bảng inventory_history (Dùng biến $current_user đã lấy ở trên)
         $query_history = "INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, 1, 'import', ?, ?)";
         $stmt_history = $db->prepare($query_history);
-        $stmt_history->execute([$item_id, $quantity, $_SESSION['username'] ?? 'Admin']);
+        $stmt_history->execute([$item_id, $quantity, $current_user]);
 
         // 4. Hoàn tất lưu dữ liệu
         $db->commit();
@@ -52,3 +60,4 @@ try {
         'message' => 'Lỗi hệ thống: ' . $e->getMessage()
     ]);
 }
+?>

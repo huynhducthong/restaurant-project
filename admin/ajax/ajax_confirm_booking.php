@@ -1,6 +1,10 @@
 <?php
 // File: admin/controllers/ajax_confirm_booking.php
 session_start();
+// FIX 1: Lưu tạm biến session và giải phóng ngay lập tức để không gây treo web
+$current_user = $_SESSION['username'] ?? ($_SESSION['user_name'] ?? 'Admin');
+session_write_close(); 
+
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../config/inventory_helper.php';
 require_once __DIR__ . '/../../config/notification_helper.php';
@@ -8,7 +12,6 @@ header('Content-Type: application/json');
 
 try {
     $db = (new Database())->getConnection();
-    $current_user = $_SESSION['username'] ?? ($_SESSION['user_name'] ?? 'Admin');
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['booking_id'])) {
         $booking_id = (int)$_POST['booking_id'];
@@ -35,20 +38,30 @@ try {
         $stmt_items->execute([$booking_id]);
         $ordered_items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
 
-        // Chuẩn bị sẵn các câu lệnh SQL (Đã JOIN để lấy đơn vị tồn kho i_unit và category)
-        $query_recipe = $db->prepare("
-            SELECT r.ingredient_id, r.quantity_required, r.unit as r_unit, i.unit_name as i_unit, i.category
-            FROM food_recipes r
-            JOIN inventory i ON r.ingredient_id = i.id
-            WHERE r.food_id = ?
-        ");
-        
+        // FIX 2: TRIỆT TIÊU LỖI N+1 QUERY - Lấy TẤT CẢ công thức trong 1 lần gọi DB duy nhất
+        $recipes_by_food = [];
+        $food_ids = array_column($ordered_items, 'menu_id');
+        if (!empty($food_ids)) {
+            $placeholders = implode(',', array_fill(0, count($food_ids), '?'));
+            $query_recipe = $db->prepare("
+                SELECT r.food_id, r.ingredient_id, r.quantity_required, r.unit as r_unit, i.unit_name as i_unit, i.category
+                FROM food_recipes r
+                JOIN inventory i ON r.ingredient_id = i.id
+                WHERE r.food_id IN ($placeholders)
+            ");
+            $query_recipe->execute($food_ids);
+            while ($row = $query_recipe->fetch(PDO::FETCH_ASSOC)) {
+                $recipes_by_food[$row['food_id']][] = $row;
+            }
+        }
+
         $query_check_stock = $db->prepare("
             SELECT quantity
             FROM inventory_stocks
             WHERE ingredient_id = ? AND warehouse_id = ?
             FOR UPDATE
         ");
+        
         $query_update_inventory = $db->prepare("
             UPDATE inventory_stocks
             SET quantity = quantity - ?
@@ -66,9 +79,8 @@ try {
             $food_id = $item['menu_id'];
             $food_qty = (float)$item['quantity'];
 
-            // Tìm định mức nguyên liệu (Recipe)
-            $query_recipe->execute([$food_id]);
-            $recipes = $query_recipe->fetchAll(PDO::FETCH_ASSOC);
+            // Lấy công thức từ mảng PHP thay vì gọi DB
+            $recipes = $recipes_by_food[$food_id] ?? [];
 
             // Duyệt qua từng nguyên liệu trong định mức
             foreach ($recipes as $r) {
@@ -139,11 +151,12 @@ try {
             $msg .= "💰 Tổng: <b>{$money_total} VNĐ</b>\n";
             $msg .= "🧾 Cọc (30%): <b>{$money_dep} VNĐ</b>\n";
             $msg .= "👤 Xác nhận bởi: <b>{$who}</b>\n";
+            
+            // FIX: Hàm này bắt buộc phải có Timeout (xem mục 5 bên dưới)
             @sendTelegramNotification($msg);
         }
 
         echo json_encode(['status' => 'success', 'message' => 'Xác nhận đơn và trừ kho thành công!']);
-
 
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Yêu cầu không hợp lệ.']);

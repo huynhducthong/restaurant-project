@@ -35,9 +35,11 @@ $links = $db->query("SELECT * FROM footer_links ORDER BY priority ASC")->fetchAl
     .footer-admin .btn-outline-gold { border: 1px solid var(--gold); color: var(--gold); }
     .footer-admin .btn-outline-gold:hover { background: var(--gold); color: #fff; }
     .live-preview-wrapper { position: sticky; top: 20px; }
-    .live-preview { background: #0c0b09; color: #fff; border-radius: 12px; padding: 30px; min-height: 300px; }
-    .live-preview h4 { color: var(--gold); }
-    .live-preview .mock-links a { display: inline-block; margin: 4px; padding: 4px 12px; border: 1px solid var(--gold); border-radius: 20px; font-size: 12px; color: #fff; text-decoration: none; }
+    .live-preview { background: #0c0b09; color: #fff; border-radius: 12px; padding: 30px; min-height: 300px; font-family: 'Playfair Display', serif; }
+    .live-preview h4 { color: #fff; font-size: 18px; margin-bottom: 15px; font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 1px; font-weight: 500;}
+    .live-preview p, .live-preview span { font-size: 13px; color: #ccc; line-height: 1.6; }
+    .live-preview .social-icons i { margin-right: 10px; font-size: 16px; color: #fff; }
+    .live-preview .mock-links a { display: block; margin-bottom: 8px; font-size: 13px; color: #ccc; text-decoration: none; }
     .link-table th, .link-table td { vertical-align: middle; }
 </style>
 
@@ -85,19 +87,19 @@ $links = $db->query("SELECT * FROM footer_links ORDER BY priority ASC")->fetchAl
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="small text-muted"><i class="fab fa-facebook text-primary"></i> Facebook</label>
-                            <input type="url" name="facebook_url" class="form-control" placeholder="https://facebook.com/..." value="<?= htmlspecialchars($ft['facebook_url'] ?? '') ?>">
+                            <input type="text" name="facebook_url" class="form-control" placeholder="https://facebook.com/..." value="<?= htmlspecialchars($ft['facebook_url'] ?? '') ?>">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="small text-muted"><i class="fab fa-instagram text-danger"></i> Instagram</label>
-                            <input type="url" name="instagram_url" class="form-control" placeholder="https://instagram.com/..." value="<?= htmlspecialchars($ft['instagram_url'] ?? '') ?>">
+                            <input type="text" name="instagram_url" class="form-control" placeholder="https://instagram.com/..." value="<?= htmlspecialchars($ft['instagram_url'] ?? '') ?>">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="small text-muted"><i class="fab fa-tiktok text-dark"></i> TikTok</label>
-                            <input type="url" name="tiktok_url" class="form-control" placeholder="https://tiktok.com/..." value="<?= htmlspecialchars($ft['tiktok_url'] ?? '') ?>">
+                            <input type="text" name="tiktok_url" class="form-control" placeholder="https://tiktok.com/..." value="<?= htmlspecialchars($ft['tiktok_url'] ?? '') ?>">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="small text-muted"><i class="fas fa-comment-dots text-info"></i> Zalo</label>
-                            <input type="url" name="zalo_url" class="form-control" placeholder="https://zalo.me/..." value="<?= htmlspecialchars($ft['zalo_url'] ?? '') ?>">
+                            <input type="text" name="zalo_url" class="form-control" placeholder="https://zalo.me/..." value="<?= htmlspecialchars($ft['zalo_url'] ?? '') ?>">
                         </div>
                     </div>
                 </div>
@@ -125,14 +127,17 @@ $links = $db->query("SELECT * FROM footer_links ORDER BY priority ASC")->fetchAl
                     <div class="col-md-2"><button class="btn btn-outline-gold w-100" onclick="addLink()">Thêm</button></div>
                 </div>
                 <table class="table link-table">
-                    <thead><tr><th>Tiêu đề</th><th>URL</th><th>Thứ tự</th><th></th></tr></thead>
+                    <thead><tr><th>Tiêu đề</th><th>URL</th><th>Thứ tự</th><th>Thao tác</th></tr></thead>
                     <tbody>
                         <?php foreach ($links as $l): ?>
                             <tr data-id="<?= $l['id'] ?>">
-                                <td><?= htmlspecialchars($l['title']) ?></td>
-                                <td><?= htmlspecialchars($l['url']) ?></td>
+                                <td><input type="text" class="form-control form-control-sm" id="title_<?= $l['id'] ?>" value="<?= htmlspecialchars($l['title']) ?>"></td>
+                                <td><input type="text" class="form-control form-control-sm" id="url_<?= $l['id'] ?>" value="<?= htmlspecialchars($l['url']) ?>"></td>
                                 <td><input type="number" class="form-control form-control-sm" value="<?= $l['priority'] ?>" onchange="updatePriority(<?= $l['id'] ?>, this.value)" style="width:80px"></td>
-                                <td><button class="btn btn-sm btn-outline-danger" onclick="deleteLink(<?= $l['id'] ?>)"><i class="fas fa-trash"></i></button></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="editLink(<?= $l['id'] ?>)"><i class="fas fa-save"></i></button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteLink(<?= $l['id'] ?>)"><i class="fas fa-trash"></i></button>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -145,12 +150,44 @@ $links = $db->query("SELECT * FROM footer_links ORDER BY priority ASC")->fetchAl
             <div class="live-preview-wrapper">
                 <h5 class="mb-3">Xem trước Footer</h5>
                 <div class="live-preview" id="previewFooter">
-                    <div id="previewLogo" class="mb-2"></div>
-                    <h4 id="previewName"><?= htmlspecialchars($ft['restaurant_name'] ?? 'Restaurantly') ?></h4>
-                    <p id="previewDesc"><?= nl2br(htmlspecialchars($ft['footer_description'] ?? '')) ?></p>
-                    <div class="mock-links mb-2" id="previewLinks"></div>
-                    <div class="mb-2"><i class="fas fa-map-marker-alt"></i> <span id="previewAddr"><?= htmlspecialchars($ft['address'] ?? '') ?></span></div>
-                    <div><i class="fas fa-phone"></i> <span id="previewPhone"><?= htmlspecialchars($ft['phone'] ?? '') ?></span></div>
+                    <div class="row">
+                        <div class="col-sm-4 mb-3">
+                            <h4 id="previewName" style="color: #fff; font-family: 'Playfair Display', serif; text-transform: none; font-size: 20px;"><?= htmlspecialchars($ft['restaurant_name'] ?? 'Restaurantly') ?></h4>
+                            <p id="previewDesc" class="mb-3"><?= nl2br(htmlspecialchars($ft['footer_description'] ?? '')) ?></p>
+                            
+                            <div class="mb-1"><i class="fas fa-map-marker-alt" style="width: 15px;"></i> <span id="previewAddr"><?= htmlspecialchars($ft['address'] ?? '') ?></span></div>
+                            <div class="mb-1"><i class="fas fa-phone" style="width: 15px;"></i> <span id="previewPhone"><?= htmlspecialchars($ft['phone'] ?? '') ?></span></div>
+                            <div class="mb-3"><i class="fas fa-envelope" style="width: 15px;"></i> <span id="previewEmail"><?= htmlspecialchars($ft['email'] ?? '') ?></span></div>
+                            
+                            <div class="social-icons" id="previewSocials" style="<?= ($ft['show_social'] ?? '0') == '1' ? '' : 'display:none;' ?>">
+                                <i class="fab fa-facebook-f" id="icon-fb" style="<?= empty($ft['facebook_url']) ? 'display:none;' : '' ?>"></i>
+                                <i class="fab fa-instagram" id="icon-ig" style="<?= empty($ft['instagram_url']) ? 'display:none;' : '' ?>"></i>
+                                <i class="fab fa-tiktok" id="icon-tt" style="<?= empty($ft['tiktok_url']) ? 'display:none;' : '' ?>"></i>
+                                <i class="fas fa-comment-dots" id="icon-zl" style="<?= empty($ft['zalo_url']) ? 'display:none;' : '' ?>"></i>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 mb-3">
+                            <h4>LIÊN KẾT NHANH</h4>
+                            <div class="mock-links mb-2" id="previewLinks">
+                                <?php foreach ($links as $l): ?>
+                                    <a href="#"><?= htmlspecialchars($l['title']) ?></a>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 mb-3">
+                            <h4>GIỜ MỞ CỬA</h4>
+                            <div id="previewHours" style="white-space: pre-line; font-size: 13px; color: #ccc; line-height: 2; margin-bottom: 20px;">
+                                <?= htmlspecialchars($ft['opening_hours'] ?? "Thứ 2: Nghỉ định kỳ\nThứ 3 - Thứ 6: 10:00 AM - 10:00 PM") ?>
+                            </div>
+                            
+                            <div id="previewMapBox" style="<?= ($ft['show_map'] ?? '0') == '1' ? '' : 'display:none;' ?> position: relative; width: 100%; height: 80px; background: rgba(255,255,255,0.1); border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                <span style="font-size: 11px; color: #fff;">🗺️ Bản đồ Google</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: 20px; padding-top: 15px; text-align: center;">
+                        <span id="previewCopyright" style="font-size: 12px; color: #aaa;"><?= htmlspecialchars($ft['copyright_text'] ?? '© 2026 Restaurantly.') ?></span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -164,13 +201,36 @@ function updatePreview() {
     const bg = $('[name="footer_bg_color"]').val();
     const textColor = $('[name="footer_text_color"]').val();
     $('#previewFooter').css({ backgroundColor: bg, color: textColor });
+    $('#previewFooter').find('h4, i, p, span').css('color', textColor);
+    
     $('#previewName').text($('[name="restaurant_name"]').val() || 'Restaurantly');
     $('#previewDesc').html(($('[name="footer_description"]').val() || '').replace(/\n/g,'<br>'));
     $('#previewAddr').text($('[name="address"]').val() || '');
     $('#previewPhone').text($('[name="phone"]').val() || '');
+    $('#previewEmail').text($('[name="email"]').val() || '');
+    $('#previewHours').text($('[name="opening_hours"]').val() || '');
+    $('#previewCopyright').text($('[name="copyright_text"]').val() || '');
+    
+    // Xử lý ẩn/hiện social icons
+    if($('[name="show_social"]').is(':checked')) {
+        $('#previewSocials').show();
+        $('[name="facebook_url"]').val() ? $('#icon-fb').show() : $('#icon-fb').hide();
+        $('[name="instagram_url"]').val() ? $('#icon-ig').show() : $('#icon-ig').hide();
+        $('[name="tiktok_url"]').val() ? $('#icon-tt').show() : $('#icon-tt').hide();
+        $('[name="zalo_url"]').val() ? $('#icon-zl').show() : $('#icon-zl').hide();
+    } else {
+        $('#previewSocials').hide();
+    }
+    
+    // Xử lý ẩn/hiện map
+    if($('[name="show_map"]').is(':checked')) {
+        $('#previewMapBox').show();
+    } else {
+        $('#previewMapBox').hide();
+    }
 }
 
-$('input, textarea').on('input', updatePreview);
+$('input, textarea').on('input change', updatePreview);
 updatePreview();
 
 // AJAX quản lý links (giữ nguyên)
@@ -179,11 +239,24 @@ function addLink() {
     const url = $('#linkUrl').val().trim();
     const p = $('#linkPriority').val() || 0;
     if (!title || !url) return alert('Nhập đầy đủ');
-    $.post('ajax_footer_links.php', { action: 'add', title, url, priority: p }, function(r) {
+    $.post('ajax/ajax_footer_links.php', { action: 'add', title, url, priority: p }, function(r) {
         if (r.status === 'success') location.reload();
         else alert(r.message);
     }, 'json');
 }
-function deleteLink(id) { if (confirm('Xóa?')) $.post('ajax_footer_links.php', { action: 'delete', id }, () => location.reload()); }
-function updatePriority(id, v) { $.post('ajax_footer_links.php', { action: 'update', id, priority: v }); }
+function deleteLink(id) { if (confirm('Xóa?')) $.post('ajax/ajax_footer_links.php', { action: 'delete', id }, () => location.reload()); }
+function updatePriority(id, v) { $.post('ajax/ajax_footer_links.php', { action: 'update', id, priority: v }); }
+function editLink(id) {
+    const title = $('#title_'+id).val().trim();
+    const url = $('#url_'+id).val().trim();
+    if (!title || !url) return alert('Nhập đầy đủ Tiêu đề và URL');
+    $.post('ajax/ajax_footer_links.php', { action: 'edit', id: id, title: title, url: url }, function(r) {
+        if (r.status === 'success') {
+            alert('Cập nhật thành công!');
+            location.reload();
+        } else {
+            alert(r.message);
+        }
+    }, 'json');
+}
 </script>
