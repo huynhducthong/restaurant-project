@@ -252,9 +252,13 @@ include __DIR__ . '/views/client/layouts/header.php';
     $row1  = array_slice($all_foods, 0, $half);
     $row2  = array_slice($all_foods, $half);
 
-    // Nếu ít hơn 6 món, nhân đôi để đủ ảnh chạy đẹp
-    while (count($row1) < 6) $row1 = array_merge($row1, $row1);
-    while (count($row2) < 6) $row2 = array_merge($row2, $row2);
+    // Nếu ít hơn 6 món và có dữ liệu, nhân đôi để đủ ảnh chạy đẹp (Tránh lỗi lặp vô hạn nếu mảng rỗng)
+    if (count($row1) > 0) {
+        while (count($row1) < 6) $row1 = array_merge($row1, $row1);
+    }
+    if (count($row2) > 0) {
+        while (count($row2) < 6) $row2 = array_merge($row2, $row2);
+    }
     ?>
 
     <!-- Tiêu đề -->

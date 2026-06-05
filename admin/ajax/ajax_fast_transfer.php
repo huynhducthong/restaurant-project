@@ -6,13 +6,16 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// FIX: Giải phóng session ngay sau khi kiểm tra xong
+$current_user = $_SESSION['username'] ?? 'Admin';
+session_write_close(); 
+
 // admin/ajax/ajax_fast_transfer.php
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../config/notification_helper.php';
 header('Content-Type: application/json');
 
 $db = (new Database())->getConnection();
-$current_user = $_SESSION['username'] ?? 'Admin';
 
 try {
     // Lấy dữ liệu từ POST
@@ -127,6 +130,8 @@ try {
             $msg .= implode("\n", $b['lines']) . "\n\n";
         }
         $msg .= "👉 <i>Ghi chú: chuyển từ Kho Tổng sang kho đích.</i>";
+        
+        // FIX: Hàm này bắt buộc phải có Timeout (xem mục 5 bên dưới)
         @sendTelegramNotification($msg);
     }
 
@@ -136,3 +141,4 @@ try {
     if ($db->inTransaction()) $db->rollBack();
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }
+?>

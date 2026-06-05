@@ -39,7 +39,10 @@ function sendTelegramNotification($message) {
     // Tắt kiểm tra SSL trên localhost XAMPP để tránh lỗi HTTPS
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    
+    // Giới hạn thời gian kết nối & thực thi (Tránh đơ web)
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 2);
 
     $result = curl_exec($ch);
     $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
