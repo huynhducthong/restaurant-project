@@ -159,18 +159,19 @@ include __DIR__ . '/views/client/layouts/header.php';
 
 <style>
 :root {
-    --news-bg: #0d2b27;         /* Matches var(--F2) from menu.php */
-    --news-card-bg: #ffffff;    /* WHITE background for frames/cards/widgets */
-    --news-dark-bg: #f8fafc;    /* Light slate background for inputs/inner boxes */
-    --news-gold: #e5a93b;       /* More vibrant premium gold highlights */
-    --news-gold-hover: #c88e27; /* Saturated hover state for gold links */
-    --news-gold-muted: rgba(229, 169, 59, 0.1);
-    --news-text: #ffffff;       /* Bright pure white text for outside cards */
-    --news-text-dark: #111827;  /* High contrast dark text for inside white cards */
-    --news-text-muted: #e2e8f0; /* Bright light gray text for outside cards */
-    --news-text-muted-dark: #4b5563; /* High contrast medium dark gray for tóm tắt/meta inside white cards */
-    --news-border: rgba(229, 169, 59, 0.15);
-    --news-border-light: #e2e8f0; /* Light gray border for white cards */
+    --news-bg: #F6F2E9;         /* Cream */
+    --news-card-bg: #ffffff;     /* Pure White cards to pop off the cream */
+    --news-dark-bg: #fafafa;    /* Very light gray for inner inputs */
+    --news-gold: #C9A66B;       /* Gold highlights */
+    --news-gold-hover: #b89248; /* Saturated hover state for gold links */
+    --news-gold-muted: rgba(201, 166, 107, 0.1);
+    --news-text: #222222;       /* Bright pure white text for outside cards */
+    --news-text-dark: #222222;  /* High contrast dark text for inside white cards */
+    --news-text-muted: #555555; /* Bright light gray text for outside cards */
+    --news-text-muted-dark: #555555; /* High contrast medium dark gray for tóm tắt/meta inside white cards */
+    --news-border: rgba(79, 91, 58, 0.15);
+    --news-border-light: rgba(79, 91, 58, 0.15); /* Olive border */
+    --olive: #4F5B3A;
 }
 
 /* Base Reset and Layout */
@@ -213,12 +214,12 @@ include __DIR__ . '/views/client/layouts/header.php';
 /* Sidebar Widgets */
 .sidebar-widget {
     background: var(--news-card-bg);
-    border-radius: 12px;
+    border-radius: 0;
     border: 1px solid var(--news-border-light);
-    border-top: 4px solid var(--news-gold);
-    padding: 22px;
+    border-top: 2px solid var(--news-gold);
+    padding: 25px;
     margin-bottom: 25px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.02);
 }
 .widget-title {
     font-family: 'Playfair Display', serif;
@@ -243,7 +244,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     align-items: flex-start;
     gap: 15px;
     text-decoration: none;
-    border-bottom: 1px dashed var(--news-border-light);
+    border-bottom: 1px solid var(--news-border-light);
     padding-bottom: 15px;
     transition: border-color 0.2s;
 }
@@ -302,7 +303,8 @@ include __DIR__ . '/views/client/layouts/header.php';
     text-decoration: none;
     font-size: 13px;
     padding: 8px 12px;
-    border-radius: 6px;
+    border-radius: 0;
+    border-bottom: 1px solid var(--news-border-light);
     transition: background 0.2s, color 0.2s;
 }
 .cat-sidebar-item a:hover, .cat-sidebar-item.active a {
@@ -314,11 +316,11 @@ include __DIR__ . '/views/client/layouts/header.php';
 .newsletter-sidebar {
     background: var(--news-card-bg);
     border: 1px solid var(--news-border-light);
-    border-top: 4px solid var(--news-gold);
-    padding: 22px;
-    border-radius: 12px;
+    border-top: 2px solid var(--news-gold);
+    padding: 25px;
+    border-radius: 0;
     margin-bottom: 25px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.02);
 }
 .newsletter-sidebar-title {
     font-family: 'Playfair Display', serif;
@@ -336,31 +338,36 @@ include __DIR__ . '/views/client/layouts/header.php';
 .newsletter-sidebar .form-control {
     background: var(--news-dark-bg);
     border: 1px solid var(--news-border-light);
+    border-bottom: 1px solid var(--news-gold);
     color: var(--news-text-dark);
     font-size: 13px;
-    padding: 10px;
-    border-radius: 6px;
+    padding: 12px;
+    border-radius: 0;
     box-shadow: none;
 }
 .newsletter-sidebar .form-control:focus {
     border-color: var(--news-gold);
 }
 .newsletter-sidebar .btn-subscribe {
-    background: linear-gradient(135deg, var(--news-gold), #b89248);
+    background: var(--olive);
     color: #ffffff;
     border: none;
     width: 100%;
     font-size: 13px;
-    font-weight: 700;
-    padding: 10px;
-    border-radius: 6px;
-    transition: all 0.2s;
-    box-shadow: 0 4px 15px rgba(212, 176, 106, 0.2);
+    font-weight: 600;
+    padding: 12px;
+    border-radius: 0;
+    transition: all 0.4s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: none;
 }
 .newsletter-sidebar .btn-subscribe:hover {
-    background: linear-gradient(135deg, #edd9a3, var(--news-gold));
-    box-shadow: 0 6px 20px rgba(212, 176, 106, 0.35);
-    transform: translateY(-1px);
+    background: transparent;
+    color: var(--olive);
+    border: 1px solid var(--olive);
+    box-shadow: none;
+    transform: none;
 }
 
 /* LIST VIEW STYLES */
@@ -375,21 +382,21 @@ include __DIR__ . '/views/client/layouts/header.php';
 }
 .news-row-card {
     background: var(--news-card-bg);
-    border-radius: 8px;
+    border-radius: 0;
     overflow: hidden;
     border: 1px solid var(--news-border-light);
-    border-top: 4px solid var(--news-gold);
+    border-left: 3px solid var(--news-gold);
     cursor: pointer;
-    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: row;
     height: 180px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.02);
 }
 .news-row-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(224, 179, 84, 0.2);
-    border-color: var(--news-gold);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+    opacity: 1;
 }
 .news-row-img {
     width: 260px;
@@ -412,15 +419,15 @@ include __DIR__ . '/views/client/layouts/header.php';
     position: absolute;
     top: 10px;
     left: 10px;
-    background: linear-gradient(135deg, var(--news-gold), #b89248);
+    background: var(--olive);
     color: #ffffff;
     font-size: 9px;
-    font-weight: 700;
+    font-weight: 600;
     padding: 3px 8px;
-    border-radius: 3px;
+    border-radius: 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: none;
 }
 .news-row-body {
     padding: 20px;
@@ -479,13 +486,13 @@ include __DIR__ . '/views/client/layouts/header.php';
 /* READ VIEW STYLES */
 .article-read-card {
     background: var(--news-card-bg);
-    border-radius: 12px;
+    border-radius: 0;
     border: 1px solid var(--news-border-light);
-    border-top: 5px solid var(--news-gold);
-    padding: 35px;
+    border-top: 2px solid var(--news-gold);
+    padding: 40px;
     margin-bottom: 25px;
     color: var(--news-text-dark);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.03);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.02);
 }
 .article-category-label {
     display: inline-block;
@@ -533,10 +540,10 @@ include __DIR__ . '/views/client/layouts/header.php';
     gap: 12px;
 }
 .article-action-btn {
-    background: #f8fafc;
+    background: transparent;
     border: 1px solid var(--news-border-light);
     color: #555555;
-    border-radius: 4px;
+    border-radius: 0;
     padding: 6px 14px;
     font-size: 13px;
     font-weight: 500;
@@ -594,7 +601,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 }
 .article-featured-img {
     width: 100%;
-    border-radius: 8px;
+    border-radius: 0;
     overflow: hidden;
     margin-bottom: 8px;
     border: 1px solid var(--news-border-light);
@@ -635,7 +642,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 .article-body-content img {
     max-width: 100%;
     height: auto;
-    border-radius: 6px;
+    border-radius: 0;
     border: 1px solid var(--news-border-light);
 }
 .article-author-tag {
@@ -662,17 +669,19 @@ include __DIR__ . '/views/client/layouts/header.php';
     text-transform: uppercase;
 }
 .related-card {
-    background: #ffffff;
-    border-radius: 8px;
+    background: var(--news-card-bg);
+    border-radius: 0;
     overflow: hidden;
     border: 1px solid var(--news-border-light);
     text-decoration: none;
-    transition: transform 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
     height: 100%;
     display: block;
 }
 .related-card:hover {
     transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    opacity: 1;
 }
 .related-img {
     height: 130px;
@@ -749,10 +758,10 @@ include __DIR__ . '/views/client/layouts/header.php';
     background: var(--news-gold);
 }
 .vne-comment-form {
-    background: #f8fafc;
+    background: var(--news-dark-bg);
     border: 1px solid var(--news-border-light);
-    border-radius: 8px;
-    padding: 15px;
+    border-radius: 0;
+    padding: 20px;
     margin-bottom: 25px;
 }
 .vne-comment-textarea {
@@ -797,21 +806,22 @@ include __DIR__ . '/views/client/layouts/header.php';
     outline: none;
 }
 .vne-comment-btn {
-    background: linear-gradient(135deg, var(--news-gold), #b89248);
-    color: #ffffff;
-    border: none;
-    border-radius: 4px;
+    background: transparent;
+    color: var(--olive);
+    border: 1px solid var(--olive);
+    border-radius: 0;
     padding: 6px 18px;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    box-shadow: 0 4px 15px rgba(212, 176, 106, 0.2);
+    box-shadow: none;
 }
 .vne-comment-btn:hover {
-    background: linear-gradient(135deg, #edd9a3, var(--news-gold));
-    box-shadow: 0 6px 20px rgba(212, 176, 106, 0.35);
-    transform: translateY(-1px);
+    background: var(--olive);
+    color: #fff;
+    box-shadow: none;
+    transform: none;
 }
 .vne-comments-list {
     display: flex;
@@ -925,15 +935,15 @@ include __DIR__ . '/views/client/layouts/header.php';
 .news-overlay.active {
     display: flex;
 }.news-modal {
-    background: var(--news-card-bg);
-    border-radius: 12px;
+    background: var(--news-bg);
+    border-radius: 0;
     width: 100%;
     max-width: 400px;
     max-height: 450px;
     display: flex;
     flex-direction: column;
     border: 1px solid var(--news-border-light);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    box-shadow: none;
     overflow: hidden;
 }
 .news-modal-head {
@@ -1043,13 +1053,13 @@ include __DIR__ . '/views/client/layouts/header.php';
     display: flex;
 }
 .vne-report-modal-box {
-    background: var(--news-card-bg);
+    background: var(--news-bg);
     border: 1px solid var(--news-border-light);
-    border-radius: 12px;
+    border-radius: 0;
     width: 90%;
     max-width: 480px;
     overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: none;
 }
 .vne-report-modal-header {
     background: var(--news-dark-bg);

@@ -118,7 +118,7 @@ if (!empty($logo_path)) {
 
     <!-- GOOGLE FONT -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
     <!-- BOOTSTRAP -->
@@ -153,7 +153,8 @@ if (!empty($logo_path)) {
             left: 0;
             right: 0;
 
-            height: 40px;
+            height: 50px;
+            padding-top: 10px; /* Push text down further */
 
             z-index: 999;
 
@@ -168,7 +169,7 @@ if (!empty($logo_path)) {
         }
 
         #topbar.topbar-scrolled {
-            top: -40px;
+            top: -50px;
         }
 
         /* =======================
@@ -178,7 +179,7 @@ if (!empty($logo_path)) {
         #header {
             position: fixed;
 
-            top: 40px;
+            top: 50px;
             left: 0;
             right: 0;
 
@@ -231,7 +232,7 @@ if (!empty($logo_path)) {
 
             color: #fff;
 
-            font-family: "Playfair Display", serif;
+            font-family: "Libre Baskerville", serif;
 
             white-space: nowrap;
         }
@@ -257,7 +258,8 @@ if (!empty($logo_path)) {
 
             color: #fff;
 
-            font-size: 13px;
+            font-family: "Libre Baskerville", serif;
+            font-size: 14px;
             font-weight: 600;
 
             text-transform: uppercase;
@@ -288,7 +290,8 @@ if (!empty($logo_path)) {
 
             text-decoration: none;
 
-            font-size: 13px;
+            font-family: "Libre Baskerville", serif;
+            font-size: 14px;
             font-weight: 600;
 
             text-transform: uppercase;
@@ -368,7 +371,8 @@ if (!empty($logo_path)) {
 
             text-decoration: none;
 
-            font-size: 13px;
+            font-family: "Libre Baskerville", serif;
+            font-size: 14px;
             font-weight: 600;
 
             text-transform: uppercase;
@@ -417,25 +421,45 @@ if (!empty($logo_path)) {
             font-size: 22px;
         }
 
+        .btn-book-outside {
+            background-color: #F6F2E9; /* Cream */
+            color: #4F5B3A; /* Olive */
+            padding: 8px 16px;
+            font-family: "Libre Baskerville", serif;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-radius: 0; /* Sharp corners */
+            border: 1px solid #4F5B3A;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-book-outside:hover {
+            background-color: #4F5B3A;
+            color: #F6F2E9;
+        }
+
         .oriental-panel {
             position: absolute;
             top: 55px;
             right: 0;
             width: 320px;
-            min-height: 420px;
-            background-image: url('public/assets/img/oriental-frame.png');
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
-            padding: 60px 40px;
+            min-height: auto;
+            background-color: #F6F2E9; /* Cream */
+            border: 1px solid #4F5B3A; /* Olive border */
+            padding: 30px 20px;
             z-index: 10001;
             opacity: 0;
             visibility: hidden;
-            transform: translateY(20px);
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            transform: translateY(15px);
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            gap: 0;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15); /* Lighter shadow for bright bg */
+            border-radius: 0; /* Sharp corners */
         }
 
         .oriental-nav-wrapper:hover .oriental-panel,
@@ -447,17 +471,18 @@ if (!empty($logo_path)) {
 
         .oriental-item {
             text-decoration: none;
-            color: #fff;
+            color: #4F5B3A; /* Olive */
+            font-family: "Libre Baskerville", serif;
             font-size: 14px;
-            font-weight: 500;
-            padding: 12px 15px;
-            border-bottom: 1px solid rgba(205, 164, 94, 0.15);
-            transition: all 0.3s;
+            font-weight: 600;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(79, 91, 58, 0.15); /* Faint olive line */
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
         }
 
         .oriental-item:last-child {
@@ -465,24 +490,30 @@ if (!empty($logo_path)) {
         }
 
         .oriental-item:hover {
-            color: var(--primary-color);
-            padding-left: 20px;
-            background: rgba(205, 164, 94, 0.08);
+            color: #C9A66B; /* Gold */
+            padding-left: 25px;
+            background-color: rgba(201, 166, 107, 0.05); /* Slight gold hover bg */
         }
 
         .oriental-item i {
-            color: var(--primary-color);
+            color: #4F5B3A; /* Olive */
             font-size: 18px;
             width: 20px;
             text-align: center;
+            transition: color 0.3s ease;
+        }
+        
+        .oriental-item:hover i {
+            color: #C9A66B; /* Gold icon on hover */
         }
 
         .oriental-item.text-danger-custom {
-            color: #ff5e5e !important;
+            color: #d63031 !important; /* Standard red for light bg */
         }
         
         .oriental-item.text-danger-custom:hover {
-            background: rgba(255, 94, 94, 0.1);
+            background-color: rgba(214, 48, 49, 0.05);
+            color: #d63031 !important;
         }
 
         @media (max-width: 991px) {
@@ -619,14 +650,16 @@ if (!empty($logo_path)) {
 
                 <div class="header-actions ms-3">
 
-                    <!-- ORIENTAL MEGA MENU -->
-                    <div class="oriental-nav-wrapper">
+                    <!-- ORIENTAL MEGA MENU & OUTSIDE BOOKING BUTTON -->
+                    <div class="oriental-nav-wrapper" style="display:flex; align-items:center; gap:15px;">
+                        
+                        <a href="booking_service.php?type=table" class="btn-book-outside">ĐẶT BÀN</a>
+
                         <div class="oriental-trigger">
                             <i class="bi bi-list"></i>
                         </div>
                         
                         <div class="oriental-panel" id="orientalPanel">
-                            <a href="booking_service.php?type=table"   class="oriental-item"><i class="bi bi-calendar-check"></i> Đặt bàn</a>
 
                             <?php if (isset($_SESSION['user_id'])): ?>
                                 <!-- TRANG QUẢN TRỊ / BẢNG CÔNG -->

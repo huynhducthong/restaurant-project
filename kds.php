@@ -37,6 +37,20 @@ $query = "
 ";
 $stmt = $db->query($query);
 $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Truy vấn các đơn đặt trước (Upcoming)
+$upcoming_query = "
+    SELECT 
+        sb.id, sb.customer_name, sb.guests, sb.booking_date, sb.service_type, 
+        c.name as combo_name
+    FROM service_bookings sb
+    LEFT JOIN combos c ON sb.combo_id = c.id
+    WHERE sb.status = 'Confirmed' AND DATE(sb.booking_date) > CURDATE()
+    ORDER BY sb.booking_date ASC
+    LIMIT 15
+";
+$stmt_up = $db->query($upcoming_query);
+$upcoming_orders = $stmt_up->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -703,6 +717,54 @@ body::before {
   .kds-main { padding: 16px; }
   .ticket-grid { grid-template-columns: 1fr; gap: 14px; }
 }
+
+/* Upcoming Orders Widget */
+.upcoming-section {
+  margin-top: 40px;
+  background: var(--surface);
+  border: 1px solid var(--border-md);
+  border-radius: var(--r);
+  padding: 20px;
+}
+.upcoming-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--forest);
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.upcoming-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+.upcoming-card {
+  background: var(--surface2);
+  padding: 12px 16px;
+  border-radius: var(--r-sm);
+  border-left: 3px solid var(--gold);
+}
+.up-date {
+  font-size: 11px;
+  color: var(--gold);
+  font-family: var(--mono);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.up-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--txt);
+  margin-bottom: 2px;
+}
+.up-detail {
+  font-size: 12px;
+  color: var(--txt-muted);
+}
 </style>
 </head>
 <body>
@@ -911,6 +973,35 @@ $normalOrders = $totalOrders - $urgentOrders;
     <?php endif; ?>
 
   </div>
+
+  <!-- Upcoming Orders Section -->
+  <?php if (!empty($upcoming_orders)): ?>
+  <div class="upcoming-section">
+    <div class="upcoming-title">
+      <i class="fas fa-calendar-alt"></i> Đơn đặt trước cho ngày mai / sắp tới (<?= count($upcoming_orders) ?>)
+    </div>
+    <div class="upcoming-list">
+      <?php foreach ($upcoming_orders as $up): 
+          $up_date = date('d/m/Y - H:i', strtotime($up['booking_date']));
+      ?>
+      <div class="upcoming-card">
+        <div class="up-date"><?= $up_date ?></div>
+        <div class="up-name">
+          Khách: <?= htmlspecialchars($up['customer_name']) ?> (<?= $up['guests'] ?> người)
+        </div>
+        <div class="up-detail">
+          <?php 
+            if ($up['combo_name']) echo "<strong>Combo:</strong> " . htmlspecialchars($up['combo_name']) . "<br>";
+            if ($up['service_type'] !== 'table') echo "<strong>Dịch vụ:</strong> " . htmlspecialchars($up['service_type']) . "<br>";
+          ?>
+          <a href="admin/booking_service.php" style="color:var(--forest);font-size:11px;text-decoration:none;margin-top:5px;display:inline-block">Xem chi tiết <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+      <?php endforeach; ?>
+    </div>
+  </div>
+  <?php endif; ?>
+
 </main>
 
 <!-- Toast container -->

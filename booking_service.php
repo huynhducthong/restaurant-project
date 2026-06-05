@@ -26,6 +26,7 @@ if ($type !== 'chef') {
 }
 
 $foods  = $db->query("SELECT * FROM foods WHERE status=1 ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+$chefs = $db->query("SELECT id, name FROM chefs WHERE is_active = 1 ORDER BY sort_order ASC, id DESC")->fetchAll(PDO::FETCH_ASSOC);
 
 // Lấy thông tin người dùng và sổ địa chỉ nếu đã đăng nhập
 $user_info = null;
@@ -88,258 +89,168 @@ include 'views/client/layouts/header.php';
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
-/* === LUXURY TOKENS === */
+/* === MINIMALIST TOKENS === */
 :root {
-  --bg-dark: #0a1715;
-  --forest: #143B36; /* Màu chủ đạo */
-  --forest-light: #1d5750;
-  --gold: #D4B06A;
-  --gold-glow: rgba(212, 176, 106, 0.3);
-  --glass-bg: rgba(20, 59, 54, 0.4);
-  --glass-border: rgba(212, 176, 106, 0.15);
-  --text-main: #fdfcf0;
-  --text-muted: rgba(253, 252, 240, 0.5);
+  --bg-cream: #F6F2E9;
+  --forest: #4F5B3A; /* Olive */
+  --forest-light: #6A7A4E;
+  --gold: #C9A66B;
+  --gold-glow: rgba(201, 166, 107, 0.2);
+  --glass-bg: #FFFFFF;
+  --glass-border: #E0DDD5;
+  --text-main: #222222;
+  --text-muted: #666666;
   --ease: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 body {
-    background-color: var(--bg-dark);
+    background-color: var(--bg-cream);
     color: var(--text-main);
     font-family: 'Inter', sans-serif;
 }
 
-/* === CINEMATIC HERO (GIỐNG HÌNH MẪU CỦA BẠN) === */
+/* === CINEMATIC HERO === */
 .hero-luxury {
-    position: relative;
-    height: 85vh;
-    min-height: 600px;
-    display: flex;
-    align-items: center;
+    position: relative; height: 85vh; min-height: 600px; display: flex; align-items: center;
     background: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat fixed; 
 }
 .hero-luxury::before {
-    content: '';
-    position: absolute; inset: 0;
-    /* Phủ Gradient bóng râm từ trái qua phải và từ dưới lên để nổi bật Text & Form */
-    background: linear-gradient(90deg, rgba(10,23,21,0.9) 0%, rgba(10,23,21,0.5) 50%, transparent 100%),
-                linear-gradient(0deg, var(--bg-dark) 0%, transparent 35%);
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(246,242,233,0.95) 0%, rgba(246,242,233,0.7) 50%, transparent 100%),
+                linear-gradient(0deg, var(--bg-cream) 0%, transparent 35%);
 }
 .hero-content {
-    position: relative; z-index: 2;
-    max-width: 1200px; margin: 0 auto; width: 100%; padding: 0 20px;
-    text-align: left; /* CĂN TRÁI THEO HÌNH MẪU */
+    position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; width: 100%; padding: 0 20px; text-align: left;
 }
 .hero-tagline {
-    font-size: 11px; letter-spacing: 0.35em; text-transform: uppercase;
-    color: var(--gold); margin-bottom: 20px; display: inline-flex; align-items: center;
+    font-size: 11px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--forest); margin-bottom: 20px; display: inline-flex; align-items: center; font-weight: 600;
 }
-.hero-tagline::after {
-    content: ''; display: inline-block; width: 40px; height: 1px; background: var(--gold); margin-left: 15px;
-}
+.hero-tagline::after { content: ''; display: inline-block; width: 40px; height: 1px; background: var(--forest); margin-left: 15px; }
 .hero-luxury h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(3.5rem, 6vw, 5rem); font-weight: 600; line-height: 1.1;
-    margin-bottom: 20px; color: #fff;
+    font-family: 'Cormorant Garamond', serif; font-size: clamp(3.5rem, 6vw, 5rem); font-weight: 600; line-height: 1.1; margin-bottom: 20px; color: var(--text-main);
 }
-.hero-sub { 
-    color: rgba(255,255,255,0.75); font-weight: 300; font-size: 1.05rem; line-height: 1.6; 
-    max-width: 550px; margin-bottom: 40px;
-}
-.hero-btns {
-    display: flex; gap: 15px; align-items: center; flex-wrap: wrap;
-}
+.hero-sub { color: var(--text-muted); font-weight: 400; font-size: 1.05rem; line-height: 1.6; max-width: 550px; margin-bottom: 40px; }
+.hero-btns { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
 .btn-hero-primary {
-    background: linear-gradient(135deg, #E6C887 0%, #D4B06A 50%, #A5803A 100%);
-    color: var(--bg-dark); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
-    padding: 14px 35px; border-radius: 50px; text-decoration: none; display: inline-flex; align-items: center; gap: 10px;
-    transition: all 0.3s var(--ease); border: none;
+    background: var(--forest); color: #fff; font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
+    padding: 14px 35px; border-radius: 0; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s var(--ease); border: 1px solid var(--forest);
 }
-.btn-hero-primary:hover {
-    transform: translateY(-3px); box-shadow: 0 10px 25px var(--gold-glow); color: var(--bg-dark);
-}
+.btn-hero-primary:hover { background: #fff; color: var(--forest); }
 .btn-hero-secondary {
-    background: rgba(20,59,54,0.3); border: 1px solid rgba(255,255,255,0.25); backdrop-filter: blur(8px);
-    color: #fff; font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
-    padding: 14px 35px; border-radius: 50px; text-decoration: none; display: inline-flex; align-items: center; gap: 10px;
-    transition: all 0.3s var(--ease);
+    background: transparent; border: 1px solid var(--forest); color: var(--forest); font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
+    padding: 14px 35px; border-radius: 0; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s var(--ease);
 }
-.btn-hero-secondary:hover {
-    background: rgba(212,176,106,0.1); border-color: var(--gold); color: var(--gold);
-}
+.btn-hero-secondary:hover { background: var(--forest); color: #fff; }
 
-/* === TABS DỊCH VỤ NHÚNG VÀO FORM === */
-.service-selector-inline {
-    display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap;
-}
+/* === TABS DỊCH VỤ === */
+.service-selector-inline { display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; }
 .svc-card-inline {
-    background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
-    padding: 10px 20px; border-radius: 50px; color: var(--text-muted); font-size: 12px; font-weight: 500; 
-    text-transform: uppercase; text-decoration: none; transition: 0.3s; letter-spacing: 1px;
+    background: #fff; border: 1px solid var(--glass-border); padding: 10px 20px; border-radius: 0; color: var(--text-muted); font-size: 12px; font-weight: 500; text-transform: uppercase; text-decoration: none; transition: 0.3s; letter-spacing: 1px;
 }
-.svc-card-inline:hover { border-color: var(--gold); color: var(--gold); }
-.svc-card-inline.active { background: var(--gold); border-color: var(--gold); color: var(--bg-dark); font-weight: 600; box-shadow: 0 0 15px var(--gold-glow); }
-
+.svc-card-inline:hover { border-color: var(--forest); color: var(--forest); }
+.svc-card-inline.active { background: var(--forest); border-color: var(--forest); color: #fff; font-weight: 600; }
 
 /* === MAIN BOOKING AREA === */
-.booking-section {
-    position: relative; max-width: 1200px; margin: -80px auto 100px; padding: 0 20px; z-index: 10;
-    display: grid; grid-template-columns: 1fr 400px; gap: 30px;
-}
-@media (max-width: 992px) {
-    .booking-section { grid-template-columns: 1fr; margin-top: 0; padding-top: 30px; }
-}
+.booking-section { position: relative; max-width: 1200px; margin: -80px auto 100px; padding: 0 20px; z-index: 10; display: grid; grid-template-columns: 1fr 400px; gap: 30px; }
+@media (max-width: 992px) { .booking-section { grid-template-columns: 1fr; margin-top: 0; padding-top: 30px; } }
 
-.luxury-panel {
-    background: var(--forest); border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); overflow: hidden;
-}
-.panel-section { padding: 35px 40px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.luxury-panel { background: #fff; border: 1px solid var(--glass-border); border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; }
+.panel-section { padding: 35px 40px; border-bottom: 1px solid var(--glass-border); }
 .panel-section:last-child { border-bottom: none; }
+.section-title-lux { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--forest); margin-bottom: 25px; display: flex; align-items: center; gap: 15px; font-weight: 600;}
 
-.section-title-lux {
-    font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: #fff;
-    margin-bottom: 25px; display: flex; align-items: center; gap: 15px;
-}
-
-/* === LUXURY INPUTS === */
+/* === INPUTS === */
 .row-lux { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 @media(max-width:600px) { .row-lux { grid-template-columns: 1fr; } }
-
 .input-group-lux { position: relative; margin-bottom: 20px; }
 .input-lux {
-    width: 100%; background: rgba(0,0,0,0.25); border: 1px solid transparent;
-    border-bottom: 1px solid rgba(255,255,255,0.2); padding: 16px 20px;
-    color: #fff; font-family: 'Inter', sans-serif; font-size: 14px;
-    border-radius: 8px 8px 0 0; transition: all 0.3s ease; outline: none;
+    width: 100%; background: #fff; border: 1px solid var(--glass-border); padding: 16px 20px;
+    color: var(--text-main); font-family: 'Inter', sans-serif; font-size: 14px; border-radius: 0; transition: all 0.3s ease; outline: none;
+    height: 54px; box-sizing: border-box;
 }
-.input-lux:focus { border-bottom-color: var(--gold); background: rgba(212, 176, 106, 0.05); }
+.input-lux:focus { border-color: var(--gold); }
 .input-lux::placeholder { color: transparent; }
 .label-lux {
-    position: absolute; top: 16px; left: 20px; color: var(--text-muted); font-size: 14px;
-    pointer-events: none; transition: 0.3s ease; z-index: 2;
+    position: absolute; top: 18px; left: 20px; color: var(--text-muted); font-size: 14px; pointer-events: none; transition: 0.3s ease; z-index: 2;
 }
-.input-lux:focus ~ .label-lux, 
-.input-lux:not(:placeholder-shown) ~ .label-lux,
-select.input-lux ~ .label-lux {
-    top: -8px; left: 15px; font-size: 11px; color: var(--gold);
-    background: var(--forest); padding: 0 5px; letter-spacing: 1px; text-transform: uppercase;
-    z-index: 2;
+.input-lux:focus ~ .label-lux, .input-lux:not(:placeholder-shown) ~ .label-lux, select.input-lux ~ .label-lux {
+    top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: #fff; padding: 0 5px; letter-spacing: 1px; text-transform: uppercase; z-index: 2; font-weight: 600;
 }
 select.input-lux {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4B06A'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 20px center;
-    background-size: 18px;
-    padding-right: 45px;
-    cursor: pointer;
+    appearance: none; -webkit-appearance: none; -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23C9A66B'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 20px center; background-size: 18px; padding-right: 45px; cursor: pointer;
 }
-.input-lux option { background: var(--bg-dark); color: #fff; }
+.input-lux option { background: #fff; color: var(--text-main); }
 
 /* Guest Counter */
-.guest-lux {
-    display: flex; align-items: center; background: rgba(0,0,0,0.25);
-    border-radius: 50px; padding: 5px; border: 1px solid rgba(255,255,255,0.1);
-}
-.btn-qty {
-    width: 38px; height: 38px; border-radius: 50%; border: none;
-    background: var(--forest-light); color: #fff; cursor: pointer; transition: 0.3s;
-}
-.btn-qty:hover { background: var(--gold); color: #000; }
-.guest-lux input {
-    flex: 1; text-align: center; background: transparent; border: none; color: #fff;
-    font-size: 1.1rem; font-weight: 500; pointer-events: none;
-}
+.guest-lux { display: flex; align-items: center; background: #fff; border: 1px solid var(--glass-border); border-radius: 0; padding: 0; height: 54px; box-sizing: border-box; }
+.btn-qty { width: 44px; height: 100%; border-radius: 0; border: none; background: #fafafa; color: var(--text-main); cursor: pointer; transition: 0.3s; font-size: 16px; }
+.btn-qty:first-child { border-right: 1px solid var(--glass-border); }
+.btn-qty:last-child { border-left: 1px solid var(--glass-border); }
+.btn-qty:hover { background: var(--forest); color: #fff; border-color: var(--forest); }
+.guest-lux input { flex: 1; text-align: center; background: transparent; border: none; color: var(--text-main); font-size: 1.1rem; font-weight: 500; pointer-events: none; }
 
 /* === MAP BTN & CARDS === */
 .map-btn-lux {
-    width: 100%; padding: 25px; border: 1px dashed var(--gold); border-radius: 12px;
-    color: var(--gold); text-transform: uppercase; letter-spacing: 2px; font-size: 12px;
-    cursor: pointer; transition: 0.3s; text-align: center; background: rgba(212, 176, 106, 0.05);
+    width: 100%; padding: 25px; border: 1px solid var(--forest); border-radius: 0; color: var(--forest); text-transform: uppercase; letter-spacing: 2px; font-size: 12px; cursor: pointer; transition: 0.3s; text-align: center; background: #fff; font-weight: 600;
 }
-.map-btn-lux:hover { background: rgba(212, 176, 106, 0.15); box-shadow: 0 0 20px var(--gold-glow); }
+.map-btn-lux:hover { background: var(--forest); color: #fff; }
 
 .card-select {
-    border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2);
-    border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s var(--ease);
-    position: relative; overflow: hidden;
+    border: 1px solid var(--glass-border); background: #fff; border-radius: 0; padding: 20px; cursor: pointer; transition: all 0.3s var(--ease); position: relative; overflow: hidden;
 }
-.card-select:hover { border-color: rgba(212, 176, 106, 0.5); background: rgba(212, 176, 106, 0.05); }
-.card-select.active {
-    border-color: var(--gold); background: rgba(212, 176, 106, 0.1);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-}
-.card-select.active::after { content: '✓'; position: absolute; top: 15px; right: 15px; color: var(--gold); }
+.card-select:hover { border-color: var(--forest); }
+.card-select.active { border-color: var(--forest); background: rgba(79, 91, 58, 0.05); }
+.card-select.active::after { content: '✓'; position: absolute; top: 15px; right: 15px; color: var(--forest); font-weight: bold; }
 
 /* Thực đơn Add-on */
-.menu-item-lux {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 15px; border-bottom: 1px dashed rgba(255,255,255,0.1);
-    transition: 0.3s; border-radius: 8px;
-}
-.menu-item-lux:hover { background: rgba(255,255,255,0.02); }
-.menu-checkbox {
-    appearance: none; width: 18px; height: 18px; border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 3px; cursor: pointer; position: relative; transition: 0.2s;
-}
-.menu-checkbox:checked { background: var(--gold); border-color: var(--gold); }
-.menu-checkbox:checked::after {
-    content: '✓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    color: var(--bg-dark); font-size: 10px; font-weight: bold;
-}
-.menu-qty-input {
-    width: 50px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2);
-    color: #fff; text-align: center; border-radius: 4px; padding: 4px; display: none;
-}
-.menu-item-lux.checked .menu-qty-input { display: block; }
+.menu-item-lux { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid var(--glass-border); transition: 0.3s; border-radius: 0; background: #fff; }
+.menu-item-lux:hover { background: #fafafa; }
+.menu-checkbox { appearance: none; width: 18px; height: 18px; border: 1px solid var(--glass-border); border-radius: 0; cursor: pointer; position: relative; transition: 0.2s; }
+.menu-checkbox:checked { background: var(--forest); border-color: var(--forest); }
+.menu-checkbox:checked::after { content: '✓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #fff; font-size: 10px; font-weight: bold; }
+.menu-qty-input { width: 60px; background: #fff; border: 1px solid var(--glass-border); color: var(--text-main); text-align: center; border-radius: 0; padding: 4px; opacity: 0.3; pointer-events: none; transition: 0.3s; }
+.menu-note-input { width: 200px; background: #fff; border: 1px solid var(--glass-border); color: var(--text-main); border-radius: 0; padding: 4px; opacity: 0.3; pointer-events: none; transition: 0.3s; }
+.menu-item-lux.checked .menu-qty-input, .menu-item-lux.checked .menu-note-input { opacity: 1; pointer-events: auto; border-color: var(--forest); }
 
 /* === FLOATING SUMMARY === */
 .summary-floating {
-    position: sticky; top: 100px; background: var(--forest);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px; padding: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    position: sticky; top: 100px; background: var(--forest); border: none; border-radius: 0; padding: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); color: #fff;
 }
-.sum-title {
-    font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: #fff;
-    border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 20px;
-}
-.sum-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 13px; color: var(--text-muted); }
+.sum-title { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--gold); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 20px; }
+.sum-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 13px; color: rgba(255,255,255,0.7); }
 .sum-val { color: #fff; font-weight: 400; text-align: right;}
-.sum-val.highlight { color: var(--gold); font-weight: 500;}
+.sum-val.highlight { color: var(--gold); font-weight: 600;}
 
 .total-box { margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; }
-.deposit-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
+.deposit-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 5px; }
 .deposit-amount { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; color: var(--gold); line-height: 1.2; margin: 5px 0;}
 
 .btn-gold-grad {
-    width: 100%; padding: 16px; background: linear-gradient(135deg, #E6C887 0%, #D4B06A 50%, #A5803A 100%);
-    border: none; border-radius: 8px; color: var(--bg-dark); font-weight: 600; letter-spacing: 1px;
-    text-transform: uppercase; font-size: 13px; cursor: pointer; transition: all 0.4s ease;
+    width: 100%; padding: 16px; background: var(--gold); border: 1px solid var(--gold); border-radius: 0; color: #fff; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-size: 13px; cursor: pointer; transition: all 0.3s ease;
 }
-.btn-gold-grad:hover { transform: translateY(-2px); box-shadow: 0 15px 30px var(--gold-glow); }
+.btn-gold-grad:hover { background: transparent; color: var(--gold); }
 
 /* === MAP MODAL VIP === */
-.modal-content.dark-lux { background: var(--bg-dark); border: 1px solid var(--gold); border-radius: 16px; color: #fff; }
-.modal-header.lux { border-bottom: 1px solid rgba(255,255,255,0.1); padding: 20px 30px; }
-.modal-title.lux { font-family: 'Cormorant Garamond', serif; color: var(--gold); font-size: 1.5rem; }
-.btn-close-lux { filter: invert(1); opacity: 0.5; }
-.cinematic-map { padding: 40px; background: radial-gradient(circle at center, rgba(20,59,54,0.6) 0%, transparent 80%); }
+.modal-content.dark-lux { background: #fff; border: 1px solid var(--forest); border-radius: 0; color: var(--text-main); }
+.modal-header.lux { border-bottom: 1px solid var(--glass-border); padding: 20px 30px; }
+.modal-title.lux { font-family: 'Cormorant Garamond', serif; color: var(--forest); font-size: 1.5rem; font-weight: 600; }
+.btn-close-lux { opacity: 0.5; }
+.cinematic-map { padding: 40px; background: var(--bg-cream); }
 .map-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
 .vip-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
 
 .seat-lux {
-    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px; padding: 15px 10px; text-align: center; cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;
+    background: #fff; border: 1px solid var(--glass-border); border-radius: 0; padding: 15px 10px; text-align: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;
 }
-.seat-lux.available:hover { border-color: var(--gold); transform: scale(1.05); box-shadow: 0 0 15px var(--gold-glow); z-index: 2; }
-.seat-lux.booked { opacity: 0.3; cursor: not-allowed; }
-.seat-lux.selected { background: rgba(212, 176, 106, 0.15); border-color: var(--gold); box-shadow: 0 0 20px var(--gold-glow); transform: scale(1.05); z-index: 3; }
-.seat-code { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: #fff; display: block;}
-.seat-lux.selected .seat-code { color: var(--gold); }
+.seat-lux.available:hover { border-color: var(--forest); transform: scale(1.05); z-index: 2; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+.seat-lux.booked { opacity: 0.5; cursor: not-allowed; background: #f0f0f0;}
+.seat-lux.selected { background: var(--forest); border-color: var(--forest); transform: scale(1.05); z-index: 3; }
+.seat-code { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--text-main); display: block; font-weight: 600;}
+.seat-lux.selected .seat-code { color: #fff; }
 .seat-info { font-size: 10px; color: var(--text-muted); display: block; margin-top: 5px;}
+.seat-lux.selected .seat-info { color: rgba(255,255,255,0.7); }
 </style>
 
 <section class="hero-luxury">
@@ -388,13 +299,22 @@ select.input-lux {
                         <input type="datetime-local" name="booking_date" id="bd" class="input-lux" placeholder=" " required onchange="us()">
                         <label class="label-lux">Ngày & Giờ <?= $type==='chef' ? 'phục vụ' : 'đến' ?> *</label>
                     </div>
-                    <div>
-                        <label class="label-lux" style="position:relative; top:0; left:0; font-size:11px; margin-bottom:8px; display:block;">Số lượng khách *</label>
+                    <div class="input-group-lux">
                         <div class="guest-lux">
                             <button type="button" class="btn-qty" onclick="cg(-1)">-</button>
                             <input type="number" name="guests" id="gi" value="2" min="1" max="50" readonly onchange="us()">
                             <button type="button" class="btn-qty" onclick="cg(1)">+</button>
                         </div>
+                        <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: #fff; padding: 0 5px; letter-spacing: 1px; text-transform: uppercase; z-index: 2; font-weight: 600;">Số lượng khách *</label>
+                        <?php if ($type === 'chef'): ?>
+                            <div class="mt-2 p-2" style="background: #fdfdfd; border: 1px solid var(--glass-border); font-size: 11px; color: var(--text-main); line-height: 1.5; border-radius: 0;">
+                                <i class="fas fa-info-circle me-1" style="color: var(--forest);"></i> <strong style="color: var(--forest);">Phí phục vụ Bếp trưởng</strong> thay đổi theo số lượng khách:<br>
+                                • ≤ 2 khách: 250.000đ<br>
+                                • 3-6 khách: 500.000đ<br>
+                                • 7-12 khách: 1.000.000đ<br>
+                                • Trên 12 khách: 1.200.000đ
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -411,7 +331,7 @@ select.input-lux {
                                 <option value="Tiệc công ty/Họp mặt">Họp Mặt / Công Ty</option>
                                 <option value="Khác">Khác</option>
                             </select>
-                            <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: var(--forest); padding: 0 5px; letter-spacing: 1px; text-transform: uppercase;">Loại hình kỷ niệm</label>
+                            <label class="label-lux" >Loại hình kỷ niệm</label>
                         </div>
                         <div class="input-group-lux">
                             <select name="decor_package" class="input-lux" onchange="us()">
@@ -419,7 +339,7 @@ select.input-lux {
                                 <option value="Lãng mạn">Gói lãng mạn (+ Bóng bay, nhạc nhẹ)</option>
                                 <option value="Hoàng gia">Gói hoàng gia (+ Rượu vang, backdrop)</option>
                             </select>
-                            <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: var(--forest); padding: 0 5px; letter-spacing: 1px; text-transform: uppercase;">Gói trang trí</label>
+                            <label class="label-lux" >Gói trang trí</label>
                         </div>
                     </div>
                     <div class="d-flex gap-4 mt-2">
@@ -458,6 +378,17 @@ select.input-lux {
                         <?php endforeach; ?>
                     </select>
                 <?php else: ?>
+                    <!-- Chọn Bếp trưởng -->
+                    <div class="input-group-lux mb-4">
+                        <select id="selected_chef" class="input-lux" onchange="updateChefReq(); us();">
+                            <option value="">-- Nhà hàng tự sắp xếp --</option>
+                            <?php foreach ($chefs as $c): ?>
+                                <option value="<?= htmlspecialchars($c['name']) ?>">Chef <?= htmlspecialchars($c['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <label class="label-lux" >Bếp trưởng chỉ định</label>
+                    </div>
+
                     <!-- Địa điểm phục vụ (Địa chỉ) -->
                     <div class="input-group-lux mb-4">
                         <select id="saddr_select" class="input-lux" onchange="toggleAddrInput(); us();">
@@ -474,7 +405,7 @@ select.input-lux {
                                 <option value="custom">Nhập địa chỉ mới...</option>
                             <?php endif; ?>
                         </select>
-                        <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: var(--forest); padding: 0 5px; letter-spacing: 1px; text-transform: uppercase;">Địa điểm phục vụ</label>
+                        <label class="label-lux" >Địa điểm phục vụ</label>
                     </div>
 
                     <div class="input-group-lux mb-4" id="custom-addr-wrap" style="display: <?= empty($user_addresses) ? 'block' : 'none' ?>;">
@@ -539,13 +470,13 @@ select.input-lux {
                             <div style="font-size:12px; color:var(--text-main)"><?= number_format($cb['price']) ?> đ</div>
                         </div>
                     <?php endforeach; ?>
-                    <div class="card-select cc" id="opt-bespoke-menu" data-price="0" onclick="selCombo(-1,this)" style="border: 1px dashed var(--gold); background: linear-gradient(135deg, rgba(212,176,106,0.08), rgba(20,59,54,0.3));">
+                    <div class="card-select cc" id="opt-bespoke-menu" data-price="0" onclick="selCombo(-1,this)" style="border: 1px solid var(--forest); background: #fff;">
                         <div style="color:var(--gold); font-size:15px; margin-bottom:5px;"><i class="fas fa-scroll me-1"></i> Thiết Kế Riêng</div>
                         <div style="font-size:11px; color:var(--gold)">Bespoke Tasting Menu</div>
                     </div>
                 </div>
 
-                <div id="bespoke-menu-fields" style="display:none; margin-top:20px; border: 1px solid rgba(212,176,106,0.2); padding:20px; border-radius:8px; background:rgba(20,59,54,0.15);">
+                <div id="bespoke-menu-fields" style="display:none; margin-top:20px; border: 1px solid var(--glass-border); padding:20px; background:#fafafa;">
                     <h4 style="font-family:'Cormorant Garamond',serif; color:var(--gold); font-size:1.2rem; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px;"><i class="fas fa-scroll me-2"></i> Yêu cầu Thiết kế Thực đơn riêng</h4>
                     <div class="row-lux mb-3">
                         <div class="input-group-lux">
@@ -556,7 +487,7 @@ select.input-lux {
                                 <option value="3.000.000 đ - 5.000.000 đ / khách">3.000.000 đ - 5.000.000 đ / khách</option>
                                 <option value="Trên 5.000.000 đ / khách (Siêu cao cấp)">Trên 5.000.000 đ / khách (Siêu cao cấp)</option>
                             </select>
-                            <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: var(--forest); padding: 0 5px; letter-spacing: 1px; text-transform: uppercase;">Ngân sách dự kiến</label>
+                            <label class="label-lux" >Ngân sách dự kiến</label>
                         </div>
                         <div class="input-group-lux">
                             <select name="chef_style" id="chef_style" class="input-lux" onchange="updateChefReq(); us();">
@@ -567,7 +498,7 @@ select.input-lux {
                                 <option value="Hải sản Cao cấp (Premium Seafood)">Hải sản Cao cấp</option>
                                 <option value="Thực dưỡng & Chay Thượng hạng (Fine Vegetarian)">Thực dưỡng & Chay Thượng hạng</option>
                             </select>
-                            <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: var(--forest); padding: 0 5px; letter-spacing: 1px; text-transform: uppercase;">Phong cách ẩm thực</label>
+                            <label class="label-lux" >Phong cách ẩm thực</label>
                         </div>
                     </div>
                     <div class="input-group-lux mb-0">
@@ -595,9 +526,10 @@ select.input-lux {
                                         <div style="font-size:12px; color:var(--gold)"><?= number_format($fd['price']) ?> đ</div>
                                     </div>
                                 </div>
-                                <input type="number" class="menu-qty-input" name="quantity[<?= $fd['id'] ?>]" id="q<?= $fd['id'] ?>" value="1" min="1" onchange="us()">
-                                <!-- Hidden input for food notes -->
-                                <input type="hidden" name="food_notes[<?= $fd['id'] ?>]" id="fn<?= $fd['id'] ?>" value="">
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <input type="text" class="menu-note-input" name="food_notes[<?= $fd['id'] ?>]" id="fn<?= $fd['id'] ?>" placeholder="Ghi chú (vd: không hành, cho khách không dị ứng...)" style="font-size:11px; padding: 4px 8px; border: 1px solid var(--glass-border); border-radius: 0; outline: none;">
+                                    <input type="number" class="menu-qty-input" name="quantity[<?= $fd['id'] ?>]" id="q<?= $fd['id'] ?>" value="1" min="1" onchange="us()">
+                                </div>
                             </div>
                             <?php endforeach; ?>
                         </div>
@@ -620,7 +552,7 @@ select.input-lux {
                         </div>
                     </label>
 
-                    <div class="p-2 rounded" style="background:rgba(212,176,106,0.05); border:1px solid rgba(212,176,106,0.2); transition:0.3s;">
+                    <div class="p-2 rounded" style="background:#fff; border:1px solid var(--glass-border); transition:0.3s; border-radius:0;">
                         <label class="d-flex align-items-center gap-3" style="cursor:pointer; margin-bottom:0;" onclick="document.getElementById('flower-input-wrap').style.display = document.getElementById('bespoke-flower').checked ? 'block' : 'none'; us();">
                             <input type="checkbox" name="has_bespoke_flower" id="bespoke-flower" class="menu-checkbox">
                             <div>
@@ -636,7 +568,7 @@ select.input-lux {
                         </div>
                     </div>
 
-                    <div class="p-2 rounded" style="background:rgba(212,176,106,0.05); border:1px solid rgba(212,176,106,0.2); transition:0.3s;">
+                    <div class="p-2 rounded" style="background:#fff; border:1px solid var(--glass-border); transition:0.3s; border-radius:0;">
                         <label class="d-flex align-items-center gap-3" style="cursor:pointer; margin-bottom:0;" onclick="document.getElementById('card-input-wrap').style.display = document.getElementById('bespoke-card').checked ? 'block' : 'none'; us();">
                             <input type="checkbox" name="has_handwritten_card" id="bespoke-card" class="menu-checkbox">
                             <div>
@@ -663,7 +595,7 @@ select.input-lux {
                                     <option value="Romantic Instrumental">Romantic Instrumental (Lãng mạn)</option>
                                     <option value="Không bật nhạc">Không bật nhạc (Cần yên tĩnh)</option>
                                 </select>
-                                <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: var(--forest); padding: 0 5px; text-transform: uppercase;">Playlist Âm nhạc</label>
+                                <label class="label-lux" >Playlist Âm nhạc</label>
                             </div>
                             <div class="input-group-lux">
                                 <select name="light_tone" class="input-lux" style="font-size:13px;">
@@ -671,7 +603,7 @@ select.input-lux {
                                     <option value="Warm (Ấm áp, Mờ ảo)">Warm (Ấm áp, Mờ ảo lãng mạn)</option>
                                     <option value="Natural (Sáng tự nhiên)">Natural (Sáng tự nhiên)</option>
                                 </select>
-                                <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: var(--forest); padding: 0 5px; text-transform: uppercase;">Tông màu Ánh sáng</label>
+                                <label class="label-lux" >Tông màu Ánh sáng</label>
                             </div>
                         </div>
                     </div>
@@ -700,6 +632,7 @@ select.input-lux {
                 <div class="sum-row"><span>Phí vị trí</span> <span class="sum-val" id="sp2">0 đ</span></div>
             <?php else: ?>
                 <div class="sum-row"><span>Địa điểm</span> <span class="sum-val highlight" id="saddr-sum" style="text-align:right; max-width:60%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Chưa nhập</span></div>
+                <div class="sum-row"><span>Phí phục vụ (Đầu bếp)</span> <span class="sum-val" id="schef-fee">0 đ</span></div>
             <?php endif; ?>
             
             <?php if ($type === 'birthday'): ?>
@@ -728,7 +661,7 @@ select.input-lux {
 <!-- MODAL TÙY CHỌN MÓN ĂN -->
 <div class="modal fade" id="foodOptionModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
-    <div class="modal-content" style="background:var(--bg-dark); border:1px solid var(--gold); border-radius:12px;">
+    <div class="modal-content" style="background:#fff; border:1px solid var(--forest); border-radius:0;">
       <div class="modal-header" style="border-bottom:1px solid rgba(212,176,106,0.2);">
         <h5 class="modal-title" style="color:var(--gold); font-family:'Playfair Display', serif;"><i class="fas fa-utensils me-2"></i>Tùy chọn <span id="foodOptName">Món</span></h5>
         <button type="button" class="btn-close btn-close-white" onclick="cancelFoodOption()"></button>
@@ -853,11 +786,15 @@ function selCombo(id,el){
 }
 
 function updateChefReq() {
+    var reqInput = document.getElementById('creq');
+    if (!reqInput) return;
+    
     var select = document.getElementById('saddr_select');
     var customInput = document.getElementById('custom_saddr');
     var budget = document.getElementById('chef_budget') ? document.getElementById('chef_budget').value : '';
     var style = document.getElementById('chef_style') ? document.getElementById('chef_style').value : '';
     var detail = document.getElementById('creq_detail') ? document.getElementById('creq_detail').value : '';
+    var chef = document.getElementById('selected_chef') ? document.getElementById('selected_chef').value : '';
 
     var address = '';
     if (select) {
@@ -866,6 +803,7 @@ function updateChefReq() {
 
     var parts = [];
     if (address) parts.push("Địa điểm phục vụ: " + address);
+    if (chef) parts.push("Bếp trưởng chỉ định: " + chef);
 
     var sid = document.getElementById('sid') ? parseInt(document.getElementById('sid').value) : 0;
     if (sid === -1) {
@@ -874,12 +812,10 @@ function updateChefReq() {
         if (detail) parts.push("Chi tiết: " + detail);
     }
 
-    var finalInput = document.getElementById('creq');
-    if (finalInput) {
-        finalInput.value = parts.join("\n");
+    if (reqInput) {
+        reqInput.value = parts.join("\n");
     }
 }
-
 function togMrow(cb,id,pr){
     var row = document.getElementById('mr'+id);
     if(cb.checked){
@@ -1047,6 +983,20 @@ function us(){
         document.getElementById('sp2').textContent = selPrice.toLocaleString('vi-VN')+' đ';
     }
 
+    // Tính phí Đầu bếp tại gia dựa trên số khách
+    var typeStr = "<?= $type ?>";
+    var guestsNum = parseInt(document.getElementById('gi').value) || 2;
+    var chefServiceFee = 0;
+    if (typeStr === 'chef') {
+        if (guestsNum <= 2) chefServiceFee = 250000;
+        else if (guestsNum <= 6) chefServiceFee = 500000;
+        else if (guestsNum <= 12) chefServiceFee = 1000000;
+        else chefServiceFee = 1200000;
+        
+        var schef = document.getElementById('schef-fee');
+        if (schef) schef.textContent = chefServiceFee.toLocaleString('vi-VN') + ' đ';
+    }
+
     var sid = document.getElementById('sid') ? parseInt(document.getElementById('sid').value) : 0;
     var food = 0;
     if (sid === -1) {
@@ -1096,7 +1046,7 @@ function us(){
     var sBespoke = document.getElementById('s-bespoke');
     if (sBespoke) sBespoke.textContent = bespokePrice > 0 ? bespokePrice.toLocaleString('vi-VN') + ' đ' : '0 đ';
 
-    var total = food + (typeof selPrice !== 'undefined' ? selPrice : 0) + decorPrice + bespokePrice;
+    var total = food + (typeof selPrice !== 'undefined' ? selPrice : 0) + decorPrice + bespokePrice + chefServiceFee;
     
     // Cập nhật số tiền đặt cọc 30%
     var btnGo = document.getElementById('btn-go');

@@ -18,7 +18,7 @@ $db = (new Database())->getConnection();
 $action = $_GET['action'] ?? 'list';
 
 // ============================================================
-// HELPER: Validate & upload ảnh combo
+// HELPER: Validate & upload ảnh set
 // ============================================================
 function validateComboImage(array &$errors): array {
     $result = ['file_name' => '', 'ok' => false];
@@ -31,7 +31,7 @@ function validateComboImage(array &$errors): array {
     $size     = $_FILES['image']['size'];
 
     if (!in_array($ext, $allowed_ext)) {
-        $errors[] = 'Ảnh combo chỉ chấp nhận: JPG, PNG, WEBP.';
+        $errors[] = 'Ảnh set chỉ chấp nhận: JPG, PNG, WEBP.';
         return $result;
     }
     if ($size > 5 * 1024 * 1024) {
@@ -63,7 +63,7 @@ function saveComboItems(PDO $db, int $combo_id): void {
 }
 
 // ============================================================
-// AJAX: Toggle bật / tắt combo
+// AJAX: Toggle bật / tắt set
 // ============================================================
 if ($action === 'toggle' && isset($_POST['combo_id'])) {
     header('Content-Type: application/json');
@@ -76,7 +76,7 @@ if ($action === 'toggle' && isset($_POST['combo_id'])) {
 }
 
 // ============================================================
-// XÓA combo
+// XÓA set
 // ============================================================
 if ($action === 'delete' && isset($_POST['delete_combo_id'])) {
     $del_id = (int)$_POST['delete_combo_id'];
@@ -102,7 +102,7 @@ if ($action === 'delete' && isset($_POST['delete_combo_id'])) {
 }
 
 // ============================================================
-// THÊM COMBO (GET = form | POST = lưu)
+// THÊM SET (GET = form | POST = lưu)
 // ============================================================
 if ($action === 'add') {
     $errors  = [];
@@ -113,12 +113,13 @@ if ($action === 'add') {
         $old['name']        = trim($_POST['name']        ?? '');
         $old['price']       = trim($_POST['price']       ?? '');
         $old['description'] = trim($_POST['description'] ?? '');
+        $theme_id           = !empty($_POST['theme_id']) ? (int)$_POST['theme_id'] : null;
 
         if ($old['name'] === '')
-            $errors[] = 'Tên combo không được để trống.';
+            $errors[] = 'Tên set không được để trống.';
         $price_val = (float)$old['price'];
         if ($old['price'] === '' || $price_val < 0)
-            $errors[] = 'Giá combo phải là số không âm.';
+            $errors[] = 'Giá set phải là số không âm.';
 
         $img = validateComboImage($errors);
 
@@ -136,8 +137,8 @@ if ($action === 'add') {
                 $db->beginTransaction();
                 try {
                     $db->prepare(
-                        "INSERT INTO combos (name, price, description, image, is_active) VALUES (?, ?, ?, ?, 1)"
-                    )->execute([$old['name'], $price_val, $old['description'], $file_name]);
+                        "INSERT INTO combos (name, price, description, image, is_active, theme_id) VALUES (?, ?, ?, ?, 1, ?)"
+                    )->execute([$old['name'], $price_val, $old['description'], $file_name, $theme_id]);
                     saveComboItems($db, (int)$db->lastInsertId());
                     $db->commit();
                     $success = true;
@@ -152,6 +153,7 @@ if ($action === 'add') {
     }
 
     $all_foods      = $db->query("SELECT id, name, price FROM foods WHERE is_active = 1 ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $all_themes     = $db->query("SELECT id, name FROM themes WHERE is_active = 1 ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
     $selected_foods = [];
 
     include '../../public/admin_layout_header.php';
@@ -161,7 +163,7 @@ if ($action === 'add') {
 }
 
 // ============================================================
-// SỬA COMBO (GET = form điền sẵn | POST = lưu)
+// SỬA SET (GET = form điền sẵn | POST = lưu)
 // ============================================================
 if ($action === 'edit') {
     $id = (int)($_GET['id'] ?? $_POST['combo_id'] ?? 0);
@@ -182,18 +184,21 @@ if ($action === 'edit') {
         'name'        => $combo['name'],
         'price'       => $combo['price'],
         'description' => $combo['description'],
+        'theme_id'    => $combo['theme_id'],
     ];
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $old['name']        = trim($_POST['name']        ?? '');
         $old['price']       = trim($_POST['price']       ?? '');
         $old['description'] = trim($_POST['description'] ?? '');
+        $theme_id           = !empty($_POST['theme_id']) ? (int)$_POST['theme_id'] : null;
+        $old['theme_id']    = $theme_id;
 
         if ($old['name'] === '')
-            $errors[] = 'Tên combo không được để trống.';
+            $errors[] = 'Tên set không được để trống.';
         $price_val = (float)$old['price'];
         if ($old['price'] === '' || $price_val < 0)
-            $errors[] = 'Giá combo phải là số không âm.';
+            $errors[] = 'Giá set phải là số không âm.';
 
         $img         = validateComboImage($errors);
         $final_image = $combo['image'];
@@ -224,8 +229,8 @@ if ($action === 'edit') {
                 $db->beginTransaction();
                 try {
                     $db->prepare(
-                        "UPDATE combos SET name=?, price=?, description=?, image=? WHERE id=?"
-                    )->execute([$old['name'], $price_val, $old['description'], $final_image, $id]);
+                        "UPDATE combos SET name=?, price=?, description=?, image=?, theme_id=? WHERE id=?"
+                    )->execute([$old['name'], $price_val, $old['description'], $final_image, $theme_id, $id]);
                     saveComboItems($db, $id);
                     $db->commit();
                     $success = true;
@@ -239,6 +244,7 @@ if ($action === 'edit') {
                         'name'        => $combo['name'],
                         'price'       => $combo['price'],
                         'description' => $combo['description'],
+                        'theme_id'    => $combo['theme_id'],
                     ];
                 } catch (Exception $e) {
                     $db->rollBack();
@@ -250,6 +256,7 @@ if ($action === 'edit') {
     }
 
     $all_foods = $db->query("SELECT id, name, price FROM foods WHERE is_active = 1 ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $all_themes = $db->query("SELECT id, name FROM themes WHERE is_active = 1 ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
     // Danh sách combo để chuyển nhanh
     $all_combos_list = $db->query("SELECT id, name FROM combos ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
 
@@ -290,13 +297,14 @@ $page        = min($page, $total_pages);
 $offset      = ($page - 1) * $per_page;
 
 $stmt = $db->prepare(
-    "SELECT c.*,
+    "SELECT c.*, t.name as theme_name,
         GROUP_CONCAT(f.name ORDER BY f.name SEPARATOR '||') as list_foods,
         COUNT(ci.food_id)   as food_count,
         SUM(f.price)        as total_food_price
      FROM combos c
      LEFT JOIN combo_items ci ON c.id = ci.combo_id
      LEFT JOIN foods f        ON ci.food_id = f.id
+     LEFT JOIN themes t       ON c.theme_id = t.id
      $where_sql
      GROUP BY c.id
      ORDER BY c.id DESC

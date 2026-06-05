@@ -493,14 +493,15 @@ body{
       <div class="prof-top">
         <div class="av-ring">
           <?php 
-            $my_av = 'public/assets/img/default-avatar.png';
+            $default_name = urlencode($current_user['full_name'] ?: $current_user['username'] ?: 'U');
+            $my_av = 'https://ui-avatars.com/api/?name=' . $default_name . '&background=143B36&color=fff&size=128';
             if ($current_user['avatar_blob']) {
                 $my_av = 'ajax/get_avatar.php?user_id=' . $current_user['id'];
             } elseif (!empty($current_user['avatar'])) {
                 $my_av = (strpos($current_user['avatar'], 'http') === 0) ? $current_user['avatar'] : $current_user['avatar'];
             }
           ?>
-          <img src="<?= $my_av ?>" alt="Avatar" onerror="this.src='public/assets/img/default-avatar.png'">
+          <img src="<?= $my_av ?>" alt="Avatar">
         </div>
         <h5 class="prof-name"><?= htmlspecialchars($current_user['full_name'] ?: $current_user['username']) ?></h5>
         <p class="prof-email"><?= htmlspecialchars($current_user['email']) ?></p>
@@ -581,14 +582,15 @@ body{
             <label for="avatar_input" class="av-upload">
               <div class="av-upload-ring">
                 <?php 
-                  $my_av_form = 'public/assets/img/default-avatar.png';
+                  $default_name = urlencode($current_user['full_name'] ?: $current_user['username'] ?: 'U');
+                  $my_av_form = 'https://ui-avatars.com/api/?name=' . $default_name . '&background=143B36&color=fff&size=128';
                   if ($current_user['avatar_blob']) {
                       $my_av_form = 'ajax/get_avatar.php?user_id=' . $current_user['id'];
                   } elseif (!empty($current_user['avatar'])) {
                       $my_av_form = (strpos($current_user['avatar'], 'http') === 0) ? $current_user['avatar'] : $current_user['avatar'];
                   }
                 ?>
-                <img src="<?= $my_av_form ?>" id="avatar_preview" onerror="this.src='public/assets/img/default-avatar.png'">
+                <img src="<?= $my_av_form ?>" id="avatar_preview">
               </div>
               <span class="av-upload-lbl"><i class="bi bi-camera me-1"></i>Đổi ảnh đại diện</span>
             </label>

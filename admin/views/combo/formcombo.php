@@ -7,7 +7,7 @@
 // =============================================================
 $mode       = $mode ?? 'add';
 $is_edit    = ($mode === 'edit');
-$form_title = $is_edit ? 'Chỉnh sửa Combo' : 'Thêm Combo Mới';
+$form_title = $is_edit ? 'Chỉnh sửa Set' : 'Thêm Set Mới';
 
 // ✅ FIX LỖI NHÂN ĐÔI COMBO: Lấy trực tiếp ID từ mảng $combo
 $combo_id = $is_edit ? ($combo['id'] ?? 0) : 0;
@@ -34,7 +34,7 @@ $form_action = $is_edit
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
                 <div class="d-flex align-items-center gap-2 text-muted small">
                     <a href="ComboController.php?action=list" class="text-decoration-none text-muted">
-                        <i class="fas fa-boxes me-1"></i>Danh sách Combo
+                        <i class="fas fa-boxes me-1"></i>Danh sách Set
                     </a>
                     <span>/</span>
                     <span class="text-dark fw-bold"><?= htmlspecialchars($form_title) ?></span>
@@ -49,7 +49,7 @@ $form_action = $is_edit
                     <select class="form-select form-select-sm"
                             style="max-width:220px"
                             onchange="if(this.value) window.location='ComboController.php?action=edit&id='+this.value">
-                        <option value="">-- Chọn combo khác --</option>
+                        <option value="">-- Chọn set khác --</option>
                         <?php foreach ($all_combos_list as $c): ?>
                         <option value="<?= (int)$c['id'] ?>"
                             <?= $c['id'] == $combo_id ? 'selected' : '' ?>>
@@ -66,10 +66,10 @@ $form_action = $is_edit
             <div class="alert alert-success border-0 shadow-sm d-flex align-items-center gap-3 mb-4">
                 <i class="fas fa-check-circle fa-lg text-success"></i>
                 <div>
-                    <div class="fw-bold"><?= $is_edit ? 'Cập nhật combo thành công!' : 'Thêm combo thành công!' ?></div>
+                    <div class="fw-bold"><?= $is_edit ? 'Cập nhật set thành công!' : 'Thêm set thành công!' ?></div>
                     <div class="small">
                         <a href="ComboController.php?action=list" class="alert-link">Quay lại danh sách</a>
-                        <?php if (!$is_edit): ?>&nbsp;hoặc&nbsp;<a href="ComboController.php?action=add" class="alert-link">Thêm combo khác</a><?php endif; ?>
+                        <?php if (!$is_edit): ?>&nbsp;hoặc&nbsp;<a href="ComboController.php?action=add" class="alert-link">Thêm set khác</a><?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -104,15 +104,15 @@ $form_action = $is_edit
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label fw-bold small text-muted">
-                                        Tên Combo <span class="text-danger">*</span>
+                                        Tên Set <span class="text-danger">*</span>
                                     </label>
                                     <input type="text" name="name" class="form-control bg-light border-0 py-2"
                                            value="<?= htmlspecialchars($old['name']) ?>"
-                                           placeholder="Ví dụ: Combo Gia Đình 4 người" required>
+                                           placeholder="Ví dụ: Set Gia Đình 4 người" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold small text-muted">
-                                        Giá Combo (VNĐ) <span class="text-danger">*</span>
+                                        Giá Set (VNĐ) <span class="text-danger">*</span>
                                     </label>
                                     <div class="input-group">
                                         <input type="number" name="price" class="form-control bg-light border-0 py-2"
@@ -125,13 +125,24 @@ $form_action = $is_edit
                                 <div class="mb-3">
                                     <label class="form-label fw-bold small text-muted">Mô tả</label>
                                     <textarea name="description" class="form-control bg-light border-0" rows="3"
-                                              placeholder="Ghi chú về combo..."><?= htmlspecialchars($old['description']) ?></textarea>
+                                              placeholder="Ghi chú về set..."><?= htmlspecialchars($old['description']) ?></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted">Thuộc Chủ đề (Tùy chọn)</label>
+                                    <select name="theme_id" class="form-select bg-light border-0 py-2">
+                                        <option value="">-- Không thuộc chủ đề nào --</option>
+                                        <?php foreach ($all_themes as $t): ?>
+                                            <option value="<?= $t['id'] ?>" <?= ($old['theme_id'] ?? '') == $t['id'] ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($t['name']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </div>
 
                                 <!-- Ảnh -->
                                 <div class="mb-3">
                                     <label class="form-label fw-bold small text-muted">
-                                        Hình ảnh Combo
+                                        Hình ảnh Set
                                         <?php if (!$is_edit): ?><span class="text-muted small fw-normal">(tùy chọn)</span><?php endif; ?>
                                     </label>
 
@@ -171,7 +182,7 @@ $form_action = $is_edit
                             <!-- Cột phải: chọn món -->
                             <div class="col-md-6">
                                 <label class="form-label fw-bold small text-muted">
-                                    Chọn món ăn trong Combo
+                                    Chọn món ăn trong Set
                                 </label>
                                 <div class="mb-2 d-flex gap-2 align-items-center flex-wrap">
                                     <input type="text" id="food-search" class="form-control form-control-sm"
@@ -217,7 +228,7 @@ $form_action = $is_edit
                             <button type="submit" class="btn btn-success px-5 rounded-pill fw-bold shadow-sm"
                                     id="btn-submit">
                                 <i class="fas fa-save me-2"></i>
-                                <?= $is_edit ? 'LƯU THAY ĐỔI' : 'TẠO COMBO' ?>
+                                <?= $is_edit ? 'LƯU THAY ĐỔI' : 'TẠO SET' ?>
                             </button>
                         </div>
                     </form>

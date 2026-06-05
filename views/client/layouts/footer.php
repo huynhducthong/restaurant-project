@@ -230,9 +230,6 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
 
                 <?php if ($showMap && !empty($ft['google_map_iframe'])): ?>
                     <div class="map-wrapper mt-4" id="footerMapWrapper">
-                        <div class="map-overlay" id="footerMapOverlay" onclick="activateFooterMap()">
-                            <span class="map-overlay-message">🗺️ Xem bản đồ</span>
-                        </div>
                         <?= $ft['google_map_iframe'] ?>
                     </div>
                 <?php endif; ?>
@@ -248,6 +245,89 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
         </div>
     </div>
 </footer>
+
+<!-- FLOATING GLOBAL CHAT WIDGET -->
+<div class="global-chat-widget">
+    <div class="chat-widget-content">
+        <span class="chat-eyebrow">RESTAURANTLY</span>
+        <h3 class="chat-heading">Trải nghiệm fine dining hôm nay</h3>
+        <a href="#" onclick="alert('Tính năng trò chuyện đang được phát triển'); return false;" class="btn-chat-gold">TRÒ CHUYỆN</a>
+    </div>
+</div>
+
+<style>
+/* === FLOATING CHAT WIDGET === */
+.global-chat-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  background-color: #0d1a16;
+  width: 180px; /* Scaled down */
+  padding: 15px; /* Scaled down */
+  border: 1px solid rgba(201, 166, 107, 0.4);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+.chat-widget-content {
+  border: 1px solid rgba(201, 166, 107, 0.2);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.chat-eyebrow {
+  font-family: 'Inter', sans-serif;
+  font-size: 8px; /* Scaled down */
+  letter-spacing: 1px;
+  color: #C9A66B;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.chat-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem; /* Scaled down */
+  color: #F6F2E9;
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+.btn-chat-gold {
+  display: inline-block;
+  background-color: #C19A5B;
+  color: #0d1a16;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px; /* Scaled down */
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 12px; /* Scaled down */
+  text-decoration: none;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-align: center;
+  border: none;
+}
+.btn-chat-gold:hover {
+  background-color: #d6af70;
+  color: #000;
+}
+@media (max-width: 768px) {
+  .global-chat-widget {
+    width: 150px;
+    padding: 12px;
+    bottom: 15px;
+    right: 15px;
+  }
+  .chat-heading {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+  .btn-chat-gold {
+    font-size: 9px;
+    padding: 6px 10px;
+  }
+}
+</style>
 
 <script>
 function activateFooterMap() {

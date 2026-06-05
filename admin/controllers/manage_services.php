@@ -351,7 +351,7 @@ if ($filter == 'all') {
     $stmt = $db->prepare("SELECT * FROM service_bookings WHERE is_archived = 0 ORDER BY created_at DESC");
     $stmt->execute();
 } elseif ($filter == 'bespoke') {
-    $stmt = $db->prepare("SELECT * FROM service_bookings WHERE chef_requirements IS NOT NULL AND chef_requirements != '' AND is_archived = 0 ORDER BY created_at DESC");
+    $stmt = $db->prepare("SELECT * FROM service_bookings WHERE combo_id = -1 AND is_archived = 0 ORDER BY created_at DESC");
     $stmt->execute();
 } else {
     $stmt = $db->prepare("SELECT * FROM service_bookings WHERE service_type = :type AND is_archived = 0 ORDER BY created_at DESC");
@@ -460,7 +460,7 @@ include '../../public/admin_layout_header.php';
                             </td>
                             <td>
                                 <span class="badge bg-light text-dark border"><?= htmlspecialchars(ucfirst($s['service_type'])) ?></span>
-                                <?php if (!empty($s['chef_requirements'])): ?>
+                                <?php if ($s['combo_id'] == -1): ?>
                                     <div class="mt-1">
                                         <span class="badge bg-warning text-dark border-gold" style="font-size: 10px; border: 1px solid var(--gold); background: #fff5e6;"><i class="fas fa-scroll me-1" style="color:#b38600;"></i>Thiết kế riêng</span>
                                     </div>
@@ -544,9 +544,9 @@ include '../../public/admin_layout_header.php';
                         <div class="col-5 text-muted">Loại dịch vụ:</div>
                         <div class="col-7 fw-bold" id="m-type"></div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-5 text-muted">Bàn/Phòng:</div>
-                        <div class="col-7 fw-bold text-danger" id="m-table"></div>
+                    <div class="row border-bottom py-2" id="row-table">
+                        <div class="col-4 text-muted" id="lbl-table">Bàn/Phòng:</div>
+                        <div class="col-8 fw-bold" id="m-table"></div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-5 text-muted">Thời gian:</div>
@@ -586,15 +586,21 @@ include '../../public/admin_layout_header.php';
                         <div class="col-5 text-muted">Món ăn:</div>
                         <div class="col-7" id="m-foods"></div>
                     </div>
-                    <div class="row mb-2" id="row-chef-req" style="display:none;">
-                        <div class="col-5 text-muted" style="color:#e6a817;"><i class="fas fa-scroll me-1"></i>Y/c Bếp trưởng:</div>
-                        <div class="col-7 fst-italic text-warning fw-semibold" id="m-chef-req" style="white-space: pre-wrap;"></div>
+                    <div class="row border-bottom py-2" id="row-chef-req" style="display:none;">
+                        <div class="col-4 text-muted"><i class="fas fa-scroll"></i> Y/c Bếp trưởng:</div>
+                        <div class="col-8">
+                            <div class="p-2 rounded bg-light" id="m-chef-req" style="font-size: 0.9em; line-height: 1.5; color: #333;"></div>
+                        </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-5 text-muted">Ghi chú:</div>
                         <div class="col-7" id="m-msg"></div>
                     </div>
                     <hr class="border-secondary my-2">
+                    <div class="row mb-2" id="row-chef-fee" style="display:none;">
+                        <div class="col-5 text-muted">Phí phục vụ (Đầu bếp):</div>
+                        <div class="col-7" id="m-chef-fee"></div>
+                    </div>
                     <div class="row mb-2">
                         <div class="col-5 text-muted">Tổng ước tính:</div>
                         <div class="col-7 fw-bold text-success" id="m-total"></div>
@@ -779,7 +785,13 @@ include '../../public/admin_layout_header.php';
                 if (data) {
                     $('#m-phone').text(data.customer_phone);
                     $('#m-type').text(data.service_type.toUpperCase());
-                    $('#m-table').text(data.table_code ? data.table_code : 'Chưa chọn');
+                    if (data.service_type === 'chef') {
+                        $('#row-table').hide();
+                    } else {
+                        $('#row-table').show();
+                        $('#lbl-table').text('Bàn/Phòng:');
+                        $('#m-table').html(data.table_code ? `<span class="text-primary">${data.table_code}</span>` : '<span class="text-danger">Chưa chọn</span>');
+                    }
                     $('#m-date').text(data.booking_date);
                     $('#m-guests').text(data.guests + ' người');
                     $('#m-combo').text(data.combo_name ? data.combo_name : 'Không');
@@ -829,7 +841,7 @@ include '../../public/admin_layout_header.php';
                     let foodsHtml = '';
                     if (data.foods && data.foods.length > 0) {
                         data.foods.forEach(f => {
-                            foodsHtml += `<div class="small">- ${f.name} (x${f.quantity})</div>`;
+                            foodsHtml += `<div class="small">- ${f.food_name} (x${f.quantity})</div>`;
                         });
                     } else {
                         foodsHtml = 'Không có';
@@ -841,13 +853,27 @@ include '../../public/admin_layout_header.php';
                     // --- YÊU CẦU BẾP TRƯỞNG ---
                     if (data.chef_requirements) {
                         $('#row-chef-req').show();
-                        $('#m-chef-req').text(data.chef_requirements);
+                        $('#m-chef-req').html(data.chef_requirements.replace(/\n/g, '<br>'));
                     } else {
                         $('#row-chef-req').hide();
                     }
 
-                    
                     let formatter = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
+                    
+                    if (data.service_type === 'chef') {
+                        let g = parseInt(data.guests) || 2;
+                        let cf = 0;
+                        if (g <= 2) cf = 250000;
+                        else if (g <= 6) cf = 500000;
+                        else if (g <= 12) cf = 1000000;
+                        else cf = 1200000;
+                        
+                        $('#row-chef-fee').show();
+                        $('#m-chef-fee').text(formatter.format(cf));
+                    } else {
+                        $('#row-chef-fee').hide();
+                    }
+
                     $('#m-total').text(formatter.format(data.total_amount || 0));
                     $('#m-deposit').text(formatter.format(data.deposit_amount || 0));
 

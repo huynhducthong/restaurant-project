@@ -30,6 +30,8 @@ unset($_SESSION['video_flash']);
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_update'])) {
 
     $type      = $_POST['video_type'] ?? 'youtube';
+    $title     = trim($_POST['title'] ?? '');
+    $desc      = trim($_POST['description'] ?? '');
     $video_url = '';
     $file_path = $video['file_path'] ?? ''; 
 
@@ -95,8 +97,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_update'])) {
     }
 
     // Lưu vào DB
-    $db->prepare("UPDATE videos SET video_type = ?, video_url = ?, file_path = ? WHERE id = ?")
-       ->execute([$type, $video_url, $file_path, $video_id_db]);
+    $db->prepare("UPDATE videos SET video_type = ?, video_url = ?, file_path = ?, title = ?, description = ? WHERE id = ?")
+       ->execute([$type, $video_url, $file_path, $title, $desc, $video_id_db]);
 
     $_SESSION['video_flash'] = ['type' => 'success', 'msg' => 'Cập nhật video thành công!'];
     header('Location: ' . $_SERVER['PHP_SELF']); exit;
@@ -141,6 +143,20 @@ include '../../public/admin_layout_header.php';
                 <div class="card-body p-4">
                     <form method="POST" enctype="multipart/form-data" id="form-video"
                           action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>">
+
+                        <!-- Nội dung giới thiệu -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-muted">Tiêu đề giới thiệu</label>
+                            <input type="text" name="title" class="form-control bg-light border-0" 
+                                   value="<?= htmlspecialchars($video['title'] ?? '') ?>" 
+                                   placeholder="VD: Câu Chuyện Về Restaurantly">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-muted">Đoạn văn mô tả</label>
+                            <textarea name="description" class="form-control bg-light border-0" rows="3"
+                                      placeholder="VD: Nằm giữa lòng Biên Hòa..."><?= htmlspecialchars($video['description'] ?? '') ?></textarea>
+                        </div>
 
                         <!-- Loại nguồn -->
                         <div class="mb-4">

@@ -90,38 +90,45 @@ $html = '
         </div>
         <table style="width:100%; font-size:13px; border-collapse:collapse;">
             <tr>
-                <td style="padding:5px 0; width:40%; color:#888;">Khách hàng:</td>
-                <td style="padding:5px 0; font-weight:bold;">' . htmlspecialchars($s['customer_name']) . '</td>
-                <td style="padding:5px 0; width:30%; color:#888;">Điện thoại:</td>
-                <td style="padding:5px 0;">' . htmlspecialchars($s['customer_phone']) . '</td>
+                <td style="padding:6px 0; width:22%; color:#888;">Khách hàng:</td>
+                <td style="padding:6px 0; width:33%; font-weight:bold;">' . htmlspecialchars($s['customer_name']) . '</td>
+                <td style="padding:6px 0; width:20%; color:#888;">Điện thoại:</td>
+                <td style="padding:6px 0; width:25%; font-weight:bold;">' . htmlspecialchars($s['customer_phone']) . '</td>
             </tr>
             <tr>
-                <td style="padding:5px 0; color:#888;">Dịch vụ:</td>
-                <td style="padding:5px 0; font-weight:bold; color:#cda45e;">' . htmlspecialchars(strtoupper($s['service_type'])) . '</td>
-                <td style="padding:5px 0; color:#888;">Thời gian:</td>
-                <td style="padding:5px 0; font-weight:bold;">' . htmlspecialchars(date('H:i - d/m/Y', strtotime($s['booking_date']))) . '</td>
+                <td style="padding:6px 0; color:#888;">Dịch vụ:</td>
+                <td style="padding:6px 0; font-weight:bold; color:#cda45e;">' . htmlspecialchars(strtoupper($s['service_type'])) . '</td>
+                <td style="padding:6px 0; color:#888;">Thời gian:</td>
+                <td style="padding:6px 0; font-weight:bold;">' . htmlspecialchars(date('H:i d/m/y', strtotime($s['booking_date']))) . '</td>
             </tr>
             <tr>
-                <td style="padding:5px 0; color:#888;">Số lượng khách:</td>
-                <td style="padding:5px 0;">' . htmlspecialchars((string)$s['guests']) . ' người</td>
-                <td style="padding:5px 0; color:#888;">Phòng/Bàn:</td>
-                <td style="padding:5px 0; font-weight:bold;">' . ($s['service_type'] === 'birthday' ? 'PHÒNG VIP (Mặc định)' : 'Bàn tiêu chuẩn') . '</td>
+                <td style="padding:6px 0; color:#888;">Số khách:</td>
+                <td style="padding:6px 0;">' . htmlspecialchars((string)$s['guests']) . ' người</td>
+                <td style="padding:6px 0; color:#888;">' . ($s['service_type'] === 'chef' ? 'Địa điểm:' : 'Phòng/Bàn:') . '</td>
+                <td style="padding:6px 0; font-weight:bold;">' . ($s['service_type'] === 'chef' ? 'Tư gia' : ($s['service_type'] === 'birthday' ? 'PHÒNG VIP' : 'Bàn tiêu chuẩn')) . '</td>
             </tr>
         </table>
     </div>';
 
 // KHỐI TRẢI NGHIỆM CÁ NHÂN HÓA (BESPOKE)
-$has_bespoke = !empty($s['has_candle']) || !empty($s['has_handwritten_card']) || !empty($s['has_flower']) || !empty($s['event_type']) || !empty($s['music_playlist']);
+$has_bespoke = !empty($s['has_candle']) || !empty($s['has_handwritten_card']) || !empty($s['has_flower']) || !empty($s['event_type']) || !empty($s['music_playlist']) || !empty($s['chef_requirements']);
 
 if ($has_bespoke) {
     $html .= '
     <div style="border:1px solid #e8e2d9; background:#fafafa; border-radius:8px; padding:16px; margin-bottom:20px;">
         <div style="font-size:11px; font-weight:bold; letter-spacing:.15em; text-transform:uppercase; color:#cda45e; margin-bottom:12px; border-bottom:1px solid #f0ece4; padding-bottom:6px;">
-            Trải nghiệm Cá nhân hóa (Bespoke)
+            Yêu Cầu Dịch Vụ & Cá Nhân Hóa (Bespoke)
         </div>
         <table style="width:100%; font-size:13px; border-collapse:collapse;">';
 
-    if (!empty($s['event_type'])) {
+    if (!empty($s['chef_requirements'])) {
+        $html .= '
+            <tr>
+                <td colspan="2" style="padding:5px 0; font-weight:bold; color:#333; line-height: 1.6;">
+                    ' . nl2br(htmlspecialchars($s['chef_requirements'])) . '
+                </td>
+            </tr>';
+    }
         $html .= '
             <tr>
                 <td style="padding:5px 0; width:40%; color:#888;">Dịp đặc biệt:</td>
@@ -196,13 +203,34 @@ if (!empty($items)) {
                 </tr>';
     }
 
-    // ✅ THÊM: Dòng tổng tiền
+    // ✅ THÊM: Tính phí Đầu bếp tại gia
+    if ($s['service_type'] === 'chef') {
+        $g = (int)$s['guests'];
+        $chef_fee = 0;
+        if ($g <= 2) $chef_fee = 250000;
+        elseif ($g <= 6) $chef_fee = 500000;
+        elseif ($g <= 12) $chef_fee = 1000000;
+        else $chef_fee = 1200000;
+        
+        $html .= '
+                <tr>
+                    <td colspan="3" style="padding:8px 10px; border-bottom:1px solid #f0ece4; text-align:right; color:#888;">Phí phục vụ Đầu bếp:</td>
+                    <td style="padding:8px 10px; border-bottom:1px solid #f0ece4; text-align:right; font-weight:bold;">' . number_format($chef_fee, 0, ',', '.') . 'đ</td>
+                </tr>';
+        
+        // $grand_total already includes the chef fee in the database (total_amount), 
+        // but $grand_total here in this script was recalculated manually: 
+        // foreach ($items as $item) { $grand_total += $item['price'] * $item['quantity']; }
+        // We should just use $s['total_amount'] instead of manually recalculating, OR add chef_fee to grand_total here.
+        // Wait, $grand_total was missing bespoke fees too! Let's just use $s['total_amount'].
+    }
+
     $html .= '
             </tbody>
             <tfoot>
                 <tr style="background:#fdf6e9;">
                     <td colspan="3" style="padding:10px; font-weight:bold; text-align:right; color:#555;">TỔNG CỘNG:</td>
-                    <td style="padding:10px; font-weight:bold; text-align:right; font-size:15px; color:#cda45e;">' . number_format($grand_total, 0, ',', '.') . 'đ</td>
+                    <td style="padding:10px; font-weight:bold; text-align:right; font-size:15px; color:#cda45e;">' . number_format($s['total_amount'], 0, ',', '.') . 'đ</td>
                 </tr>
             </tfoot>
         </table>
@@ -212,9 +240,9 @@ if (!empty($items)) {
 // GHI CHÚ
 if (!empty(trim($s['message']))) {
     $html .= '
-    <div style="padding:12px 16px; background:#fdfcf9; border-left:4px solid #cda45e; border-radius:4px; margin-bottom:20px; font-size:12px;">
-        <strong style="color:#555;">Yêu cầu bổ sung:</strong><br>
-        <span style="color:#666; font-style:italic; line-height:1.6;">' . nl2br(htmlspecialchars($s['message'])) . '</span>
+    <div style="padding:12px 16px; background:#fdfcf9; border-left:4px solid #cda45e; border-radius:4px; margin-bottom:20px; font-size:12px; border: 1px solid #e8e2d9;">
+        <strong style="color:#cda45e; text-transform:uppercase; letter-spacing:1px;">Ghi chú của khách:</strong><br>
+        <span style="color:#444; font-style:italic; line-height:1.6; display:inline-block; margin-top:5px;">' . nl2br(htmlspecialchars($s['message'])) . '</span>
     </div>';
 }
 

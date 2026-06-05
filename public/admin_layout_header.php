@@ -488,6 +488,12 @@ try {
                 </li>
 
                 <?php if (checkMenuAccess($user_role, ['chef', 'waiter', 'cashier'])): ?>
+                <li class="<?= isActive('manage_themes.php') ?>">
+                    <a href="/restaurant-project/admin/controllers/manage_themes.php">
+                        <i class="fas fa-layer-group"></i> Quản lý Chủ đề Thực đơn
+                    </a>
+                </li>
+                
                 <li class="<?= isActive('FoodController.php') ?>">
                     <a href="/restaurant-project/admin/controllers/FoodController.php">
                         <i class="fas fa-utensils"></i> Quản lý Món ăn
@@ -496,7 +502,7 @@ try {
 
                 <li class="<?= ($current_page == 'ComboController.php' || $current_page == 'add_combo.php' || $current_page == 'edit_combo.php') ? 'active' : '' ?>">
                     <a href="/restaurant-project/admin/controllers/ComboController.php">
-                        <i class="fas fa-layer-group"></i> Quản lý Combo
+                        <i class="fas fa-layer-group"></i> Quản lý Set
                     </a>
                 </li>
                 <?php endif; ?>
@@ -626,10 +632,10 @@ try {
                 $page_titles = [
                     'admin_dashboard.php'     => 'Bảng Điều Khiển Tổng Quan',
                     'FoodController.php'      => 'Quản Lý Thực Đơn',
-                    'ComboController.php'     => 'Quản Lý Combo',
-                    'list_combos.php'         => 'Quản Lý Combo',
-                    'add_combo.php'           => 'Thêm Combo',
-                    'edit_combo.php'          => 'Chỉnh Sửa Combo',
+                    'ComboController.php'     => 'Quản Lý Set',
+                    'list_combos.php'         => 'Quản Lý Set',
+                    'add_combo.php'           => 'Thêm Set',
+                    'edit_combo.php'          => 'Chỉnh Sửa Set',
                     'manage_services.php'     => 'Quản Lý Dịch Vụ',
                     'InventoryController.php' => 'Quản Lý Kho Nguyên Liệu',
                     'manage_inventory.php'    => 'Quản Lý Kho Nguyên Liệu',

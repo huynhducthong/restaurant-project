@@ -20,19 +20,19 @@ tr.inactive-row { opacity: .5; }
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <h3 class="fw-bold m-0">
-            <i class="fas fa-boxes me-2 text-primary"></i>Quản lý Combo Món Ăn
+            <i class="fas fa-boxes me-2 text-primary"></i>Quản lý Set Món Ăn
         </h3>
         <div class="d-flex gap-2">
             <a href="ComboController.php?action=list<?= $show_hidden ? '' : '&show_hidden=1' ?>"
                class="btn btn-sm <?= $show_hidden ? 'btn-secondary' : 'btn-outline-secondary' ?>">
                 <i class="fas fa-eye-slash me-1"></i>
-                Combo ẩn
+                Set ẩn
                 <?php if ($hidden_count > 0): ?>
                     <span class="badge bg-danger ms-1"><?= $hidden_count ?></span>
                 <?php endif; ?>
             </a>
             <a href="ComboController.php?action=add" class="btn btn-primary shadow-sm">
-                <i class="fas fa-plus-circle me-1"></i>Thêm Combo Mới
+                <i class="fas fa-plus-circle me-1"></i>Thêm Set Mới
             </a>
         </div>
     </div>
@@ -46,7 +46,7 @@ tr.inactive-row { opacity: .5; }
 
     <?php if (isset($_GET['msg']) && $_GET['msg'] === 'deleted'): ?>
     <div class="alert alert-success border-0 shadow-sm mb-3" id="alert-success">
-        <i class="fas fa-check-circle me-2"></i>Đã xóa combo thành công.
+        <i class="fas fa-check-circle me-2"></i>Đã xóa set thành công.
     </div>
     <?php endif; ?>
 
@@ -57,7 +57,7 @@ tr.inactive-row { opacity: .5; }
                 <?php if ($show_hidden) echo "<input type='hidden' name='show_hidden' value='1'>"; ?>
                 <input type="text" name="q"
                        class="form-control form-control-sm"
-                       placeholder="🔍 Tìm tên combo..."
+                       placeholder="🔍 Tìm tên set..."
                        value="<?= htmlspecialchars($search) ?>">
                 <button type="submit" class="btn btn-sm btn-dark px-3">Tìm</button>
                 <?php if ($search): ?>
@@ -70,7 +70,7 @@ tr.inactive-row { opacity: .5; }
                 <?php if ($search): ?>
                     Kết quả cho "<b><?= htmlspecialchars($search) ?></b>" —
                 <?php endif; ?>
-                Tổng <b><?= $total ?></b> combo
+                Tổng <b><?= $total ?></b> set
                 <?= $show_hidden ? '(bao gồm đã ẩn)' : '' ?>
             </small>
         </div>
@@ -83,9 +83,9 @@ tr.inactive-row { opacity: .5; }
                 <tr>
                     <th class="ps-4" style="width:50px">ID</th>
                     <th style="width:90px">Ảnh</th>
-                    <th>Tên Combo</th>
+                    <th>Tên Set</th>
                     <th style="width:160px">Giá / Tiết kiệm</th>
-                    <th>Món trong Combo</th>
+                    <th>Món trong Set</th>
                     <th class="text-center" style="width:170px">Thao tác</th>
                 </tr>
             </thead>
@@ -95,8 +95,8 @@ tr.inactive-row { opacity: .5; }
                     <td colspan="6" class="text-center py-5 text-muted">
                         <i class="fas fa-boxes fa-3x mb-3 d-block opacity-25"></i>
                         <?= $search
-                            ? 'Không tìm thấy combo nào khớp với "<b>' . htmlspecialchars($search) . '</b>".'
-                            : 'Chưa có combo nào.' ?>
+                            ? 'Không tìm thấy set nào khớp với "<b>' . htmlspecialchars($search) . '</b>".'
+                            : 'Chưa có set nào.' ?>
                     </td>
                 </tr>
                 <?php else: ?>
@@ -196,7 +196,7 @@ tr.inactive-row { opacity: .5; }
                             <!-- Sửa -->
                             <a href="ComboController.php?action=edit&id=<?= $row['id'] ?>"
                                class="btn btn-sm btn-outline-warning"
-                               title="Chỉnh sửa combo">
+                               title="Chỉnh sửa set">
                                 <i class="fas fa-edit"></i>
                             </a>
 
@@ -205,7 +205,7 @@ tr.inactive-row { opacity: .5; }
                                     class="btn btn-sm <?= $is_active ? 'btn-outline-secondary' : 'btn-secondary' ?> btn-toggle-combo"
                                     data-id="<?= $row['id'] ?>"
                                     data-active="<?= $is_active ?>"
-                                    title="<?= $is_active ? 'Ẩn combo' : 'Hiện combo' ?>">
+                                    title="<?= $is_active ? 'Ẩn set' : 'Hiện set' ?>">
                                 <i class="fas <?= $is_active ? 'fa-eye-slash' : 'fa-eye' ?>"></i>
                             </button>
 
@@ -215,7 +215,7 @@ tr.inactive-row { opacity: .5; }
                                     data-id="<?= $row['id'] ?>"
                                     data-name="<?= htmlspecialchars($row['name']) ?>"
                                     data-count="<?= $food_count ?>"
-                                    title="Xóa combo">
+                                    title="Xóa set">
                                 <i class="fas fa-trash"></i>
                             </button>
 
@@ -233,7 +233,7 @@ tr.inactive-row { opacity: .5; }
     <nav class="d-flex justify-content-between align-items-center">
         <small class="text-muted">
             Trang <b><?= $page ?></b> / <?= $total_pages ?>
-            &nbsp;·&nbsp; Tổng <b><?= $total ?></b> combo
+            &nbsp;·&nbsp; Tổng <b><?= $total ?></b> set
         </small>
         <ul class="pagination pagination-sm mb-0">
             <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
@@ -268,7 +268,7 @@ tr.inactive-row { opacity: .5; }
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4 text-center">
-                <p class="mb-1 text-muted small">Xóa combo:</p>
+                <p class="mb-1 text-muted small">Xóa set:</p>
                 <p class="fw-bold mb-1" id="confirm-combo-name"></p>
                 <p class="text-muted small mb-0" id="confirm-combo-count"></p>
                 <p class="text-danger small mt-2 mb-0">
@@ -306,7 +306,7 @@ $(function () {
 
         $('#confirm-combo-name').text(name);
         $('#confirm-combo-count').text(
-            count > 0 ? 'Combo gồm ' + count + ' món, sẽ bị xóa hoàn toàn.' : ''
+            count > 0 ? 'Set gồm ' + count + ' món, sẽ bị xóa hoàn toàn.' : ''
         );
         $('#delete-combo-id').val(id);
         new bootstrap.Modal(document.getElementById('modalConfirmDelete')).show();
@@ -323,7 +323,7 @@ $(function () {
 
             const active = r.is_active;
             btn.data('active', active);
-            btn.attr('title', active ? 'Ẩn combo' : 'Hiện combo');
+            btn.attr('title', active ? 'Ẩn set' : 'Hiện set');
             btn.toggleClass('btn-outline-secondary', !!active)
                .toggleClass('btn-secondary', !active);
             btn.find('i')

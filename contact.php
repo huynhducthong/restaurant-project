@@ -76,20 +76,19 @@ include 'views/client/layouts/header.php';
 
 <style>
     :root {
-        --bg-dark: #0a1715;
-        --forest: #143B36;
-        --forest-light: #1d5750;
-        --forest-glow: rgba(20, 59, 54, 0.5);
-        --gold: #cda45e;
-        --gold-glow: rgba(205, 164, 94, 0.3);
-        --glass-bg: rgba(20, 59, 54, 0.25);
-        --glass-border: rgba(205, 164, 94, 0.15);
+        --bg-color: #F6F2E9;       /* Cream */
+        --card-bg: #ffffff;        /* White */
+        --text-main: #222222;
+        --text-muted: #555555;
+        --olive: #4F5B3A;
+        --gold: #C9A66B;
+        --border-light: rgba(79, 91, 58, 0.15);
         --ease: cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     .contact-page {
-        background: var(--bg-dark);
-        color: #fff;
+        background: var(--bg-color);
+        color: var(--text-main);
         font-family: 'Inter', sans-serif;
     }
 
@@ -97,14 +96,14 @@ include 'views/client/layouts/header.php';
         padding: 180px 0 100px;
         text-align: center;
         position: relative;
-        background: url('public/assets/img/hero-bg.jpg') center center / cover no-repeat fixed;
-        border-bottom: 1px solid var(--glass-border);
+        background: url('public/assets/img/hero/1776687242_hero-bg.jpg') center center / cover no-repeat fixed;
+        border-bottom: 1px solid var(--border-light);
     }
     
     .contact-hero::before {
         content: '';
         position: absolute; inset: 0;
-        background: linear-gradient(0deg, var(--bg-dark) 0%, rgba(10,23,21,0.6) 100%);
+        background: linear-gradient(0deg, rgba(246, 242, 233, 0.8) 0%, rgba(246, 242, 233, 0.95) 100%);
     }
 
     .contact-hero .container {
@@ -115,19 +114,19 @@ include 'views/client/layouts/header.php';
     .contact-hero h2 {
         font-family: 'Playfair Display', serif;
         font-size: clamp(3rem, 5vw, 4.5rem);
-        color: var(--gold);
+        color: var(--olive);
         margin-bottom: 20px;
         font-weight: 700;
-        letter-spacing: 2px;
-        text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        line-height: 1.1;
     }
 
     .contact-hero p {
-        color: rgba(255,255,255,0.8);
+        color: var(--text-muted);
         font-style: italic;
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         max-width: 600px;
         margin: 0 auto;
+        font-family: 'Playfair Display', serif;
     }
 
     .contact-section {
@@ -138,181 +137,120 @@ include 'views/client/layouts/header.php';
     }
 
     .info-item {
-        background: var(--glass-bg);
-        border: 1px solid var(--glass-border);
-        backdrop-filter: blur(10px);
-        border-radius: 16px;
-        padding: 25px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-light);
+        border-radius: 0;
+        padding: 30px;
         margin-bottom: 20px;
-        transition: all 0.4s var(--ease);
-        position: relative;
-        overflow: hidden;
+        transition: all 0.3s var(--ease);
     }
     
-    .info-item::before {
-        content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-        transition: 0.5s;
-    }
-
     .info-item:hover {
         border-color: var(--gold);
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.4), 0 0 15px var(--forest-glow);
-        background: rgba(20, 59, 54, 0.4);
-    }
-    
-    .info-item:hover::before {
-        left: 200%;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.03);
     }
 
     .info-item i {
-        font-size: 2rem;
+        font-size: 1.8rem;
         color: var(--gold);
         margin-right: 20px;
         float: left;
-        transition: 0.3s;
-    }
-
-    .info-item:hover i {
-        transform: scale(1.1);
     }
 
     .info-item h5 {
-        color: #fff;
+        color: var(--text-main);
         margin-bottom: 8px;
         font-family: 'Playfair Display', serif;
-        font-size: 1.25rem;
+        font-size: 1.4rem;
+        font-weight: 700;
         letter-spacing: 1px;
     }
 
     .info-item p {
         margin: 0;
-        color: rgba(255,255,255,0.6);
+        color: var(--text-muted);
         font-size: 0.95rem;
     }
 
     .map-mini {
-        border-radius: 16px;
+        border-radius: 0;
         overflow: hidden;
-        border: 1px solid var(--glass-border);
-        height: 250px;
+        border: 1px solid var(--border-light);
+        height: 300px;
         margin-top: 30px;
-        transition: 0.4s;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
-    
-    .map-mini:hover {
-        border-color: var(--gold);
-        box-shadow: 0 15px 40px rgba(0,0,0,0.5);
     }
 
     .map-mini iframe {
         width: 100%;
         height: 100%;
         border: none;
-        filter: invert(90%) hue-rotate(180deg) brightness(80%) contrast(80%);
-        transition: 0.5s;
-    }
-    
-    .map-mini:hover iframe {
-        filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%);
     }
 
     .form-wrapper {
-        background: var(--forest);
-        border: 1px solid var(--glass-border);
-        border-radius: 20px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-light);
+        border-radius: 0;
         padding: 50px 40px;
         height: 100%;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        position: relative;
     }
 
     .form-wrapper .form-label {
-        color: var(--gold);
-        font-weight: 500;
-        font-size: 12px;
-        letter-spacing: 1.5px;
+        color: var(--olive);
+        font-weight: 600;
+        font-size: 11px;
+        letter-spacing: 2px;
         text-transform: uppercase;
         margin-bottom: 10px;
     }
 
     .form-control {
-        background: rgba(0,0,0,0.25);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-bottom: 1px solid rgba(255,255,255,0.2);
-        color: #fff;
-        padding: 15px 20px;
-        border-radius: 8px;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--border-light);
+        color: var(--text-main);
+        padding: 12px 0;
+        border-radius: 0;
         transition: all 0.3s ease;
         font-size: 14px;
+        box-shadow: none !important;
     }
 
     .form-control:focus {
-        border-color: rgba(255,255,255,0.1);
         border-bottom-color: var(--gold);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        background: rgba(212, 176, 106, 0.05);
-        color: #fff;
+        background: transparent;
+        color: var(--text-main);
     }
     
     .form-control::placeholder {
-        color: rgba(255,255,255,0.3);
+        color: #999;
     }
 
     .btn-gold {
-        background: linear-gradient(135deg, #E6C887 0%, #D4B06A 50%, #A5803A 100%);
-        color: var(--bg-dark);
+        background: var(--olive);
+        color: #ffffff;
         font-weight: 600;
         padding: 16px 30px;
-        border-radius: 50px;
-        border: none;
-        transition: all 0.4s var(--ease);
+        border-radius: 0;
+        border: 1px solid var(--olive);
+        transition: all 0.3s var(--ease);
         text-transform: uppercase;
-        letter-spacing: 1.5px;
+        letter-spacing: 2px;
         width: 100%;
-        font-size: 14px;
-        margin-top: 15px;
+        font-size: 13px;
+        margin-top: 25px;
     }
 
     .btn-gold:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 25px var(--gold-glow);
-        background: linear-gradient(135deg, #f0d59e 0%, #e8c47b 50%, #b8943f 100%);
+        background: transparent;
+        color: var(--olive);
     }
-
-    .alert {
-        border-radius: 12px;
-        border: none;
-        padding: 15px 20px;
-        font-size: 14px;
-    }
-
-    /* Animations & Polish */
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .info-item, .form-wrapper, .map-mini {
-        opacity: 0;
-        animation: fadeInUp 0.8s var(--ease) forwards;
-    }
-
-    .info-item:nth-child(1) { animation-delay: 0.1s; }
-    .info-item:nth-child(2) { animation-delay: 0.2s; }
-    .info-item:nth-child(3) { animation-delay: 0.3s; }
-    .info-item:nth-child(4) { animation-delay: 0.4s; }
-    .map-mini { animation-delay: 0.5s; }
-    .form-wrapper { animation-delay: 0.3s; }
 
     .btn-gold:disabled {
-        background: rgba(255,255,255,0.1);
-        color: rgba(255,255,255,0.3);
+        background: #e2e8f0;
+        border-color: #e2e8f0;
+        color: #94a3b8;
         cursor: not-allowed;
-        box-shadow: none;
-        transform: none;
     }
 </style>
 

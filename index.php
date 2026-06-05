@@ -70,23 +70,30 @@ try {
     $file_path  = $video_data['file_path'] ?? '';
   }
 
-  // 5.3 Truy vấn Combo — đồng bộ với list_combos.php (dùng is_active)
-  $sql_combos = "SELECT c.*, GROUP_CONCAT(f.name ORDER BY f.name SEPARATOR ', ') as list_foods
-                   FROM combos c
-                   LEFT JOIN combo_items ci ON c.id = ci.combo_id
-                   LEFT JOIN foods f        ON ci.food_id = f.id
-                   WHERE c.is_active = 1
-                   GROUP BY c.id
-                   ORDER BY c.id DESC";
-  $stmt_combos = $db->prepare($sql_combos);
-  $stmt_combos->execute();
+  // 5.3 Truy vấn Chủ đề
+  $active_themes = $db->query("SELECT * FROM themes WHERE is_active = 1 AND (start_date IS NULL OR start_date <= NOW()) AND (end_date IS NULL OR end_date >= NOW()) ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
+  foreach ($active_themes as &$t) {
+      $t_combos = $db->prepare("SELECT c.*, GROUP_CONCAT(f.name ORDER BY f.name SEPARATOR ', ') as list_foods
+                                FROM combos c
+                                LEFT JOIN combo_items ci ON c.id = ci.combo_id
+                                LEFT JOIN foods f ON ci.food_id = f.id
+                                WHERE c.theme_id = ? AND c.is_active = 1
+                                GROUP BY c.id ORDER BY c.id DESC");
+      $t_combos->execute([$t['id']]);
+      $t['combos'] = $t_combos->fetchAll(PDO::FETCH_ASSOC);
+      
+      $t_foods = $db->prepare("SELECT f.*, c.name as cat_name FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.theme_id = ? AND f.is_active = 1");
+      $t_foods->execute([$t['id']]);
+      $t['foods'] = $t_foods->fetchAll(PDO::FETCH_ASSOC);
+  }
+  unset($t);
 
   // 5.4 Lấy danh sách đầu bếp nổi bật cho trang chủ
   $stmt_home_chefs = $db->prepare("SELECT * FROM chefs WHERE is_active = 1 ORDER BY is_featured DESC, sort_order ASC, id ASC LIMIT 3");
   $stmt_home_chefs->execute();
   $home_chefs = $stmt_home_chefs->fetchAll(PDO::FETCH_ASSOC);
-  // 5.5 Lấy danh sách ảnh Gallery cho trang chủ (4 ảnh)
-  $stmt_galleries = $db->prepare("SELECT * FROM galleries WHERE is_active = 1 ORDER BY sort_order ASC, id DESC LIMIT 4");
+  // 5.5 Lấy danh sách ảnh Gallery cho trang chủ (7 ảnh)
+  $stmt_galleries = $db->prepare("SELECT * FROM galleries WHERE is_active = 1 ORDER BY sort_order ASC, id DESC LIMIT 7");
   $stmt_galleries->execute();
   $home_galleries = $stmt_galleries->fetchAll(PDO::FETCH_ASSOC);
 
@@ -115,7 +122,7 @@ include __DIR__ . '/views/client/layouts/header.php';
         <div class="carousel-item <?= $first ? 'active' : '' ?>"
           style="background-image: url('public/assets/img/hero/<?= $row['image_url'] ?>'); background-size: cover; height: 100vh; background-position: center; position: relative;">
 
-          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5);"></div>
+          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 25%, rgba(0,0,0,0.2) 75%, #F6F2E9 100%);"></div>
 
           <div class="container position-relative d-flex flex-column justify-content-center h-100"
             style="text-align: <?= $row['text_align'] ?>; z-index: 2;">
@@ -146,7 +153,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                   <a href="<?= htmlspecialchars($row['button_link'] ?? '#') ?>" class="animate__animated animate__fadeInUp" style="
                     display:inline-block;
                     padding:12px 36px;
-                    border-radius:50px;
+                    border-radius:0px;
                     text-transform:uppercase;
                     text-decoration:none;
                     font-weight:600;
@@ -176,15 +183,37 @@ include __DIR__ . '/views/client/layouts/header.php';
     <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
       <span class="carousel-control-next-icon"></span>
     </button>
-  </div>
-</section>
+  <img id="hoverImageTooltip" class="menu-hover-tooltip" src="" alt="">
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tooltip = document.getElementById('hoverImageTooltip');
+    const triggers = document.querySelectorAll('.menu-hover-trigger');
+    
+    triggers.forEach(trigger => {
+        trigger.addEventListener('mousemove', function(e) {
+            tooltip.src = this.getAttribute('data-img');
+            tooltip.style.left = e.pageX + 'px';
+            tooltip.style.top = e.pageY + 'px';
+            tooltip.style.opacity = '1';
+            tooltip.style.transform = 'translate(15px, -50%) scale(1)';
+        });
+        trigger.addEventListener('mouseleave', function() {
+            tooltip.style.opacity = '0';
+            tooltip.style.transform = 'translate(15px, -50%) scale(0.95)';
+        });
+    });
+});
+</script>
+
+</body>
+</html></section>
 
 <main id="main">
-  <section id="about" class="about-section" style="background: #0A1C1A; color: #fff; padding: 140px 0; overflow: hidden;">
+  <section id="about" class="about-section" style="background: #F6F2E9; color: #222222; padding: 140px 0; overflow: hidden;">
     <div class="container-fluid px-0">
       <div class="row g-0 align-items-center">
         <div class="col-lg-7" style="padding-left: 5%; padding-right: 30px;">
-          <div class="video-wrapper" style="position: relative; width: 100%; border-radius: 5px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); background: #000;">
+          <div class="video-wrapper" style="position: relative; width: 100%; border-radius: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #C9A66B; background: #fff;">
 
             <?php if ($video_type == 'youtube' && !empty($video_url)): ?>
               <iframe width="100%" height="500"
@@ -220,11 +249,22 @@ include __DIR__ . '/views/client/layouts/header.php';
 
         <div class="col-lg-5 p-4 p-md-5">
           <div class="about-content" style="padding-right: 5%;">
-            <h2 style="font-family: 'Playfair Display', serif; color: #d9ba85; font-size: 3rem; margin-bottom: 25px; font-weight: 700; line-height: 1.2;">
-              Câu Chuyện <br> Về <?= htmlspecialchars($settings['restaurant_name'] ?? 'Restaurantly') ?>
+            <?php
+              $v_title = $video_data['title'] ?? '';
+              $v_desc  = $video_data['description'] ?? '';
+              
+              if (empty($v_title)) {
+                  $v_title = "Câu Chuyện <br> Về " . htmlspecialchars($settings['restaurant_name'] ?? 'Restaurantly');
+              }
+              if (empty($v_desc)) {
+                  $v_desc = "Nằm giữa lòng " . htmlspecialchars($settings['address'] ?? 'Biên Hòa') . ", chúng tôi mang đến một không gian ẩm thực tinh tế.";
+              }
+            ?>
+            <h2 style="font-family: 'Playfair Display', serif; color: #4F5B3A; font-size: 3rem; margin-bottom: 25px; font-weight: 700; line-height: 1.2;">
+              <?= $v_title ?>
             </h2>
-            <p style="font-family: 'Poppins', sans-serif; font-weight: 300; line-height: 2; color: #ced4da; font-size: 1.15rem; margin-bottom: 25px;">
-              Nằm giữa lòng <?= htmlspecialchars($settings['address'] ?? 'Biên Hòa') ?>, chúng tôi mang đến một không gian ẩm thực tinh tế.
+            <p style="font-family: 'Poppins', sans-serif; font-weight: 300; line-height: 2; color: #222222; font-size: 1.15rem; margin-bottom: 25px;">
+              <?= nl2br(htmlspecialchars($v_desc)) ?>
             </p>
           </div>
         </div>
@@ -232,7 +272,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     </div>
   </section>
 
-  <section id="menu" class="menu section-bg" style="background: #0d0d0d; padding: 100px 0; overflow: hidden;">
+  <section id="menu" class="menu section-bg" style="background: #ffffff; padding: 100px 0; overflow: hidden;">
 
     <?php
     // Lấy tất cả món ăn active để hiển thị gallery
@@ -263,10 +303,10 @@ include __DIR__ . '/views/client/layouts/header.php';
 
     <!-- Tiêu đề -->
     <div class="text-center mb-5" style="position:relative; z-index:2;">
-      <p style="color:#cda45e; font-family:'Poppins',sans-serif; font-size:13px; letter-spacing:4px; text-transform:uppercase; margin-bottom:12px;">Hương Vị Tinh Tế</p>
-      <h2 style="color:#fff; font-family:'Playfair Display',serif; font-size:clamp(2rem,5vw,3.2rem); font-weight:700; margin-bottom:16px;">Một Trải Nghiệm Độc Đáo</h2>
-      <div style="width:50px; height:2px; background:#cda45e; margin:0 auto 20px;"></div>
-      <p style="color:#aaaaaa; font-family:'Poppins',sans-serif; font-size:15px; max-width:560px; margin:0 auto; line-height:1.8;">
+      <p style="color:#C9A66B; font-family:'Poppins',sans-serif; font-size:13px; letter-spacing:4px; text-transform:uppercase; margin-bottom:12px;">Hương Vị Tinh Tế</p>
+      <h2 style="color:#4F5B3A; font-family:'Playfair Display',serif; font-size:clamp(2rem,5vw,3.2rem); font-weight:700; margin-bottom:16px;">Một Trải Nghiệm Độc Đáo</h2>
+      <div style="width:50px; height:2px; background:#C9A66B; margin:0 auto 20px;"></div>
+      <p style="color:#666666; font-family:'Poppins',sans-serif; font-size:15px; max-width:560px; margin:0 auto; line-height:1.8;">
         Khám phá bản giao hưởng hương vị nơi truyền thống cổ xưa hòa quyện với nghệ thuật hiện đại.<br>
         Mỗi món ăn là một kiệt tác được tuyển chọn kỹ lưỡng, không chỉ để thưởng thức mà còn để cảm nhận.
       </p>
@@ -372,7 +412,7 @@ include __DIR__ . '/views/client/layouts/header.php';
       height: 200px;
       flex-shrink: 0;
       overflow: hidden;
-      border-radius: 4px;
+      border-radius: 0;
       cursor: pointer;
     }
 
@@ -392,7 +432,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     .menu-gallery-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%);
+      background: linear-gradient(to top, rgba(79,91,58,0.9) 0%, transparent 80%);
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
@@ -414,7 +454,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     }
 
     .menu-gallery-price {
-      color: #cda45e;
+      color: #C9A66B;
       font-family: 'Poppins', sans-serif;
       font-size: 12px;
       font-weight: 700;
@@ -434,9 +474,9 @@ include __DIR__ . '/views/client/layouts/header.php';
     .menu-explore-btn {
       display: inline-block;
       padding: 14px 44px;
-      background: rgba(13,13,13,0.85);
-      border: 1.5px solid #cda45e;
-      color: #cda45e;
+      background: #4F5B3A;
+      border: 1.5px solid #4F5B3A;
+      color: #C9A66B;
       font-family: 'Poppins', sans-serif;
       font-size: 12px;
       font-weight: 700;
@@ -446,82 +486,121 @@ include __DIR__ . '/views/client/layouts/header.php';
       backdrop-filter: blur(6px);
       transform: translateY(-50%);   /* Căn giữa đúng theo chiều dọc */
       transition: background 0.3s, color 0.3s, box-shadow 0.3s;
-      border-radius: 2px;
+      border-radius: 0;
       white-space: nowrap;
     }
 
     .menu-explore-btn:hover {
       background: #cda45e;
       color: #000;
-      box-shadow: 0 0 30px rgba(205,164,94,0.4);
+      box-shadow: none; border-color: #C9A66B;
+    }
+    
+    .menu-hover-tooltip {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      object-fit: cover;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+      border: 4px solid #fff;
+      transform: translate(15px, -50%) scale(0.95);
+    }
+    .menu-hover-trigger:hover {
+      color: #C9A66B !important;
+      transition: color 0.3s ease;
+    }
+    .menu-list-item:hover {
+      background: rgba(201, 166, 107, 0.03);
     }
   </style>
 
-  <section id="combos" style="background: #071A18; padding: 160px 0; border-top: 1px solid rgba(198,167,106,0.08); border-bottom: 1px solid rgba(198,167,106,0.08); position: relative;">
+  <section id="combos" style="background: #F6F2E9; padding: 160px 0; border-top: 1px solid rgba(79,91,58,0.1); border-bottom: 1px solid rgba(79,91,58,0.1); position: relative;">
     <!-- Radial subtle glow behind the whole section -->
-    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(198,167,106,0.03) 0%, transparent 70%); pointer-events: none; z-index: 0;"></div>
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(79,91,58,0.05) 0%, transparent 70%); pointer-events: none; z-index: 0;"></div>
     
     <div class="container" style="position: relative; z-index: 1;">
       <div class="section-title text-center mb-5" style="margin-bottom: 80px !important;">
-        <p style="color: #C6A76A; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Tuyển Chọn Thượng Hạng</p>
-        <h2 style="color: #F6F1E7; font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Bộ Sưu Tập Hương Vị</h2>
-        <div style="width: 1px; height: 40px; background: rgba(198,167,106,0.3); margin: 20px auto;"></div>
+        <p style="color: #C9A66B; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Tuyển Chọn Thượng Hạng</p>
+        <h2 style="color: #4F5B3A; font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Bộ Sưu Tập Hương Vị</h2>
+        <div style="width: 1px; height: 40px; background: #C9A66B; margin: 20px auto;"></div>
       </div>
 
       <div class="row g-5 justify-content-center">
-        <?php if ($stmt_combos): ?>
-          <?php 
-          $badge_types = ['Signature Collection', 'Chef Curated', 'Limited Experience'];
-          $badge_idx = 0;
-          while ($row = $stmt_combos->fetch(PDO::FETCH_ASSOC)): 
-            $badge_text = $badge_types[$badge_idx % count($badge_types)];
-            $badge_idx++;
-          ?>
-            <div class="col-lg-4 col-md-6">
-              <div class="combo-card-custom">
-                <div class="combo-img-wrap">
-                  <div class="combo-badge"><?= $badge_text ?></div>
-                  <img src="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>"
-                    alt="<?= htmlspecialchars($row['name']) ?>"
-                    onerror="this.src='public/assets/img/combos/default-combo.jpg'">
+        <?php if (!empty($active_themes)): ?>
+          <?php foreach ($active_themes as $t): ?>
+            <?php if(empty($t['combos']) && empty($t['foods'])) continue; ?>
+            <div class="col-12 text-center mt-5 mb-3">
+              <?php if($t['image']): ?>
+                <div style="max-width: 800px; height: 300px; margin: 0 auto 30px; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                  <img src="<?= htmlspecialchars($t['image']) ?>" alt="<?= htmlspecialchars($t['name']) ?>" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                 </div>
-                
-                <div class="combo-content">
-                  <h4 class="combo-name-custom"><?= htmlspecialchars($row['name']) ?></h4>
-                  <p class="combo-desc-custom"><?= htmlspecialchars($row['description']) ?></p>
-                  
-                  <div class="combo-divider"></div>
-                  
-                  <div class="combo-items-list">
-                    <?php 
-                    $foods = explode(',', $row['list_foods']);
-                    foreach($foods as $f): 
-                      if(trim($f)):
-                    ?>
-                      <span><?= htmlspecialchars(trim($f)) ?></span>
-                    <?php 
-                      endif;
-                    endforeach; 
-                    ?>
-                  </div>
-                  
-                  <div class="combo-footer">
-                    <span class="combo-price-custom"><?= number_format($row['price'], 0, ',', '.') ?> VND</span>
-                    <button onclick="addToCart('combo', <?= $row['id'] ?>)" class="btn-combo-order">KHÁM PHÁ</button>
-                  </div>
+              <?php endif; ?>
+              <h3 style="color: #4F5B3A; font-family: 'Playfair Display', serif; font-size: 32px; border-bottom: 1px solid #C9A66B; display: inline-block; padding-bottom: 10px;"><?= htmlspecialchars($t['name']) ?></h3>
+              <p style="color: #666; font-style: italic; max-width: 600px; margin: 15px auto 0;"><?= htmlspecialchars($t['description']) ?></p>
+            </div>
+            
+            <?php if(!empty($t['combos'])): ?>
+              <div class="col-12 mt-5">
+                <h4 style="text-align: center; color: #4F5B3A; font-family: 'Playfair Display', serif; margin-bottom: 30px; font-size: 24px; letter-spacing: 2px;">SET MENU (TASTING MENU)</h4>
+                <div class="row g-5 justify-content-center">
+                  <?php foreach($t['combos'] as $row): ?>
+                    <div class="col-lg-6 col-md-12">
+                      <div class="menu-list-item" style="display: flex; align-items: center; border-bottom: 1px dashed rgba(79,91,58,0.2); padding: 15px 10px; cursor: pointer; transition: background 0.3s ease;" onclick="window.location.href='combo_detail.php?id=<?= $row['id'] ?>'">
+                        <div style="flex-grow: 1;">
+                          <h5 class="menu-hover-trigger" data-img="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>" style="color: #222; font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 5px; display: inline-block;">
+                            <?= htmlspecialchars($row['name']) ?>
+                          </h5>
+                          <p style="color: #666; font-size: 13px; margin: 0; line-height: 1.6; max-width: 90%;"><?= htmlspecialchars($row['description']) ?></p>
+                          <div style="font-size: 11px; color: #999; margin-top: 8px;"><i class="bi bi-star-fill me-1" style="color:#C9A66B; font-size:9px;"></i><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></div>
+                        </div>
+                        <div style="color: #C9A66B; font-weight: 500; font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-left: 20px; white-space: nowrap;">
+                          <?= number_format($row['price'], 0, ',', '.') ?>đ
+                        </div>
+                      </div>
+                    </div>
+                  <?php endforeach; ?>
                 </div>
               </div>
-            </div>
-          <?php endwhile; ?>
+            <?php endif; ?>
+
+            <?php if(!empty($t['foods'])): ?>
+              <div class="col-12 mt-5 mb-4">
+                <h4 style="text-align: center; color: #4F5B3A; font-family: 'Playfair Display', serif; margin-bottom: 30px; font-size: 24px; letter-spacing: 2px;">MÓN LẺ (A LA CARTE)</h4>
+                <div class="row g-5 justify-content-center">
+                  <?php foreach($t['foods'] as $f): ?>
+                    <div class="col-lg-6 col-md-12">
+                      <div class="menu-list-item" style="display: flex; align-items: center; border-bottom: 1px dashed rgba(79,91,58,0.2); padding: 15px 10px; transition: background 0.3s ease;">
+                        <div style="flex-grow: 1;">
+                          <h5 class="menu-hover-trigger" data-img="public/assets/img/menu/<?= htmlspecialchars($f['image'] ?: 'default-food.jpg') ?>" style="color: #222; font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 5px; display: inline-block; cursor: default;">
+                            <?= htmlspecialchars($f['name']) ?>
+                          </h5>
+                          <p style="color: #666; font-size: 13px; margin: 0; line-height: 1.6; max-width: 90%;"><?= htmlspecialchars($f['description']) ?></p>
+                        </div>
+                        <div style="color: #C9A66B; font-weight: 500; font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-left: 20px; white-space: nowrap;">
+                          <?= number_format($f['price'], 0, ',', '.') ?>đ
+                        </div>
+                      </div>
+                    </div>
+                  <?php endforeach; ?>
+                </div>
+              </div>
+            <?php endif; ?>
+
+          <?php endforeach; ?>
         <?php endif; ?>
       </div>
     </div>
-  <section id="chefs" class="chefs" style="background: #04100E; padding: 140px 0; position: relative;">
+  <section id="chefs" class="chefs" style="background: #ffffff; padding: 140px 0; position: relative;">
     <div class="container" style="position: relative; z-index: 1;">
       <div class="section-title text-center mb-5" style="margin-bottom: 70px !important;">
-        <p style="color: #C6A76A; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Đội Ngũ Đầu Bếp</p>
-        <h2 style="color: #F6F1E7; font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Những Nghệ Nhân Ẩm Thực Hàng Đầu</h2>
-        <div style="width: 1px; height: 40px; background: rgba(198,167,106,0.3); margin: 20px auto;"></div>
+        <p style="color: #C9A66B; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Đội Ngũ Đầu Bếp</p>
+        <h2 style="color: #4F5B3A; font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Những Nghệ Nhân Ẩm Thực Hàng Đầu</h2>
+        <div style="width: 1px; height: 40px; background: #C9A66B; margin: 20px auto;"></div>
       </div>
       
       <div class="row justify-content-center g-4">
@@ -562,7 +641,7 @@ include __DIR__ . '/views/client/layouts/header.php';
             </div>
           <?php endforeach; ?>
         <?php else: ?>
-          <p class="text-center" style="color:rgba(246,241,231,0.5); font-style: italic;">Chưa có thông tin đầu bếp.</p>
+          <p class="text-center" style="color:#666666; font-style: italic;">Chưa có thông tin đầu bếp.</p>
         <?php endif; ?>
       </div>
       
@@ -573,12 +652,12 @@ include __DIR__ . '/views/client/layouts/header.php';
   </section>
 
   <!-- ATMOSPHERE & GALLERY SECTION -->
-  <section id="atmosphere" style="background: #051412; padding: 140px 0; position: relative;">
+  <section id="atmosphere" style="background: #F6F2E9; padding: 140px 0; position: relative;">
     <div class="container" style="position: relative; z-index: 1;">
       <div class="section-title text-center mb-5" style="margin-bottom: 70px !important;">
-        <p style="color: #C6A76A; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Không Gian & Trải Nghiệm</p>
-        <h2 style="color: #F6F1E7; font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Kiệt Tác Kiến Trúc Tĩnh Lặng</h2>
-        <div style="width: 1px; height: 40px; background: rgba(198,167,106,0.3); margin: 20px auto;"></div>
+        <p style="color: #C9A66B; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Không Gian & Trải Nghiệm</p>
+        <h2 style="color: #4F5B3A; font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Kiệt Tác Kiến Trúc Tĩnh Lặng</h2>
+        <div style="width: 1px; height: 40px; background: #C9A66B; margin: 20px auto;"></div>
       </div>
 
       <!-- Asymmetric Grid Gallery -->
@@ -593,8 +672,8 @@ include __DIR__ . '/views/client/layouts/header.php';
             </div>
           <?php 
             $item_class++;
-            // Nếu có hơn 4 ảnh, từ ảnh thứ 4 trở đi dùng class item-4 (thường bị ẩn hoặc xuống hàng mới)
-            if ($item_class > 4) $item_class = 4;
+            // Nếu có hơn 7 ảnh, từ ảnh thứ 8 trở đi sẽ bị ẩn
+            if ($item_class > 8) $item_class = 8;
           endforeach; 
           ?>
         <?php else: ?>
@@ -607,6 +686,9 @@ include __DIR__ . '/views/client/layouts/header.php';
           </div>
           <div class="atmo-item item-3">
             <img src="public/assets/img/about-bg.jpg" alt="Atmosphere" onerror="this.src='public/assets/img/about.jpg'">
+          </div>
+          <div class="atmo-item item-4">
+            <img src="public/assets/img/hero/1776687242_hero-bg.jpg" alt="Atmosphere" onerror="this.src='public/assets/img/about-bg.jpg'">
           </div>
         <?php endif; ?>
       </div>
@@ -677,7 +759,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     font-family: 'Poppins', sans-serif;
     font-size: 0.9rem;
     letter-spacing: 3px;
-    color: #d9ba85;
+    color: #4F5B3A;
     text-decoration: none;
     text-transform: uppercase;
     border-bottom: 2px solid #d9ba85;
@@ -688,21 +770,21 @@ include __DIR__ . '/views/client/layouts/header.php';
 
   /* --- MICHELIN COMBO CARDS --- */
   .combo-card-custom {
-    background: #102825;
-    border: 1px solid rgba(198, 167, 106, 0.1);
+    background: #fff;
+    border: 1px solid rgba(79,91,58,0.2);
     height: 100%;
     display: flex;
     flex-direction: column;
     transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
     overflow: hidden;
     position: relative;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); border-radius: 0;
   }
 
   .combo-card-custom:hover {
     transform: translateY(-8px);
-    border-color: rgba(198, 167, 106, 0.3);
-    box-shadow: 0 15px 45px rgba(0,0,0,0.4), 0 0 20px rgba(198, 167, 106, 0.05);
+    border-color: #4F5B3A;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   }
 
   .combo-img-wrap {
@@ -716,7 +798,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     position: absolute;
     bottom: 0; left: 0; right: 0;
     height: 60px;
-    background: linear-gradient(to top, #102825, transparent);
+    background: linear-gradient(to top, #fff, transparent);
     pointer-events: none;
   }
 
@@ -735,16 +817,16 @@ include __DIR__ . '/views/client/layouts/header.php';
     position: absolute;
     top: 20px;
     left: 20px;
-    background: rgba(198, 167, 106, 0.15);
+    background: #C9A66B;
     backdrop-filter: blur(8px);
-    border: 1px solid rgba(198, 167, 106, 0.3);
-    color: #F6F1E7;
+    border: 1px solid #C9A66B;
+    color: #222222;
     font-size: 9px;
     text-transform: uppercase;
     letter-spacing: 2px;
     padding: 6px 14px;
     z-index: 2;
-    border-radius: 2px;
+    border-radius: 0;
     font-weight: 500;
   }
 
@@ -759,7 +841,7 @@ include __DIR__ . '/views/client/layouts/header.php';
   }
 
   .combo-name-custom {
-    color: #F6F1E7;
+    color: #222222;
     margin: 0 0 8px 0;
     font-size: 26px;
     font-weight: 400;
@@ -769,7 +851,7 @@ include __DIR__ . '/views/client/layouts/header.php';
   }
 
   .combo-desc-custom {
-    color: rgba(246, 241, 231, 0.65);
+    color: #666666;
     font-size: 13px;
     font-weight: 300;
     line-height: 1.6;
@@ -793,7 +875,7 @@ include __DIR__ . '/views/client/layouts/header.php';
   }
 
   .combo-items-list span {
-    color: rgba(246, 241, 231, 0.85);
+    color: #222222;
     font-size: 13.5px;
     font-weight: 300;
     letter-spacing: 0.5px;
@@ -803,7 +885,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 
   .combo-items-list span::before {
     content: '•';
-    color: #C6A76A;
+    color: #C9A66B;
     margin-right: 12px;
     font-size: 14px;
   }
@@ -817,7 +899,7 @@ include __DIR__ . '/views/client/layouts/header.php';
   }
 
   .combo-price-custom {
-    color: #C6A76A;
+    color: #C9A66B;
     font-weight: 500;
     font-size: 15px;
     letter-spacing: 1px;
@@ -825,8 +907,8 @@ include __DIR__ . '/views/client/layouts/header.php';
 
   .btn-combo-order {
     background: transparent;
-    color: #C6A76A;
-    border: 1px solid rgba(198, 167, 106, 0.3);
+    color: #C9A66B;
+    border: 1px solid #C9A66B;
     padding: 10px 24px;
     font-weight: 500;
     font-size: 11px;
@@ -837,8 +919,8 @@ include __DIR__ . '/views/client/layouts/header.php';
 
   .btn-combo-order:hover {
     background: rgba(198, 167, 106, 0.1);
-    color: #F6F1E7;
-    border-color: #C6A76A;
+    color: #222222;
+    border-color: #C9A66B;
   }
 
   /* --- MICHELIN CHEFS SECTION --- */
@@ -847,7 +929,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     font-weight: 500;
     letter-spacing: 4px;
     text-transform: uppercase;
-    color: #C6A76A;
+    color: #C9A66B;
     font-family: 'Poppins', sans-serif;
   }
 
@@ -856,16 +938,16 @@ include __DIR__ . '/views/client/layouts/header.php';
     font-size: 42px;
     font-weight: 400;
     font-family: 'Playfair Display', serif;
-    color: #F6F1E7;
+    color: #222222;
     letter-spacing: 1px;
   }
 
   .luxury-chef-card {
-    border-radius: 2px;
+    border-radius: 0;
     overflow: hidden;
     position: relative;
-    background: #102825;
-    box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+    background: #fff;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.05);
   }
 
   .chef-img-wrapper {
@@ -884,7 +966,7 @@ include __DIR__ . '/views/client/layouts/header.php';
   .chef-placeholder-img {
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #0d211e, #071513);
+    background: #E0DDD5;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -905,7 +987,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     left: 0;
     right: 0;
     padding: 60px 30px 30px 30px;
-    background: linear-gradient(to top, rgba(4, 16, 14, 0.95) 0%, rgba(4, 16, 14, 0.8) 40%, transparent 100%);
+    background: linear-gradient(to top, rgba(79,91,58, 0.95) 0%, rgba(79,91,58, 0.7) 40%, transparent 100%);
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -947,7 +1029,7 @@ include __DIR__ . '/views/client/layouts/header.php';
   }
 
   .chef-name {
-    color: #F6F1E7;
+    color: #222222;
     font-size: 24px;
     font-weight: 400;
     font-family: 'Playfair Display', serif;
@@ -956,7 +1038,7 @@ include __DIR__ . '/views/client/layouts/header.php';
   }
 
   .chef-title {
-    color: #C6A76A;
+    color: #C9A66B;
     font-size: 11px;
     font-weight: 500;
     text-transform: uppercase;
@@ -975,15 +1057,15 @@ include __DIR__ . '/views/client/layouts/header.php';
   .atmo-item {
     position: relative;
     overflow: hidden;
-    border-radius: 2px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border-radius: 0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
   }
 
   .atmo-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: grayscale(0.4) brightness(0.7);
+    filter: grayscale(0.1) brightness(0.95);
     transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
@@ -991,7 +1073,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     content: '';
     position: absolute;
     inset: 0;
-    border: 1px solid rgba(198, 167, 106, 0);
+    border: 1px solid rgba(79, 91, 58, 0);
     transition: all 0.6s ease;
     pointer-events: none;
   }
@@ -1002,28 +1084,47 @@ include __DIR__ . '/views/client/layouts/header.php';
   }
 
   .atmo-item:hover::after {
-    border-color: rgba(198, 167, 106, 0.4);
+    border-color: rgba(79, 91, 58, 0.4);
     inset: 15px; /* Creates an inner border effect */
   }
 
   /* Asymmetric Placement */
   .item-1 {
-    grid-column: span 7;
+    grid-column: span 6;
     grid-row: span 2;
   }
 
   .item-2 {
-    grid-column: span 5;
+    grid-column: span 6;
     grid-row: span 1;
   }
 
   .item-3 {
-    grid-column: span 5;
+    grid-column: span 3;
     grid-row: span 1;
   }
 
   .item-4 {
-    /* Optional hidden or extra items */
+    grid-column: span 3;
+    grid-row: span 1;
+  }
+
+  .item-5 {
+    grid-column: span 4;
+    grid-row: span 1;
+  }
+
+  .item-6 {
+    grid-column: span 4;
+    grid-row: span 1;
+  }
+
+  .item-7 {
+    grid-column: span 4;
+    grid-row: span 1;
+  }
+
+  .item-8 {
     display: none; 
   }
 

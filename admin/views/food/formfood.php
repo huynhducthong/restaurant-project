@@ -99,7 +99,7 @@ $form_action = $is_edit
                         </div>
 
                         <div class="row g-3 mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label fw-bold small text-muted">
                                     Danh mục <span class="text-danger">*</span>
                                 </label>
@@ -113,7 +113,18 @@ $form_action = $is_edit
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small text-muted">Chủ đề (Tùy chọn)</label>
+                                <select name="theme_id" class="form-select bg-light border-0 py-2">
+                                    <option value="">-- Không thuộc chủ đề nào --</option>
+                                    <?php foreach ($all_themes as $t): ?>
+                                    <option value="<?= $t['id'] ?>" <?= (($old['theme_id'] ?? '') == $t['id']) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($t['name']) ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
                                 <label class="form-label fw-bold small text-muted">
                                     Giá bán (VNĐ) <span class="text-danger">*</span>
                                 </label>
