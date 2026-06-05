@@ -16,17 +16,18 @@ $login_url = $client->createAuthUrl();
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #f7f5f2;
+      --bg: #F6F2E9;
       --card: #ffffff;
-      --text: #1a1814;
-      --muted: #8a857d;
-      --border: #e8e4de;
-      --accent: #c9a96e;
-      --accent-dark: #b08a50;
+      --text: #222222;
+      --muted: #666666;
+      --border: rgba(79, 91, 58, 0.2);
+      --accent: #C9A66B;
+      --accent-dark: #b89555;
       --danger: #d94f3d;
       --success: #2d7a5b;
-      --input-bg: #faf9f7;
-      --shadow: 0 2px 40px rgba(0,0,0,0.08);
+      --input-bg: #ffffff;
+      --shadow: 0 10px 40px rgba(0,0,0,0.05);
+      --olive: #4F5B3A;
     }
 
     body {
@@ -61,7 +62,7 @@ $login_url = $client->createAuthUrl();
 
     .card-box {
       background: var(--card);
-      border-radius: 20px;
+      border-radius: 0;
       box-shadow: var(--shadow);
       padding: 48px 44px;
       width: 100%;
@@ -100,7 +101,7 @@ $login_url = $client->createAuthUrl();
 
     /* Alerts */
     .alert-custom {
-      border-radius: 10px;
+      border-radius: 0;
       padding: 10px 14px;
       font-size: 13px;
       margin-bottom: 20px;
@@ -160,8 +161,8 @@ $login_url = $client->createAuthUrl();
     .form-input {
       width: 100%;
       background: var(--input-bg);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
+      border: 1px solid var(--border);
+      border-radius: 0;
       padding: 13px 14px 13px 40px;
       font-family: 'DM Sans', sans-serif;
       font-size: 14px;
@@ -200,10 +201,10 @@ $login_url = $client->createAuthUrl();
     /* Submit */
     .btn-submit {
       width: 100%;
-      background: var(--text);
+      background: var(--olive);
       color: #fff;
       border: none;
-      border-radius: 10px;
+      border-radius: 0;
       padding: 14px;
       font-family: 'DM Sans', sans-serif;
       font-size: 14px;
@@ -254,8 +255,8 @@ $login_url = $client->createAuthUrl();
       width: 100%;
       background: #fff;
       color: var(--text);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
+      border: 1px solid var(--border);
+      border-radius: 0;
       padding: 12px 14px;
       font-family: 'DM Sans', sans-serif;
       font-size: 14px;

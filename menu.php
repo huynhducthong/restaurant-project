@@ -4,9 +4,22 @@ $database = new Database();
 $db = $database->getConnection();
 
 $all_categories = $db->query("SELECT * FROM categories ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
-$all_combos     = $db->query("SELECT * FROM combos WHERE is_active = 1 ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
-$all_foods      = $db->query("SELECT f.*, c.name as cat_name FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
-$chef_foods     = $db->query("SELECT f.*, c.name as cat_name FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND f.is_chef_recommended = 1 ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch Active Themes
+$active_themes = $db->query("SELECT * FROM themes WHERE is_active = 1 AND (start_date IS NULL OR start_date <= NOW()) AND (end_date IS NULL OR end_date >= NOW()) ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
+foreach ($active_themes as &$t) {
+    $t_combos = $db->prepare("SELECT * FROM combos WHERE theme_id = ? AND is_active = 1");
+    $t_combos->execute([$t['id']]);
+    $t['combos'] = $t_combos->fetchAll(PDO::FETCH_ASSOC);
+    
+    $t_foods = $db->prepare("SELECT f.*, c.name as cat_name FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.theme_id = ? AND f.is_active = 1");
+    $t_foods->execute([$t['id']]);
+    $t['foods'] = $t_foods->fetchAll(PDO::FETCH_ASSOC);
+}
+unset($t);
+
+$all_foods      = $db->query("SELECT f.*, c.name as cat_name FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND (f.theme_id IS NULL OR f.theme_id = 0) ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
+$chef_foods     = $db->query("SELECT f.*, c.name as cat_name FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND f.is_chef_recommended = 1 AND (f.theme_id IS NULL OR f.theme_id = 0) ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -31,7 +44,6 @@ function hasAllergen($food, $user_allergies) {
     return !empty(array_intersect($user_allergies, $food_allergens));
 }
 
-// Hàm hỗ trợ loại bỏ dấu tiếng Việt để tìm kiếm thông minh hơn (Fuzzy Search)
 function removeVietnameseAccents($str) {
     $str = mb_strtolower($str, 'UTF-8');
     $str = preg_replace('/(à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ)/', 'a', $str);
@@ -44,21 +56,18 @@ function removeVietnameseAccents($str) {
     return $str;
 }
 
-// THUẬT TOÁN LỌC NỘI DUNG & CHẤM ĐIỂM (Content-Based Filtering & Scoring)
 foreach ($all_foods as &$f) {
     $score = 0;
     $f_tags = removeVietnameseAccents($f['tags'] ?? '');
     $f_ingr = removeVietnameseAccents($f['ingredients'] ?? '');
     $f_name = removeVietnameseAccents($f['name'] ?? '');
 
-    // Chấm điểm dựa trên Khẩu vị (Ví dụ: Thích ăn "cay", món có chữ "cay" -> +2 điểm)
     foreach ($user_flavor as $flav) {
         $flav = removeVietnameseAccents($flav);
         if (!empty($flav) && (strpos($f_tags, $flav) !== false || strpos($f_name, $flav) !== false || strpos($f_ingr, $flav) !== false)) {
             $score += 2;
         }
     }
-    // Chấm điểm dựa trên Thành phần yêu thích (Ví dụ: Thích "cá hồi", món có "cá hồi" -> +3 điểm)
     foreach ($user_fav as $fav) {
         $fav = removeVietnameseAccents($fav);
         if (!empty($fav) && (strpos($f_ingr, $fav) !== false || strpos($f_name, $fav) !== false || strpos($f_tags, $fav) !== false)) {
@@ -69,7 +78,6 @@ foreach ($all_foods as &$f) {
 }
 unset($f);
 
-// Sắp xếp Menu: Món nào hợp khẩu vị (Điểm cao) sẽ bị đẩy lên đầu tiên
 usort($all_foods, function($a, $b) {
     if ($a['ai_score'] == $b['ai_score']) return $b['id'] <=> $a['id'];
     return $b['ai_score'] <=> $a['ai_score'];
@@ -77,627 +85,685 @@ usort($all_foods, function($a, $b) {
 
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-/* ══ TOKENS ══ */
-:root{
-  --F:  #143B36;
-  --F1: #1a4d46;
-  --F2: #0d2b27;
-  --F3: #091e1b;
-  --G:  #D4B06A;
-  --G2: #edd9a3;
-  --G3: rgba(212,176,106,.15);
-  --ink:#080e0d;
-  --ch: #f0ece3;
-  --mu: rgba(240,236,227,.45);
-  --ease:cubic-bezier(.4,0,.2,1);
-}
-*{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{background:var(--F2);color:var(--ch);font-family:'Be Vietnam Pro',sans-serif;overflow-x:hidden;}
-img{display:block;}
-
-/* ══ HERO ══ */
-.hero{
-  position:relative;height:100vh;min-height:640px;
-  display:flex;align-items:flex-end;overflow:hidden;
-}
-.hero-bg{
-  position:absolute;inset:0;z-index:0;
-  background:
-    radial-gradient(ellipse 70% 80% at 70% 50%, rgba(20,59,54,.3) 0%, transparent 70%),
-    linear-gradient(160deg, var(--F3) 0%, var(--F2) 45%, #0a1f1c 100%);
-}
-.hero-grain{
-  position:absolute;inset:0;z-index:1;opacity:.04;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  background-size:200px;
-}
-.hero-img{
-  position:absolute;right:0;top:0;bottom:0;width:58%;z-index:0;
-  background:center/cover no-repeat url('public/assets/img/about-bg.jpg');
-  mask-image:linear-gradient(to left,rgba(0,0,0,.75) 30%,transparent 100%);
-  -webkit-mask-image:linear-gradient(to left,rgba(0,0,0,.75) 30%,transparent 100%);
-  filter:brightness(.35) saturate(.7);
-}
-.hero-line{
-  position:absolute;left:0;top:0;bottom:0;width:4px;
-  background:linear-gradient(to bottom,transparent,var(--G),transparent);
-  opacity:.4;z-index:2;
-}
-.hero-content{
-  position:relative;z-index:3;
-  padding:0 max(48px,7vw) 80px;max-width:680px;
-}
-.hero-eyebrow{
-  display:inline-flex;align-items:center;gap:14px;
-  font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--G);
-  margin-bottom:28px;
-}
-.hero-eyebrow::before{content:'';width:36px;height:1px;background:var(--G);opacity:.5;}
-.hero h1{
-  font-family:'Cormorant Garamond',serif;font-weight:300;
-  font-size:clamp(3.2rem,7vw,6rem);color:#fff;line-height:1.06;
-  letter-spacing:-.01em;margin-bottom:22px;
-}
-.hero h1 em{font-style:italic;color:var(--G);}
-.hero-sub{
-  font-size:14px;color:var(--mu);font-weight:300;
-  line-height:1.85;max-width:380px;margin-bottom:44px;
-}
-.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;}
-.btn-g{
-  padding:15px 36px;background:var(--G);color:var(--ink);
-  font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;
-  text-decoration:none;border:none;cursor:pointer;
-  transition:all .25s var(--ease);display:inline-block;font-family:'Be Vietnam Pro',sans-serif;
-}
-.btn-g:hover{background:var(--G2);transform:translateY(-2px);}
-.btn-outline{
-  padding:14px 36px;background:transparent;
-  border:1px solid rgba(212,176,106,.35);color:var(--G);
-  font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;
-  text-decoration:none;cursor:pointer;
-  transition:all .25s var(--ease);display:inline-block;font-family:'Be Vietnam Pro',sans-serif;
-}
-.btn-outline:hover{border-color:var(--G);background:var(--G3);}
-.hero-scroll{
-  position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
-  z-index:3;display:flex;flex-direction:column;align-items:center;gap:10px;
-}
-.hero-scroll span{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(212,176,106,.4);}
-.scroll-bar{width:1px;height:52px;background:linear-gradient(to bottom,var(--G),transparent);animation:spulse 2.2s ease-in-out infinite;}
-@keyframes spulse{0%,100%{opacity:.25;transform:scaleY(.5)}50%{opacity:1;transform:scaleY(1)}}
-
-/* ══ STICKY CAT BAR ══ */
-.cat-bar{
-  position:sticky;top:0;z-index:200;
-  background:rgba(9,30,27,.92);backdrop-filter:blur(24px);
-  border-bottom:1px solid rgba(212,176,106,.1);
-}
-.cat-inner{
-  max-width:1280px;margin:0 auto;padding:0 max(40px,5vw);
-  display:flex;align-items:stretch;overflow-x:auto;gap:0;
-  scrollbar-width:none;
-}
-.cat-inner::-webkit-scrollbar{display:none;}
-.cat-btn{
-  flex-shrink:0;padding:18px 22px;
-  font-size:10px;letter-spacing:.2em;text-transform:uppercase;
-  color:rgba(240,236,227,.35);background:transparent;border:none;
-  cursor:pointer;position:relative;transition:color .2s;white-space:nowrap;
-  font-family:'Be Vietnam Pro',sans-serif;
-}
-.cat-btn::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;
-  height:2px;background:var(--G);transform:scaleX(0);
-  transition:transform .25s var(--ease);transform-origin:center;
-}
-.cat-btn:hover{color:rgba(240,236,227,.65);}
-.cat-btn.on{color:var(--G);}
-.cat-btn.on::after{transform:scaleX(1);}
-
-/* ══ LAYOUT ══ */
-.wrap{max-width:1280px;margin:0 auto;padding:0 max(40px,5vw);}
-
-/* ══ SECTION HEADER ══ */
-.sec-tag{
-  display:flex;align-items:center;gap:14px;
-  font-size:9px;letter-spacing:.26em;text-transform:uppercase;
-  color:var(--G);margin-bottom:14px;
-}
-.sec-tag::after{content:'';flex:1;height:1px;background:rgba(212,176,106,.15);}
-.sec-h{
-  font-family:'Cormorant Garamond',serif;font-weight:300;
-  font-size:clamp(1.8rem,3.5vw,2.8rem);color:#fff;line-height:1.15;
-}
-.sec-h em{font-style:italic;color:var(--G);}
-
-/* ══ COMBO BENTO ══ */
-.combo-bento{
-  display:grid;gap:3px;margin-top:36px;
-  grid-template-columns:1fr 1fr 1fr;
-}
-.combo-bento.few1{grid-template-columns:1fr;}
-.combo-bento.few2{grid-template-columns:1fr 1fr;}
-@media(max-width:768px){.combo-bento{grid-template-columns:1fr!important;}}
-
-.cb-card{
-  position:relative;overflow:hidden;cursor:pointer;
-  background:var(--F1);
-}
-.cb-card:first-child{grid-row:span 1;}
-.cb-img{
-  position:absolute;inset:0;
-  background:center/cover no-repeat;
-  transition:transform .65s var(--ease);
-  filter:brightness(.38);
-}
-.cb-card:hover .cb-img{transform:scale(1.06);filter:brightness(.28);}
-.cb-body{
-  position:relative;z-index:1;
-  padding:clamp(24px,3vw,40px);
-  min-height:260px;display:flex;flex-direction:column;justify-content:flex-end;
-  background:linear-gradient(to top,rgba(9,30,27,.95) 0%,rgba(9,30,27,.2) 55%,transparent 100%);
-}
-.cb-badge{
-  display:inline-block;font-size:8px;letter-spacing:.2em;text-transform:uppercase;
-  padding:3px 10px;border:1px solid rgba(212,176,106,.4);color:var(--G);
-  margin-bottom:10px;width:fit-content;
-}
-.cb-name{
-  font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.5rem;
-  color:#fff;line-height:1.2;margin-bottom:8px;
-}
-.cb-desc{font-size:12px;color:var(--mu);line-height:1.7;margin-bottom:14px;}
-.cb-price{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:1.3rem;color:var(--G);}
-.cb-card-overlay{
-  position:absolute;inset:0;z-index:2;
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;transition:opacity .3s;
-}
-.cb-card:hover .cb-card-overlay{opacity:1;}
-.view-btn{
-  padding:12px 28px;border:1px solid var(--G);color:var(--G);
-  font-size:10px;letter-spacing:.18em;text-transform:uppercase;
-  background:transparent;cursor:pointer;
-  transition:all .2s;font-family:'Be Vietnam Pro',sans-serif;
-}
-.view-btn:hover{background:var(--G);color:var(--ink);}
-
-/* ══ LUXURY DIVIDER ══ */
-.lux-div{
-  display:flex;align-items:center;gap:24px;
-  padding:64px max(40px,5vw) 0;max-width:1280px;margin:0 auto;
-}
-.lux-div-line{flex:1;height:1px;background:rgba(212,176,106,.1);}
-.lux-div-txt{
-  font-family:'Cormorant Garamond',serif;font-style:italic;
-  font-size:1rem;color:rgba(212,176,106,.35);white-space:nowrap;letter-spacing:.1em;
+/* === EDITORIAL FINE DINING VARIABLES === */
+:root {
+  --bg-color: #F6F2E9;       /* Cream */
+  --text-main: #222222;      /* Dark Gray */
+  --text-muted: #666666;     /* Light Gray for descriptions */
+  --olive: #4F5B3A;          /* Olive Green */
+  --gold: #C9A66B;           /* Gold Accent */
+  --font-serif: 'Cormorant Garamond', serif;
+  --font-sans: 'Inter', sans-serif;
 }
 
-/* ══ CHEF SECTION ══ */
-.chef-wrap{background:var(--F);border-top:1px solid rgba(212,176,106,.1);border-bottom:1px solid rgba(212,176,106,.1);}
-.chef-grid{
-  display:grid;grid-template-columns:1.2fr 1fr;gap:3px;margin-top:36px;
-}
-@media(max-width:768px){.chef-grid{grid-template-columns:1fr;}}
-.chef-hero{position:relative;overflow:hidden;min-height:480px;cursor:pointer;}
-.chef-hero-img{
-  position:absolute;inset:0;background:center/cover no-repeat;
-  transition:transform .65s var(--ease);filter:brightness(.35);
-}
-.chef-hero:hover .chef-hero-img{transform:scale(1.04);}
-.chef-hero-body{
-  position:absolute;inset:0;padding:40px;
-  display:flex;flex-direction:column;justify-content:flex-end;
-  background:linear-gradient(to top,rgba(9,30,27,.97) 0%,transparent 55%);
-}
-.chef-stack{display:grid;grid-auto-rows:1fr;gap:3px;}
-.chef-sm{position:relative;overflow:hidden;cursor:pointer;min-height:240px;}
-.chef-sm-img{position:absolute;inset:0;background:center/cover no-repeat;transition:transform .65s var(--ease);filter:brightness(.32);}
-.chef-sm:hover .chef-sm-img{transform:scale(1.06);}
-.chef-sm-body{
-  position:absolute;inset:0;padding:28px;
-  display:flex;flex-direction:column;justify-content:flex-end;
-  background:linear-gradient(to top,rgba(9,30,27,.95) 0%,transparent 60%);
-}
-.clabel{font-size:8px;letter-spacing:.24em;text-transform:uppercase;color:var(--G);margin-bottom:8px;}
-.cname{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.6rem;color:#fff;line-height:1.2;margin-bottom:6px;}
-.cdesc{font-size:12px;color:var(--mu);line-height:1.7;margin-bottom:12px;}
-.cprice{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:1.2rem;color:var(--G);}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background-color: var(--bg-color); color: var(--text-main); font-family: var(--font-sans); line-height: 1.6; overflow-x: hidden; }
+::selection { background: var(--olive); color: #fff; }
 
-/* ══ FOOD GRID ══ */
-.food-grid{
-  display:grid;margin-top:36px;gap:3px;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+/* === HERO SECTION === */
+.editorial-hero {
+  position: relative;
+  height: 60vh;
+  min-height: 450px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-bottom: 1px solid rgba(79,91,58,0.1);
 }
-.food-card{
-  background:var(--F2);cursor:pointer;overflow:hidden;
-  border:1px solid rgba(212,176,106,.05);
-  transition:background .3s;position:relative;
+.editorial-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('public/assets/img/hero/1776687242_hero-bg.jpg'); /* Default hero image */
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(0.2) opacity(0.8);
+  z-index: 0;
 }
-.food-card:hover{background:#0f2f2a;}
-.food-card-img{width:100%;aspect-ratio:4/3;overflow:hidden;position:relative;}
-.food-card-img img{
-  width:100%;height:100%;object-fit:cover;
-  transition:transform .65s var(--ease);
+.editorial-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(246, 242, 233, 0.7) 0%, rgba(246, 242, 233, 1) 100%);
+  z-index: 1;
 }
-.food-card:hover .food-card-img img{transform:scale(1.06);}
-.food-img-overlay{position:absolute;inset:0;background:none;}
-.food-badges{position:absolute;top:12px;left:12px;display:flex;gap:5px;flex-wrap:wrap;}
-.fb{font-size:8px;letter-spacing:.14em;text-transform:uppercase;padding:3px 8px;backdrop-filter:blur(10px);}
-.fb.sig{background:rgba(212,176,106,.2);color:var(--G);border:1px solid rgba(212,176,106,.35);}
-.fb.prem{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18);}
-.fb.seas{background:rgba(20,59,54,.7);color:var(--G2);border:1px solid rgba(212,176,106,.25);}
-.food-body{padding:22px 24px;}
-.food-cat-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--G);opacity:.65;margin-bottom:7px;}
-.food-name{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.15rem;color:#fff;line-height:1.3;margin-bottom:8px;}
-.food-story{font-size:12px;color:var(--mu);line-height:1.75;margin-bottom:18px;display:none;}
-.food-foot{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid rgba(212,176,106,.08);}
-.food-price{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:1.15rem;color:var(--G);}
-.food-more{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(212,176,106,.3);transition:color .2s;background:none;border:none;cursor:pointer;font-family:'Be Vietnam Pro',sans-serif;}
-.food-card:hover .food-more{color:var(--G);}
+.editorial-hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 0 20px;
+  max-width: 700px;
+}
+.eyebrow {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--olive);
+  margin-bottom: 20px;
+}
+.editorial-hero h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(3rem, 6vw, 4.5rem);
+  font-weight: 300;
+  color: var(--text-main);
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+.editorial-hero h1 em {
+  font-style: italic;
+  color: var(--gold);
+}
+.editorial-hero p {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.8;
+}
 
-/* ══ MODAL ══ */
-.modal-ov{
-  position:fixed;inset:0;z-index:1000;
-  background:rgba(9,30,27,.97);backdrop-filter:blur(20px);
-  display:flex;align-items:center;justify-content:center;
-  padding:24px;opacity:0;pointer-events:none;transition:opacity .35s var(--ease);
+/* === MENU CONTAINER === */
+.editorial-menu-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 100px 20px;
+  background-color: var(--bg-color);
 }
-.modal-ov.open{opacity:1;pointer-events:all;}
-.modal-box{
-  background:var(--F2);border:1px solid rgba(212,176,106,.12);
-  width:100%;max-width:860px;max-height:90vh;overflow-y:auto;
-  transform:translateY(28px);transition:transform .35s var(--ease);
-  scrollbar-width:thin;scrollbar-color:rgba(212,176,106,.15) transparent;
-  position:relative;
-}
-.modal-ov.open .modal-box{transform:translateY(0);}
-.modal-img-wrap{width:100%;aspect-ratio:16/7;overflow:hidden;position:relative;}
-.modal-img-wrap img{width:100%;height:100%;object-fit:cover;}
-.modal-img-grad{display:none;}
-.modal-body{padding:36px max(36px,4vw) 44px;}
-.modal-eyebrow{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--G);margin-bottom:10px;}
-.modal-title{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.6rem,3vw,2.5rem);color:#fff;line-height:1.15;margin-bottom:14px;}
-.modal-desc{font-size:14px;color:var(--mu);line-height:1.85;margin-bottom:28px;}
-.modal-specs{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:1px;border:1px solid rgba(212,176,106,.08);margin-bottom:28px;}
-.spec{padding:15px 16px;background:rgba(212,176,106,.025);}
-.spec-l{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(212,176,106,.45);margin-bottom:5px;}
-.spec-v{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--ch);}
-.modal-foot{display:flex;align-items:center;justify-content:space-between;padding-top:20px;border-top:1px solid rgba(212,176,106,.08);}
-.modal-price{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:2rem;color:var(--G);}
-.modal-close{
-  position:absolute;top:16px;right:16px;z-index:10;
-  width:40px;height:40px;background:rgba(9,30,27,.8);
-  border:1px solid rgba(212,176,106,.2);color:var(--mu);font-size:18px;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  transition:.2s;
-}
-.modal-close:hover{color:#fff;border-color:var(--G);}
 
-/* ══ FLOAT BOOKING ══ */
-.float-book{
-  position:fixed;right:28px;bottom:28px;z-index:500;
-  opacity:0;transform:translateY(16px);
-  transition:all .4s var(--ease);pointer-events:none;
+/* === SECTION HEADERS === */
+.menu-section { margin-bottom: 120px; }
+.menu-section-title {
+  text-align: center;
+  font-family: var(--font-serif);
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: var(--olive);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
-.float-book.show{opacity:1;transform:translateY(0);pointer-events:all;}
-.float-inner{
-  background:rgba(9,30,27,.95);backdrop-filter:blur(24px);
-  border:1px solid rgba(212,176,106,.25);padding:18px 22px;
-  min-width:190px;
+.menu-section-subtitle {
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 60px;
 }
-.float-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--G);opacity:.65;margin-bottom:3px;}
-.float-title{font-family:'Cormorant Garamond',serif;font-size:.95rem;color:#fff;margin-bottom:14px;line-height:1.3;}
-.float-cta{
-  display:block;width:100%;padding:11px;
-  background:var(--G);color:var(--ink);
-  font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
-  text-align:center;text-decoration:none;border:none;cursor:pointer;
-  transition:background .2s;font-family:'Be Vietnam Pro',sans-serif;
+
+/* === TASTING MENU (COMBOS) === */
+.tasting-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+  align-items: center;
 }
-.float-cta:hover{background:var(--G2);}
-@media(max-width:600px){.float-book{right:16px;bottom:16px;}}
-
-/* ══ HIDDEN FILTER ══ */
-.food-card.hidden{display:none;}
-
-/* ══ EMPTY STATE ══ */
-.empty-state{
-  grid-column:1/-1;text-align:center;padding:80px 20px;
+.tasting-course {
+  text-align: center;
+  max-width: 500px;
 }
-.empty-state p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.2rem;color:var(--mu);}
+.tasting-name {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--text-main);
+  margin-bottom: 15px;
+  letter-spacing: 1px;
+}
+.tasting-desc {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+.tasting-price {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gold);
+  letter-spacing: 2px;
+}
 
-/* ══ SECTION SPACING ══ */
-.sec-pad{padding:72px max(40px,5vw);}
-@media(max-width:600px){.sec-pad{padding:52px 20px;}}
+/* === DIVIDER === */
+.menu-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 80px 0;
+  opacity: 0.5;
+}
+.menu-divider::before, .menu-divider::after {
+  content: '';
+  height: 1px;
+  width: 100px;
+  background-color: var(--gold);
+}
+.menu-divider .diamond {
+  width: 8px;
+  height: 8px;
+  background-color: var(--gold);
+  transform: rotate(45deg);
+  margin: 0 15px;
+}
 
-/* ══ FADE AOS FALLBACK ══ */
-[data-aos]{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s;}
-[data-aos].aos-animate{opacity:1;transform:translateY(0);}
+/* === A LA CARTE (FOODS) === */
+.menu-category {
+  margin-bottom: 100px;
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+.menu-category.image-right {
+  flex-direction: row-reverse;
+}
+.category-image-wrap {
+  flex: 0 0 40%;
+  height: 550px;
+}
+.category-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.1) contrast(1.05);
+}
+.category-content-wrap {
+  flex: 1;
+}
+.category-title {
+  text-align: left;
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  font-weight: 600;
+  font-style: italic;
+  color: var(--olive);
+  margin-bottom: 30px;
+  border-bottom: 1px solid rgba(79,91,58,0.1);
+  padding-bottom: 15px;
+}
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  padding: 10px 0;
+}
+.menu-item:hover {
+  opacity: 0.7;
+}
+.allergy-item {
+  opacity: 0.5;
+}
+.menu-item-header {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 5px;
+}
+.menu-item-name {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: var(--text-main);
+  background: var(--bg-color);
+  padding-right: 15px;
+  z-index: 2;
+}
+.menu-item-dots {
+  flex-grow: 1;
+  border-bottom: 1px dotted rgba(79,91,58,0.4);
+  margin: 0 10px;
+  position: relative;
+  top: -6px;
+  z-index: 1;
+}
+.menu-item-price {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--gold);
+  background: var(--bg-color);
+  padding-left: 15px;
+  z-index: 2;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+.menu-item-desc {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  font-style: italic;
+  max-width: 85%;
+  line-height: 1.6;
+}
+
+/* === BUTTON === */
+.btn-reserve-solid {
+  display: inline-block;
+  padding: 16px 40px;
+  background: var(--olive);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--olive);
+  transition: all 0.4s ease;
+  border-radius: 0;
+}
+.btn-reserve-solid:hover {
+  background: transparent;
+  color: var(--olive);
+}
+
+/* === MODAL MINIMALIST === */
+.ed-modal {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(246, 242, 233, 0.95);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+  backdrop-filter: blur(5px);
+}
+.ed-modal.open { opacity: 1; pointer-events: all; }
+.ed-modal-box {
+  background: #fff;
+  width: 100%; max-width: 800px;
+  display: flex;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.08);
+  transform: translateY(30px); transition: transform 0.4s ease;
+}
+.ed-modal.open .ed-modal-box { transform: translateY(0); }
+.ed-modal-img {
+  flex: 0 0 50%;
+  position: relative;
+}
+.ed-modal-img img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+.ed-modal-content {
+  flex: 1; padding: 50px 40px; position: relative;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.ed-modal-close {
+  position: absolute; top: 20px; right: 20px;
+  background: none; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer;
+  transition: color 0.3s;
+}
+.ed-modal-close:hover { color: var(--olive); }
+.ed-m-cat { font-family: var(--font-sans); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 15px; }
+.ed-m-name { font-family: var(--font-serif); font-size: 2.2rem; color: var(--olive); line-height: 1.2; margin-bottom: 20px; }
+.ed-m-desc { font-family: var(--font-serif); font-size: 1.1rem; color: var(--text-muted); font-style: italic; line-height: 1.8; margin-bottom: 30px; }
+.ed-m-price { font-family: var(--font-sans); font-size: 18px; font-weight: 500; color: var(--gold); margin-bottom: 30px; letter-spacing: 1px; }
+
+@media (max-width: 768px) {
+  .ed-modal-box { flex-direction: column; max-height: 90vh; overflow-y: auto; }
+  .ed-modal-img { height: 300px; flex: none; }
+  .ed-modal-content { padding: 30px 20px; }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .menu-category { flex-direction: column !important; gap: 30px; }
+  .category-image-wrap { width: 100%; height: 350px; flex: auto; }
+  .category-title { text-align: center; }
+  .editorial-menu-container { padding: 60px 15px; }
+  .menu-item-desc { max-width: 100%; }
+}
 </style>
 
-<!-- HERO -->
-<section class="hero" id="top">
-  <div class="hero-bg"></div>
-  <div class="hero-grain"></div>
-  <div class="hero-img"></div>
-  <div class="hero-line"></div>
-  <div class="hero-content">
-    <div class="hero-eyebrow">Signature Culinary Experience</div>
-    <h1>Tinh hoa<br>ẩm thực<br><em>Restaurantly</em></h1>
-    <p class="hero-sub">Hành trình ẩm thực cao cấp — được chắt lọc từ nguyên liệu tươi ngon nhất, bởi bàn tay đầu bếp chuyên nghiệp.</p>
-    <div class="hero-ctas">
-      <a href="#menu-section" class="btn-g">Khám phá thực đơn</a>
-      <a href="booking_service.php" class="btn-outline">Đặt bàn ngay</a>
-    </div>
-  </div>
-  <div class="hero-scroll">
-    <span>Khám phá</span>
-    <div class="scroll-bar"></div>
-  </div>
+<!-- Hero Section -->
+<section class="editorial-hero">
+   <div class="editorial-hero-bg"></div>
+   <div class="editorial-hero-overlay"></div>
+   <div class="editorial-hero-content">
+       <span class="eyebrow">Gastronomy Collection</span>
+       <h1>Thực đơn<br><em>Restaurantly</em></h1>
+       <p>Một bản giao hưởng của hương vị tinh tế, kết hợp giữa nghệ thuật ẩm thực đương đại và những nguyên liệu thượng hạng nhất.</p>
+   </div>
 </section>
 
-<!-- STICKY CATEGORY BAR -->
-<nav class="cat-bar" id="menu-section">
-  <div class="cat-inner">
-    <button class="cat-btn on" data-cat="all">Tất cả</button>
-    <button class="cat-btn" data-cat="combo">Bộ Sưu Tập Hương Vị</button>
-    <?php foreach($all_categories as $cat): ?>
-    <button class="cat-btn" data-cat="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></button>
-    <?php endforeach; ?>
-  </div>
-</nav>
+<!-- Menu Container -->
+<div class="editorial-menu-container">
 
-<!-- COMBO SECTION -->
-<?php if(!empty($all_combos)): ?>
-<section class="sec-pad" id="sec-combo">
-  <div class="wrap">
-    <div data-aos="fade-up">
-      <div class="sec-tag">Bộ Sưu Tập Hương Vị</div>
-      <h2 class="sec-h">Gói trải nghiệm <em>được tuyển chọn</em></h2>
-    </div>
-    <div class="combo-bento <?= count($all_combos)===1?'few1':(count($all_combos)===2?'few2':'') ?>" data-aos="fade-up" data-aos-delay="100">
-      <?php foreach($all_combos as $i=>$cb): ?>
-      <div class="cb-card" onclick="openModal(<?= htmlspecialchars(json_encode([
-        'type'=>'combo','name'=>$cb['name'],'desc'=>$cb['description'],
-        'price'=>$cb['price'],'img'=>'public/assets/img/combos/'.$cb['image'],
-        'cat'=>'Bộ Sưu Tập Hương Vị'
-      ])) ?>)">
-        <div class="cb-img" style="background-image:url('public/assets/img/combos/<?= htmlspecialchars($cb['image']) ?>')"></div>
-        <div class="cb-body">
-          <span class="cb-badge">Bộ Sưu Tập <?= $i+1 ?> · Ưu đãi</span>
-          <h3 class="cb-name"><?= htmlspecialchars($cb['name']) ?></h3>
-          <p class="cb-desc"><?= htmlspecialchars(mb_strimwidth($cb['description'],0,90,'…')) ?></p>
-          <div class="cb-price"><?= number_format($cb['price'],0,',','.') ?> đ</div>
-        </div>
-        <div class="cb-card-overlay">
-          <button class="view-btn">Xem chi tiết</button>
-        </div>
-      </div>
-      <?php endforeach; ?>
-    </div>
-  </div>
-</section>
+    <!-- Themed Collections -->
+    <?php if(!empty($active_themes)): ?>
+        <?php foreach($active_themes as $t): ?>
+            <?php if(empty($t['combos']) && empty($t['foods'])) continue; ?>
+            <div class="menu-section tasting-menu-section" style="margin-bottom: 80px;">
+                <h2 class="menu-section-title"><?= htmlspecialchars($t['name']) ?></h2>
+                <div class="menu-section-subtitle"><?= htmlspecialchars($t['description']) ?></div>
+                
+                <?php if(!empty($t['image'])): ?>
+                <div style="width: 100%; max-width: 900px; height: 350px; margin: 0 auto 40px auto; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <img src="<?= htmlspecialchars($t['image']) ?>" style="width:100%; height:100%; object-fit: cover; transition: transform 0.5s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" alt="<?= htmlspecialchars($t['name']) ?>">
+                </div>
+                <?php endif; ?>
 
-<div class="lux-div" data-aos="fade-up">
-  <div class="lux-div-line"></div>
-  <span class="lux-div-txt">A la Carte · Món lẻ</span>
-  <div class="lux-div-line"></div>
-</div>
-<?php endif; ?>
+                <div class="menu-list">
+                    <?php if(!empty($t['combos'])): ?>
+                        <div class="menu-category mt-4" style="display: block;">
+                            <div class="category-content-wrap" style="width: 100%; max-width: 100%; padding: 0;">
+                                <h3 class="category-title" style="text-align:center; border:none; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;">Set Menu (Tasting Menu)</h3>
+                                <div class="menu-list" style="margin-top: 30px;">
+                                    <?php foreach($t['combos'] as $row): ?>
+                                    <div class="menu-item menu-hover-trigger" data-img="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>" onclick="window.location.href='combo_detail.php?id=<?= $row['id'] ?>'" style="cursor:pointer; transition: background 0.3s ease;">
+                                        <div class="menu-item-header">
+                                            <span class="menu-item-name"><?= htmlspecialchars($row['name']) ?></span>
+                                            <span class="menu-item-dots"></span>
+                                            <span class="menu-item-price"><?= number_format($row['price'],0,',','.') ?></span>
+                                        </div>
+                                        <p class="menu-item-desc">
+                                            <?= htmlspecialchars($row['description']) ?>
+                                            <br><i class="bi bi-star-fill me-1" style="color:#C9A66B; font-size:9px; margin-top:5px;"></i><span style="font-size:11px; color:#999;"><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></span>
+                                        </p>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
 
-<!-- CHEF RECOMMENDATION -->
-<?php if(count($chef_foods) > 0): ?>
-<section class="chef-wrap sec-pad" id="sec-chef">
-  <div class="wrap">
-    <div data-aos="fade-up">
-      <div class="sec-tag">Gợi ý từ bếp trưởng</div>
-      <h2 class="sec-h"><em>Chef's</em> Recommendation</h2>
-    </div>
-    <div class="chef-grid" data-aos="fade-up" data-aos-delay="100">
-      <?php $c0=$chef_foods[0]??null; ?>
-      <?php if($c0): 
-        $has_al = hasAllergen($c0, $user_allergies);
-      ?>
-      <div class="chef-hero" style="<?= $has_al ? 'opacity:0.6;filter:grayscale(60%);' : '' ?>" onclick="<?php if(!$has_al) echo htmlspecialchars("openModal(".json_encode([
-        'type'=>'food','name'=>$c0['name'],'desc'=>$c0['description'],
-        'price'=>$c0['price'],'img'=>'public/assets/img/menu/'.$c0['image'],
-        'cat'=>$c0['cat_name']??''
-      ]).")"); else echo "alert('⚠️ Cảnh báo: Món này có chứa thành phần bạn dị ứng!');"; ?>">
-        <div class="chef-hero-img" style="background-image:url('public/assets/img/menu/<?= htmlspecialchars($c0['image']) ?>')"></div>
-        <?php if($has_al): ?>
-        <div style="position:absolute; top:20px; left:20px; background:#d64545; color:#fff; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:600; z-index:10;"><i class="bi bi-exclamation-triangle-fill"></i> Dị ứng</div>
-        <?php endif; ?>
-        <div class="chef-hero-body">
-          <div class="clabel">Signature Dish · Chef's Choice</div>
-          <h3 class="cname"><?= htmlspecialchars($c0['name']) ?></h3>
-          <p class="cdesc"><?= htmlspecialchars(mb_strimwidth($c0['description'],0,110,'…')) ?></p>
-          <div class="cprice"><?= number_format($c0['price'],0,',','.') ?> đ</div>
-        </div>
-      </div>
-      <?php endif; ?>
-      <div class="chef-stack">
-        <?php 
-        $small_chefs = array_slice($chef_foods, 1);
-        foreach($small_chefs as $cs): 
-          $has_al = hasAllergen($cs, $user_allergies);
-        ?>
-        <div class="chef-sm" style="<?= $has_al ? 'opacity:0.6;filter:grayscale(60%);' : '' ?>" onclick="<?php if(!$has_al) echo htmlspecialchars("openModal(".json_encode([
-          'type'=>'food','name'=>$cs['name'],'desc'=>$cs['description'],
-          'price'=>$cs['price'],'img'=>'public/assets/img/menu/'.$cs['image'],
-          'cat'=>$cs['cat_name']??''
-        ]).")"); else echo "alert('⚠️ Cảnh báo: Món này có chứa thành phần bạn dị ứng!');"; ?>">
-          <div class="chef-sm-img" style="background-image:url('public/assets/img/menu/<?= htmlspecialchars($cs['image']) ?>')"></div>
-          <?php if($has_al): ?>
-          <div style="position:absolute; top:10px; right:10px; background:#d64545; color:#fff; padding:4px 8px; border-radius:4px; font-size:9px; font-weight:600; z-index:10;"><i class="bi bi-exclamation-triangle-fill"></i></div>
-          <?php endif; ?>
-          <div class="chef-sm-body">
-            <div class="clabel">Premium Selection</div>
-            <h3 class="cname" style="font-size:1.2rem"><?= htmlspecialchars($cs['name']) ?></h3>
-            <div class="cprice" style="font-size:1rem"><?= number_format($cs['price'],0,',','.') ?> đ</div>
-          </div>
-        </div>
+                    <?php if(!empty($t['foods'])): ?>
+                        <div class="menu-category mt-5" style="display: block;">
+                            <div class="category-content-wrap" style="width: 100%; max-width: 100%; padding: 0;">
+                                <h3 class="category-title" style="text-align:center; border:none; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;">Món lẻ (A La Carte)</h3>
+                                <div class="menu-list" style="margin-top: 30px;">
+                                    <?php foreach($t['foods'] as $f): 
+                                        $has_al = hasAllergen($f, $user_allergies);
+                                        $modalData = htmlspecialchars(json_encode([
+                                            'name' => $f['name'], 'desc' => $f['description'],
+                                            'price' => number_format($f['price'],0,',','.'),
+                                            'img' => 'public/assets/img/menu/' . ($f['image'] ?: 'default.jpg'),
+                                            'cat' => "A La Carte"
+                                        ]));
+                                    ?>
+                                    <div class="menu-item menu-hover-trigger <?= $has_al ? 'allergy-item' : '' ?>" 
+                                         data-img="public/assets/img/menu/<?= htmlspecialchars($f['image'] ?: 'default-food.jpg') ?>"
+                                         onclick="openEdModal(<?= $modalData ?>)" style="cursor:pointer; transition: background 0.3s ease;">
+                                        <div class="menu-item-header">
+                                            <span class="menu-item-name"><?= htmlspecialchars($f['name']) ?></span>
+                                            <span class="menu-item-dots"></span>
+                                            <span class="menu-item-price"><?= number_format($f['price'],0,',','.') ?></span>
+                                        </div>
+                                        <p class="menu-item-desc">
+                                            <?= htmlspecialchars($f['description']) ?>
+                                        </p>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <!-- Divider between themes -->
+            <div class="menu-divider"><div class="diamond"></div></div>
         <?php endforeach; ?>
-      </div>
-    </div>
-  </div>
-</section>
-<?php endif; ?>
+    <?php endif; ?>
 
-<!-- ALL FOODS GRID -->
-<section class="sec-pad" id="sec-foods">
-  <div class="wrap">
-    <div data-aos="fade-up">
-      <div class="sec-tag">Thực đơn đầy đủ</div>
-      <h2 class="sec-h">Món <em>A la Carte</em></h2>
-    </div>
-    <div class="food-grid" id="food-grid">
-      <?php foreach($all_foods as $i=>$f):
-        $badges=[];
-        // Nếu món ăn có điểm AI > 0 (Khớp khẩu vị), gắn badge Gợi Ý VIP
-        if(isset($f['ai_score']) && $f['ai_score'] > 0) {
-            $badges[]=['sig','<i class="fas fa-magic text-warning me-1"></i> Gợi ý VIP'];
-        } else if($i<3) {
-            $badges[]=['sig','Signature'];
-        }
-        if(($f['price']??0)>300000) $badges[]=['prem','Premium'];
+    <!-- All Set Menus (Standalone Sets) -->
+    <?php 
+    // Get sets that are either not in a theme, or in an inactive theme
+    $standalone_sets = $db->query("
+        SELECT c.*, GROUP_CONCAT(f.name ORDER BY f.name SEPARATOR ', ') as list_foods
+        FROM combos c
+        LEFT JOIN combo_items ci ON c.id = ci.combo_id
+        LEFT JOIN foods f ON ci.food_id = f.id
+        WHERE c.is_active = 1 
+        AND (c.theme_id IS NULL OR c.theme_id NOT IN (
+            SELECT id FROM themes WHERE is_active = 1 AND (start_date IS NULL OR start_date <= NOW()) AND (end_date IS NULL OR end_date >= NOW())
+        ))
+        GROUP BY c.id ORDER BY c.id DESC
+    ")->fetchAll(PDO::FETCH_ASSOC);
+    ?>
+    <?php if(!empty($standalone_sets)): ?>
+    <div class="menu-section a-la-carte-section">
+        <h2 class="menu-section-title">Khám Phá Set Menu</h2>
+        <div class="menu-section-subtitle">Tasting Menus</div>
         
-        $has_al = hasAllergen($f, $user_allergies);
-      ?>
-      <div class="food-card" data-cat="<?= $f['category_id'] ?>" style="<?= $has_al ? 'opacity:0.5;filter:grayscale(80%);' : '' ?>"
-           onclick="<?php if(!$has_al) echo htmlspecialchars("openModal(".json_encode([
-             'type'=>'food','name'=>$f['name'],'desc'=>$f['description'],
-             'price'=>$f['price'],'img'=>'public/assets/img/menu/'.$f['image'],
-             'cat'=>$f['cat_name']??''
-           ]).")"); else echo "alert('⚠️ Cảnh báo an toàn: Món ăn chứa thành phần dị ứng với bạn!');"; ?>"
-           data-aos="fade-up" data-aos-delay="<?= ($i%4)*60 ?>">
-        <div class="food-card-img">
-          <img src="public/assets/img/menu/<?= htmlspecialchars($f['image']) ?>"
-               onerror="this.src='public/assets/img/default.jpg'"
-               alt="<?= htmlspecialchars($f['name']) ?>">
-          <div class="food-img-overlay"></div>
-          <?php if($has_al): ?>
-          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:10; background:rgba(214, 69, 69, 0.95); color:#fff; padding:6px 12px; border-radius:4px; font-size:11px; font-weight:600; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.5); width:85%;">
-             <i class="bi bi-exclamation-triangle-fill"></i> CHỨA THÀNH PHẦN DỊ ỨNG
-          </div>
-          <?php endif; ?>
-          <?php if(!empty($badges) && !$has_al): ?>
-          <div class="food-badges">
-            <?php foreach($badges as [$cls,$lbl]): ?>
-            <span class="fb <?= $cls ?>"><?= $lbl ?></span>
-            <?php endforeach; ?>
-          </div>
-          <?php endif; ?>
+        <div class="menu-category mt-4" style="display: block;">
+            <div class="category-content-wrap" style="width: 100%; max-width: 100%; padding: 0;">
+                <div class="menu-list">
+                    <?php foreach($standalone_sets as $row): ?>
+                    <div class="menu-item menu-hover-trigger" data-img="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>" onclick="window.location.href='combo_detail.php?id=<?= $row['id'] ?>'" style="cursor:pointer; transition: background 0.3s ease;">
+                        <div class="menu-item-header">
+                            <span class="menu-item-name"><?= htmlspecialchars($row['name']) ?></span>
+                            <span class="menu-item-dots"></span>
+                            <span class="menu-item-price"><?= number_format($row['price'],0,',','.') ?></span>
+                        </div>
+                        <p class="menu-item-desc">
+                            <?= htmlspecialchars($row['description']) ?>
+                            <br><i class="bi bi-star-fill me-1" style="color:#C9A66B; font-size:9px; margin-top:5px;"></i><span style="font-size:11px; color:#999;"><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></span>
+                        </p>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
         </div>
-        <div class="food-body">
-          <?php if(!empty($f['cat_name'])): ?>
-          <div class="food-cat-label"><?= htmlspecialchars($f['cat_name']) ?></div>
-          <?php endif; ?>
-          <h3 class="food-name"><?= htmlspecialchars($f['name']) ?></h3>
-          <p class="food-story"><?= htmlspecialchars($f['description']) ?></p>
-          <div class="food-foot">
-            <div class="food-price"><?= number_format($f['price'],0,',','.') ?> đ</div>
-            <button class="food-more">Chi tiết →</button>
-          </div>
-        </div>
-      </div>
-      <?php endforeach; ?>
-      <?php if(empty($all_foods)): ?>
-      <div class="empty-state"><p>Thực đơn đang được cập nhật...</p></div>
-      <?php endif; ?>
     </div>
-  </div>
-</section>
+    <div class="menu-divider"><div class="diamond"></div></div>
+    <?php endif; ?>
 
-<!-- MODAL -->
-<div class="modal-ov" id="modal" onclick="closeModal(event)">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal(null)">✕</button>
-    <div class="modal-img-wrap">
-      <img id="m-img" src="" alt="">
-      <div class="modal-img-grad"></div>
+    <!-- Chef's Recommendation -->
+    <?php if(!empty($chef_foods)): ?>
+    <div class="menu-section a-la-carte-section">
+        <h2 class="menu-section-title">Gợi Ý Từ Bếp Trưởng</h2>
+        <div class="menu-section-subtitle">Chef's Recommendation</div>
+        
+        <div class="menu-category">
+            <div class="category-image-wrap">
+                <img id="cat-img-chef" src="public/assets/img/menu/<?= htmlspecialchars($chef_foods[0]['image']) ?>" class="category-image" onerror="this.onerror=null; this.src='https://placehold.co/800x600/F6F2E9/4F5B3A?text=No+Image'" style="transition: opacity 0.15s ease;">
+            </div>
+            
+            <div class="category-content-wrap">
+                <h3 class="category-title">Signature Dishes</h3>
+                <div class="menu-list">
+                    <?php foreach($chef_foods as $f): 
+                        $has_al = hasAllergen($f, $user_allergies);
+                        $modalData = htmlspecialchars(json_encode([
+                            'name' => $f['name'], 'desc' => $f['description'],
+                            'price' => number_format($f['price'],0,',','.'),
+                            'img' => 'public/assets/img/menu/' . ($f['image'] ?: 'default.jpg'),
+                            'cat' => "Chef's Choice"
+                        ]));
+                    ?>
+                    <div class="menu-item <?= $has_al ? 'allergy-item' : '' ?>" 
+                         onmouseenter="changeFeaturedImage('cat-img-chef', 'public/assets/img/menu/<?= htmlspecialchars($f['image'] ?: 'default.jpg') ?>')"
+                         onclick="openEdModal(<?= $modalData ?>)">
+                        <div class="menu-item-header">
+                            <span class="menu-item-name"><?= htmlspecialchars($f['name']) ?></span>
+                            <span class="menu-item-dots"></span>
+                            <span class="menu-item-price"><?= number_format($f['price'],0,',','.') ?></span>
+                        </div>
+                        <p class="menu-item-desc">
+                            <?= htmlspecialchars($f['description']) ?>
+                        </p>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="modal-body">
-      <div class="modal-eyebrow" id="m-cat"></div>
-      <h2 class="modal-title" id="m-name"></h2>
-      <p class="modal-desc" id="m-desc"></p>
-      <div class="modal-specs">
-        <div class="spec"><div class="spec-l">Phong cách</div><div class="spec-v">Fine Dining</div></div>
-        <div class="spec"><div class="spec-l">Phục vụ</div><div class="spec-v">15–20 phút</div></div>
-        <div class="spec"><div class="spec-l">Wine Pairing</div><div class="spec-v">Có thể chọn</div></div>
-        <div class="spec"><div class="spec-l">Chef Note</div><div class="spec-v">Nguyên liệu tươi ngon nhất</div></div>
-      </div>
-      <div class="modal-foot">
-        <div class="modal-price" id="m-price"></div>
-        <a href="booking_service.php" class="btn-g" style="font-size:11px;padding:12px 28px;">Đặt bàn ngay</a>
-      </div>
+    
+    <!-- Divider -->
+    <div class="menu-divider"><div class="diamond"></div></div>
+    <?php endif; ?>
+
+    <!-- A La Carte -->
+    <div class="menu-section a-la-carte-section">
+        <h2 class="menu-section-title">A La Carte</h2>
+        <div class="menu-section-subtitle">Tuyển chọn nghệ thuật</div>
+        
+        <?php 
+        $cat_index = 0;
+        foreach($all_categories as $cat): 
+            $cat_foods = array_filter($all_foods, function($f) use ($cat) {
+                return $f['category_id'] == $cat['id'];
+            });
+            if(empty($cat_foods)) continue;
+            
+            // Lấy ảnh của món đầu tiên làm ảnh đại diện cho Category
+            $first_food = array_values($cat_foods)[0];
+            $cat_image = $first_food['image'] ? $first_food['image'] : 'default.jpg';
+        ?>
+        <div class="menu-category <?= $cat_index % 2 != 0 ? 'image-right' : '' ?>">
+            <div class="category-image-wrap">
+                <img id="cat-img-<?= $cat['id'] ?>" src="public/assets/img/menu/<?= htmlspecialchars($cat_image) ?>" class="category-image" onerror="this.onerror=null; this.src='https://placehold.co/800x600/F6F2E9/4F5B3A?text=No+Image'" style="transition: opacity 0.15s ease;">
+            </div>
+            
+            <div class="category-content-wrap">
+                <h3 class="category-title"><?= htmlspecialchars($cat['name']) ?></h3>
+                <div class="menu-list">
+                    <?php foreach($cat_foods as $f): 
+                        $has_al = hasAllergen($f, $user_allergies);
+                        
+                        $modalData = htmlspecialchars(json_encode([
+                            'name' => $f['name'],
+                            'desc' => $f['description'],
+                            'price' => number_format($f['price'],0,',','.'),
+                            'img' => 'public/assets/img/menu/' . ($f['image'] ?: 'default.jpg'),
+                            'cat' => $cat['name']
+                        ]));
+                    ?>
+                    <div class="menu-item <?= $has_al ? 'allergy-item' : '' ?>" 
+                         onmouseenter="changeFeaturedImage('cat-img-<?= $cat['id'] ?>', 'public/assets/img/menu/<?= htmlspecialchars($f['image'] ?: 'default.jpg') ?>')"
+                         onclick="openEdModal(<?= $modalData ?>)">
+                        <div class="menu-item-header">
+                            <span class="menu-item-name"><?= htmlspecialchars($f['name']) ?></span>
+                            <span class="menu-item-dots"></span>
+                            <span class="menu-item-price"><?= number_format($f['price'],0,',','.') ?></span>
+                        </div>
+                        <p class="menu-item-desc">
+                            <?= htmlspecialchars($f['description']) ?>
+                            <?php if($has_al): ?>
+                            <br><span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; margin-top:5px; display:inline-block;">* Chứa thành phần dị ứng với bạn</span>
+                            <?php endif; ?>
+                            <?php if(isset($f['ai_score']) && $f['ai_score'] > 0): ?>
+                            <span style="color:var(--gold); font-size:13px; font-weight:500; font-family:var(--font-sans); font-style:normal; margin-left:10px;"><i class="fas fa-star"></i> Gợi ý VIP</span>
+                            <?php endif; ?>
+                        </p>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+        <?php 
+        $cat_index++;
+        endforeach; 
+        ?>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="text-center mt-5 mb-5" style="padding-top: 50px;">
+        <p style="font-family:var(--font-serif); font-size:1.3rem; color:var(--text-main); margin-bottom:25px; font-style:italic;">Khám phá trọn vẹn hương vị tại không gian của chúng tôi.</p>
+        <a href="booking_service.php" class="btn-reserve-solid">ĐẶT BÀN NGAY</a>
+    </div>
+
+</div>
+
+<!-- EDITORIAL MODAL -->
+<div class="ed-modal" id="edModal" onclick="closeEdModal(event)">
+  <div class="ed-modal-box">
+    <div class="ed-modal-img">
+      <img id="ed-m-img" src="" alt="" onerror="this.onerror=null; this.src='https://placehold.co/800x600/F6F2E9/4F5B3A?text=No+Image'">
+    </div>
+    <div class="ed-modal-content">
+      <button class="ed-modal-close" onclick="closeEdModal(null)">✕</button>
+      <div class="ed-m-cat" id="ed-m-cat"></div>
+      <h2 class="ed-m-name" id="ed-m-name"></h2>
+      <p class="ed-m-desc" id="ed-m-desc"></p>
+      <div class="ed-m-price" id="ed-m-price"></div>
+      <a href="booking_service.php" class="btn-reserve-solid" style="width: fit-content;">ĐẶT BÀN NGAY</a>
     </div>
   </div>
 </div>
-
-<!-- FLOATING RESERVATION -->
-<div class="float-book" id="floatBook">
-  <div class="float-inner">
-    <div class="float-label">Restaurantly</div>
-    <div class="float-title">Trải nghiệm fine dining<br>hôm nay</div>
-    <a href="booking_service.php" class="float-cta">Đặt bàn ngay</a>
-  </div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <img id="hoverImageTooltip" class="menu-hover-tooltip" src="" alt="">
+<style>
+.menu-hover-tooltip {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    border: 4px solid #fff;
+    transform: translate(15px, -50%) scale(0.95);
+}
+.menu-item:hover {
+    background: rgba(201, 166, 107, 0.03);
+}
+.menu-hover-trigger:hover .menu-item-name {
+    color: var(--gold);
+    transition: color 0.3s ease;
+}
+</style>
 <script>
-AOS.init({once:true,duration:700,offset:60});
-
-/* Category filter */
-var catBtns=document.querySelectorAll('.cat-btn');
-catBtns.forEach(function(btn){
-  btn.addEventListener('click',function(){
-    catBtns.forEach(function(b){b.classList.remove('on');});
-    btn.classList.add('on');
-    var cat=btn.dataset.cat;
-    var cards=document.querySelectorAll('.food-card');
-    cards.forEach(function(c){
-      if(cat==='all'||cat===c.dataset.cat){c.classList.remove('hidden');}
-      else{c.classList.add('hidden');}
+document.addEventListener('DOMContentLoaded', function() {
+    const tooltip = document.getElementById('hoverImageTooltip');
+    const triggers = document.querySelectorAll('.menu-hover-trigger');
+    
+    triggers.forEach(trigger => {
+        trigger.addEventListener('mousemove', function(e) {
+            tooltip.src = this.getAttribute('data-img');
+            tooltip.style.left = e.pageX + 'px';
+            tooltip.style.top = e.pageY + 'px';
+            tooltip.style.opacity = '1';
+            tooltip.style.transform = 'translate(15px, -50%) scale(1)';
+        });
+        trigger.addEventListener('mouseleave', function() {
+            tooltip.style.opacity = '0';
+            tooltip.style.transform = 'translate(15px, -50%) scale(0.95)';
+        });
     });
-    /* Combo section */
-    var secCombo=document.getElementById('sec-combo');
-    if(secCombo) secCombo.style.display=(cat==='all'||cat==='combo')?'':'none';
-    var secChef=document.getElementById('sec-chef');
-    if(secChef) secChef.style.display=(cat==='all')?'':'none';
-    /* Scroll to foods */
-    if(cat!=='all') document.getElementById('sec-foods').scrollIntoView({behavior:'smooth',block:'start'});
-  });
 });
+</script>
 
-/* Modal */
-function openModal(data){
-  document.getElementById('m-img').src=data.img||'';
-  document.getElementById('m-img').alt=data.name||'';
-  document.getElementById('m-cat').textContent=data.cat||'';
-  document.getElementById('m-name').textContent=data.name||'';
-  document.getElementById('m-desc').textContent=data.desc||'';
-  document.getElementById('m-price').textContent=data.price?Number(data.price).toLocaleString('vi-VN')+' đ':'';
-  document.getElementById('modal').classList.add('open');
-  document.body.style.overflow='hidden';
+<script>
+let imageTimeoutIds = {};
+function changeFeaturedImage(imgId, newSrc) {
+    var imgEl = document.getElementById(imgId);
+    if (!imgEl) return;
+    if (imgEl.src.indexOf(newSrc) !== -1) return; // Do nothing if same image
+    
+    if (imageTimeoutIds[imgId]) {
+        clearTimeout(imageTimeoutIds[imgId]);
+    }
+    
+    imgEl.style.opacity = 0.6;
+    imageTimeoutIds[imgId] = setTimeout(function() {
+        imgEl.src = newSrc;
+        imgEl.style.opacity = 1;
+    }, 150); // Fast enough to not feel laggy
 }
-function closeModal(e){
-  if(e&&e.target!==document.getElementById('modal'))return;
-  document.getElementById('modal').classList.remove('open');
-  document.body.style.overflow='';
-}
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal(null);});
 
-/* Float booking */
-var fb=document.getElementById('floatBook');
-var heroH=document.querySelector('.hero').offsetHeight;
-window.addEventListener('scroll',function(){
-  fb.classList.toggle('show',window.scrollY>heroH*.6);
+function openEdModal(data) {
+    document.getElementById('ed-m-img').src = data.img;
+    document.getElementById('ed-m-cat').textContent = data.cat;
+    document.getElementById('ed-m-name').textContent = data.name;
+    document.getElementById('ed-m-desc').textContent = data.desc;
+    document.getElementById('ed-m-price').textContent = data.price + ' VND';
+    
+    document.getElementById('edModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeEdModal(e) {
+    if(e && e.target !== document.getElementById('edModal')) return;
+    document.getElementById('edModal').classList.remove('open');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) {
+    if(e.key === 'Escape') closeEdModal(null);
 });
 </script>
 

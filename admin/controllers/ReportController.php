@@ -281,8 +281,8 @@ if ($action === 'food_cost') {
             f.id, f.name as food_name, f.price as selling_price, f.image,
             COALESCE(SUM(
                 (CASE
-                    WHEN LOWER(TRIM(r.unit)) = 'g'  AND LOWER(TRIM(i.unit_name)) = 'kg' THEN r.quantity_required / 1000
-                    WHEN LOWER(TRIM(r.unit)) = 'ml' AND LOWER(TRIM(i.unit_name)) = 'l'  THEN r.quantity_required / 1000
+                    WHEN LOWER(TRIM(r.unit)) IN ('g', 'ml') AND LOWER(TRIM(i.unit_name)) IN ('kg', 'l') THEN r.quantity_required / 1000
+                    WHEN LOWER(TRIM(r.unit)) IN ('kg', 'l') AND LOWER(TRIM(i.unit_name)) IN ('g', 'ml') THEN r.quantity_required * 1000
                     ELSE r.quantity_required
                 END) * i.cost_price
             ), 0) as real_cost,
@@ -293,8 +293,8 @@ if ($action === 'food_cost') {
         WHERE f.is_active = 1
         GROUP BY f.id
         ORDER BY (f.price - COALESCE(SUM(
-            (CASE WHEN LOWER(TRIM(r.unit))='g' AND LOWER(TRIM(i.unit_name))='kg' THEN r.quantity_required/1000
-                  WHEN LOWER(TRIM(r.unit))='ml' AND LOWER(TRIM(i.unit_name))='l' THEN r.quantity_required/1000
+            (CASE WHEN LOWER(TRIM(r.unit)) IN ('g', 'ml') AND LOWER(TRIM(i.unit_name)) IN ('kg', 'l') THEN r.quantity_required/1000
+                  WHEN LOWER(TRIM(r.unit)) IN ('kg', 'l') AND LOWER(TRIM(i.unit_name)) IN ('g', 'ml') THEN r.quantity_required*1000
                   ELSE r.quantity_required END)*i.cost_price
         ),0)) ASC
     ")->fetchAll(PDO::FETCH_ASSOC);

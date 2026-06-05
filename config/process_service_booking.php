@@ -31,14 +31,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $music_playlist = $_POST['music_playlist'] ?? null;
     $light_tone = $_POST['light_tone'] ?? null;
     $chef_requirements = $_POST['chef_requirements'] ?? null;
-    if (isset($_POST['chef_budget']) || isset($_POST['chef_style']) || isset($_POST['chef_requirements_detail'])) {
-        $budget = $_POST['chef_budget'] ?? '';
-        $style = $_POST['chef_style'] ?? '';
-        $detail = $_POST['chef_requirements_detail'] ?? '';
-        if (!empty($budget) || !empty($style) || !empty($detail)) {
-            $chef_requirements = "Ngân sách: $budget\nPhong cách: $style\nChi tiết: $detail";
-        }
-    }
 
     // Gắn thêm Hồ sơ Khẩu vị (Culinary DNA) nếu có
     if ($user_id) {
@@ -115,6 +107,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($has_candle) $total_amount += 50000;
         if ($has_handwritten_card) $total_amount += 30000;
         if (isset($_POST['has_bespoke_flower'])) $total_amount += 200000;
+
+        // Tính phí Đầu bếp tại gia
+        if ($type === 'chef') {
+            if ($guests <= 2) $total_amount += 250000;
+            else if ($guests <= 6) $total_amount += 500000;
+            else if ($guests <= 12) $total_amount += 1000000;
+            else $total_amount += 1200000;
+        }
 
         // Tính 30% cọc
         $deposit_amount = $total_amount * 0.3;

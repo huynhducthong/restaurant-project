@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once __DIR__ . '/../../config/database.php';
 
 class GalleryController {
@@ -123,3 +124,6 @@ class GalleryController {
         exit;
     }
 }
+
+// Instantiate the controller to handle the request
+$controller = new GalleryController();

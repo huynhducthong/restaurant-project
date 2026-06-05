@@ -393,7 +393,7 @@ include '../../public/admin_layout_header.php';
                                                 <div class="mb-3">
                                                     <label class="form-label small fw-bold">Thứ tự ưu tiên (Sort Order)</label>
                                                     <input type="number" name="sort_order" class="form-control form-control-sm" value="0">
-                                                    <small class="text-muted d-block mt-1" style="font-size:11px;">Trang chủ sẽ tự động ưu tiên lấy 4 bức ảnh mới nhất và đang bật để hiển thị lên lưới.</small>
+                                                    <small class="text-muted d-block mt-1" style="font-size:11px;">Trang chủ sẽ tự động ưu tiên lấy 7 bức ảnh mới nhất và đang bật để hiển thị lên lưới.</small>
                                                 </div>
                                                 <button type="submit" class="btn btn-sm btn-primary w-100">
                                                     <i class="bi bi-upload"></i> Tải Lên

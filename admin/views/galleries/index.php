@@ -53,7 +53,7 @@ require_once __DIR__ . '/../../../public/admin_layout_header.php';
             </div>
             
             <div class="alert alert-info">
-                <strong>Lưu ý:</strong> Trang chủ sẽ tự động ưu tiên lấy <strong>4 bức ảnh mới nhất và đang được Bật</strong> để hiển thị lên lưới không gian Atmosphere chuẩn Michelin.
+                <strong>Lưu ý:</strong> Trang chủ sẽ tự động ưu tiên lấy <strong>7 bức ảnh mới nhất và đang được Bật</strong> để hiển thị lên lưới không gian Atmosphere chuẩn Michelin.
             </div>
         </div>
 

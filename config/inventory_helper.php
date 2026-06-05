@@ -28,13 +28,11 @@ function inventory_normalize_unit_string($unit) {
  */
 function inventory_unit_meta($unit) {
     $u = inventory_normalize_unit_string($unit);
-    $mass = ['g' => 1.0, 'kg' => 1000.0];
-    $volume = ['ml' => 1.0, 'l' => 1000.0];
-    if (isset($mass[$u])) {
-        return ['kind' => 'mass', 'mul' => $mass[$u]];
-    }
-    if (isset($volume[$u])) {
-        return ['kind' => 'volume', 'mul' => $volume[$u]];
+    // Cấp số nhân mặc định: 1g = 1ml = 1, 1kg = 1l = 1000
+    $mass_volume = ['g' => 1.0, 'kg' => 1000.0, 'ml' => 1.0, 'l' => 1000.0];
+    
+    if (isset($mass_volume[$u])) {
+        return ['kind' => 'mass_volume', 'mul' => $mass_volume[$u]];
     }
     return ['kind' => 'count', 'mul' => 1.0];
 }
@@ -53,7 +51,9 @@ function convert_to_base_unit($qty, $from_unit, $to_unit) {
     }
     $from = inventory_unit_meta($from_unit);
     $to = inventory_unit_meta($to_unit);
-    if ($from['kind'] === $to['kind'] && ($from['kind'] === 'mass' || $from['kind'] === 'volume')) {
+    
+    // Nếu cả hai đều thuộc nhóm có thể quy đổi (khối lượng hoặc thể tích)
+    if ($from['kind'] === $to['kind'] && $from['kind'] === 'mass_volume') {
         $base = $qty * $from['mul'];
         return $base / $to['mul'];
     }
