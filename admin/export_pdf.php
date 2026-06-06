@@ -65,47 +65,47 @@ $html = '
 <!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"></head>
-<body style="font-family: DejaVu Sans, sans-serif; margin:0; padding:0; color:#222;">
+<body style="font-family: DejaVu Sans, sans-serif; margin:0; padding:0; color:#333; background-color:#fff;">
 
-<!-- HEADER -->
-<div style="background:#1a1814; padding:22px 30px; display:table; width:100%; box-sizing:border-box;">
-    <div style="display:table-cell; vertical-align:middle;">
-        <div style="font-size:20px; font-weight:bold; color:#cda45e; letter-spacing:1px;">' . $restaurant_name . '</div>
-        ' . ($restaurant_addr ? '<div style="font-size:10px; color:#aaa; margin-top:3px;">' . $restaurant_addr . '</div>' : '') . '
-        ' . ($restaurant_tel  ? '<div style="font-size:10px; color:#aaa;">ĐT: ' . $restaurant_tel  . '</div>' : '') . '
+<!-- HEADER LUXURY -->
+<div style="background:#143B36; padding:30px 40px; display:table; width:100%; box-sizing:border-box; border-bottom: 4px solid #cda45e;">
+    <div style="display:table-cell; vertical-align:middle; width: 60%;">
+        <div style="font-size:24px; font-weight:bold; color:#cda45e; letter-spacing:2px; text-transform:uppercase;">' . $restaurant_name . '</div>
+        ' . ($restaurant_addr ? '<div style="font-size:11px; color:#e8f5f3; margin-top:5px; line-height: 1.4;">' . $restaurant_addr . '</div>' : '') . '
+        ' . ($restaurant_tel  ? '<div style="font-size:11px; color:#e8f5f3; line-height: 1.4;">Điện thoại: ' . $restaurant_tel  . '</div>' : '') . '
     </div>
-    <div style="display:table-cell; vertical-align:middle; text-align:right;">
-        <div style="font-size:13px; color:#cda45e; font-weight:bold; letter-spacing:2px; text-transform:uppercase;">Phiếu Dịch Vụ</div>
-        <div style="font-size:11px; color:#888; margin-top:4px;">Mã: #SVR-' . $id . '</div>
-        <div style="font-size:10px; color:#888;">Ngày xuất: ' . date('d/m/Y H:i') . '</div>
+    <div style="display:table-cell; vertical-align:middle; text-align:right; width: 40%;">
+        <div style="font-size:16px; color:#fff; font-weight:bold; letter-spacing:3px; text-transform:uppercase;">HÓA ĐƠN DỊCH VỤ</div>
+        <div style="font-size:12px; color:#cda45e; margin-top:6px; letter-spacing:1px;">MÃ SỐ: SVR-' . $id . '</div>
+        <div style="font-size:10px; color:#aaa; margin-top:4px;">Ngày lập: ' . date('d/m/Y H:i') . '</div>
     </div>
 </div>
 
-<div style="padding:24px 30px;">
+<div style="padding:30px 40px;">
 
     <!-- THÔNG TIN KHÁCH HÀNG -->
-    <div style="border:1px solid #e8e2d9; border-radius:8px; padding:16px; margin-bottom:20px;">
-        <div style="font-size:11px; font-weight:bold; letter-spacing:.15em; text-transform:uppercase; color:#888; margin-bottom:12px; border-bottom:1px solid #f0ece4; padding-bottom:6px;">
-            Thông tin khách hàng
+    <div style="border: 1px solid #143B36; border-radius:0px; padding:20px; margin-bottom:25px; background: #fafafa; border-left: 5px solid #cda45e;">
+        <div style="font-size:12px; font-weight:bold; letter-spacing:2px; text-transform:uppercase; color:#143B36; margin-bottom:15px; border-bottom:1px dashed #ccc; padding-bottom:8px;">
+            THÔNG TIN KHÁCH HÀNG
         </div>
-        <table style="width:100%; font-size:13px; border-collapse:collapse;">
+        <table style="width:100%; font-size:13px; border-collapse:collapse; line-height: 1.8;">
             <tr>
-                <td style="padding:6px 0; width:22%; color:#888;">Khách hàng:</td>
-                <td style="padding:6px 0; width:33%; font-weight:bold;">' . htmlspecialchars($s['customer_name']) . '</td>
-                <td style="padding:6px 0; width:20%; color:#888;">Điện thoại:</td>
-                <td style="padding:6px 0; width:25%; font-weight:bold;">' . htmlspecialchars($s['customer_phone']) . '</td>
+                <td style="width:20%; color:#555;">Khách hàng:</td>
+                <td style="width:35%; font-weight:bold; color:#000;">' . htmlspecialchars($s['customer_name']) . '</td>
+                <td style="width:20%; color:#555;">Điện thoại:</td>
+                <td style="width:25%; font-weight:bold; color:#000;">' . htmlspecialchars($s['customer_phone']) . '</td>
             </tr>
             <tr>
-                <td style="padding:6px 0; color:#888;">Dịch vụ:</td>
-                <td style="padding:6px 0; font-weight:bold; color:#cda45e;">' . htmlspecialchars(strtoupper($s['service_type'])) . '</td>
-                <td style="padding:6px 0; color:#888;">Thời gian:</td>
-                <td style="padding:6px 0; font-weight:bold;">' . htmlspecialchars(date('H:i d/m/y', strtotime($s['booking_date']))) . '</td>
+                <td style="color:#555;">Dịch vụ:</td>
+                <td style="font-weight:bold; color:#143B36; text-transform: uppercase;">' . htmlspecialchars($s['service_type']) . '</td>
+                <td style="color:#555;">Thời gian:</td>
+                <td style="font-weight:bold; color:#000;">' . htmlspecialchars(date('H:i d/m/y', strtotime($s['booking_date']))) . '</td>
             </tr>
             <tr>
-                <td style="padding:6px 0; color:#888;">Số khách:</td>
-                <td style="padding:6px 0;">' . htmlspecialchars((string)$s['guests']) . ' người</td>
-                <td style="padding:6px 0; color:#888;">' . ($s['service_type'] === 'chef' ? 'Địa điểm:' : 'Phòng/Bàn:') . '</td>
-                <td style="padding:6px 0; font-weight:bold;">' . ($s['service_type'] === 'chef' ? 'Tư gia' : ($s['service_type'] === 'birthday' ? 'PHÒNG VIP' : 'Bàn tiêu chuẩn')) . '</td>
+                <td style="color:#555;">Số khách:</td>
+                <td style="font-weight:bold; color:#000;">' . htmlspecialchars((string)$s['guests']) . ' người</td>
+                <td style="color:#555;">' . ($s['service_type'] === 'chef' ? 'Địa điểm:' : 'Phòng/Bàn:') . '</td>
+                <td style="font-weight:bold; color:#000;">' . ($s['service_type'] === 'chef' ? 'Tư gia' : ($s['service_type'] === 'birthday' ? 'PHÒNG VIP' : 'Bàn tiêu chuẩn')) . '</td>
             </tr>
         </table>
     </div>';
@@ -115,17 +115,17 @@ $has_bespoke = !empty($s['has_candle']) || !empty($s['has_handwritten_card']) ||
 
 if ($has_bespoke) {
     $html .= '
-    <div style="border:1px solid #e8e2d9; background:#fafafa; border-radius:8px; padding:16px; margin-bottom:20px;">
-        <div style="font-size:11px; font-weight:bold; letter-spacing:.15em; text-transform:uppercase; color:#cda45e; margin-bottom:12px; border-bottom:1px solid #f0ece4; padding-bottom:6px;">
-            Yêu Cầu Dịch Vụ & Cá Nhân Hóa (Bespoke)
+    <div style="border:1px solid #cda45e; background:#fffcf5; padding:20px; margin-bottom:25px; position: relative;">
+        <div style="font-size:12px; font-weight:bold; letter-spacing:2px; text-transform:uppercase; color:#cda45e; margin-bottom:15px; border-bottom:1px solid #f0e6d2; padding-bottom:8px;">
+            YÊU CẦU CÁ NHÂN HÓA (BESPOKE)
         </div>
-        <table style="width:100%; font-size:13px; border-collapse:collapse;">';
+        <table style="width:100%; font-size:13px; border-collapse:collapse; line-height: 1.8;">';
 
     if (!empty($s['chef_requirements'])) {
         $html .= '
             <tr>
-                <td colspan="2" style="padding:5px 0; font-weight:bold; color:#333; line-height: 1.6;">
-                    ' . nl2br(htmlspecialchars($s['chef_requirements'])) . '
+                <td colspan="2" style="padding:5px 0; font-weight:bold; color:#143B36; line-height: 1.6; font-style: italic;">
+                    "' . nl2br(htmlspecialchars($s['chef_requirements'])) . '"
                 </td>
             </tr>';
     }
@@ -133,32 +133,32 @@ if ($has_bespoke) {
     if (!empty($s['event_type'])) {
         $html .= '
             <tr>
-                <td style="padding:5px 0; width:40%; color:#888;">Dịp đặc biệt:</td>
-                <td style="padding:5px 0; font-weight:bold;">' . htmlspecialchars($s['event_type']) . '</td>
+                <td style="width:35%; color:#555;">Dịp đặc biệt:</td>
+                <td style="font-weight:bold; color:#000;">' . htmlspecialchars($s['event_type']) . '</td>
             </tr>';
     }
 
     if (!empty($s['has_candle'])) {
         $html .= '
             <tr>
-                <td style="padding:5px 0; width:40%; color:#888;">Trang trí:</td>
-                <td style="padding:5px 0; font-weight:bold;">Nến thơm</td>
+                <td style="color:#555;">Trang trí:</td>
+                <td style="font-weight:bold; color:#000;">Nến thơm cao cấp</td>
             </tr>';
     }
 
     if (!empty($s['has_handwritten_card'])) {
         $html .= '
             <tr>
-                <td style="padding:5px 0; width:40%; color:#888;">Thiệp viết tay:</td>
-                <td style="padding:5px 0; font-weight:bold;">' . htmlspecialchars($s['card_message'] ?: 'Có') . '</td>
+                <td style="color:#555;">Thiệp viết tay:</td>
+                <td style="font-weight:bold; color:#000;">' . htmlspecialchars($s['card_message'] ?: 'Có') . '</td>
             </tr>';
     }
 
     if (!empty($s['has_flower'])) {
         $html .= '
             <tr>
-                <td style="padding:5px 0; width:40%; color:#888;">Hoa tươi thiết kế:</td>
-                <td style="padding:5px 0; font-weight:bold;">' . htmlspecialchars($s['flower_preference'] ?: 'Có') . '</td>
+                <td style="color:#555;">Hoa tươi thiết kế:</td>
+                <td style="font-weight:bold; color:#000;">' . htmlspecialchars($s['flower_preference'] ?: 'Có') . '</td>
             </tr>';
     }
     
@@ -166,8 +166,8 @@ if ($has_bespoke) {
         $vipInfo = trim(htmlspecialchars($s['music_playlist'] . (!empty($s['light_tone']) ? ' - ' . $s['light_tone'] : '')));
         $html .= '
             <tr>
-                <td style="padding:5px 0; width:40%; color:#888;">Cấu hình VIP:</td>
-                <td style="padding:5px 0; font-weight:bold;">' . $vipInfo . '</td>
+                <td style="color:#555;">Cấu hình không gian VIP:</td>
+                <td style="font-weight:bold; color:#000;">' . $vipInfo . '</td>
             </tr>';
     }
 
@@ -176,99 +176,113 @@ if ($has_bespoke) {
     </div>';
 }
 
-// BẢNG MÓN ĂN
+// BẢNG MÓN ĂN VÀ TỔNG TIỀN
+$html .= '
+<div style="margin-bottom:30px;">
+    <div style="font-size:12px; font-weight:bold; letter-spacing:2px; text-transform:uppercase; color:#143B36; margin-bottom:12px;">
+        CHI TIẾT HÓA ĐƠN
+    </div>
+    <table style="width:100%; border-collapse:collapse; font-size:13px; border: 1px solid #143B36;">
+        <thead>
+            <tr style="background:#143B36; color:#cda45e;">
+                <th style="text-align:left; padding:12px 15px; font-weight:bold; letter-spacing: 1px;">Tên món / Dịch vụ</th>
+                <th style="text-align:center; padding:12px 15px; font-weight:bold;">SL</th>
+                <th style="text-align:right; padding:12px 15px; font-weight:bold;">Đơn giá</th>
+                <th style="text-align:right; padding:12px 15px; font-weight:bold;">Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>';
+
 if (!empty($items)) {
-    $html .= '
-    <div style="margin-bottom:20px;">
-        <div style="font-size:11px; font-weight:bold; letter-spacing:.15em; text-transform:uppercase; color:#888; margin-bottom:10px;">
-            Thực đơn đã chọn
-        </div>
-        <table style="width:100%; border-collapse:collapse; font-size:13px;">
-            <thead>
-                <tr style="background:#f8f4ee;">
-                    <th style="text-align:left; padding:9px 10px; border-bottom:2px solid #cda45e; color:#555;">Tên món</th>
-                    <th style="text-align:center; padding:9px 10px; border-bottom:2px solid #cda45e; color:#555;">SL</th>
-                    <th style="text-align:right; padding:9px 10px; border-bottom:2px solid #cda45e; color:#555;">Đơn giá</th>
-                    <th style="text-align:right; padding:9px 10px; border-bottom:2px solid #cda45e; color:#555;">Thành tiền</th>
-                </tr>
-            </thead>
-            <tbody>';
-
-    foreach ($items as $item) {
+    foreach ($items as $index => $item) {
         $sub = $item['price'] * $item['quantity'];
+        $bg = ($index % 2 === 0) ? '#fff' : '#f9f9f9';
         $html .= '
-                <tr>
-                    <td style="padding:8px 10px; border-bottom:1px solid #f0ece4;">' . htmlspecialchars($item['name']) . '</td>
-                    <td style="padding:8px 10px; border-bottom:1px solid #f0ece4; text-align:center;">×' . (int)$item['quantity'] . '</td>
-                    <td style="padding:8px 10px; border-bottom:1px solid #f0ece4; text-align:right;">' . number_format($item['price'], 0, ',', '.') . 'đ</td>
-                    <td style="padding:8px 10px; border-bottom:1px solid #f0ece4; text-align:right; font-weight:bold;">' . number_format($sub, 0, ',', '.') . 'đ</td>
-                </tr>';
+            <tr style="background:' . $bg . ';">
+                <td style="padding:10px 15px; border-bottom:1px solid #eee;">' . htmlspecialchars($item['name']) . '</td>
+                <td style="padding:10px 15px; border-bottom:1px solid #eee; text-align:center;">' . (int)$item['quantity'] . '</td>
+                <td style="padding:10px 15px; border-bottom:1px solid #eee; text-align:right;">' . number_format($item['price'], 0, ',', '.') . 'đ</td>
+                <td style="padding:10px 15px; border-bottom:1px solid #eee; text-align:right; font-weight:bold;">' . number_format($sub, 0, ',', '.') . 'đ</td>
+            </tr>';
     }
-
-    // ✅ THÊM: Tính phí Đầu bếp tại gia
-    if ($s['service_type'] === 'chef') {
-        $g = (int)$s['guests'];
-        $chef_fee = 0;
-        if ($g <= 2) $chef_fee = 250000;
-        elseif ($g <= 6) $chef_fee = 500000;
-        elseif ($g <= 12) $chef_fee = 1000000;
-        else $chef_fee = 1200000;
-        
-        $html .= '
-                <tr>
-                    <td colspan="3" style="padding:8px 10px; border-bottom:1px solid #f0ece4; text-align:right; color:#888;">Phí phục vụ Đầu bếp:</td>
-                    <td style="padding:8px 10px; border-bottom:1px solid #f0ece4; text-align:right; font-weight:bold;">' . number_format($chef_fee, 0, ',', '.') . 'đ</td>
-                </tr>';
-        
-        // $grand_total already includes the chef fee in the database (total_amount), 
-        // but $grand_total here in this script was recalculated manually: 
-        // foreach ($items as $item) { $grand_total += $item['price'] * $item['quantity']; }
-        // We should just use $s['total_amount'] instead of manually recalculating, OR add chef_fee to grand_total here.
-        // Wait, $grand_total was missing bespoke fees too! Let's just use $s['total_amount'].
-    }
-
+} else {
+    // Nếu không có món ăn cụ thể, hiển thị phí dịch vụ cơ bản / Combo
     $html .= '
-            </tbody>
-            <tfoot>
-                <tr style="background:#fdf6e9;">
-                    <td colspan="3" style="padding:10px; font-weight:bold; text-align:right; color:#555;">TỔNG CỘNG:</td>
-                    <td style="padding:10px; font-weight:bold; text-align:right; font-size:15px; color:#cda45e;">' . number_format($s['total_amount'], 0, ',', '.') . 'đ</td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>';
+            <tr style="background:#fff;">
+                <td style="padding:10px 15px; border-bottom:1px solid #eee; color:#555; font-style:italic;">Gói dịch vụ / Đặt bàn</td>
+                <td style="padding:10px 15px; border-bottom:1px solid #eee; text-align:center;">1</td>
+                <td style="padding:10px 15px; border-bottom:1px solid #eee; text-align:right;">-</td>
+                <td style="padding:10px 15px; border-bottom:1px solid #eee; text-align:right; font-weight:bold;">-</td>
+            </tr>';
 }
+
+// TÍNH PHÍ ĐẦU BẾP
+if ($s['service_type'] === 'chef') {
+    $g = (int)$s['guests'];
+    $chef_fee = 0;
+    if ($g <= 2) $chef_fee = 250000;
+    elseif ($g <= 6) $chef_fee = 500000;
+    elseif ($g <= 12) $chef_fee = 1000000;
+    else $chef_fee = 1200000;
+    
+    $html .= '
+            <tr>
+                <td colspan="3" style="padding:10px 15px; border-bottom:1px solid #eee; text-align:right; color:#143B36; font-style:italic;">Phụ phí Đầu bếp tại gia:</td>
+                <td style="padding:10px 15px; border-bottom:1px solid #eee; text-align:right; font-weight:bold; color:#143B36;">' . number_format($chef_fee, 0, ',', '.') . 'đ</td>
+            </tr>';
+}
+
+$html .= '
+        </tbody>
+        <tfoot>
+            <tr style="background:#fdfdfd; border-top: 2px solid #143B36;">
+                <td colspan="3" style="padding:10px 15px; font-weight:bold; text-align:right; color:#143B36; letter-spacing:1px;">TỔNG CỘNG HÓA ĐƠN:</td>
+                <td style="padding:10px 15px; font-weight:bold; text-align:right; font-size:15px; color:#cda45e;">' . number_format($s['total_amount'], 0, ',', '.') . ' VNĐ</td>
+            </tr>
+            <tr style="background:#fdfdfd;">
+                <td colspan="3" style="padding:5px 15px; font-weight:bold; text-align:right; color:#555; letter-spacing:1px;">ĐÃ THANH TOÁN (CỌC):</td>
+                <td style="padding:5px 15px; font-weight:bold; text-align:right; font-size:14px; color:#28a745;">- ' . number_format($s['deposit_amount'], 0, ',', '.') . ' VNĐ</td>
+            </tr>
+            <tr style="background:#fdfdfd;">
+                <td colspan="3" style="padding:10px 15px 15px; font-weight:bold; text-align:right; color:#143B36; letter-spacing:1px;">SỐ TIỀN CẦN THANH TOÁN:</td>
+                <td style="padding:10px 15px 15px; font-weight:bold; text-align:right; font-size:16px; color:#dc3545;">' . number_format($s['total_amount'] - $s['deposit_amount'], 0, ',', '.') . ' VNĐ</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>';
 
 // GHI CHÚ
 if (!empty(trim($s['message']))) {
     $html .= '
-    <div style="padding:12px 16px; background:#fdfcf9; border-left:4px solid #cda45e; border-radius:4px; margin-bottom:20px; font-size:12px; border: 1px solid #e8e2d9;">
-        <strong style="color:#cda45e; text-transform:uppercase; letter-spacing:1px;">Ghi chú của khách:</strong><br>
+    <div style="padding:15px; background:#fff; border-left:4px solid #143B36; margin-bottom:20px; font-size:13px; border: 1px solid #eee;">
+        <strong style="color:#143B36; text-transform:uppercase; letter-spacing:1px;">Ghi chú của khách:</strong><br>
         <span style="color:#444; font-style:italic; line-height:1.6; display:inline-block; margin-top:5px;">' . nl2br(htmlspecialchars($s['message'])) . '</span>
     </div>';
 }
 
 // LƯU Ý & ĐIỀU KHOẢN
 $html .= '
-    <div style="margin-top:10px; padding:15px; border:1px dashed #cda45e; border-radius:8px; font-size:10px; color:#555; line-height:1.5; background:#fffdfa;">
-        <strong style="color:#cda45e; text-transform:uppercase; letter-spacing:1px;">Lưu ý quan trọng:</strong><br>
-        • Quý khách vui lòng đến đúng giờ đã hẹn. Sau 20 phút, nếu quý khách không có mặt và không thông báo, bàn sẽ được giải phóng.<br>
-        • Tiền cọc (30%) sẽ không được hoàn lại nếu quý khách hủy lịch trong vòng 24 giờ trước giờ hẹn.<br>
-        • Mọi thay đổi về số lượng khách hoặc thực đơn xin vui lòng thông báo trước ít nhất 12 giờ.
+    <div style="margin-top:15px; padding:20px; border:1px solid #eee; background:#fafafa; font-size:11px; color:#555; line-height:1.6;">
+        <strong style="color:#cda45e; text-transform:uppercase; letter-spacing:1px; font-size:12px;">ĐIỀU KHOẢN & LƯU Ý DỊCH VỤ:</strong><br>
+        <div style="margin-top: 8px;">
+            • Quý khách vui lòng đến đúng giờ đã hẹn. Nếu quá 20 phút mà không có thông báo, bàn sẽ được tự động giải phóng.<br>
+            • Tiền cọc (30%) sẽ không được hoàn lại trong trường hợp quý khách hủy lịch sát giờ (dưới 24 tiếng).<br>
+            • Mọi thay đổi về số lượng khách, thực đơn, hay yêu cầu cá nhân hóa (Bespoke) xin vui lòng thông báo trước ít nhất 12 giờ để nhà hàng chuẩn bị tốt nhất.
+        </div>
     </div>';
 
 // FOOTER
 $html .= '
-    <div style="margin-top:40px; padding-top:16px; border-top:1px solid #e8e2d9; display:table; width:100%;">
-        <div style="display:table-cell; font-size:10px; color:#aaa; vertical-align:top;">
-            Cảm ơn quý khách đã tin tưởng và sử dụng dịch vụ tại ' . $restaurant_name . '.<br>
-            Chúng tôi hân hạnh được đón tiếp quý khách!
+    <div style="margin-top:40px; padding-top:20px; border-top:2px solid #143B36; display:table; width:100%;">
+        <div style="display:table-cell; font-size:11px; color:#666; vertical-align:top; width:60%; line-height: 1.6;">
+            <strong>Trân trọng cảm ơn quý khách đã sử dụng dịch vụ tại ' . $restaurant_name . '.</strong><br>
+            Kính chúc quý khách có một trải nghiệm ẩm thực tuyệt vời và đáng nhớ!<br>
+            <span style="color:#cda45e; font-style: italic;">Hẹn gặp lại quý khách!</span>
         </div>
-        <div style="display:table-cell; text-align:right;">
-            <div style="display:inline-block; text-align:center; font-size:11px; color:#333;">
-                <div style="font-style:italic; margin-bottom:40px; color:#888;">Xác nhận bởi nhà hàng</div>
-                <div style="width:140px; border-top:1px solid #333; padding-top:5px; font-weight:bold;">BAN QUẢN LÝ</div>
-            </div>
+        <div style="display:table-cell; text-align:center; width:40%;">
+            <div style="font-size:12px; color:#143B36; font-weight:bold; text-transform:uppercase; letter-spacing: 1px;">ĐẠI DIỆN NHÀ HÀNG</div>
+            <div style="font-style:italic; margin-bottom:50px; color:#888; font-size: 11px;">(Đã xác nhận điện tử)</div>
+            <div style="width:120px; margin: 0 auto; border-top:1px solid #143B36; padding-top:5px; font-weight:bold; color:#143B36;">BAN QUẢN LÝ</div>
         </div>
     </div>
 
