@@ -27,6 +27,8 @@ if (session_status() === PHP_SESSION_NONE) {
 $user_allergies = [];
 $user_flavor = [];
 $user_fav = [];
+$user_history_counts = [];
+
 if (isset($_SESSION['user_id'])) {
     $stmt = $db->prepare("SELECT allergies, flavor_profile, fav_ingredients FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
@@ -36,6 +38,16 @@ if (isset($_SESSION['user_id'])) {
         if ($u['flavor_profile']) $user_flavor = array_map('trim', explode(',', mb_strtolower($u['flavor_profile'], 'UTF-8')));
         if ($u['fav_ingredients']) $user_fav = array_map('trim', explode(',', mb_strtolower($u['fav_ingredients'], 'UTF-8')));
     }
+
+    $h_stmt = $db->prepare("
+        SELECT bd.menu_id, SUM(bd.quantity) as total_qty
+        FROM booking_details bd
+        JOIN service_bookings sb ON bd.booking_id = sb.id
+        WHERE sb.user_id = ? AND bd.item_type = 'food'
+        GROUP BY bd.menu_id
+    ");
+    $h_stmt->execute([$_SESSION['user_id']]);
+    $user_history_counts = $h_stmt->fetchAll(PDO::FETCH_KEY_PAIR);
 }
 
 function hasAllergen($food, $user_allergies) {
@@ -74,6 +86,13 @@ foreach ($all_foods as &$f) {
             $score += 3;
         }
     }
+
+    // Cộng điểm dựa trên Lịch sử gọi món (Tần suất)
+    if (isset($user_history_counts[$f['id']])) {
+        $history_score = min(10, $user_history_counts[$f['id']] * 2);
+        $score += $history_score;
+    }
+
     $f['ai_score'] = $score;
 }
 unset($f);
@@ -254,7 +273,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 .menu-category {
   margin-bottom: 100px;
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* Sửa từ center sang flex-start để sticky hoạt động */
   gap: 60px;
 }
 .menu-category.image-right {
@@ -263,6 +282,8 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 .category-image-wrap {
   flex: 0 0 40%;
   height: 550px;
+  position: sticky;
+  top: 100px; /* Trượt theo cuộn chuột */
 }
 .category-image {
   width: 100%;

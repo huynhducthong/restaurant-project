@@ -44,7 +44,7 @@ if (!$booking || $booking['deposit_amount'] <= 0) {
 
 // Cấu hình mã QR (Tài khoản mẫu)
 $bank_code = "vcb"; // Vietcombank
-$account_no = "0123456789";
+$account_no = "1012345678"; // Tạm thời dùng 10 số để QR render tốt hơn
 $account_name = "NHA HANG FINE DINING";
 $amount = (int)$booking['deposit_amount'];
 $add_info = "Thanh toan coc don " . $booking_id;
@@ -53,69 +53,74 @@ $qr_url = "https://img.vietqr.io/image/{$bank_code}-{$account_no}-compact2.png?a
 include 'views/client/layouts/header.php';
 ?>
 <style>
-/* CSS Tương tự trang success/booking */
 .payment-wrapper {
     min-height: 100vh;
-    background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
-    padding: 100px 20px 60px;
+    background: #fdfbf7;
+    padding: 120px 20px 60px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: 'Inter', sans-serif;
 }
 .payment-card {
-    background: #222;
-    border: 1px solid rgba(212, 176, 106, 0.2);
-    border-radius: 12px;
+    background: #fff;
+    border: 1px solid rgba(212, 176, 106, 0.3);
+    border-radius: 0;
     padding: 40px;
     max-width: 500px;
     width: 100%;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    color: #fff;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+    color: #333;
 }
 .qr-container {
     background: #fff;
     padding: 15px;
-    border-radius: 10px;
     display: inline-block;
     margin: 20px 0;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
 }
 .qr-container img {
     max-width: 250px;
     display: block;
 }
 .btn-gold {
-    background: linear-gradient(135deg, #d4b06a 0%, #b89346 100%);
-    color: #fff;
-    border: none;
-    padding: 14px 30px;
-    border-radius: 6px;
+    background: #111;
+    color: #d4b06a;
+    border: 1px solid #d4b06a;
+    padding: 16px 30px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: 0.3s;
+    transition: 0.4s;
     width: 100%;
     margin-top: 20px;
     text-transform: uppercase;
+    font-family: 'Cormorant Garamond', serif;
+    letter-spacing: 1px;
 }
 .btn-gold:hover {
-    box-shadow: 0 5px 15px rgba(212,176,106,0.4);
-    transform: translateY(-2px);
+    background: #d4b06a;
+    color: #fff;
 }
 .pay-info {
     font-size: 14px;
-    color: #aaa;
-    margin-bottom: 10px;
+    color: #666;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 8px;
 }
 .pay-val {
-    font-size: 16px;
-    color: #d4b06a;
-    font-weight: bold;
+    font-size: 15px;
+    color: #111;
+    font-weight: 600;
 }
 .amount-highlight {
-    font-size: 32px;
-    color: #d4b06a;
+    font-size: 40px;
+    color: #111;
     font-weight: 700;
     margin: 15px 0;
     font-family: 'Cormorant Garamond', serif;
@@ -125,30 +130,30 @@ include 'views/client/layouts/header.php';
 <div class="payment-wrapper">
     <div class="payment-card">
         <i class="fas fa-qrcode" style="font-size: 40px; color: #d4b06a; margin-bottom: 15px;"></i>
-        <h2 style="color: #d4b06a; font-family: 'Cormorant Garamond', serif; margin-bottom: 10px;">Thanh Toán Tiền Cọc</h2>
-        <p style="color: #aaa; font-size: 14px; margin-bottom: 25px;">Vui lòng dùng ứng dụng Ngân hàng để quét mã QR và hoàn tất việc đặt cọc giữ chỗ.</p>
+        <h2 style="color: #d4b06a; font-family: 'Cormorant Garamond', serif; margin-bottom: 10px; font-weight: 600;">Thanh Toán Tiền Cọc</h2>
+        <p style="color: #777; font-size: 14px; margin-bottom: 25px;">Vui lòng dùng ứng dụng Ngân hàng để quét mã QR và hoàn tất việc đặt cọc giữ chỗ.</p>
         
         <div class="amount-highlight"><?= number_format($amount) ?> VNĐ</div>
 
         <div class="qr-container">
-            <img src="<?= $qr_url ?>" alt="VietQR">
+            <img src="<?= $qr_url ?>" alt="VietQR QR Code" onerror="this.onerror=null; this.src='https://img.vietqr.io/image/vcb-1012345678-compact2.png?amount=<?= $amount ?>&addInfo=<?= urlencode($add_info) ?>&accountName=FINE%20DINING';">
         </div>
 
-        <div style="text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-top: 10px;">
-            <div class="pay-info">Ngân hàng: <span class="pay-val">Vietcombank</span></div>
-            <div class="pay-info">Chủ tài khoản: <span class="pay-val"><?= $account_name ?></span></div>
-            <div class="pay-info">Số tài khoản: <span class="pay-val"><?= $account_no ?></span></div>
-            <div class="pay-info" style="margin-bottom:0;">Nội dung CK: <span class="pay-val"><?= $add_info ?></span></div>
+        <div style="text-align: left; background: #fafafa; padding: 20px; margin-top: 10px; border: 1px solid #f0f0f0;">
+            <div class="pay-info"><span>Ngân hàng:</span> <span class="pay-val">Vietcombank</span></div>
+            <div class="pay-info"><span>Chủ tài khoản:</span> <span class="pay-val"><?= $account_name ?></span></div>
+            <div class="pay-info"><span>Số tài khoản:</span> <span class="pay-val"><?= $account_no ?></span></div>
+            <div class="pay-info" style="border-bottom:none; margin-bottom:0; padding-bottom:0;"><span>Nội dung CK:</span> <span class="pay-val"><?= $add_info ?></span></div>
         </div>
 
         <form method="POST" action="">
             <input type="hidden" name="confirm_payment" value="1">
             <button type="submit" class="btn-gold" id="btn-confirm">
-                <i class="fas fa-check-circle me-2"></i> Tôi đã chuyển khoản
+                Tôi đã chuyển khoản <i class="fas fa-arrow-right ms-2"></i>
             </button>
         </form>
         
-        <p style="font-size: 12px; color: #777; margin-top: 20px;">Nhà hàng sẽ tự động ghi nhận khi giao dịch hoàn tất.</p>
+        <p style="font-size: 12.5px; color: #888; margin-top: 20px;"><i class="fas fa-shield-alt me-1"></i> Giao dịch an toàn & bảo mật. Trạng thái đơn sẽ được tự động cập nhật.</p>
     </div>
 </div>
 

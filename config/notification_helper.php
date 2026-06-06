@@ -222,3 +222,81 @@ function generateEndOfDayRevenueReport(PDO $db, ?string $forDateYmd = null): str
 
     return $msg;
 }
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+/**
+ * Gửi Email Xác nhận Đặt bàn cho Khách hàng
+ */
+function sendBookingEmailConfirmation($emailNguoiNhan, $booking_info) {
+    if (empty($emailNguoiNhan)) return false;
+    
+    // Nạp thư viện nếu chưa có
+    if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+        require_once __DIR__ . '/../vendor/autoload.php';
+    }
+
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host       = $_ENV['MAIL_HOST'] ?? 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $_ENV['MAIL_USERNAME'] ?? ''; 
+        $mail->Password   = $_ENV['MAIL_PASSWORD'] ?? ''; 
+        $mail->SMTPSecure = $_ENV['MAIL_ENCRYPTION'] ?? 'tls';
+        $mail->Port       = $_ENV['MAIL_PORT'] ?? 587;
+        $mail->CharSet    = 'UTF-8';
+
+        $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'] ?? 'noreply@restaurantly.com', 'Restaurantly Admin');
+        $mail->addAddress($emailNguoiNhan);
+
+        $mail->isHTML(true);
+        $mail->Subject = 'Xác Nhận Đặt Bàn - Restaurantly';
+        
+        $svc = htmlspecialchars($booking_info['service_type'] ?? 'Dịch vụ', ENT_QUOTES);
+        if ($svc === 'table') $svc = 'Đặt bàn tiêu chuẩn';
+        if ($svc === 'birthday') $svc = 'Tiệc kỷ niệm / Phòng VIP';
+        if ($svc === 'chef') $svc = 'Đầu bếp tại gia';
+        if ($svc === 'bespoke') $svc = 'Thiết kế riêng';
+
+        $timeStr = date('H:i - d/m/Y', strtotime($booking_info['booking_date']));
+        $money = number_format((float)($booking_info['total_amount'] ?? 0), 0, ',', '.');
+        $deposit = number_format((float)($booking_info['deposit_amount'] ?? 0), 0, ',', '.');
+        
+        $name = htmlspecialchars($booking_info['customer_name'] ?? 'Quý khách', ENT_QUOTES);
+
+        $mail->Body = "
+            <div style='max-width: 600px; margin: auto; border: 2px solid #C9A66B; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
+                <div style='background-color: #0c0b09; padding: 20px; text-align: center;'>
+                    <h1 style='color: #C9A66B; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
+                    <p style='color: #fff; margin: 5px 0 0; font-size: 14px;'>Fine Dining Experience</p>
+                </div>
+                <div style='padding: 30px; background-color: #fff;'>
+                    <h2 style='color: #2c2c2c; margin-top: 0;'>Kính chào $name,</h2>
+                    <p style='color: #555; line-height: 1.6;'>Cảm ơn quý khách đã tin tưởng và lựa chọn dịch vụ tại Restaurantly. Chúng tôi xin trân trọng xác nhận yêu cầu đặt bàn của quý khách đã được hệ thống ghi nhận thành công.</p>
+                    
+                    <div style='background-color: #f9f6f0; padding: 20px; border-left: 4px solid #C9A66B; margin: 25px 0;'>
+                        <h3 style='margin-top: 0; color: #C9A66B;'>Thông Tin Đặt Bàn (#{$booking_info['id']})</h3>
+                        <table style='width: 100%; border-collapse: collapse; font-size: 15px;'>
+                            <tr><td style='padding: 8px 0; color: #666; width: 40%;'>Loại dịch vụ:</td><td style='padding: 8px 0; font-weight: bold;'>$svc</td></tr>
+                            <tr><td style='padding: 8px 0; color: #666;'>Thời gian:</td><td style='padding: 8px 0; font-weight: bold; color: #d32f2f;'>$timeStr</td></tr>
+                            <tr><td style='padding: 8px 0; color: #666;'>Số khách:</td><td style='padding: 8px 0; font-weight: bold;'>{$booking_info['guests']} người</td></tr>
+                            <tr><td style='padding: 8px 0; color: #666;'>Tổng dự kiến:</td><td style='padding: 8px 0; font-weight: bold;'>$money VNĐ</td></tr>
+                            <tr><td style='padding: 8px 0; color: #666;'>Tiền cọc (30%):</td><td style='padding: 8px 0; font-weight: bold; color: #f57c00;'>$deposit VNĐ</td></tr>
+                        </table>
+                    </div>
+                    
+                    <p style='color: #555; line-height: 1.6;'>Vui lòng có mặt đúng giờ để chúng tôi có thể phục vụ quý khách một cách chu đáo nhất. Mọi thay đổi về lịch trình xin vui lòng liên hệ Hotline: <strong>0123 456 789</strong>.</p>
+                    
+                    <p style='color: #555; line-height: 1.6; margin-bottom: 0;'>Hân hạnh được đón tiếp quý khách!</p>
+                </div>
+            </div>";
+
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        return false;
+    }
+}

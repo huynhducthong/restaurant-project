@@ -10,13 +10,30 @@ $svc  = [
     'table'    => ['title'=>'Đặt Chỗ Cao Cấp','sub'=>'Ẩm thực đỉnh cao chuẩn Michelin','icon'=>'table'],
     'birthday' => ['title'=>'Không Gian Kỷ Niệm','sub'=>'Riêng tư, sang trọng và đẳng cấp','icon'=>'birthday'],
     'chef'     => ['title'=>'Đầu Bếp Tại Gia','sub'=>'Trải nghiệm ẩm thực thượng lưu phục vụ tại tư gia','icon'=>'chef'],
+    'bespoke'  => ['title'=>'Thiết Kế Riêng','sub'=>'Trải nghiệm ẩm thực độc bản được may đo riêng','icon'=>'gem'],
 ];
 $cfg   = $svc[$type] ?? $svc['table'];
-$combos = $db->query(
-    "SELECT c.*, GROUP_CONCAT(f.name SEPARATOR '|') as list_foods
-     FROM combos c LEFT JOIN combo_items ci ON c.id=ci.combo_id
-     LEFT JOIN foods f ON ci.food_id=f.id WHERE c.status=1 GROUP BY c.id"
+$combos_raw = $db->query(
+    "SELECT c.*, t.name as theme_name, t.description as theme_desc, t.image as theme_img, GROUP_CONCAT(f.name SEPARATOR '|') as list_foods
+     FROM combos c 
+     LEFT JOIN themes t ON c.theme_id = t.id
+     LEFT JOIN combo_items ci ON c.id=ci.combo_id
+     LEFT JOIN foods f ON ci.food_id=f.id 
+     WHERE c.status=1 GROUP BY c.id ORDER BY t.created_at DESC, c.id DESC"
 )->fetchAll(PDO::FETCH_ASSOC);
+
+$grouped_combos = [];
+foreach($combos_raw as $cb) {
+    $t_name = $cb['theme_name'] ? $cb['theme_name'] : 'Thực Đơn Tiêu Chuẩn';
+    if(!isset($grouped_combos[$t_name])) {
+        $grouped_combos[$t_name] = [
+            'desc' => $cb['theme_desc'] ?? '',
+            'img' => $cb['theme_img'] ?? '',
+            'combos' => []
+        ];
+    }
+    $grouped_combos[$t_name]['combos'][] = $cb;
+}
 
 // Chỉ lấy dữ liệu bàn nếu KHÔNG phải dịch vụ Đầu bếp
 $t_open = []; $t_room = [];
@@ -25,12 +42,22 @@ if ($type !== 'chef') {
     $t_room = $db->query("SELECT * FROM restaurant_tables WHERE category='room'  ORDER BY id")->fetchAll(PDO::FETCH_ASSOC);
 }
 
-$foods  = $db->query("SELECT * FROM foods WHERE status=1 ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+$foods_raw  = $db->query("
+    SELECT f.*, t.name as theme_name 
+    FROM foods f 
+    LEFT JOIN themes t ON f.theme_id = t.id 
+    WHERE f.status=1 ORDER BY t.created_at DESC, f.name ASC
+")->fetchAll(PDO::FETCH_ASSOC);
+
+
+
 $chefs = $db->query("SELECT id, name FROM chefs WHERE is_active = 1 ORDER BY sort_order ASC, id DESC")->fetchAll(PDO::FETCH_ASSOC);
 
 // Lấy thông tin người dùng và sổ địa chỉ nếu đã đăng nhập
 $user_info = null;
 $user_addresses = [];
+$user_history_counts = [];
+
 if (isset($_SESSION['user_id'])) {
     $u_stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
     $u_stmt->execute([$_SESSION['user_id']]);
@@ -39,6 +66,16 @@ if (isset($_SESSION['user_id'])) {
     $a_stmt = $db->prepare("SELECT * FROM user_addresses WHERE user_id = ? ORDER BY is_default DESC");
     $a_stmt->execute([$_SESSION['user_id']]);
     $user_addresses = $a_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $h_stmt = $db->prepare("
+        SELECT bd.menu_id, SUM(bd.quantity) as total_qty
+        FROM booking_details bd
+        JOIN service_bookings sb ON bd.booking_id = sb.id
+        WHERE sb.user_id = ? AND bd.item_type = 'food'
+        GROUP BY bd.menu_id
+    ");
+    $h_stmt->execute([$_SESSION['user_id']]);
+    $user_history_counts = $h_stmt->fetchAll(PDO::FETCH_KEY_PAIR);
 }
 
 $user_flavor = [];
@@ -60,7 +97,7 @@ function removeVietnameseAccentsBooking($str) {
     return $str;
 }
 
-foreach ($foods as &$f) {
+foreach ($foods_raw as &$f) {
     $score = 0;
     $f_tags = removeVietnameseAccentsBooking($f['tags'] ?? '');
     $f_ingr = removeVietnameseAccentsBooking($f['ingredients'] ?? '');
@@ -74,14 +111,28 @@ foreach ($foods as &$f) {
         $fav = removeVietnameseAccentsBooking($fav);
         if (!empty($fav) && (strpos($f_ingr, $fav) !== false || strpos($f_name, $fav) !== false || strpos($f_tags, $fav) !== false)) $score += 3;
     }
+
+    // Cộng điểm dựa trên Lịch sử gọi món (Tần suất)
+    if (isset($user_history_counts[$f['id']])) {
+        // Mỗi lần gọi trong quá khứ cộng 2 điểm (Max 10 điểm để tránh việc lặp lại món cũ quá mức)
+        $history_score = min(10, $user_history_counts[$f['id']] * 2);
+        $score += $history_score;
+    }
+
     $f['ai_score'] = $score;
 }
 unset($f);
 
-usort($foods, function($a, $b) {
+usort($foods_raw, function($a, $b) {
     if ($a['ai_score'] == $b['ai_score']) return $b['id'] <=> $a['id'];
     return $b['ai_score'] <=> $a['ai_score'];
 });
+
+$grouped_foods = [];
+foreach($foods_raw as $fd) {
+    $t_name = $fd['theme_name'] ? $fd['theme_name'] : 'Món Lẻ (A La Carte)';
+    $grouped_foods[$t_name][] = $fd;
+}
 
 include 'views/client/layouts/header.php';
 ?>
@@ -143,9 +194,9 @@ body {
 .btn-hero-secondary:hover { background: var(--forest); color: #fff; }
 
 /* === TABS DỊCH VỤ === */
-.service-selector-inline { display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; }
+.service-selector-inline { display: flex; gap: 8px; margin-bottom: 30px; flex-wrap: wrap; }
 .svc-card-inline {
-    background: #fff; border: 1px solid var(--glass-border); padding: 10px 20px; border-radius: 0; color: var(--text-muted); font-size: 12px; font-weight: 500; text-transform: uppercase; text-decoration: none; transition: 0.3s; letter-spacing: 1px;
+    background: #fff; border: 1px solid var(--glass-border); padding: 10px 12px; border-radius: 0; color: var(--text-muted); font-size: 11px; font-weight: 500; text-transform: uppercase; text-decoration: none; transition: 0.3s; letter-spacing: 1px; flex-grow: 1; text-align: center;
 }
 .svc-card-inline:hover { border-color: var(--forest); color: var(--forest); }
 .svc-card-inline.active { background: var(--forest); border-color: var(--forest); color: #fff; font-weight: 600; }
@@ -269,7 +320,7 @@ select.input-lux {
     <div class="luxury-panel">
         <form method="POST" action="config/process_service_booking.php" id="bk-form">
             <input type="hidden" name="service_type" value="<?= htmlspecialchars($type) ?>">
-            <input type="hidden" name="selected_combo_id" id="sid" value="0">
+            <input type="hidden" name="selected_combo_id" id="sid" value="<?= $type === 'bespoke' ? '-1' : '0' ?>">
             <input type="hidden" name="table_id" id="tid" value="">
 
             <div class="panel-section" style="padding-bottom: 10px; border-bottom: none;">
@@ -280,6 +331,7 @@ select.input-lux {
                     <a href="?type=table" class="svc-card-inline <?= $type==='table'?'active':'' ?>"><i class="fas fa-utensils me-1"></i> Đặt Bàn Tiêu Chuẩn</a>
                     <a href="?type=birthday" class="svc-card-inline <?= $type==='birthday'?'active':'' ?>"><i class="fas fa-glass-cheers me-1"></i> Tiệc Kỷ Niệm</a>
                     <a href="?type=chef" class="svc-card-inline <?= $type==='chef'?'active':'' ?>"><i class="fas fa-fire-burner me-1"></i> Đầu Bếp Tại Gia</a>
+                    <a href="?type=bespoke" class="svc-card-inline <?= $type==='bespoke'?'active':'' ?>"><i class="fas fa-gem me-1"></i> Thiết Kế Riêng</a>
                 </div>
             </div>
 
@@ -458,34 +510,49 @@ select.input-lux {
 
             <div class="panel-section">
                 <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold);">Tinh Hoa Ẩm Thực</h3>
+                
+                <?php if ($type !== 'bespoke'): ?>
                 <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">Bộ Sưu Tập Hương Vị</p>
                 <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:15px; margin-bottom: 25px;">
                     <div class="card-select cc active" data-price="0" onclick="selCombo(0,this)">
                         <div style="color:var(--gold); font-size:15px; margin-bottom:5px;">Gọi Món Tự Do</div>
                         <div style="font-size:11px; color:var(--text-muted)">A la Carte</div>
                     </div>
-                    <?php foreach($combos as $cb): ?>
+                </div>
+
+                <?php foreach($grouped_combos as $theme_name => $theme_data): 
+                    $themeJson = htmlspecialchars(json_encode([
+                        'name' => $theme_name,
+                        'desc' => $theme_data['desc'],
+                        'img'  => $theme_data['img']
+                    ]), ENT_QUOTES, 'UTF-8');
+                ?>
+                <p style="font-size:13px; color:var(--gold); margin-bottom:10px; font-family:'Playfair Display', serif; text-transform:uppercase; letter-spacing:1px; border-bottom: 1px dashed rgba(212,176,106,0.3); padding-bottom:5px; cursor:pointer;" onclick='showThemeInfo(<?= $themeJson ?>)'>
+                    SET MENU TỪ CHỦ ĐỀ: <?= htmlspecialchars($theme_name) ?> <i class="fas fa-info-circle ms-1" style="font-size:11px; opacity:0.7;"></i>
+                </p>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:15px; margin-bottom: 25px;">
+                    <?php foreach($theme_data['combos'] as $cb): ?>
                         <div class="card-select cc" data-price="<?= (float)$cb['price'] ?>" onclick="selCombo(<?= $cb['id'] ?>,this)">
                             <div style="color:var(--gold); font-size:15px; margin-bottom:5px;"><?= htmlspecialchars($cb['name']) ?></div>
                             <div style="font-size:12px; color:var(--text-main)"><?= number_format($cb['price']) ?> đ</div>
                         </div>
                     <?php endforeach; ?>
-                    <div class="card-select cc" id="opt-bespoke-menu" data-price="0" onclick="selCombo(-1,this)" style="border: 1px solid var(--forest); background: #fff;">
-                        <div style="color:var(--gold); font-size:15px; margin-bottom:5px;"><i class="fas fa-scroll me-1"></i> Thiết Kế Riêng</div>
-                        <div style="font-size:11px; color:var(--gold)">Bespoke Tasting Menu</div>
-                    </div>
                 </div>
+                <?php endforeach; ?>
 
-                <div id="bespoke-menu-fields" style="display:none; margin-top:20px; border: 1px solid var(--glass-border); padding:20px; background:#fafafa;">
+
+                <?php endif; ?>
+
+                <div id="bespoke-menu-fields" style="display:<?= $type === 'bespoke' ? 'block' : 'none' ?>; margin-top:20px; border: 1px solid var(--glass-border); padding:20px; background:#fafafa;">
                     <h4 style="font-family:'Cormorant Garamond',serif; color:var(--gold); font-size:1.2rem; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px;"><i class="fas fa-scroll me-2"></i> Yêu cầu Thiết kế Thực đơn riêng</h4>
                     <div class="row-lux mb-3">
                         <div class="input-group-lux">
-                            <select name="chef_budget" id="chef_budget" class="input-lux" onchange="updateChefReq(); us();">
-                                <option value="Thỏa thuận sau khi thiết kế thực đơn">Thỏa thuận sau khi thiết kế</option>
-                                <option value="Dưới 1.500.000 đ / khách">Dưới 1.500.000 đ / khách</option>
-                                <option value="1.500.000 đ - 3.000.000 đ / khách">1.500.000 đ - 3.000.000 đ / khách</option>
-                                <option value="3.000.000 đ - 5.000.000 đ / khách">3.000.000 đ - 5.000.000 đ / khách</option>
-                                <option value="Trên 5.000.000 đ / khách (Siêu cao cấp)">Trên 5.000.000 đ / khách (Siêu cao cấp)</option>
+                            <select name="chef_budget" id="chef_budget" class="input-lux" onchange="updateChefReq(); us(); calcTotal();">
+                                <option value="Thỏa thuận sau khi thiết kế thực đơn" data-price="0">Thỏa thuận sau khi thiết kế</option>
+                                <option value="Dưới 1.500.000 đ / khách" data-price="1500000">Dưới 1.500.000 đ / khách</option>
+                                <option value="1.500.000 đ - 3.000.000 đ / khách" data-price="2000000">1.500.000 đ - 3.000.000 đ / khách</option>
+                                <option value="3.000.000 đ - 5.000.000 đ / khách" data-price="4000000">3.000.000 đ - 5.000.000 đ / khách</option>
+                                <option value="Trên 5.000.000 đ / khách (Siêu cao cấp)" data-price="5000000">Trên 5.000.000 đ / khách (Siêu cao cấp)</option>
                             </select>
                             <label class="label-lux" >Ngân sách dự kiến</label>
                         </div>
@@ -503,38 +570,45 @@ select.input-lux {
                     </div>
                     <div class="input-group-lux mb-0">
                         <textarea name="chef_requirements_detail" id="creq_detail" class="input-lux" rows="3" placeholder=" " oninput="updateChefReq(); us();"></textarea>
-                        <label class="label-lux">Yêu cầu chi tiết (Nguyên liệu đặc biệt, dị ứng, khẩu vị ưa thích...)</label>
+                        <label class="label-lux"><i class="fas fa-utensils me-1"></i> Yêu cầu chi tiết cho Thực đơn (Chủ đề, nguyên liệu đặc biệt...)</label>
                     </div>
                 </div>
                 <textarea name="chef_requirements" id="creq" style="display:none;"></textarea>
 
+                <?php if ($type !== 'bespoke'): ?>
                 <div id="addon-foods-section">
-                    <?php if(!empty($foods)): ?>
+                    <?php if(!empty($grouped_foods)): ?>
                         <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px; letter-spacing:1px; text-transform:uppercase;">Thực Đơn Chọn Trước (Add-on)</p>
-                        <div style="max-height: 250px; overflow-y: auto; padding-right:10px;">
-                            <?php foreach($foods as $fd): ?>
-                            <div class="menu-item-lux" id="mr<?= $fd['id'] ?>" data-name="<?= htmlspecialchars($fd['name']) ?>">
-                                <div style="display:flex; align-items:center; gap:15px;">
-                                    <input type="checkbox" class="menu-checkbox" name="menu_items[]" value="<?= $fd['id'] ?>" onchange="togMrow(this,<?= $fd['id'] ?>,<?= (float)$fd['price'] ?>)">
-                                    <div>
-                                        <div style="font-size:14px;">
-                                            <?= htmlspecialchars($fd['name']) ?>
-                                            <?php if(isset($fd['ai_score']) && $fd['ai_score'] > 0): ?>
-                                                <span class="badge bg-warning text-dark ms-2" style="font-size: 10px; border: 1px solid var(--gold);"><i class="fas fa-magic me-1"></i> Gợi ý VIP</span>
-                                            <?php endif; ?>
+                        <div style="max-height: 400px; overflow-y: auto; padding-right:10px;">
+                            <?php foreach($grouped_foods as $t_name => $t_foods): ?>
+                                <div style="margin-bottom: 20px;">
+                                    <h5 style="color:var(--gold); font-size:12px; text-transform:uppercase; border-bottom:1px dashed rgba(212,176,106,0.3); padding-bottom:5px; margin-bottom:10px;">MÓN LẺ THUỘC CHỦ ĐỀ: <?= htmlspecialchars($t_name) ?></h5>
+                                    <?php foreach($t_foods as $fd): ?>
+                                    <div class="menu-item-lux" id="mr<?= $fd['id'] ?>" data-name="<?= htmlspecialchars($fd['name']) ?>">
+                                        <div style="display:flex; align-items:center; gap:15px;">
+                                            <input type="checkbox" class="menu-checkbox" name="menu_items[]" value="<?= $fd['id'] ?>" onchange="togMrow(this,<?= $fd['id'] ?>,<?= (float)$fd['price'] ?>)">
+                                            <div>
+                                                <div style="font-size:14px;">
+                                                    <?= htmlspecialchars($fd['name']) ?>
+                                                    <?php if(isset($fd['ai_score']) && $fd['ai_score'] > 0): ?>
+                                                        <span class="badge bg-warning text-dark ms-2" style="font-size: 10px; border: 1px solid var(--gold);"><i class="fas fa-magic me-1"></i> Gợi ý VIP</span>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <div style="font-size:12px; color:var(--gold)"><?= number_format($fd['price']) ?> đ</div>
+                                            </div>
                                         </div>
-                                        <div style="font-size:12px; color:var(--gold)"><?= number_format($fd['price']) ?> đ</div>
+                                        <div style="display: flex; gap: 10px; align-items: center;">
+                                            <input type="text" class="menu-note-input" name="food_notes[<?= $fd['id'] ?>]" id="fn<?= $fd['id'] ?>" placeholder="Ghi chú (vd: không hành, cho khách...)" style="font-size:11px; padding: 4px 8px; border: 1px solid var(--glass-border); border-radius: 0; outline: none;">
+                                            <input type="number" class="menu-qty-input" name="quantity[<?= $fd['id'] ?>]" id="q<?= $fd['id'] ?>" value="1" min="1" onchange="us()">
+                                        </div>
                                     </div>
+                                    <?php endforeach; ?>
                                 </div>
-                                <div style="display: flex; gap: 10px; align-items: center;">
-                                    <input type="text" class="menu-note-input" name="food_notes[<?= $fd['id'] ?>]" id="fn<?= $fd['id'] ?>" placeholder="Ghi chú (vd: không hành, cho khách không dị ứng...)" style="font-size:11px; padding: 4px 8px; border: 1px solid var(--glass-border); border-radius: 0; outline: none;">
-                                    <input type="number" class="menu-qty-input" name="quantity[<?= $fd['id'] ?>]" id="q<?= $fd['id'] ?>" value="1" min="1" onchange="us()">
-                                </div>
-                            </div>
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
                 </div>
+                <?php endif; // end if type !== bespoke ?>
             </div>
 
 
@@ -583,8 +657,23 @@ select.input-lux {
                             </div>
                         </div>
                     </div>
+                    <div class="input-group-lux mt-3 mb-0">
+                        <select name="dedicated_server" class="input-lux" style="font-size:13px;" onchange="if(this.value=='other') { document.getElementById('server-name-wrap').style.display='block'; } else { document.getElementById('server-name-wrap').style.display='none'; }">
+                            <option value="">Không yêu cầu (Nhà hàng tự sắp xếp)</option>
+                            <option value="Phục vụ Nam">Ưu tiên Phục vụ Nam</option>
+                            <option value="Phục vụ Nữ">Ưu tiên Phục vụ Nữ</option>
+                            <option value="other">Yêu cầu đích danh (Khách quen)</option>
+                        </select>
+                        <label class="label-lux" style="font-size:12px;">💁 Yêu cầu Phục vụ riêng</label>
+                    </div>
+                    <div id="server-name-wrap" style="display:none; margin-top:10px;">
+                        <div class="input-group-lux mb-0">
+                            <input type="text" name="dedicated_server_name" class="input-lux" placeholder=" " style="font-size:13px; padding:8px 12px;">
+                            <label class="label-lux" style="font-size:12px;">Tên nhân viên yêu cầu</label>
+                        </div>
+                    </div>
 
-                    <div id="vip-config-section" style="display:none; margin-top:10px; padding-top:15px; border-top:1px dashed rgba(212,176,106,0.3);">
+                    <div id="vip-config-section" style="display:none; margin-top:15px; padding-top:15px; border-top:1px dashed rgba(212,176,106,0.3);">
                         <h4 style="font-size:13px; color:var(--gold); margin-bottom:15px; text-transform:uppercase;"><i class="fas fa-sliders-h me-2"></i>Cấu hình Không gian (Dành cho Phòng VIP)</h4>
                         <div class="row-lux mb-0">
                             <div class="input-group-lux">
@@ -611,10 +700,46 @@ select.input-lux {
             </div>
 
             <div class="panel-section">
-                <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold);">Yêu Cầu Đặc Biệt</h3>
-                <div class="input-group-lux mb-0">
-                    <textarea name="message" class="input-lux" rows="3" placeholder=" "></textarea>
-                    <label class="label-lux">Dị ứng thực phẩm, trang trí, yêu cầu khác...</label>
+                <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold);">Hồ Sơ Yêu Cầu & Khẩu Vị</h3>
+                
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <label class="fw-bold mb-3" style="color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;"><i class="fas fa-exclamation-triangle me-1"></i> Dị ứng thực phẩm</label>
+                        <div class="d-flex flex-column gap-2" style="font-size: 0.95rem;">
+                            <label class="form-check-label cursor-pointer"><input type="checkbox" name="allergies[]" value="Hải sản" class="form-check-input me-2" style="cursor:pointer"> Hải sản</label>
+                            <label class="form-check-label cursor-pointer"><input type="checkbox" name="allergies[]" value="Sữa" class="form-check-input me-2" style="cursor:pointer"> Sữa</label>
+                            <label class="form-check-label cursor-pointer"><input type="checkbox" name="allergies[]" value="Gluten" class="form-check-input me-2" style="cursor:pointer"> Gluten</label>
+                            <label class="form-check-label cursor-pointer"><input type="checkbox" name="allergies[]" value="Đậu phộng" class="form-check-input me-2" style="cursor:pointer"> Đậu phộng</label>
+                            <label class="form-check-label cursor-pointer"><input type="checkbox" name="allergies[]" value="Trứng" class="form-check-input me-2" style="cursor:pointer"> Trứng</label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <label class="fw-bold mb-3" style="color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;"><i class="fas fa-leaf me-1"></i> Chế độ ăn</label>
+                        <div class="d-flex flex-column gap-2" style="font-size: 0.95rem;">
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Healthy" class="form-check-input me-2" style="cursor:pointer"> Healthy</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Vegetarian" class="form-check-input me-2" style="cursor:pointer"> Vegetarian</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Vegan" class="form-check-input me-2" style="cursor:pointer"> Vegan</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Keto" class="form-check-input me-2" style="cursor:pointer"> Keto</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Không yêu cầu" class="form-check-input me-2" style="cursor:pointer" checked> Không yêu cầu</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="fw-bold mb-3" style="color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;"><i class="fas fa-glass-cheers me-1"></i> Mục đích</label>
+                        <div class="d-flex flex-column gap-2" style="font-size: 0.95rem;">
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Hẹn hò" class="form-check-input me-2" style="cursor:pointer"> Hẹn hò</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Sinh nhật" class="form-check-input me-2" style="cursor:pointer"> Sinh nhật</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Kỷ niệm" class="form-check-input me-2" style="cursor:pointer"> Kỷ niệm</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Tiếp khách" class="form-check-input me-2" style="cursor:pointer"> Tiếp khách</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Cầu hôn" class="form-check-input me-2" style="cursor:pointer"> Cầu hôn</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group-lux mb-0 mt-4">
+                    <textarea name="message" class="input-lux" rows="2" placeholder=" "></textarea>
+                    <label class="label-lux"><i class="fas fa-comment-dots me-1"></i> Ghi chú / Yêu cầu đặc biệt khác</label>
                 </div>
             </div>
         </form>
@@ -663,7 +788,7 @@ select.input-lux {
   <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
     <div class="modal-content" style="background:#fff; border:1px solid var(--forest); border-radius:0;">
       <div class="modal-header" style="border-bottom:1px solid rgba(212,176,106,0.2);">
-        <h5 class="modal-title" style="color:var(--gold); font-family:'Playfair Display', serif;"><i class="fas fa-utensils me-2"></i>Tùy chọn <span id="foodOptName">Món</span></h5>
+        <h5 class="modal-title" style="color:var(--gold); font-family:'Playfair Display', serif;"><i class="fas fa-utensils me-2"></i>Tùy chọn: <span id="foodOptName" style="margin-left: 5px;">Món</span></h5>
         <button type="button" class="btn-close btn-close-white" onclick="cancelFoodOption()"></button>
       </div>
       <div class="modal-body">
@@ -691,6 +816,25 @@ select.input-lux {
   </div>
 </div>
 <!-- KẾT THÚC MODAL TÙY CHỌN MÓN ĂN -->
+
+<!-- MODAL CHI TIẾT CHỦ ĐỀ -->
+<div class="modal fade" id="themeInfoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
+    <div class="modal-content" style="background:#111; border:1px solid var(--forest); border-radius:0;">
+      <div class="modal-header" style="border-bottom:1px solid rgba(212,176,106,0.2);">
+        <h5 class="modal-title" style="color:var(--gold); font-family:'Playfair Display', serif;"><i class="fas fa-book-open me-2"></i>Chi tiết Chủ đề</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="padding:0;">
+          <img id="themeInfoImg" src="" alt="Theme Image" style="width:100%; height:250px; object-fit:cover; display:none;">
+          <div style="padding:20px;">
+              <h4 id="themeInfoName" style="color:var(--gold); font-family:'Playfair Display', serif; margin-bottom:15px; font-size:1.5rem;"></h4>
+              <p id="themeInfoDesc" style="color:var(--text-muted); font-size:15px; line-height:1.6; font-style:italic; font-family:'Cormorant Garamond', serif;"></p>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <?php if ($type !== 'chef'): ?>
 <div class="modal fade" id="mapModal" tabindex="-1">
@@ -749,7 +893,23 @@ select.input-lux {
 // ==========================================
 // KỊCH BẢN JAVASCRIPT GIỮ NGUYÊN HOÀN TOÀN
 // ==========================================
-var selId=0, selCode='', selPrice=0, selCat='', selComboPr=0, menuPr={};
+
+function showThemeInfo(data) {
+    if(data.name === 'Thực Đơn Tiêu Chuẩn') return;
+    document.getElementById('themeInfoName').innerText = data.name;
+    document.getElementById('themeInfoDesc').innerText = data.desc || 'Chưa có mô tả cho chủ đề này.';
+    let imgEl = document.getElementById('themeInfoImg');
+    if(data.img) {
+        imgEl.src = data.img; 
+        imgEl.style.display = 'block';
+    } else {
+        imgEl.style.display = 'none';
+    }
+    var modal = new bootstrap.Modal(document.getElementById('themeInfoModal'));
+    modal.show();
+}
+
+let comboId = 0, selId=0, selCode='', selPrice=0, selCat='', selComboPr=0, menuPr={};
 
 function togBespoke(cb) {
     var extra = cb.closest('.menu-item-lux').querySelector('.bespoke-extra');
@@ -888,21 +1048,48 @@ function saveFoodOption() {
     bootstrap.Modal.getInstance(document.getElementById('foodOptionModal')).hide();
 }
 
-/* SỰ KIỆN CHỌN BÀN */
-if (document.querySelectorAll('.seat-lux.available').length > 0) {
-    document.querySelectorAll('.seat-lux.available').forEach(function(s){
+/* SỰ KIỆN CHỌN BÀN & AJAX KHẢ DỤNG ĐỘNG */
+    document.querySelectorAll('.seat-lux').forEach(function(s){
         s.addEventListener('click',function(){
+            if(!s.classList.contains('available')) return;
             document.querySelectorAll('.seat-lux').forEach(function(x){x.classList.remove('selected');});
             s.classList.add('selected');
             selId=s.dataset.id; selCode=s.dataset.code; selPrice=parseFloat(s.dataset.price||0); selCat=s.dataset.cat||'';
         });
     });
 
-    document.getElementById('mapConfirm').addEventListener('click',function(){
-        if(!selId){return;}
-        applyseat();
-    });
-}
+    var mapConfirmBtn = document.getElementById('mapConfirm');
+    if (mapConfirmBtn) {
+        mapConfirmBtn.addEventListener('click',function(){
+            if(!selId){return;}
+            applyseat();
+        });
+    }
+
+    function checkTableAvailability() {
+        var d = document.getElementById('bd');
+        if (!d || !d.value) return;
+        
+        fetch('api/check_table_availability.php?datetime=' + encodeURIComponent(d.value))
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    var unav = data.unavailable_tables || [];
+                    document.querySelectorAll('.seat-lux').forEach(function(s) {
+                        var id = parseInt(s.dataset.id);
+                        if (unav.includes(id)) {
+                            s.classList.remove('available');
+                            s.classList.add('booked');
+                            if (selId == id) clrSeat();
+                        } else {
+                            s.classList.add('available');
+                            s.classList.remove('booked');
+                        }
+                    });
+                }
+            })
+            .catch(err => console.error(err));
+    }
 
 function fromDrop(sel){
     var opt=sel.options[sel.selectedIndex];
@@ -959,6 +1146,9 @@ function clrSeat(){
 
 /* CẬP NHẬT TÓM TẮT */
 function us(){
+    // Check table availability remotely
+    checkTableAvailability();
+
     var n=document.querySelector('[name="customer_name"]');
     document.getElementById('sn').textContent=n&&n.value?n.value:'—';
 
@@ -1035,6 +1225,14 @@ function us(){
     }
 
     var bespokePrice = 0;
+    
+    // Tính ngân sách thiết kế riêng (nếu có)
+    var budgetSel = document.getElementById('chef_budget');
+    if (budgetSel && typeStr === 'bespoke') {
+        var opt = budgetSel.options[budgetSel.selectedIndex];
+        var bPrice = parseInt(opt.getAttribute('data-price')) || 0;
+        bespokePrice += bPrice * guestsNum;
+    }
     var cCandle = document.getElementById('bespoke-candle');
     var cFlower = document.getElementById('bespoke-flower');
     var cCard = document.getElementById('bespoke-card');
