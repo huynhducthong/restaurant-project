@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 06, 2026 at 10:17 AM
+-- Generation Time: Jun 06, 2026
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -1962,7 +1962,34 @@ INSERT INTO `service_bookings` (`id`, `user_id`, `customer_name`, `customer_phon
 (47, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-30 14:40:00', 'table', 2, 0, 2, '', 45000.00, 13500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-06 07:40:35', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
 (48, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-07 14:50:00', 'table', 1, 0, 2, '', 895000.00, 268500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-06 07:50:57', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
 (49, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-06 14:51:00', 'table', 1, 0, 2, '', 145000.00, 43500.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-06 07:51:56', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
-(50, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-06 16:56:00', 'table', 1, 0, 2, '', 220000.00, 66000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-06 07:57:08', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0);
+(50, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-06 16:56:00', 'table', 1, 0, 2, '', 220000.00, 66000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-06 07:57:08', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+
+(51, 37, 'Phạm Minh Hoa', '0991796427', '2026-05-30 18:30:19', 'chef', 5, 3, 7, NULL, 8023442.00, 2407032.60, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(52, 36, 'Vũ Bảo Vy', '0941689163', '2026-05-02 10:05:52', 'chef', 9, 2, 7, NULL, 2308419.00, 692525.70, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(53, 35, 'Huỳnh Minh Linh', '0920234689', '2026-03-15 10:55:49', 'birthday', 8, 3, 8, NULL, 9607922.00, 2882376.60, 'Confirmed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(54, 34, 'Phạm Thị Xuân', '0985291351', '2026-01-12 17:37:15', 'table', 7, 1, 5, NULL, 2291436.00, 687430.80, 'Pending', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(55, 33, 'Phạm Đức Quân', '0994414869', '2026-05-29 22:57:29', 'birthday', 6, 4, 10, NULL, 7035593.00, 2110677.90, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(56, 32, 'Lê Gia An', '0932506191', '2025-12-23 08:19:13', 'birthday', 2, 4, 3, NULL, 6147481.00, 1844244.30, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(57, 32, 'Lê Gia An', '0932506191', '2026-03-02 04:39:36', 'birthday', 3, 2, 8, NULL, 6680471.00, 2004141.30, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(58, 31, 'Đặng Bảo Sơn', '0939391711', '2026-03-18 20:18:42', 'birthday', 7, 1, 10, NULL, 2461854.00, 738556.20, 'Confirmed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(59, 30, 'Phan Hoàng Sơn', '0948958860', '2026-01-26 02:33:16', 'table', 10, 3, 9, NULL, 5516881.00, 1655064.30, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(60, 29, 'Nguyễn Gia Dương', '0927194712', '2025-12-27 03:56:09', 'table', 9, 5, 5, NULL, 6725596.00, 2017678.80, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(61, 28, 'Trần Thị Hải', '0987490077', '2026-02-26 06:09:07', 'table', 1, 5, 7, NULL, 7869611.00, 2360883.30, 'Pending', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(62, 28, 'Trần Thị Hải', '0987490077', '2025-12-15 13:26:21', 'birthday', 5, 5, 2, NULL, 1464277.00, 439283.10, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(63, 27, 'Lê Minh Yến', '0958971878', '2026-03-07 07:15:39', 'chef', 8, 2, 7, NULL, 5889750.00, 1766925.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(64, 27, 'Lê Minh Yến', '0958971878', '2026-01-12 20:21:22', 'birthday', 2, 1, 3, NULL, 3492336.00, 1047700.80, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(65, 27, 'Lê Minh Yến', '0958971878', '2026-03-18 21:04:05', 'chef', 4, 5, 6, NULL, 2709103.00, 812730.90, 'Pending', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(66, 26, 'Lê Thị Mai', '0916261315', '2026-04-22 03:32:54', 'birthday', 9, 3, 3, NULL, 2686254.00, 805876.20, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(67, 25, 'Võ Văn Yến', '0952393534', '2026-04-11 11:17:44', 'birthday', 1, 4, 3, NULL, 2814244.00, 844273.20, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(68, 24, 'Vũ Minh Hải', '0995865619', '2026-04-18 21:45:59', 'table', 10, 4, 7, NULL, 9695115.00, 2908534.50, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(69, 24, 'Vũ Minh Hải', '0995865619', '2026-02-01 03:24:36', 'chef', 10, 4, 3, NULL, 6445778.00, 1933733.40, 'Pending', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(70, 23, 'Trần Văn Cường', '0997746456', '2026-02-03 13:15:35', 'table', 2, 1, 10, NULL, 2992285.00, 897685.50, 'Pending', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(71, 23, 'Trần Văn Cường', '0997746456', '2026-03-17 20:20:00', 'chef', 9, 5, 8, NULL, 4846552.00, 1453965.60, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(72, 23, 'Trần Văn Cường', '0997746456', '2026-05-17 08:18:00', 'birthday', 5, 1, 4, NULL, 3453361.00, 1036008.30, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(73, 22, 'Huỳnh Ngọc Sơn', '0953062208', '2026-01-28 15:34:50', 'birthday', 6, 4, 6, NULL, 6683159.00, 2004947.70, 'Pending', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(74, 22, 'Huỳnh Ngọc Sơn', '0953062208', '2026-05-01 13:33:22', 'birthday', 3, 1, 6, NULL, 9032822.00, 2709846.60, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(75, 21, 'Trần Minh Xuân', '0917904228', '2026-01-17 06:55:29', 'birthday', 10, 4, 9, NULL, 8143613.00, 2443083.90, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(76, 21, 'Trần Minh Xuân', '0917904228', '2026-02-24 11:35:31', 'birthday', 2, 2, 3, NULL, 7279423.00, 2183826.90, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0);;
 
 -- --------------------------------------------------------
 
@@ -1993,6 +2020,7 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 ('inv_low_stock', '5'),
 ('inv_low_stock_threshold', '5'),
 ('last_telegram_alert_date', '2026-06-06'),
+('last_telegram_eod_date', '2026-06-05'),
 ('logo_url', 'assets/img/logo.png'),
 ('logo_ver', '1779627100'),
 ('maps_embed', ''),
@@ -2179,7 +2207,28 @@ INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `avatar`, `avata
 (16, 'hoangha', '$2y$10$dBOdF0Rw2aVPXgUjGDd9auuUot/3lbOVworbaSlaKVbLe0bW6QRte', 'Hoàng Thu Hà', NULL, NULL, NULL, '0945678901', NULL, 'ha.hoang@email.com', NULL, 'customer', 1, '2026-06-05 11:25:03', NULL, 'Rare', 'Nguyên bản, Không sốt', 'Thịt thăn nội (Tenderloin)', 'Mỡ động vật', 'Không dung nạp Lactose (Sữa)'),
 (17, 'vuonganh', '$2y$10$dBOdF0Rw2aVPXgUjGDd9auuUot/3lbOVworbaSlaKVbLe0bW6QRte', 'Vương Tuấn Anh', NULL, NULL, NULL, '0956789012', NULL, 'anh.vuong@email.com', NULL, 'customer', 1, '2026-06-05 11:25:03', NULL, 'Medium Rare', 'Đậm đà, Thơm bơ', 'Tôm hùm, Bơ Pháp', 'Cà rốt', 'Không có'),
 (18, 'ngochuyen', '$2y$10$dBOdF0Rw2aVPXgUjGDd9auuUot/3lbOVworbaSlaKVbLe0bW6QRte', 'Bùi Ngọc Huyền', NULL, NULL, NULL, '0967890123', NULL, 'huyen.bui@email.com', NULL, 'customer', 1, '2026-06-05 11:25:03', NULL, 'Medium', 'Thanh tao, Giữ nguyên vị ngọt', 'Sò điệp, Trứng cá tầm (Caviar)', 'Thịt heo', 'Dị ứng Gluten'),
-(19, 'duykhang', '$2y$10$dBOdF0Rw2aVPXgUjGDd9auuUot/3lbOVworbaSlaKVbLe0bW6QRte', 'Đỗ Duy Khang', NULL, NULL, NULL, '0978901234', NULL, 'khang.do@email.com', NULL, 'customer', 1, '2026-06-05 11:25:03', NULL, 'Rare', 'Khói, Cay nhẹ', 'Sườn bò hun khói', 'Rau thơm', 'Không có');
+(19, 'duykhang', '$2y$10$dBOdF0Rw2aVPXgUjGDd9auuUot/3lbOVworbaSlaKVbLe0bW6QRte', 'Đỗ Duy Khang', NULL, NULL, NULL, '0978901234', NULL, 'khang.do@email.com', NULL, 'customer', 1, '2026-06-05 11:25:03', NULL, 'Rare', 'Khói, Cay nhẹ', 'Sườn bò hun khói', 'Rau thơm', 'Không có'),
+(20, 'Chinh Van', '', '', NULL, NULL, NULL, NULL, NULL, 'hvchinh0211@gmail.com', '112121017916863660614', 'admin', 1, '2026-06-05 21:44:53', NULL, NULL, NULL, NULL, NULL, NULL),
+(21, 'tranminhxuan169_1', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Trần Minh Xuân', NULL, NULL, NULL, '0917904228', '2002-10-12', 'tranminhxuan169_1@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Well Done', 'Chua thanh', 'Cua hoàng đế', '', 'Không'),
+(22, 'huynhngocson924_2', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Huỳnh Ngọc Sơn', NULL, NULL, NULL, '0953062208', '1988-06-26', 'huynhngocson924_2@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Medium Rare', 'Chua thanh', 'Hải sản', 'Cà rốt', 'Đậu phộng'),
+(23, 'tranvancuong120_3', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Trần Văn Cường', NULL, NULL, NULL, '0997746456', '2000-05-08', 'tranvancuong120_3@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Medium', 'Ngọt dịu', 'Thịt cừu, Nấm truffle', 'Cà rốt', 'Hải sản có vỏ'),
+(24, 'vuminhhai815_4', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Vũ Minh Hải', NULL, NULL, NULL, '0995865619', '1998-05-07', 'vuminhhai815_4@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Rare', 'Chua thanh', 'Rau xanh, Gà', 'Cà rốt', 'Đậu phộng'),
+(25, 'vovanyen700_5', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Võ Văn Yến', NULL, NULL, NULL, '0952393534', '2003-12-05', 'vovanyen700_5@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Well Done', 'Đậm đà', 'Thịt bò Úc, Cá hồi', 'Hạt tiêu', 'Gluten'),
+(26, 'lethimai163_6', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Lê Thị Mai', NULL, NULL, NULL, '0916261315', '1996-05-04', 'lethimai163_6@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Well Done', 'Thanh đạm', 'Rau xanh, Gà', 'Hành tây', 'Hải sản có vỏ'),
+(27, 'leminhyen932_7', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Lê Minh Yến', NULL, NULL, NULL, '0958971878', '2005-07-05', 'leminhyen932_7@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Medium Well', 'Thanh đạm', 'Thịt bò Úc, Cá hồi', 'Rau mùi', 'Hải sản có vỏ'),
+(28, 'tranthihai470_8', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Trần Thị Hải', NULL, NULL, NULL, '0987490077', '2000-10-03', 'tranthihai470_8@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Rare', 'Thanh đạm', 'Hải sản', 'Hạt tiêu', 'Không'),
+(29, 'nguyengiaduong849_9', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Nguyễn Gia Dương', NULL, NULL, NULL, '0927194712', '2004-06-17', 'nguyengiaduong849_9@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Medium Well', 'Đậm đà', 'Cua hoàng đế', 'Rau mùi', 'Trứng'),
+(30, 'phanhoangson709_10', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Phan Hoàng Sơn', NULL, NULL, NULL, '0948958860', '1998-03-16', 'phanhoangson709_10@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Medium Rare', 'Đậm đà', 'Thịt bò Úc, Cá hồi', 'Hạt tiêu', 'Gluten'),
+(31, 'Đangbaoson626_11', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Đặng Bảo Sơn', NULL, NULL, NULL, '0939391711', '1993-12-19', 'Đangbaoson626_11@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Medium Well', 'Chua thanh', 'Cua hoàng đế', 'Hành, tỏi', 'Gluten'),
+(32, 'legiaan320_12', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Lê Gia An', NULL, NULL, NULL, '0932506191', '2004-11-27', 'legiaan320_12@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Well Done', 'Cay nồng', 'Rau xanh, Gà', 'Hành tây', 'Sữa'),
+(33, 'phamĐucquan101_13', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Phạm Đức Quân', NULL, NULL, NULL, '0994414869', '1984-08-13', 'phamĐucquan101_13@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Well Done', 'Đậm đà', 'Rau xanh, Gà', 'Hành tây', 'Trứng'),
+(34, 'phamthixuan177_14', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Phạm Thị Xuân', NULL, NULL, NULL, '0985291351', '1985-02-24', 'phamthixuan177_14@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Rare', 'Chua thanh', 'Thịt cừu, Nấm truffle', 'Hành tây', 'Trứng'),
+(35, 'huynhminhlinh927_15', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Huỳnh Minh Linh', NULL, NULL, NULL, '0920234689', '1989-10-14', 'huynhminhlinh927_15@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Rare', 'Ngọt dịu', 'Hải sản', '', 'Trứng'),
+(36, 'vubaovy464_16', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Vũ Bảo Vy', NULL, NULL, NULL, '0941689163', '2002-12-08', 'vubaovy464_16@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Medium', 'Chua thanh', 'Rau xanh, Gà', 'Hành, tỏi', 'Gluten'),
+(37, 'phamminhhoa356_17', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Phạm Minh Hoa', NULL, NULL, NULL, '0991796427', '1992-04-08', 'phamminhhoa356_17@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Well Done', 'Cay nồng', 'Thịt bò Úc, Cá hồi', 'Hạt tiêu', 'Không'),
+(38, 'vuhoanghung210_18', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Vũ Hoàng Hùng', NULL, NULL, NULL, '0936065848', '1994-12-02', 'vuhoanghung210_18@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Medium', 'Thanh đạm', 'Thịt cừu, Nấm truffle', 'Hạt tiêu', 'Gluten'),
+(39, 'phamthanhhung300_19', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Phạm Thanh Hùng', NULL, NULL, NULL, '0990047319', '1992-03-18', 'phamthanhhung300_19@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Well Done', 'Thanh đạm', 'Cua hoàng đế', 'Rau mùi', 'Không'),
+(40, 'vuvanyen951_20', '$2y$10$fNsZjzP/EAbpG0EB21zRXeohiyv1GNC/jBlxjlptqbtnHzZo4tvXm', 'Vũ Văn Yến', NULL, NULL, NULL, '0910434134', '1996-01-20', 'vuvanyen951_20@example.com', NULL, 'customer', 1, '2026-06-05 21:50:01', NULL, 'Well Done', 'Chua thanh', 'Thịt bò Úc, Cá hồi', 'Hành, tỏi', 'Gluten');
 
 -- --------------------------------------------------------
 
@@ -2895,7 +2944,7 @@ ALTER TABLE `services`
 -- AUTO_INCREMENT for table `service_bookings`
 --
 ALTER TABLE `service_bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=77;
 
 --
 -- AUTO_INCREMENT for table `suppliers`
@@ -2919,7 +2968,7 @@ ALTER TABLE `transfer_details`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `user_addresses`
