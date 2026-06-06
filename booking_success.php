@@ -843,31 +843,31 @@ if ($is_success) {
     }
 </style>
 
-<div class="bk-page">
+<div class="bk-page" style="background: #fdfbf7;">
     <?php if ($is_success && $booking): ?>
-    <section class="bk-hero" style="padding: 140px 0 100px; background: linear-gradient(135deg, #061210 0%, #143B36 100%);">
+    <section class="bk-hero" style="padding: 140px 0 100px; background: #fdfbf7;">
         <div class="container" style="position:relative;z-index:1">
             <div class="success-icon-wrap" style="margin-bottom: 30px; animation: fadeInUp 0.8s var(--ease);">
                 <div style="width: 80px; height: 80px; background: rgba(205, 164, 94, 0.1); border: 2px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: var(--gold); font-size: 32px; box-shadow: 0 0 30px rgba(205, 164, 94, 0.2);">
                     <i class="fas fa-check"></i>
                 </div>
             </div>
-            <div class="bk-hero-eyebrow" style="animation: fadeInUp 0.8s var(--ease) 0.1s both;">
+            <div class="bk-hero-eyebrow" style="animation: fadeInUp 0.8s var(--ease) 0.1s both; color: var(--gold); border-color: rgba(205,164,94,0.3); background: transparent;">
                 Đặt chỗ thành công
             </div>
-            <h1 style="animation: fadeInUp 0.8s var(--ease) 0.2s both;">
+            <h1 style="animation: fadeInUp 0.8s var(--ease) 0.2s both; color: #111; font-weight: 600;">
                 Cảm ơn <em><?= htmlspecialchars($booking['customer_name']) ?></em>!<br>
                 Yêu cầu của bạn đã được ghi nhận
             </h1>
-            <p class="bk-hero-sub" style="max-width: 600px; margin: 0 auto 40px; animation: fadeInUp 0.8s var(--ease) 0.3s both;">
-                Mã số đặt chỗ: <span style="color: var(--gold); font-weight: 600;">#SVR-<?= htmlspecialchars($booking['id']) ?></span>. 
-                Đội ngũ chúng tôi sẽ gọi điện xác nhận cho bạn qua số <span style="color: #fff;"><?= htmlspecialchars($booking['customer_phone']) ?></span> sớm nhất.
+            <p class="bk-hero-sub" style="max-width: 600px; margin: 0 auto 40px; animation: fadeInUp 0.8s var(--ease) 0.3s both; color: #555;">
+                Mã số đặt chỗ: <span style="color: var(--gold); font-weight: 700;">#SVR-<?= htmlspecialchars($booking['id']) ?></span>. 
+                Đội ngũ chúng tôi sẽ gọi điện xác nhận cho bạn qua số <span style="color: #111; font-weight: 600;"><?= htmlspecialchars($booking['customer_phone']) ?></span> sớm nhất.
             </p>
-            <div class="svc-tabs" style="gap: 15px; animation: fadeInUp 0.8s var(--ease) 0.4s both;">
-                <a href="admin/export_pdf.php?id=<?= $booking['id'] ?>" class="btn-go" style="width: auto; padding: 14px 40px; margin-top: 0; background: linear-gradient(135deg, #D4B06A, #A5803A); color: #000; border-radius: 50px;">
-                    <i class="fas fa-file-pdf me-2"></i> Tải Phiếu Xác Nhận (PDF)
+            <div class="svc-tabs" style="gap: 15px; justify-content: center; animation: fadeInUp 0.8s var(--ease) 0.4s both;">
+                <a href="admin/export_pdf.php?id=<?= $booking['id'] ?>" class="btn-go" style="width: auto; padding: 14px 40px; margin-top: 0; background: #111; color: var(--gold); border: 1px solid var(--gold); border-radius: 0; font-family:'Cormorant Garamond',serif; font-size:16px;">
+                    <i class="fas fa-file-pdf me-2"></i> Tải Phiếu Xác Nhận
                 </a>
-                <a href="index.php" class="svc-tab" style="padding: 14px 40px; border-radius: 50px; border-color: rgba(255,255,255,0.2); backdrop-filter: blur(10px);">
+                <a href="index.php" class="svc-tab" style="padding: 14px 40px; border-radius: 0; border: 1px solid #ddd; color: #111; background: transparent; font-family:'Cormorant Garamond',serif; font-size:16px;">
                     Về trang chủ
                 </a>
             </div>

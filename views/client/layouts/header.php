@@ -652,7 +652,7 @@ if (!empty($logo_path)) {
 
                     <!-- ORIENTAL MEGA MENU & OUTSIDE BOOKING BUTTON -->
                     <div class="oriental-nav-wrapper" style="display:flex; align-items:center; gap:15px;">
-                        
+                        <a href="booking_service.php?type=bespoke" class="btn-book-outside" style="background-color: #1a1814; color: #C9A66B; border-color: #C9A66B; margin-right: 10px;">BESPOKE DINING</a>
                         <a href="booking_service.php?type=table" class="btn-book-outside">ĐẶT BÀN</a>
 
                         <div class="oriental-trigger">

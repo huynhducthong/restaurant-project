@@ -13,7 +13,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $phone = $_POST['customer_phone'] ?? '';
     $date = $_POST['booking_date'] ?? '';
     $guests = $_POST['guests'] ?? 1;
-    $msg = $_POST['message'] ?? '';
+    
+    $allergies = isset($_POST['allergies']) ? implode(', ', $_POST['allergies']) : '';
+    $diet = $_POST['diet'] ?? '';
+    $purpose = $_POST['purpose'] ?? '';
+    $msg = trim($_POST['message'] ?? '');
+
+    $extra_info = [];
+    if (!empty($purpose)) $extra_info[] = "Mục đích: " . $purpose;
+    if (!empty($diet) && $diet !== 'Không yêu cầu') $extra_info[] = "Chế độ ăn: " . $diet;
+    if (!empty($allergies)) $extra_info[] = "DỊ ỨNG: " . $allergies;
+
+    if (!empty($extra_info)) {
+        $msg = implode(" | ", $extra_info) . ($msg ? "\n\nGhi chú khác: " . $msg : "");
+    }
     $table_id = $_POST['table_id'] ?? null;
     $combo_id = $_POST['selected_combo_id'] ?? 0;
     
@@ -30,6 +43,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $flower_preference = $_POST['flower_preference'] ?? null;
     $music_playlist = $_POST['music_playlist'] ?? null;
     $light_tone = $_POST['light_tone'] ?? null;
+    $msg = trim($_POST['message'] ?? '');
+    
+    // Xử lý yêu cầu Phục vụ riêng
+    $dedicated_server = $_POST['dedicated_server'] ?? '';
+    if ($dedicated_server) {
+        $ds_name = $_POST['dedicated_server_name'] ?? '';
+        $ds_text = $dedicated_server === 'other' ? "Khách quen: $ds_name" : $dedicated_server;
+        $msg .= "\n[Phục vụ riêng] " . $ds_text;
+    }
+
     $chef_requirements = $_POST['chef_requirements'] ?? null;
 
     // Gắn thêm Hồ sơ Khẩu vị (Culinary DNA) nếu có
@@ -104,6 +127,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         
         // Tính tiền dịch vụ Bespoke
+        if ($type === 'bespoke') {
+            $budget_str = $_POST['chef_budget'] ?? '';
+            $per_guest = 0;
+            if (strpos($budget_str, 'Dưới 1.500.000') !== false) $per_guest = 1500000;
+            else if (strpos($budget_str, '1.500.000 đ - 3.000.000') !== false) $per_guest = 2000000;
+            else if (strpos($budget_str, '3.000.000 đ - 5.000.000') !== false) $per_guest = 4000000;
+            else if (strpos($budget_str, 'Trên 5.000.000') !== false) $per_guest = 5000000;
+            $total_amount += ($per_guest * $guests);
+        }
+
         if ($has_candle) $total_amount += 50000;
         if ($has_handwritten_card) $total_amount += 30000;
         if (isset($_POST['has_bespoke_flower'])) $total_amount += 200000;
@@ -147,9 +180,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // 5. Cập nhật trạng thái bàn thành "Đã đặt"
-        if ($table_id) {
-            $db->prepare("UPDATE restaurant_tables SET is_available = 0 WHERE id = ?")->execute([$table_id]);
-        }
+        // Không khóa cứng bàn nữa, trạng thái bàn sẽ được tính toán động (Dynamic Availability) dựa vào thời gian đặt (booking_date)
 
         // Xác nhận thành công toàn bộ quá trình
         $db->commit();

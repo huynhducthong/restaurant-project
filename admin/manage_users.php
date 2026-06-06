@@ -145,9 +145,14 @@ $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="container-fluid py-4 min-vh-100">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold m-0"><i class="fas fa-users-cog me-2 text-primary"></i> Quản lý Nhân sự</h4>
-        <button class="btn btn-primary shadow-sm" onclick="openModal('create')">
-            <i class="fas fa-plus me-2"></i> Thêm Nhân sự Mới
-        </button>
+        <div>
+            <a href="export_employees.php" class="btn btn-success shadow-sm me-2">
+                <i class="fas fa-file-excel me-2"></i> Xuất Excel (CSV)
+            </a>
+            <button class="btn btn-primary shadow-sm" onclick="openModal('create')">
+                <i class="fas fa-plus me-2"></i> Thêm Nhân sự Mới
+            </button>
+        </div>
     </div>
 
     <?php if ($message_success): ?>

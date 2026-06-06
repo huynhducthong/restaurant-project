@@ -129,6 +129,8 @@ if ($has_bespoke) {
                 </td>
             </tr>';
     }
+
+    if (!empty($s['event_type'])) {
         $html .= '
             <tr>
                 <td style="padding:5px 0; width:40%; color:#888;">Dịp đặc biệt:</td>

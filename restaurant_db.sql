@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 05, 2026 at 04:21 PM
+-- Generation Time: Jun 06, 2026 at 10:17 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -489,7 +489,12 @@ INSERT INTO `booking_details` (`id`, `booking_id`, `menu_id`, `item_type`, `quan
 (25, 21, 1, 'food', 1, '', 0.00, '2026-06-04 03:10:16'),
 (26, 22, 1, 'food', 1, '', 0.00, '2026-06-04 03:10:48'),
 (27, 23, 1, 'food', 1, '', 0.00, '2026-06-05 01:21:07'),
-(28, 24, 1, 'food', 1, '', 0.00, '2026-06-05 01:22:32');
+(28, 24, 1, 'food', 1, '', 0.00, '2026-06-05 01:22:32'),
+(29, 47, 11, 'food', 1, '', 0.00, '2026-06-06 07:40:35'),
+(30, 48, 11, 'food', 1, '', 0.00, '2026-06-06 07:50:57'),
+(31, 48, 12, 'food', 1, '', 0.00, '2026-06-06 07:50:57'),
+(32, 49, 8, 'food', 1, '', 0.00, '2026-06-06 07:51:56'),
+(33, 50, 4, 'food', 1, '', 0.00, '2026-06-06 07:57:08');
 
 -- --------------------------------------------------------
 
@@ -554,7 +559,21 @@ INSERT INTO `booking_inventory_deductions` (`id`, `booking_id`, `ingredient_id`,
 (62, 24, 12, 2, 0.00, '2026-06-05 01:34:31'),
 (63, 24, 2, 2, 0.02, '2026-06-05 01:34:31'),
 (64, 24, 3, 2, 0.01, '2026-06-05 01:34:31'),
-(65, 24, 15, 2, 0.03, '2026-06-05 01:34:31');
+(65, 24, 15, 2, 0.03, '2026-06-05 01:34:31'),
+(66, 47, 21, 2, 0.00, '2026-06-06 07:48:07'),
+(67, 47, 1, 2, 1.00, '2026-06-06 07:48:07'),
+(68, 47, 2, 2, 0.04, '2026-06-06 07:48:07'),
+(69, 47, 12, 2, 0.00, '2026-06-06 07:48:07'),
+(70, 48, 21, 2, 0.00, '2026-06-06 07:54:29'),
+(71, 48, 1, 2, 1.00, '2026-06-06 07:54:29'),
+(72, 48, 2, 2, 0.04, '2026-06-06 07:54:29'),
+(73, 48, 12, 2, 0.00, '2026-06-06 07:54:29'),
+(74, 48, 33, 2, 0.01, '2026-06-06 07:54:29'),
+(75, 48, 14, 2, 0.20, '2026-06-06 07:54:29'),
+(76, 48, 28, 2, 0.02, '2026-06-06 07:54:29'),
+(78, 50, 9, 2, 0.40, '2026-06-06 08:00:31'),
+(79, 50, 10, 2, 0.01, '2026-06-06 08:00:31'),
+(80, 50, 13, 2, 0.01, '2026-06-06 08:00:31');
 
 -- --------------------------------------------------------
 
@@ -689,7 +708,7 @@ CREATE TABLE `chefs` (
 
 INSERT INTO `chefs` (`id`, `name`, `position`, `image`, `experience`, `specialty`, `description`, `quote`, `facebook`, `instagram`, `email`, `is_active`, `is_featured`, `sort_order`) VALUES
 (1, 'Chef Minh', 'Bếp trưởng', '1780661835_6a22be4bb618a.jpg', 0, '', '', '', '', '', '', 1, 0, 0),
-(2, 'Chef Lan', 'Bếp phó', '1780661805_6a22be2d284cd.jpg', 5, '', 'njzbjkhjfnbinfvi', 'Mỗi món ăn là một câu chuyện.', '', '', '', 1, 0, 0);
+(2, 'Chef long', 'Bếp phó', '1780661805_6a22be2d284cd.jpg', 5, '', 'njzbjkhjfnbinfvi', 'Mỗi món ăn là một câu chuyện.', 'https://www.facebook.com/friends/suggestions/?profile_id=61576317195911', '', '', 1, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -715,8 +734,8 @@ CREATE TABLE `combos` (
 --
 
 INSERT INTO `combos` (`id`, `name`, `description`, `price`, `image`, `status`, `is_active`, `created_at`, `theme_id`) VALUES
-(1, 'Combo Gia đình', 'Bít tết + salad cho 2 người', 850000.00, '95ee1e2949febbdd3708a969.png', 1, 1, '2026-05-14 08:00:00', 1),
-(2, 'combo gia đình', 'hahn', 1200000.00, '8f8f185167541bd2f03f318f.webp', 1, 1, '2026-05-23 07:15:51', 1);
+(1, 'Romantic Evening', 'Bít tết + salad cho 2 người', 850000.00, 'e86b1160c79e65f1cb494d5d.jpg', 1, 1, '2026-05-14 08:00:00', 1),
+(2, 'The Olive Experience', 'hahn', 1200000.00, '7449c8a6ce9351e40490a778.jpg', 1, 1, '2026-05-23 07:15:51', 1);
 
 -- --------------------------------------------------------
 
@@ -736,9 +755,12 @@ CREATE TABLE `combo_items` (
 --
 
 INSERT INTO `combo_items` (`id`, `combo_id`, `food_id`) VALUES
-(3, 1, 1),
-(4, 2, 1),
-(5, 2, 3);
+(9, 2, 12),
+(10, 2, 1),
+(11, 2, 3),
+(12, 1, 11),
+(13, 1, 12),
+(14, 1, 13);
 
 -- --------------------------------------------------------
 
@@ -821,7 +843,7 @@ CREATE TABLE `foods` (
 --
 
 INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`, `is_active`, `is_chef_recommended`, `allergens`, `wine_pairing_id`, `chef_note`, `theme_id`) VALUES
-(1, 2, 'Bò Bít Tết (Beefsteak)', 400000.00, '7d76786780be41b26cea039d.jpg', 'Thăn nội bò nướng than hoa mềm ngọt, kèm sốt tiêu đen đặc biệt.', 1, 1, 1, '', NULL, '', 1),
+(1, 2, 'Bò Bít Tết (Beefsteak)', 400000.00, '7d76786780be41b26cea039d.jpg', 'Thăn nội bò nướng than hoa mềm ngọt, kèm sốt tiêu đen đặc biệt.', 1, 1, 1, '', NULL, '', NULL),
 (3, 2, 'Cá Hồi Áp Chảo', 180000.00, '1779508455_6a1124e77c5f4.jpg', 'Cá hồi Na Uy tươi áp chảo xém da, dùng kèm sốt chanh leo chua ngọt.', 1, 1, 0, '', NULL, '', NULL),
 (4, 2, 'Sườn Heo Nướng BBQ', 220000.00, '1779508431_6a1124cfdd1c3.jpg', 'Sườn non tẩm ướp sốt BBQ đậm đà nướng chậm trong 4 giờ.', 1, 1, 0, '', NULL, '', NULL),
 (5, 2, 'Mì Ý Hải Sản', 150000.00, '1779508403_6a1124b3b9104.webp', 'Mì Spaghetti xào tôm, mực, vẹm xanh sốt cà chua cay nhẹ.', 1, 1, 0, '', NULL, '', NULL),
@@ -829,8 +851,13 @@ INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description
 (7, 3, 'Soup Kem Nấm', 65000.00, '1779508350_6a11247ee9fae.jpg', 'Soup nấm hương nấm mỡ xay mịn nấu cùng kem tươi béo ngậy.', 1, 1, 0, '', NULL, '', NULL),
 (8, 2, 'Pizza Gà Nấm', 145000.00, '1779508327_6a112467d05fd.jpg', 'Bánh pizza đế mỏng nướng củi, phô mai mozzarella kéo sợi phủ thịt gà và nấm.', 1, 1, 1, 'đậu phộng', NULL, '', NULL),
 (9, 1, 'Tôm Sú Rang Muối Ớt', 195000.00, '1779508300_6a11244c4b361.jpg', 'Tôm sú tươi sống chiên giòn xóc muối ớt kiểu Hồng Kông.', 1, 1, 0, '', NULL, '', NULL),
-(10, 1, 'Gà Nướng Mật Ong', 170000.00, '1779508271_6a11242f14d3b.webp', 'Nửa con gà ta nướng mật ong vàng ươm, thịt dai ngọt tự nhiên.', 1, 1, 0, '', NULL, '', NULL),
-(11, 5, 'Bánh Mì Bơ Tỏi', 45000.00, '1779508232_6a112408d74a9.webp', 'Bánh mì baguette nướng giòn rụm phết bơ tỏi và lá thơm băm nhỏ.', 1, 1, 1, '', NULL, '', 1);
+(11, 5, 'Bánh Mì Bơ Tỏi', 45000.00, '1779508232_6a112408d74a9.webp', 'Bánh mì baguette nướng giòn rụm phết bơ tỏi và lá thơm băm nhỏ.', 1, 1, 1, '', NULL, '', NULL),
+(12, 2, 'Beef Wellington', 850000.00, '1780713599_6a23887fcefe9.jpg', 'Thăn bò hảo hạng cuộn trong lớp nấm truffles và vỏ bánh ngàn lớp nướng vàng rụm.', 1, 1, 0, '', NULL, '', NULL),
+(13, 2, 'Duck Breast with Cherry Reduction', 650000.00, '1780713649_6a2388b12a6a1.jpg', 'Ức vịt áp chảo mềm mọng dùng kèm sốt cherry đỏ cô đặc chua ngọt tinh tế.', 1, 1, 0, '', NULL, '', NULL),
+(14, 2, 'Herb-Crusted Lamb Rack', 750000.00, '1780713689_6a2388d90ba6f.jpg', 'Sườn cừu Pháp nướng phủ lớp vụn bánh mì và thảo mộc thơm lừng.', 1, 1, 0, '', NULL, '', NULL),
+(15, 2, 'Seared Hokkaido Scallops', 950000.00, '1780713718_6a2388f69f231.jpg', 'Cồi sò điệp Hokkaido áp chảo dùng kèm sốt bơ chanh vàng béo ngậy.', 1, 1, 0, '', NULL, '', NULL),
+(16, 1, 'Burrata & Heirloom Tomato', 350000.00, '1780713742_6a23890e80b50.jpg', 'Phô mai Burrata tươi béo ngậy ăn cùng cà chua Heirloom và sốt dầu giấm balsamic.', 1, 1, 0, '', NULL, '', NULL),
+(17, 1, 'Tuna Tartare', 450000.00, '1780713767_6a238927e7dd3.jpg', 'Cá ngừ đại dương xắt lựu tẩm ướp tinh tế, dùng kèm quả bơ và bánh quy giòn.', 1, 1, 0, '', NULL, '', NULL);
 
 -- --------------------------------------------------------
 
@@ -875,9 +902,14 @@ INSERT INTO `food_recipes` (`id`, `food_id`, `ingredient_id`, `quantity_required
 (44, 6, 19, 200.000, 'gram'),
 (45, 6, 15, 50.000, 'gram'),
 (46, 6, 20, 30.000, 'gram'),
-(47, 10, 24, 1.000, 'con'),
-(48, 10, 25, 10.000, 'gram'),
-(49, 10, 26, 0.200, 'lít');
+(50, 12, 14, 200.000, 'gram'),
+(51, 12, 28, 20.000, 'gram'),
+(52, 12, 33, 10.000, 'gram'),
+(53, 13, 29, 200.000, 'gram'),
+(54, 13, 30, 0.400, 'lít'),
+(55, 14, 31, 400.000, 'gram'),
+(56, 14, 16, 200.000, 'gram'),
+(57, 14, 33, 20.000, 'gram');
 
 -- --------------------------------------------------------
 
@@ -1001,10 +1033,13 @@ CREATE TABLE `galleries` (
 --
 
 INSERT INTO `galleries` (`id`, `image_url`, `title`, `sort_order`, `is_active`, `created_at`) VALUES
-(1, '1780541225_vuong-quoc-anh.jpg', '', 0, 1, '2026-06-04 02:47:05'),
-(2, '1780661028_vZz6uRyu0YMaH7FRKWvKuaa_s2brWN4qgpNCf_mjVlDm_AQ6q4tAIyRfloxejBP5-2IpSFO_wm8r6eOpzD6fK1mKcbM8YLU5S5TXVj6h7LpYz8MRRUcRc7wLJ4HfOxd8I1DgptpfYM9AMbo0XJUQdmoS-pAlh8o36tRMdXPBANcA7w7xgDmnq1QAAzy9nUtG.jpg', '', 0, 1, '2026-06-05 12:03:48'),
-(3, '1780661048_5Qyz4-8nni4lc28weSNVGOQo1J44odhk0n1cn6rUskdU0PwFYWnid8EEJITsNAMKWfsSW-Ml5Gawo4uAFkG8Ys9HuMBWr4foWSl6s4CohTmfu8XHFWHGGoC7PK7SFpCwEog0wDx2luahh4wTOBny9KrjvjS10jJVHpILTnhwfGEZocIJKEUpKJYDz3ytLWnp.jpg', '', 0, 1, '2026-06-05 12:04:08'),
-(4, '1780661065_9dYdYk0SFffGCDJb3KhfNEIYdhTC7GlYMthCYx28Qmy-ExQTaGMn_LEgpWhBekmyRcfou_yQVRg3D4rhblyqf55fx1vc917IVWo4CI_6KfvuzjkjSXR7uG8HfvXr2oDBe-aS-_563Tw5a2RUEQJlTmU-FeqxxZkNlyqxHYEE-OtTf8AsQ8fhv0xsmhEenu9E.jpg', '', 0, 1, '2026-06-05 12:04:25');
+(5, '1780712860_anh3.jpg', '', 0, 1, '2026-06-06 02:27:40'),
+(6, '1780712868_anh4.jpg', '', 0, 1, '2026-06-06 02:27:48'),
+(7, '1780712877_anh5.jpg', '', 0, 1, '2026-06-06 02:27:57'),
+(8, '1780712889_anh2.jpg', '', 0, 1, '2026-06-06 02:28:09'),
+(9, '1780712925_anh6.jpg', '', 0, 1, '2026-06-06 02:28:45'),
+(10, '1780712950_anh6.jpg', '', 0, 1, '2026-06-06 02:29:10'),
+(11, '1780712953_anh7.jpg', '', 0, 1, '2026-06-06 02:29:13');
 
 -- --------------------------------------------------------
 
@@ -1058,9 +1093,13 @@ INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `cost_price
 (21, 'Muối', 'Gia vị', 'kg', 7500.00, NULL, NULL, '2027-06-04', 0.00, '2026-06-04 02:46:28', 0, 1, 'Kho khô', NULL),
 (22, 'Xà lách xanh', 'Rau củ', 'kg', 15000.00, NULL, NULL, '2026-06-11', 0.00, '2026-06-04 02:46:28', 0, 1, 'Kho khô', NULL),
 (23, 'Xà lách tím', 'Rau củ', 'kg', 20000.00, NULL, NULL, '2026-06-11', 0.00, '2026-06-04 02:46:28', 0, 1, 'Kho khô', NULL),
-(24, 'Gà nguyên con', 'Thịt', 'con', 60000.00, NULL, NULL, '2026-06-09', 0.00, '2026-06-04 02:46:28', 0, 1, 'Kho khô', NULL),
 (25, 'Mật ong', 'Gia vị', 'lít', 100000.00, NULL, NULL, '2028-06-03', 0.00, '2026-06-04 02:46:28', 0, 1, 'Kho khô', NULL),
-(26, 'Nước tương', 'Gia vị', 'lít', 25000.00, NULL, NULL, '2027-06-04', 0.00, '2026-06-04 02:46:28', 0, 1, 'Kho khô', NULL);
+(26, 'Nước tương', 'Gia vị', 'lít', 25000.00, NULL, NULL, '2027-06-04', 0.00, '2026-06-04 02:46:28', 0, 1, 'Kho khô', NULL),
+(28, 'Thịt heo muối', 'Thực phẩm', 'kg', 250000.00, NULL, '2026-06-06', '2026-12-03', 0.00, '2026-06-06 02:58:13', 5, 1, 'Kho Tổng', NULL),
+(29, 'Ức vịt', 'Thực phẩm', 'kg', 180000.00, NULL, '2026-06-06', '2026-07-06', 0.00, '2026-06-06 02:58:13', 5, 1, 'Kho Tổng', NULL),
+(30, 'Sốt cherry cô đặc', 'Gia vị', 'lít', 150000.00, NULL, '2026-06-06', '2027-06-06', 0.00, '2026-06-06 02:58:13', 5, 1, 'Kho Tổng', NULL),
+(31, 'Sườn cừu', 'Thực phẩm', 'kg', 450000.00, NULL, '2026-06-06', '2026-07-06', 0.00, '2026-06-06 02:58:13', 5, 1, 'Kho Tổng', NULL),
+(33, 'Hương thảo', 'Rau củ', 'kg', 120000.00, NULL, '2026-06-06', '2026-06-20', 0.00, '2026-06-06 02:58:13', 5, 1, 'Kho Tổng', NULL);
 
 -- --------------------------------------------------------
 
@@ -1170,7 +1209,14 @@ INSERT INTO `inventory_batches` (`id`, `ingredient_id`, `warehouse_id`, `batch_c
 (41, 23, 1, 'PO-20260604094628', 8.000, '2026-06-11', 40000.00, NULL, '2026-06-04 02:46:28'),
 (42, 24, 1, 'PO-20260604094628', 15.000, '2026-06-09', 120000.00, NULL, '2026-06-04 02:46:28'),
 (43, 25, 1, 'PO-20260604094628', 5.000, '2028-06-03', 200000.00, NULL, '2026-06-04 02:46:28'),
-(44, 26, 1, 'PO-20260604094628', 5.000, '2027-06-04', 50000.00, NULL, '2026-06-04 02:46:28');
+(44, 26, 1, 'PO-20260604094628', 5.000, '2027-06-04', 50000.00, NULL, '2026-06-04 02:46:28'),
+(45, 27, 1, 'PO-20260606-VIP', 20.000, '2026-07-06', 350000.00, NULL, '2026-06-06 02:58:13'),
+(46, 28, 1, 'PO-20260606-VIP', 10.000, '2026-12-03', 250000.00, NULL, '2026-06-06 02:58:13'),
+(47, 29, 1, 'PO-20260606-VIP', 18.000, '2026-07-06', 180000.00, NULL, '2026-06-06 02:58:13'),
+(48, 30, 1, 'PO-20260606-VIP', 5.000, '2027-06-06', 150000.00, NULL, '2026-06-06 02:58:13'),
+(49, 31, 1, 'PO-20260606-VIP', 20.000, '2026-07-06', 450000.00, NULL, '2026-06-06 02:58:13'),
+(50, 32, 1, 'PO-20260606-VIP', 4.000, '2026-09-04', 80000.00, NULL, '2026-06-06 02:58:13'),
+(51, 33, 1, 'PO-20260606-VIP', 2.000, '2026-06-20', 120000.00, NULL, '2026-06-06 02:58:13');
 
 -- --------------------------------------------------------
 
@@ -1322,7 +1368,42 @@ INSERT INTO `inventory_history` (`id`, `ingredient_id`, `warehouse_id`, `type`, 
 (232, 12, 2, 'export', 0.00, '2026-06-05 01:34:31', 'POS (Xác nhận #24)'),
 (233, 2, 2, 'export', 0.02, '2026-06-05 01:34:31', 'POS (Xác nhận #24)'),
 (234, 3, 2, 'export', 0.01, '2026-06-05 01:34:31', 'POS (Xác nhận #24)'),
-(235, 15, 2, 'export', 0.03, '2026-06-05 01:34:31', 'POS (Xác nhận #24)');
+(235, 15, 2, 'export', 0.03, '2026-06-05 01:34:31', 'POS (Xác nhận #24)'),
+(236, 27, 1, 'import', 20.00, '2026-06-06 02:58:13', 'admin'),
+(237, 28, 1, 'import', 10.00, '2026-06-06 02:58:13', 'admin'),
+(238, 29, 1, 'import', 18.00, '2026-06-06 02:58:13', 'admin'),
+(239, 30, 1, 'import', 5.00, '2026-06-06 02:58:13', 'admin'),
+(240, 31, 1, 'import', 20.00, '2026-06-06 02:58:13', 'admin'),
+(241, 32, 1, 'import', 4.00, '2026-06-06 02:58:13', 'admin'),
+(242, 33, 1, 'import', 2.00, '2026-06-06 02:58:13', 'admin'),
+(243, 13, 1, 'export', 3.00, '2026-06-06 03:05:27', 'Admin (Chuyển đi #52)'),
+(244, 13, 2, 'import', 3.00, '2026-06-06 03:05:27', 'Admin (Nhận từ #52)'),
+(245, 29, 1, 'export', 8.00, '2026-06-06 03:05:27', 'Admin (Chuyển đi #52)'),
+(246, 29, 2, 'import', 8.00, '2026-06-06 03:05:27', 'Admin (Nhận từ #52)'),
+(247, 30, 1, 'export', 3.00, '2026-06-06 03:05:27', 'Admin (Chuyển đi #52)'),
+(248, 30, 2, 'import', 3.00, '2026-06-06 03:05:27', 'Admin (Nhận từ #52)'),
+(249, 31, 1, 'export', 10.00, '2026-06-06 03:05:27', 'Admin (Chuyển đi #52)'),
+(250, 31, 2, 'import', 10.00, '2026-06-06 03:05:27', 'Admin (Nhận từ #52)'),
+(251, 33, 1, 'export', 1.00, '2026-06-06 03:05:27', 'Admin (Chuyển đi #52)'),
+(252, 33, 2, 'import', 1.00, '2026-06-06 03:05:27', 'Admin (Nhận từ #52)'),
+(253, 28, 1, 'export', 6.00, '2026-06-06 03:08:11', 'Admin (Chuyển đi #53)'),
+(254, 28, 2, 'import', 6.00, '2026-06-06 03:08:11', 'Admin (Nhận từ #53)'),
+(255, 21, 2, 'export', 0.00, '2026-06-06 07:48:07', 'POS (Xác nhận #47)'),
+(256, 1, 2, 'export', 1.00, '2026-06-06 07:48:07', 'POS (Xác nhận #47)'),
+(257, 2, 2, 'export', 0.04, '2026-06-06 07:48:07', 'POS (Xác nhận #47)'),
+(258, 12, 2, 'export', 0.00, '2026-06-06 07:48:07', 'POS (Xác nhận #47)'),
+(259, 21, 2, 'export', 0.00, '2026-06-06 07:54:29', 'POS (Xác nhận #48)'),
+(260, 1, 2, 'export', 1.00, '2026-06-06 07:54:29', 'POS (Xác nhận #48)'),
+(261, 2, 2, 'export', 0.04, '2026-06-06 07:54:29', 'POS (Xác nhận #48)'),
+(262, 12, 2, 'export', 0.00, '2026-06-06 07:54:29', 'POS (Xác nhận #48)'),
+(263, 33, 2, 'export', 0.01, '2026-06-06 07:54:29', 'POS (Vét kho dự phòng #48)'),
+(264, 14, 2, 'export', 0.20, '2026-06-06 07:54:29', 'POS (Xác nhận #48)'),
+(265, 28, 2, 'export', 0.02, '2026-06-06 07:54:29', 'POS (Xác nhận #48)'),
+(267, 10, 9, 'export', 1.00, '2026-06-06 08:00:22', 'Admin (Chuyển đi #54)'),
+(268, 10, 2, 'import', 1.00, '2026-06-06 08:00:22', 'Admin (Nhận từ #54)'),
+(269, 9, 2, 'export', 0.40, '2026-06-06 08:00:31', 'POS (Xác nhận #50)'),
+(270, 10, 2, 'export', 0.01, '2026-06-06 08:00:31', 'POS (Xác nhận #50)'),
+(271, 13, 2, 'export', 0.01, '2026-06-06 08:00:31', 'POS (Xác nhận #50)');
 
 -- --------------------------------------------------------
 
@@ -1341,6 +1422,19 @@ CREATE TABLE `inventory_receipts` (
   `expiry_date` date DEFAULT NULL,
   `note` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `inventory_receipts`
+--
+
+INSERT INTO `inventory_receipts` (`id`, `ingredient_id`, `supplier_id`, `quantity`, `import_price`, `entry_date`, `expiry_date`, `note`) VALUES
+(1, 27, NULL, 20.00, 350000.00, '2026-06-06', '2026-07-06', 'Phiếu nhập PO: PO-20260606-VIP'),
+(2, 28, NULL, 10.00, 250000.00, '2026-06-06', '2026-12-03', 'Phiếu nhập PO: PO-20260606-VIP'),
+(3, 29, NULL, 18.00, 180000.00, '2026-06-06', '2026-07-06', 'Phiếu nhập PO: PO-20260606-VIP'),
+(4, 30, NULL, 5.00, 150000.00, '2026-06-06', '2027-06-06', 'Phiếu nhập PO: PO-20260606-VIP'),
+(5, 31, NULL, 20.00, 450000.00, '2026-06-06', '2026-07-06', 'Phiếu nhập PO: PO-20260606-VIP'),
+(6, 32, NULL, 4.00, 80000.00, '2026-06-06', '2026-09-04', 'Phiếu nhập PO: PO-20260606-VIP'),
+(7, 33, NULL, 2.00, 120000.00, '2026-06-06', '2026-06-20', 'Phiếu nhập PO: PO-20260606-VIP');
 
 -- --------------------------------------------------------
 
@@ -1374,18 +1468,18 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 (30, 1, 10, 0.00, '2026-06-04 09:34:19'),
 (31, 1, 11, 5.00, '2026-06-03 19:22:47'),
 (32, 1, 12, 0.00, '2026-06-04 09:39:38'),
-(33, 1, 13, 5.00, '2026-06-03 19:22:47'),
+(33, 1, 13, 2.00, '2026-06-06 10:05:27'),
 (34, 1, 14, 10.00, '2026-06-04 09:14:11'),
 (35, 1, 15, 2.00, '2026-06-04 10:04:12'),
 (36, 1, 16, 10.00, '2026-06-03 19:22:47'),
 (37, 1, 17, 10.00, '2026-06-03 19:22:47'),
 (38, 1, 18, 5.00, '2026-06-03 19:22:47'),
 (39, 8, 14, 5.00, '2026-06-04 09:12:38'),
-(40, 2, 9, 10.00, '2026-06-04 09:12:41'),
+(40, 2, 9, 9.60, '2026-06-06 15:00:31'),
 (41, 8, 9, 6.00, '2026-06-04 09:14:07'),
-(43, 2, 14, 2.30, '2026-06-05 08:34:31'),
+(43, 2, 14, 2.10, '2026-06-06 14:54:29'),
 (44, 9, 2, 8.00, '2026-06-04 10:02:27'),
-(45, 9, 10, 2.00, '2026-06-04 09:34:19'),
+(45, 9, 10, 1.00, '2026-06-06 15:00:22'),
 (46, 9, 4, 10.00, '2026-06-04 09:34:21'),
 (47, 9, 8, 20.00, '2026-06-04 09:34:28'),
 (48, 9, 12, 1.00, '2026-06-04 10:02:57'),
@@ -1402,18 +1496,37 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 (59, 9, 21, 8.00, '2026-06-04 10:01:20'),
 (60, 9, 26, 5.00, '2026-06-04 09:49:41'),
 (61, 2, 21, 2.00, '2026-06-04 10:01:20'),
-(64, 2, 1, 198.00, '2026-06-04 10:07:36'),
-(67, 2, 2, 1.88, '2026-06-05 08:34:31'),
+(64, 2, 1, 196.00, '2026-06-06 14:54:29'),
+(67, 2, 2, 1.82, '2026-06-06 14:54:29'),
 (71, 2, 12, 1.00, '2026-06-04 10:02:57'),
 (79, 2, 3, 2.94, '2026-06-05 08:34:31'),
 (88, 2, 15, 2.82, '2026-06-05 08:34:31'),
 (89, 6, 21, 0.00, '2026-06-04 10:04:17'),
-(90, 6, 1, 2.00, '2026-06-04 10:07:36'),
-(91, 6, 2, 0.20, '2026-06-05 08:34:31'),
+(90, 6, 1, 4.00, '2026-06-06 14:54:29'),
+(91, 6, 2, 0.28, '2026-06-06 14:54:29'),
 (92, 6, 12, 0.00, '2026-06-04 10:04:17'),
-(93, 6, 14, 2.70, '2026-06-05 08:34:31'),
+(93, 6, 14, 2.90, '2026-06-06 14:54:29'),
 (96, 6, 3, 0.06, '2026-06-05 08:34:31'),
-(97, 6, 15, 0.18, '2026-06-05 08:34:31');
+(97, 6, 15, 0.18, '2026-06-05 08:34:31'),
+(127, 1, 27, 20.00, '2026-06-06 09:58:13'),
+(128, 1, 28, 4.00, '2026-06-06 10:08:11'),
+(129, 1, 29, 10.00, '2026-06-06 10:05:27'),
+(130, 1, 30, 2.00, '2026-06-06 10:05:27'),
+(131, 1, 31, 10.00, '2026-06-06 10:05:27'),
+(132, 1, 32, 4.00, '2026-06-06 09:58:13'),
+(133, 1, 33, 1.00, '2026-06-06 10:05:27'),
+(134, 2, 13, 2.99, '2026-06-06 15:00:31'),
+(135, 2, 29, 8.00, '2026-06-06 10:05:27'),
+(136, 2, 30, 3.00, '2026-06-06 10:05:27'),
+(137, 2, 31, 10.00, '2026-06-06 10:05:27'),
+(138, 2, 33, 0.99, '2026-06-06 14:54:29'),
+(139, 2, 28, 5.98, '2026-06-06 14:54:29'),
+(148, 6, 33, 0.01, '2026-06-06 14:54:29'),
+(150, 6, 28, 0.02, '2026-06-06 14:54:29'),
+(152, 2, 10, 0.99, '2026-06-06 15:00:31'),
+(153, 6, 9, 0.40, '2026-06-06 15:00:31'),
+(154, 6, 10, 0.01, '2026-06-06 15:00:31'),
+(155, 6, 13, 0.01, '2026-06-06 15:00:31');
 
 -- --------------------------------------------------------
 
@@ -1489,7 +1602,10 @@ INSERT INTO `inventory_transfers` (`id`, `from_warehouse_id`, `to_warehouse_id`,
 (48, 9, 2, 'Admin', '2026-06-04 10:02:22', 'Yêu cầu chuyển kho nội bộ (1 mặt hàng)', 'completed', 'Admin', '2026-06-04 10:02:27'),
 (49, 9, 2, 'Admin', '2026-06-04 10:02:51', 'Yêu cầu chuyển kho nội bộ (1 mặt hàng)', 'completed', 'Admin', '2026-06-04 10:02:57'),
 (50, 1, 2, 'Admin', '2026-06-04 10:03:46', 'Yêu cầu chuyển kho nội bộ (1 mặt hàng)', 'completed', 'Admin', '2026-06-04 10:03:51'),
-(51, 1, 2, 'Admin', '2026-06-04 10:04:08', 'Yêu cầu chuyển kho nội bộ (1 mặt hàng)', 'completed', 'Admin', '2026-06-04 10:04:12');
+(51, 1, 2, 'Admin', '2026-06-04 10:04:08', 'Yêu cầu chuyển kho nội bộ (1 mặt hàng)', 'completed', 'Admin', '2026-06-04 10:04:12'),
+(52, 1, 2, 'Admin', '2026-06-06 10:05:18', 'Yêu cầu chuyển kho nội bộ (5 mặt hàng)', 'completed', 'Admin', '2026-06-06 10:05:27'),
+(53, 1, 2, 'Admin', '2026-06-06 10:08:07', 'Yêu cầu chuyển kho nội bộ (1 mặt hàng)', 'completed', 'Admin', '2026-06-06 10:08:11'),
+(54, 9, 2, 'Admin', '2026-06-06 15:00:15', 'Yêu cầu chuyển kho nội bộ (1 mặt hàng)', 'completed', 'Admin', '2026-06-06 15:00:22');
 
 -- --------------------------------------------------------
 
@@ -1788,59 +1904,65 @@ CREATE TABLE `service_bookings` (
   `flower_preference` varchar(255) DEFAULT NULL,
   `music_playlist` varchar(255) DEFAULT NULL,
   `light_tone` varchar(50) DEFAULT NULL,
-  `chef_requirements` text DEFAULT NULL
+  `chef_requirements` text DEFAULT NULL,
+  `is_reminded` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `service_bookings`
 --
 
-INSERT INTO `service_bookings` (`id`, `user_id`, `customer_name`, `customer_phone`, `booking_date`, `service_type`, `table_id`, `combo_id`, `guests`, `message`, `total_amount`, `deposit_amount`, `status`, `event_type`, `decor_package`, `has_cake`, `has_flower`, `is_archived`, `created_at`, `has_candle`, `has_handwritten_card`, `card_message`, `flower_preference`, `music_playlist`, `light_tone`, `chef_requirements`) VALUES
-(1, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-16 15:17:00', 'table', 1, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-13 08:17:11', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(2, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-23 15:18:00', 'table', 1, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-13 08:18:22', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(3, 2, 'Khách demo', '0909123456', '2026-05-20 18:00:00', 'table', 2, 1, 4, 'Đặt combo gia đình', 850000.00, 255000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-14 10:00:00', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(4, NULL, 'Ẩn danh', '0911222333', '2026-05-25 12:00:00', 'birthday', 19, 0, 8, 'Tiệc sinh nhật', 2000000.00, 600000.00, 'Completed', 'birthday', 'premium', 1, 1, 0, '2026-05-14 10:05:00', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(5, 5, 'Huỳnh Dương', '0122222222', '2026-05-22 09:30:00', 'chef', 0, 1, 20, '', 1370000.00, 411000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-05-14 15:07:47', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(6, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-24 13:58:00', 'table', 1, 0, 2, '', 145000.00, 43500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-23 06:58:54', 0, 0, NULL, NULL, NULL, NULL, 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: '),
-(7, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-26 19:37:00', 'table', 1, 0, 2, '', 445000.00, 133500.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-05-24 12:37:30', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: '),
-(8, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-25 19:38:00', 'table', 2, 0, 2, '', 170000.00, 51000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-05-24 12:38:32', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: '),
-(9, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-25 19:42:00', 'table', 1, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-24 12:42:37', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: '),
-(10, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-26 20:11:00', 'table', 2, -1, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-24 13:11:20', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Dưới 1.500.000 đ / khách\nPhong cách: Ẩm thực Việt Nam Đương Đại (Contemporary Vietnamese)\nChi tiết: rgreh\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng'),
-(11, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-31 10:30:00', 'table', 0, -1, 2, '', 280000.00, 84000.00, 'Completed', NULL, NULL, 0, 1, 0, '2026-05-30 03:30:35', 1, 1, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: 1.500.000 đ - 3.000.000 đ / khách\nPhong cách: Ẩm thực Việt Nam Đương Đại (Contemporary Vietnamese)\nChi tiết: cdevwesb\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng'),
-(12, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-04 11:26:00', 'table', 1, 0, 2, '', 95000.00, 28500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 04:26:57', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng'),
-(13, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-02 11:30:00', 'table', 1, 0, 2, '', 0.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 04:31:27', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng'),
-(14, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-02 11:36:00', 'table', 1, 0, 2, '', 45000.00, 13500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 04:36:48', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng'),
-(15, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-02 16:02:00', 'table', 2, 0, 2, '', 45000.00, 13500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 09:02:55', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng'),
-(16, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-02 16:04:00', 'table', 1, 0, 2, '', 45000.00, 13500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 09:04:01', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng'),
-(17, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-04 19:55:00', 'table', 1, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-03 12:56:04', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng'),
-(18, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-04 19:57:00', 'table', 1, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-03 12:57:41', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng'),
-(19, 2, 'Quản trị viên', '1234567890', '2026-06-05 09:57:00', 'table', 1, 0, 2, '', 445000.00, 133500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 02:57:44', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng'),
-(20, 2, 'Quản trị viên', '1234567890', '2026-06-04 10:06:00', 'table', 1, 0, 2, '', 445000.00, 133500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 03:06:56', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng'),
-(21, 2, 'Quản trị viên', '1234567890', '2026-06-05 10:10:00', 'table', 1, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 03:10:16', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng'),
-(22, 2, 'Quản trị viên', '1234567890', '2026-06-04 10:10:00', 'table', 2, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 03:10:48', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng'),
-(23, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-06 08:21:00', 'chef', 0, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 01:21:07', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng'),
-(24, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-05 08:22:00', 'chef', 0, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 01:22:32', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng'),
-(25, 12, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3125000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-19 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(26, 12, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3125000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-11 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(27, 12, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3125000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-20 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(28, 12, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3125000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-28 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(29, 13, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3250000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-20 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(30, 13, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3250000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-30 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(31, 14, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 1500000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-15 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(32, 15, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3666666.67, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-23 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(33, 15, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3666666.67, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-08 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(34, 15, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3666666.67, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(35, 16, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 800000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-17 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(36, 17, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 2750000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-14 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(37, 17, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 2750000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-13 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(38, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-15 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(39, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-07 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(40, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-15 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(41, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-26 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(42, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-20 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(43, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(44, 19, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 1600000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-15 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL),
-(45, 19, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 1600000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-31 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `service_bookings` (`id`, `user_id`, `customer_name`, `customer_phone`, `booking_date`, `service_type`, `table_id`, `combo_id`, `guests`, `message`, `total_amount`, `deposit_amount`, `status`, `event_type`, `decor_package`, `has_cake`, `has_flower`, `is_archived`, `created_at`, `has_candle`, `has_handwritten_card`, `card_message`, `flower_preference`, `music_playlist`, `light_tone`, `chef_requirements`, `is_reminded`) VALUES
+(1, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-16 15:17:00', 'table', 1, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-13 08:17:11', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(2, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-23 15:18:00', 'table', 1, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-13 08:18:22', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(3, 2, 'Khách demo', '0909123456', '2026-05-20 18:00:00', 'table', 2, 1, 4, 'Đặt combo gia đình', 850000.00, 255000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-14 10:00:00', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(4, NULL, 'Ẩn danh', '0911222333', '2026-05-25 12:00:00', 'birthday', 19, 0, 8, 'Tiệc sinh nhật', 2000000.00, 600000.00, 'Completed', 'birthday', 'premium', 1, 1, 0, '2026-05-14 10:05:00', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(5, 5, 'Huỳnh Dương', '0122222222', '2026-05-22 09:30:00', 'chef', 0, 1, 20, '', 1370000.00, 411000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-05-14 15:07:47', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(6, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-24 13:58:00', 'table', 1, 0, 2, '', 145000.00, 43500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-23 06:58:54', 0, 0, NULL, NULL, NULL, NULL, 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: ', 0),
+(7, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-26 19:37:00', 'table', 1, 0, 2, '', 445000.00, 133500.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-05-24 12:37:30', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: ', 0),
+(8, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-25 19:38:00', 'table', 2, 0, 2, '', 170000.00, 51000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-05-24 12:38:32', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: ', 0),
+(9, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-25 19:42:00', 'table', 1, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-24 12:42:37', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: ', 0),
+(10, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-26 20:11:00', 'table', 2, -1, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-24 13:11:20', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Dưới 1.500.000 đ / khách\nPhong cách: Ẩm thực Việt Nam Đương Đại (Contemporary Vietnamese)\nChi tiết: rgreh\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(11, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-31 10:30:00', 'table', 0, -1, 2, '', 280000.00, 84000.00, 'Completed', NULL, NULL, 0, 1, 0, '2026-05-30 03:30:35', 1, 1, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: 1.500.000 đ - 3.000.000 đ / khách\nPhong cách: Ẩm thực Việt Nam Đương Đại (Contemporary Vietnamese)\nChi tiết: cdevwesb\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(12, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-04 11:26:00', 'table', 1, 0, 2, '', 95000.00, 28500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 04:26:57', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(13, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-02 11:30:00', 'table', 1, 0, 2, '', 0.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 04:31:27', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(14, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-02 11:36:00', 'table', 1, 0, 2, '', 45000.00, 13500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 04:36:48', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(15, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-02 16:02:00', 'table', 2, 0, 2, '', 45000.00, 13500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 09:02:55', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(16, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-02 16:04:00', 'table', 1, 0, 2, '', 45000.00, 13500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 09:04:01', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(17, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-04 19:55:00', 'table', 1, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-03 12:56:04', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(18, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-04 19:57:00', 'table', 1, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-03 12:57:41', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(19, 2, 'Quản trị viên', '1234567890', '2026-06-05 09:57:00', 'table', 1, 0, 2, '', 445000.00, 133500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 02:57:44', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(20, 2, 'Quản trị viên', '1234567890', '2026-06-04 10:06:00', 'table', 1, 0, 2, '', 445000.00, 133500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 03:06:56', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(21, 2, 'Quản trị viên', '1234567890', '2026-06-05 10:10:00', 'table', 1, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 03:10:16', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(22, 2, 'Quản trị viên', '1234567890', '2026-06-04 10:10:00', 'table', 2, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 03:10:48', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(23, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-06 08:21:00', 'chef', 0, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 01:21:07', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(24, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-05 08:22:00', 'chef', 0, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 01:22:32', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(25, 12, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3125000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-19 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(26, 12, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3125000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-11 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(27, 12, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3125000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-20 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(28, 12, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3125000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-28 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(29, 13, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3250000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-20 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(30, 13, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3250000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-30 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(31, 14, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 1500000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-15 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(32, 15, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3666666.67, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-23 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(33, 15, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3666666.67, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-08 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(34, 15, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3666666.67, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(35, 16, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 800000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-17 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(36, 17, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 2750000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-14 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(37, 17, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 2750000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-13 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(38, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-15 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(39, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-07 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(40, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-15 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(41, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-26 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(42, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-20 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(43, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(44, 19, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 1600000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-15 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(45, 19, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, 1, NULL, 1600000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-31 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0),
+(46, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-06 14:32:00', '', 1, -1, 2, 'Mục đích: Hẹn hò | Chế độ ăn: Healthy | DỊ ỨNG: Hải sản', 3050000.00, 915000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-06 07:32:43', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Dưới 1.500.000 đ / khách\r\nPhong cách: Tùy Bếp trưởng đề xuất\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(47, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-30 14:40:00', 'table', 2, 0, 2, '', 45000.00, 13500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-06 07:40:35', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(48, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-07 14:50:00', 'table', 1, 0, 2, '', 895000.00, 268500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-06 07:50:57', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(49, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-06 14:51:00', 'table', 1, 0, 2, '', 145000.00, 43500.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-06 07:51:56', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0),
+(50, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-06 16:56:00', 'table', 1, 0, 2, '', 220000.00, 66000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-06 07:57:08', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0);
 
 -- --------------------------------------------------------
 
@@ -1870,7 +1992,7 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 ('inv_expiry_warning_days', '30'),
 ('inv_low_stock', '5'),
 ('inv_low_stock_threshold', '5'),
-('last_telegram_alert_date', '2026-06-05'),
+('last_telegram_alert_date', '2026-06-06'),
 ('logo_url', 'assets/img/logo.png'),
 ('logo_ver', '1779627100'),
 ('maps_embed', ''),
@@ -2000,7 +2122,14 @@ INSERT INTO `transfer_details` (`id`, `transfer_id`, `ingredient_id`, `quantity`
 (49, 48, 2, 2.00),
 (50, 49, 12, 1.00),
 (51, 50, 3, 3.00),
-(52, 51, 15, 3.00);
+(52, 51, 15, 3.00),
+(53, 52, 13, 3.00),
+(54, 52, 29, 8.00),
+(55, 52, 30, 3.00),
+(56, 52, 31, 10.00),
+(57, 52, 33, 1.00),
+(58, 53, 28, 6.00),
+(59, 54, 10, 1.00);
 
 -- --------------------------------------------------------
 
@@ -2562,13 +2691,13 @@ ALTER TABLE `bookings`
 -- AUTO_INCREMENT for table `booking_details`
 --
 ALTER TABLE `booking_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `booking_inventory_deductions`
 --
 ALTER TABLE `booking_inventory_deductions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
 
 --
 -- AUTO_INCREMENT for table `books`
@@ -2610,7 +2739,7 @@ ALTER TABLE `combos`
 -- AUTO_INCREMENT for table `combo_items`
 --
 ALTER TABLE `combo_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `contacts`
@@ -2628,13 +2757,13 @@ ALTER TABLE `employees`
 -- AUTO_INCREMENT for table `foods`
 --
 ALTER TABLE `foods`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `food_recipes`
 --
 ALTER TABLE `food_recipes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- AUTO_INCREMENT for table `footer_links`
@@ -2646,13 +2775,13 @@ ALTER TABLE `footer_links`
 -- AUTO_INCREMENT for table `galleries`
 --
 ALTER TABLE `galleries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `inventory_audits`
@@ -2670,7 +2799,7 @@ ALTER TABLE `inventory_audit_details`
 -- AUTO_INCREMENT for table `inventory_batches`
 --
 ALTER TABLE `inventory_batches`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `inventory_categories`
@@ -2682,25 +2811,25 @@ ALTER TABLE `inventory_categories`
 -- AUTO_INCREMENT for table `inventory_history`
 --
 ALTER TABLE `inventory_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=236;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=272;
 
 --
 -- AUTO_INCREMENT for table `inventory_receipts`
 --
 ALTER TABLE `inventory_receipts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `inventory_stocks`
 --
 ALTER TABLE `inventory_stocks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=156;
 
 --
 -- AUTO_INCREMENT for table `inventory_transfers`
 --
 ALTER TABLE `inventory_transfers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT for table `inventory_units`
@@ -2766,7 +2895,7 @@ ALTER TABLE `services`
 -- AUTO_INCREMENT for table `service_bookings`
 --
 ALTER TABLE `service_bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT for table `suppliers`
@@ -2784,7 +2913,7 @@ ALTER TABLE `themes`
 -- AUTO_INCREMENT for table `transfer_details`
 --
 ALTER TABLE `transfer_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT for table `users`

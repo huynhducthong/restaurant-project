@@ -49,7 +49,7 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
             $db->prepare("UPDATE service_bookings SET status = 'Confirmed' WHERE id = ?")->execute([$id]);
 
             // Lấy thông tin đơn (dùng cho thông báo)
-            $stmt_bk = $db->prepare("SELECT id, service_type, customer_name, customer_phone, booking_date, guests, total_amount, deposit_amount FROM service_bookings WHERE id = ?");
+            $stmt_bk = $db->prepare("SELECT sb.id, sb.service_type, sb.customer_name, sb.customer_phone, sb.booking_date, sb.guests, sb.total_amount, sb.deposit_amount, u.email FROM service_bookings sb LEFT JOIN users u ON sb.user_id = u.id WHERE sb.id = ?");
             $stmt_bk->execute([$id]);
             $booking_info = $stmt_bk->fetch(PDO::FETCH_ASSOC) ?: null;
 
@@ -73,6 +73,7 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
                     $msg .= "👤 Xác nhận bởi: <b>{$who}</b>\n";
                     $msg .= "\n<i>Ghi chú: hệ thống đang tắt tự động trừ kho (inv_auto_deduct=0).</i>";
                     @sendTelegramNotification($msg);
+                    @sendBookingEmailConfirmation($booking_info['email'] ?? '', $booking_info);
                 }
                 header("Location: manage_services.php?msg=confirmed_no_stock");
                 exit;
@@ -223,6 +224,7 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
                 $msg .= "🧾 Cọc (30%): <b>{$money_dep} VNĐ</b>\n";
                 $msg .= "👤 Xác nhận bởi: <b>{$who}</b>\n";
                 @sendTelegramNotification($msg);
+                @sendBookingEmailConfirmation($booking_info['email'] ?? '', $booking_info);
             }
 
             if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
@@ -326,6 +328,51 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
             $db->rollBack();
         }
     }
+
+    // E. QUICK EDIT
+    elseif ($action == 'quick_edit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        $edit_date = $_POST['booking_date'] ?? '';
+        $edit_guests = (int)($_POST['guests'] ?? 0);
+        $edit_table = !empty($_POST['table_id']) ? (int)$_POST['table_id'] : null;
+
+        $db->beginTransaction();
+        try {
+            $stmt_old = $db->prepare("SELECT table_id, status FROM service_bookings WHERE id = ?");
+            $stmt_old->execute([$id]);
+            $old_data = $stmt_old->fetch();
+
+            if ($old_data) {
+                // Giải phóng bàn cũ nếu đổi bàn (chỉ khi đơn đã confirm và đang giữ bàn cũ)
+                if ($old_data['table_id'] && $old_data['table_id'] != $edit_table && $old_data['status'] === 'Confirmed') {
+                    $db->prepare("UPDATE restaurant_tables SET is_available = 1 WHERE id = ?")->execute([$old_data['table_id']]);
+                }
+                
+                $db->prepare("UPDATE service_bookings SET booking_date = ?, guests = ?, table_id = ? WHERE id = ?")
+                   ->execute([$edit_date, $edit_guests, $edit_table, $id]);
+
+                // Chiếm bàn mới (nếu đơn đã Confirmed)
+                if ($old_data['status'] === 'Confirmed' && $edit_table && $old_data['table_id'] != $edit_table) {
+                    $db->prepare("UPDATE restaurant_tables SET is_available = 0 WHERE id = ?")->execute([$edit_table]);
+                }
+            }
+            $db->commit();
+            
+            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                header('Content-Type: application/json');
+                echo json_encode(['status' => 'success', 'message' => 'Đã cập nhật đơn hàng thành công!']);
+                exit;
+            }
+            header("Location: manage_services.php?msg=edited");
+            exit;
+        } catch (Exception $e) {
+            $db->rollBack();
+            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                header('Content-Type: application/json');
+                echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                exit;
+            }
+        }
+    }
 }
 
 // D. RESET BÀN
@@ -345,6 +392,15 @@ if (isset($_GET['action']) && $_GET['action'] == 'reset_table' && isset($_GET['t
 // --- 2. DỮ LIỆU HIỂN THỊ ---
 $tables = $db->query("SELECT * FROM restaurant_tables WHERE category = 'open' ORDER BY id ASC LIMIT 16")->fetchAll(PDO::FETCH_ASSOC);
 $rooms = $db->query("SELECT * FROM restaurant_tables WHERE category = 'room' ORDER BY id ASC LIMIT 6")->fetchAll(PDO::FETCH_ASSOC);
+
+// Lấy lịch đặt bàn tiếp theo (trong tương lai hoặc đang diễn ra)
+$upcoming_stmt = $db->query("
+    SELECT table_id, MIN(booking_date) as next_booking 
+    FROM service_bookings 
+    WHERE status IN ('pending', 'confirmed') 
+      AND booking_date >= DATE_SUB(NOW(), INTERVAL 150 MINUTE)
+    GROUP BY table_id
+")->fetchAll(PDO::FETCH_KEY_PAIR);
 
 $filter = $_GET['filter'] ?? 'all';
 if ($filter == 'all') {
@@ -384,16 +440,12 @@ include '../../public/admin_layout_header.php';
                 <p class="fw-bold small mb-2">BÀN LẺ (tối đa 6 người)</p>
                 <div class="grid-4-cols">
                     <?php foreach ($tables as $t):
-                        $status_class = ($t['is_available'] == 1) ? 'seat-available' : 'seat-booked';
+                        $next_time = $upcoming_stmt[$t['id']] ?? null;
+                        $status_class = $next_time ? 'seat-booked' : 'seat-available';
                         ?>
-                        <div class="admin-seat <?= $status_class ?>" data-table-id="<?= $t['id'] ?>">
-                            <?php if ($t['is_available'] == 0): ?>
-                                <a href="#" class="btn-reset-table" data-table-id="<?= $t['id'] ?>" title="Reset bàn">
-                                    <i class="fa fa-times"></i>
-                                </a>
-                            <?php endif; ?>
+                        <div class="admin-seat <?= $status_class ?>" data-table-id="<?= $t['id'] ?>" <?= $next_time ? 'title="Có khách đặt lúc '.date('H:i d/m', strtotime($next_time)).'"' : '' ?>>
                             <span><?= htmlspecialchars($t['table_code']) ?></span>
-                            <small><?= $t['is_available'] ? 'Trống' : 'Đã đặt' ?></small>
+                            <small style="font-size: 10px;"><?= $next_time ? 'Hẹn: ' . date('H:i d/m', strtotime($next_time)) : 'Trống' ?></small>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -402,16 +454,12 @@ include '../../public/admin_layout_header.php';
                 <p class="fw-bold small mb-2">PHÒNG VIP</p>
                 <div class="grid-2-cols">
                     <?php foreach ($rooms as $r):
-                        $status_class = ($r['is_available'] == 1) ? 'seat-available' : 'seat-booked';
+                        $next_time = $upcoming_stmt[$r['id']] ?? null;
+                        $status_class = $next_time ? 'seat-booked' : 'seat-available';
                         ?>
-                        <div class="admin-seat <?= $status_class ?>" data-table-id="<?= $r['id'] ?>">
-                            <?php if ($r['is_available'] == 0): ?>
-                                <a href="#" class="btn-reset-table" data-table-id="<?= $r['id'] ?>" title="Reset bàn">
-                                    <i class="fa fa-times"></i>
-                                </a>
-                            <?php endif; ?>
+                        <div class="admin-seat <?= $status_class ?>" data-table-id="<?= $r['id'] ?>" <?= $next_time ? 'title="Có khách đặt lúc '.date('H:i d/m', strtotime($next_time)).'"' : '' ?>>
                             <span><?= htmlspecialchars($r['table_code']) ?></span>
-                            <small><?= $r['is_available'] ? 'Trống' : 'Đã đặt' ?></small>
+                            <small style="font-size: 10px;"><?= $next_time ? 'Hẹn: ' . date('H:i d/m', strtotime($next_time)) : 'Trống' ?></small>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -422,13 +470,15 @@ include '../../public/admin_layout_header.php';
     <!-- DANH SÁCH YÊU CẦU -->
     <div class="card card-custom p-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="fw-bold m-0"><i class="fas fa-clipboard-list me-2" style="color: var(--gold);"></i>Danh sách yêu
-                cầu dịch vụ</h4>
-            <div class="btn-group">
-                <?php foreach (['all' => 'Tất cả', 'table' => 'Đặt bàn', 'birthday' => 'Sinh nhật', 'chef' => 'Đầu bếp', 'bespoke' => '✨ Thiết kế riêng'] as $k => $v): ?>
-                    <a href="?filter=<?= $k ?>"
-                        class="btn filter-btn <?= $filter == $k ? 'btn-dark' : 'btn-outline-gold' ?>"><?= $v ?></a>
-                <?php endforeach; ?>
+            <h4 class="fw-bold m-0"><i class="fas fa-clipboard-list me-2" style="color: var(--gold);"></i>Danh sách yêu cầu dịch vụ</h4>
+            <div class="d-flex gap-2">
+                <div class="btn-group">
+                    <?php foreach (['all' => 'Tất cả', 'table' => 'Đặt bàn', 'birthday' => 'Sinh nhật', 'chef' => 'Đầu bếp', 'bespoke' => '✨ Thiết kế riêng'] as $k => $v): ?>
+                        <a href="?filter=<?= $k ?>"
+                            class="btn filter-btn <?= $filter == $k ? 'btn-dark' : 'btn-outline-gold' ?>"><?= $v ?></a>
+                    <?php endforeach; ?>
+                </div>
+                <a href="export_bookings.php?filter=<?= $filter ?>" class="btn btn-success" style="border-radius: 0; display: flex; align-items: center;"><i class="fas fa-file-excel me-1"></i> Xuất Excel (CSV)</a>
             </div>
         </div>
 
@@ -495,6 +545,12 @@ include '../../public/admin_layout_header.php';
                                     data-status="<?= $s['status'] ?>">
                                     <i class="fas fa-eye"></i>
                                 </button>
+
+                                <?php if (in_array($s['status'], ['Pending', 'Confirmed'])): ?>
+                                    <button class="btn btn-sm btn-outline-info btn-edit-service" data-id="<?= $s['id'] ?>" title="Chỉnh sửa đơn">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                <?php endif; ?>
 
                                 <?php if ($s['status'] == 'Pending'): ?>
                                     <?php if ($s['total_amount'] == 0 || !empty($s['chef_requirements'])): ?>
@@ -626,6 +682,45 @@ include '../../public/admin_layout_header.php';
                         class="fas fa-file-pdf me-2"></i>Xuất PDF</a>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- MODAL QUICK EDIT -->
+<div class="modal fade" id="modalQuickEdit" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form id="formQuickEdit" class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold text-info"><i class="fas fa-edit me-2"></i>Chỉnh sửa nhanh Đơn #<span id="qe-id-text"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="booking_id" id="qe-id">
+                <div class="mb-3">
+                    <label class="form-label text-muted">Thời gian đặt:</label>
+                    <input type="datetime-local" class="form-control rounded-0" name="booking_date" id="qe-date" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-muted">Số khách:</label>
+                    <input type="number" class="form-control rounded-0" name="guests" id="qe-guests" min="1" required>
+                </div>
+                <div class="mb-3" id="qe-table-wrapper">
+                    <label class="form-label text-muted">Đổi Bàn/Phòng:</label>
+                    <select class="form-select rounded-0" name="table_id" id="qe-table">
+                        <option value="">-- Không chọn (Mặc định) --</option>
+                        <?php foreach ($tables as $t): ?>
+                            <option value="<?= $t['id'] ?>"><?= $t['table_code'] ?> (Bàn Lẻ <?= $t['is_available']?'Trống':'Đã đặt' ?>)</option>
+                        <?php endforeach; ?>
+                        <?php foreach ($rooms as $r): ?>
+                            <option value="<?= $r['id'] ?>"><?= $r['table_code'] ?> (Phòng VIP <?= $r['is_available']?'Trống':'Đã đặt' ?>)</option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0">
+                <button type="button" class="btn btn-secondary rounded-0" data-bs-dismiss="modal">Hủy</button>
+                <button type="submit" class="btn btn-info text-white rounded-0"><i class="fas fa-save me-1"></i> Lưu thay đổi</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -1000,6 +1095,67 @@ include '../../public/admin_layout_header.php';
                 window.location.href = `manage_services.php?action=update_price&id=${id}&price=${price}`;
             }
         }
+    });
+
+    // --- QUICK EDIT AJAX ---
+    $(document).on('click', '.btn-edit-service', function(e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        
+        // Fetch current data
+        $.getJSON(`../ajax/ajax_get_booking_detail.php?id=${id}`, function (data) {
+            if (data) {
+                $('#qe-id-text').text(data.id);
+                $('#qe-id').val(data.id);
+                
+                // Format datetime-local from Y-m-d H:i:s to Y-m-dTH:i
+                let dateStr = data.booking_date;
+                if(dateStr && dateStr.includes(' ')) {
+                    dateStr = dateStr.replace(' ', 'T');
+                    if(dateStr.length > 16) dateStr = dateStr.substring(0, 16);
+                }
+                
+                $('#qe-date').val(dateStr);
+                $('#qe-guests').val(data.guests);
+                $('#qe-table').val(data.table_id || '');
+                
+                if (data.service_type === 'chef') {
+                    $('#qe-table-wrapper').hide();
+                } else {
+                    $('#qe-table-wrapper').show();
+                }
+                
+                const modal = new bootstrap.Modal(document.getElementById('modalQuickEdit'));
+                modal.show();
+            }
+        });
+    });
+
+    $('#formQuickEdit').on('submit', function(e) {
+        e.preventDefault();
+        const id = $('#qe-id').val();
+        const btn = $(this).find('button[type="submit"]');
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Đang lưu');
+
+        $.ajax({
+            url: `manage_services.php?action=quick_edit&id=${id}`,
+            type: 'POST',
+            data: $(this).serialize(),
+            dataType: 'json',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            success: function(res) {
+                if(res.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Lỗi: ' + res.message);
+                    btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Lưu thay đổi');
+                }
+            },
+            error: function() {
+                alert('Có lỗi xảy ra!');
+                btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Lưu thay đổi');
+            }
+        });
     });
 </script>
 </body>

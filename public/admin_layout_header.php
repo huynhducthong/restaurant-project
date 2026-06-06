@@ -90,26 +90,26 @@ try {
     
     <style>
         :root {
-            --sidebar-bg: #ffffff;
-            --sidebar-border: #f0ebe3;
+            --sidebar-bg: #F6F2E9; /* Kem */
+            --sidebar-border: #e8e1d5;
             --topbar-bg: #ffffff;
 
-            --accent-color: #e0b876;
-            --accent-green: #1b5e20; /* Xanh lá rêu đậm chuẩn, không bị ngả xanh dương */
-            --accent-green-light: #2e7d32;
+            --accent-color: #C9A66B; /* Gold */
+            --accent-green: #4F5B3A; /* Olive */
+            --accent-green-light: #6A7A4E;
             
-            /* Dành cho nền sáng (Sidebar, Topbar) */
-            --text-sidebar: #1a1612;
-            --text-sidebar-muted: #8a7f72;
+            /* Dành cho nền sáng (Sidebar) */
+            --text-sidebar: #222222; /* Xám Đen */
+            --text-sidebar-muted: #666666;
             
             /* Dành cho nền sáng (Main Content) */
-            --text-main: #1a1612;
-            --text-muted: #8a7f72;
+            --text-main: #222222;
+            --text-muted: #666666;
             
-            --bg-main: #f4f6f5; /* Hơi ngả xanh xám cho đồng bộ */
+            --bg-main: #fcfcfc;
             
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.07);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.05);
         }
 
         * {
@@ -151,7 +151,7 @@ try {
             width: 42px;
             height: 42px;
             background: var(--accent-green);
-            border-radius: 10px;
+            border-radius: 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -206,8 +206,8 @@ try {
             text-decoration: none;
             font-size: 13.5px;
             font-weight: 500;
-            border-left: 3px solid transparent; /* Tránh giật layout khi thêm border */
-            border-radius: 0 10px 10px 0;
+            border-left: 3px solid transparent;
+            border-radius: 0;
             transition: all 0.2s ease;
             margin-bottom: 2px;
             gap: 11px;
@@ -230,7 +230,7 @@ try {
             color: #ffffff;
             font-weight: 600;
             border-left: 3px solid var(--accent-color);
-            border-radius: 0 10px 10px 0;
+            border-radius: 0;
         }
 
         .menu-list li.active a i {
@@ -245,8 +245,8 @@ try {
             margin: 0 14px 8px;
             padding: 10px 14px;
             background: transparent;
-            border: 1px solid var(--accent-mid);
-            border-radius: 10px;
+            border: 1px solid var(--accent-green-light);
+            border-radius: 0;
             color: var(--accent-color) !important;
             font-size: 12.5px;
             font-weight: 600;
@@ -265,7 +265,7 @@ try {
             font-size: 10.5px;
             font-weight: 700;
             text-transform: uppercase;
-            color: #b0a491;
+            color: #7b8364; /* Olive nhạt hơn chút so với Xám đen */
             letter-spacing: 1.4px;
         }
 
@@ -280,7 +280,7 @@ try {
             align-items: center;
             gap: 10px;
             padding: 11px 14px;
-            border-radius: 10px;
+            border-radius: 0;
             background: rgba(214, 69, 69, 0.1);
             color: #ff6b6b !important;
             text-decoration: none;
@@ -358,10 +358,10 @@ try {
             font-size: 11px;
             font-weight: 600;
             padding: 3px 10px;
-            border-radius: 20px;
-            background: var(--accent-light);
-            color: var(--accent-color);
-            border: 1px solid var(--accent-mid);
+            border-radius: 0;
+            background: var(--accent-color);
+            color: var(--sidebar-bg);
+            border: 1px solid var(--accent-color);
             letter-spacing: 0.3px;
         }
 
@@ -369,22 +369,24 @@ try {
             font-size: 11px;
             font-weight: 600;
             padding: 3px 10px;
-            border-radius: 20px;
-            background: #e6f4ea;
-            color: #2d7a3a;
+            border-radius: 0;
+            background: var(--accent-green);
+            color: var(--accent-color);
             letter-spacing: 0.3px;
         }
 
+        .user-avatar {
             width: 42px;
             height: 42px;
-            background: var(--accent-light);
-            border: 1px solid var(--accent-mid);
-            border-radius: 50%;
+            background: var(--accent-green);
+            border: 1px solid var(--accent-color);
+            border-radius: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--accent-color);
             font-size: 16px;
+        }
 
         /* Content */
         .content-area {
@@ -399,7 +401,7 @@ try {
             font-size: 10px;
             font-weight: 700;
             padding: 2px 6px;
-            border-radius: 50px;
+            border-radius: 0;
             margin-left: auto;
             box-shadow: 0 2px 5px rgba(255, 71, 87, 0.3);
             animation: pulse-red 2s infinite;
@@ -414,19 +416,19 @@ try {
         /* --- NOTIFICATION BELL --- */
         .notification-wrapper { position: relative; margin-right: 20px; }
         .notification-btn { 
-            background: none; border: none; font-size: 20px; color: #8a7f72; position: relative; cursor: pointer;
-            transition: all 0.3s; padding: 5px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            background: none; border: none; font-size: 20px; color: var(--text-sidebar); position: relative; cursor: pointer;
+            transition: all 0.3s; padding: 5px; border-radius: 0; display: flex; align-items: center; justify-content: center;
         }
-        .notification-btn:hover { background: rgba(0,0,0,0.05); color: var(--accent-color); }
+        .notification-btn:hover { background: rgba(0,0,0,0.05); color: var(--accent-green); }
         .notification-badge {
             position: absolute; top: -2px; right: -2px; background: #ff4757; color: white;
-            font-size: 10px; min-width: 16px; height: 16px; border-radius: 50%;
+            font-size: 10px; min-width: 16px; height: 16px; border-radius: 0;
             display: flex; align-items: center; justify-content: center; border: 2px solid #fff;
             animation: pulse-red 2s infinite;
         }
         .notification-dropdown {
             position: absolute; top: 45px; right: 0; width: 320px; background: #fff;
-            border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #eee;
+            border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #eee;
             display: none; z-index: 1000; overflow: hidden;
         }
         .notification-dropdown.show { display: block; animation: slideDown 0.3s ease; }
@@ -436,7 +438,7 @@ try {
             text-decoration: none; color: #333; transition: background 0.2s;
         }
         .notify-item:hover { background: #f8f9fa; color: inherit; }
-        .notify-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+        .notify-icon { width: 32px; height: 32px; border-radius: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
         .notify-content { flex: 1; }
         .notify-title { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
         .notify-desc { font-size: 11px; color: #777; }

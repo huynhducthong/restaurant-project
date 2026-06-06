@@ -1034,6 +1034,18 @@ setInterval(function() {
   if (elapsed >= REFRESH_SEC) window.location.reload();
 }, 1000);
 
+// Auto-trigger Telegram Reminder every 1 minute
+setInterval(() => {
+  fetch('admin/cron/cron_telegram_reminder.php', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'success' && data.reminded > 0) {
+        showToast(`Đã gửi ${data.reminded} thông báo nhắc khách đến qua Telegram!`, 'success');
+      }
+    })
+    .catch(err => console.error('Telegram cron error:', err));
+}, 60000);
+
 /* ── Toast helper ── */
 function showToast(msg, type) {
   var wrap  = document.getElementById('toastWrap');
