@@ -149,6 +149,54 @@ if ($filter_role !== '') {
     $params[] = $filter_role;
 }
 
+// 4.5 XỬ LÝ XUẤT EXCEL TẤT CẢ DỮ LIỆU ĐÃ LỌC (KHÔNG PHÂN TRANG)
+if (isset($_GET['export_excel'])) {
+    $sql_export = "SELECT u.* 
+                   FROM users u 
+                   WHERE " . implode(" AND ", $where) . " 
+                   ORDER BY u.id ASC";
+    $export_stmt = $db->prepare($sql_export);
+    $export_stmt->execute($params);
+    $all_users = $export_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    header('Content-Type: application/vnd.ms-excel; charset=utf-8');
+    header('Content-Disposition: attachment; filename="DanhSachNguoiDung_' . date('Ymd_His') . '.xls"');
+    echo "\xEF\xBB\xBF"; // UTF-8 BOM for Excel
+    echo "<table border='1'>";
+    echo "<tr style='background-color:#0d6efd;color:white;'>";
+    echo "<th>STT</th><th>ID</th><th>Họ Tên</th><th>Tên đăng nhập</th><th>Số điện thoại</th><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th>Ngày tạo</th>";
+    echo "</tr>";
+    
+    $stt = 1;
+    foreach ($all_users as $row) {
+        $roles = [
+            'admin' => 'Quản trị (Admin)',
+            'cashier' => 'Thu ngân',
+            'chef' => 'Bếp',
+            'waiter' => 'Phục vụ',
+            'customer' => 'Khách hàng'
+        ];
+        $role_str = $roles[$row['role']] ?? 'Người dùng';
+        $status_str = $row['is_active'] ? 'Hoạt động' : 'Đã khóa';
+        $date_str = date('d/m/Y H:i', strtotime($row['created_at']));
+        
+        echo "<tr>";
+        echo "<td>{$stt}</td>";
+        echo "<td>{$row['id']}</td>";
+        echo "<td>" . htmlspecialchars($row['full_name']) . "</td>";
+        echo "<td>@" . htmlspecialchars($row['username']) . "</td>";
+        echo "<td>" . htmlspecialchars($row['phone'] ?? '') . "</td>";
+        echo "<td>" . htmlspecialchars($row['email'] ?? '') . "</td>";
+        echo "<td>{$role_str}</td>";
+        echo "<td>{$status_str}</td>";
+        echo "<td>{$date_str}</td>";
+        echo "</tr>";
+        $stt++;
+    }
+    echo "</table>";
+    exit;
+}
+
 $where_clause = implode(' AND ', $where);
 
 // Đếm tổng để phân trang

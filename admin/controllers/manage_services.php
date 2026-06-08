@@ -1026,12 +1026,26 @@ include '../../public/admin_layout_header.php';
                     }
                     $('#m-foods').html(foodsHtml);
 
-                    $('#m-msg').text(data.message || 'Không có ghi chú.');
+                    function formatNotes(text) {
+                        if (!text) return '';
+                        let html = text.replace(/\n/g, '<br>');
+                        html = html.replace(/- Độ chín:/g, '<span class="fw-bold text-danger">- Độ chín:</span>');
+                        html = html.replace(/- Hương vị:/g, '<span class="fw-bold text-primary">- Hương vị:</span>');
+                        
+                        html = html.replace(/(?:-\s*)?DỊ ỨNG:\s*(.*?)(?=\s*\||<br>|$)/g, '<span class="badge bg-danger text-white" style="font-size: 11px;"><i class="fas fa-exclamation-triangle me-1"></i>DỊ ỨNG</span> <strong class="text-danger">$1</strong>');
+                        html = html.replace(/Chế độ ăn:\s*(.*?)(?=\s*\||<br>|$)/g, '<span class="badge bg-success text-white" style="font-size: 11px;"><i class="fas fa-leaf me-1"></i>Chế độ ăn</span> <strong class="text-success">$1</strong>');
+                        html = html.replace(/Mục đích:\s*(.*?)(?=\s*\||<br>|$)/g, '<span class="badge bg-info text-dark" style="font-size: 11px;"><i class="fas fa-glass-cheers me-1"></i>Mục đích</span> <strong>$1</strong>');
+                        html = html.replace(/--- HỒ SƠ KHẨU VỊ \(CULINARY DNA\) ---/g, '<br><span class="text-warning fw-bold"><i class="fas fa-dna me-1"></i>HỒ SƠ KHẨU VỊ (CULINARY DNA)</span><br>');
+                        
+                        return html;
+                    }
+
+                    $('#m-msg').html(data.message ? formatNotes(data.message) : '<span class="text-muted">Không có ghi chú.</span>');
                     
                     // --- YÊU CẦU BẾP TRƯỞNG ---
                     if (data.chef_requirements) {
                         $('#row-chef-req').show();
-                        $('#m-chef-req').html(data.chef_requirements.replace(/\n/g, '<br>'));
+                        $('#m-chef-req').html(formatNotes(data.chef_requirements));
                     } else {
                         $('#row-chef-req').hide();
                     }

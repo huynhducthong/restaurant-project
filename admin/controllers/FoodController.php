@@ -370,7 +370,15 @@ if (!empty($foods)) {
         $recipe_map[(int) $r['food_id']][] = $r;
 
     $cst = $db->prepare(
-        "SELECT r.food_id, SUM(r.quantity_required * i.cost_price) as total_cost
+        "SELECT r.food_id, 
+         SUM(r.quantity_required * i.cost_price * 
+            CASE 
+                WHEN LOWER(r.unit) = 'gram' AND LOWER(i.unit_name) = 'kg' THEN 0.001
+                WHEN LOWER(r.unit) = 'ml' AND LOWER(i.unit_name) = 'lít' THEN 0.001
+                WHEN LOWER(r.unit) = 'ml' AND LOWER(i.unit_name) = 'lit' THEN 0.001
+                ELSE 1 
+            END
+         ) as total_cost
          FROM food_recipes r JOIN inventory i ON r.ingredient_id = i.id
          WHERE r.food_id IN ($placeholders) GROUP BY r.food_id"
     );
