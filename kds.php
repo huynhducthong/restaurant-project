@@ -16,6 +16,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     try {
         $stmt = $db->prepare("UPDATE service_bookings SET status = 'Completed' WHERE id = ?");
         $stmt->execute([$booking_id]);
+        
+        // Giải phóng bàn
+        $stmt_table = $db->prepare("SELECT table_id FROM service_bookings WHERE id = ?");
+        $stmt_table->execute([$booking_id]);
+        $table_id = $stmt_table->fetchColumn();
+        if ($table_id) {
+            $db->prepare("UPDATE restaurant_tables SET is_available = 1 WHERE id = ?")->execute([$table_id]);
+        }
+        
         echo "success";
     } catch(Exception $e) {
         echo "error";
@@ -37,6 +46,19 @@ $query = "
 ";
 $stmt = $db->query($query);
 $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Lấy danh sách các món ăn lẻ (A la Carte) cho từng đơn
+foreach ($orders as &$order) {
+    $stmt_details = $db->prepare("
+        SELECT bd.quantity, bd.notes as special_notes, f.name as food_name
+        FROM booking_details bd
+        JOIN foods f ON bd.menu_id = f.id
+        WHERE bd.booking_id = ?
+    ");
+    $stmt_details->execute([$order['id']]);
+    $order['foods'] = $stmt_details->fetchAll(PDO::FETCH_ASSOC);
+}
+unset($order);
 
 // Truy vấn các đơn đặt trước (Upcoming)
 $upcoming_query = "
@@ -69,19 +91,19 @@ $upcoming_orders = $stmt_up->fetchAll(PDO::FETCH_ASSOC);
    TOKENS — Light / Warm Kitchen Theme
 ═══════════════════════════════════════ */
 :root {
-  --bg:        #f0ece4;
+  --bg:        #F6F2E9;
   --surface:   #ffffff;
-  --surface2:  #f7f4ef;
-  --border:    rgba(20,59,54,.08);
-  --border-md: rgba(20,59,54,.14);
+  --surface2:  #F6F2E9;
+  --border:    rgba(34,34,34,.1);
+  --border-md: rgba(34,34,34,.15);
 
-  --forest:    #143B36;
-  --forest-lt: #1c5049;
-  --forest-dim:rgba(20,59,54,.07);
+  --forest:    #4F5B3A;
+  --forest-lt: #5f6e45;
+  --forest-dim:rgba(79,91,58,.1);
 
-  --gold:      #9a6f2e;
-  --gold-bg:   #fdf5e6;
-  --gold-border:rgba(154,111,46,.25);
+  --gold:      #C9A66B;
+  --gold-bg:   rgba(201,166,107,.1);
+  --gold-border:rgba(201,166,107,.3);
 
   --red:       #c0392b;
   --red-bg:    #fff5f5;
@@ -99,19 +121,19 @@ $upcoming_orders = $stmt_up->fetchAll(PDO::FETCH_ASSOC);
   --amber-bg:  #fffbeb;
   --amber-border:rgba(146,88,10,.2);
 
-  --txt:       #1a2e2b;
-  --txt-muted: #6b7f7c;
-  --txt-dim:   #a8b8b5;
+  --txt:       #222222;
+  --txt-muted: #555555;
+  --txt-dim:   #777777;
 
-  --shadow-sm: 0 1px 4px rgba(20,59,54,.06), 0 4px 12px rgba(20,59,54,.04);
-  --shadow-md: 0 4px 16px rgba(20,59,54,.08), 0 12px 32px rgba(20,59,54,.05);
-  --shadow-lg: 0 8px 32px rgba(20,59,54,.12), 0 24px 56px rgba(20,59,54,.07);
+  --shadow-sm: 0 1px 4px rgba(34,34,34,.06), 0 4px 12px rgba(34,34,34,.04);
+  --shadow-md: 0 4px 16px rgba(34,34,34,.08), 0 12px 32px rgba(34,34,34,.05);
+  --shadow-lg: 0 8px 32px rgba(34,34,34,.12), 0 24px 56px rgba(34,34,34,.07);
 
   --mono: 'Space Mono', monospace;
   --sans: 'Syne', sans-serif;
 
-  --r:    10px;
-  --r-sm: 6px;
+  --r:    0px;
+  --r-sm: 0px;
   --ease: cubic-bezier(.4,0,.2,1);
 }
 
@@ -576,6 +598,21 @@ body::before {
   line-height: 1.6;
 }
 
+/* Food List */
+.food-list {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-top: 10px;
+}
+.food-item {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  font-size: 13px; font-weight: 600; color: var(--txt);
+  padding-bottom: 6px; border-bottom: 1px dashed var(--border);
+}
+.food-item:last-child { border-bottom: none; padding-bottom: 0; }
+.food-name { flex: 1; }
+.food-qty { font-family: var(--mono); font-weight: 700; color: var(--forest); margin-left: 10px; font-size: 14px; }
+.food-note { display: block; font-size: 11px; font-style: italic; color: #c0392b; background: rgba(192,57,43,0.08); padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; font-weight: 700; letter-spacing: 0.02em; }
+
 /* ── TICKET FOOTER ── */
 .ticket-foot {
   padding: 14px 18px;
@@ -822,6 +859,10 @@ $normalOrders = $totalOrders - $urgentOrders;
       <div class="kds-date" id="liveDate"></div>
     </div>
 
+    <button id="btnSound" class="btn-exit" style="cursor:pointer; padding: 7px 12px;" onclick="toggleSound()" title="Bật/Tắt âm thanh báo đơn mới">
+      <i class="fas fa-volume-up"></i>
+    </button>
+
     <a href="admin/admin_dashboard.php" class="btn-exit">
       <i class="fas fa-arrow-right-from-bracket" style="font-size:11px"></i>
       Thoát
@@ -907,6 +948,23 @@ $normalOrders = $totalOrders - $urgentOrders;
             </div>
           <?php endif; ?>
         </div>
+
+        <!-- Danh sách món lẻ -->
+        <?php if (!empty($order['foods'])): ?>
+        <div class="food-list">
+          <?php foreach ($order['foods'] as $f): ?>
+            <div class="food-item">
+              <div class="food-name">
+                <?= htmlspecialchars($f['food_name']) ?>
+                <?php if (!empty($f['special_notes'])): ?>
+                  <span class="food-note"><i class="fas fa-exclamation-circle" style="font-size:10px; margin-right:3px;"></i><?= htmlspecialchars($f['special_notes']) ?></span>
+                <?php endif; ?>
+              </div>
+              <div class="food-qty">x<?= $f['quantity'] ?></div>
+            </div>
+          <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
 
         <!-- Allergy warning -->
         <?php if (!empty($order['allergies'])): ?>
@@ -1007,6 +1065,10 @@ $normalOrders = $totalOrders - $urgentOrders;
 <!-- Toast container -->
 <div class="kds-toast-wrap" id="toastWrap"></div>
 
+<!-- Audio Elements -->
+<audio id="audioNewOrder" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+<audio id="audioUrgent" src="https://assets.mixkit.co/active_storage/sfx/995/995-preview.mp3" preload="auto"></audio>
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
 /* ── Live Clock ── */
@@ -1044,6 +1106,8 @@ setInterval(() => {
       }
     })
     .catch(err => console.error('Telegram cron error:', err));
+  fetch('admin/cron/cron_auto_noshow.php', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+    .catch(err => console.error('No-show cron error:', err));
 }, 60000);
 
 /* ── Toast helper ── */
@@ -1092,6 +1156,53 @@ function completeOrder(id, btn) {
     btn.innerHTML = '<i class="fas fa-check-circle"></i><span>Chế Biến Xong</span>';
   });
 }
+
+/* ── Sound Alerts ── */
+var soundEnabled = localStorage.getItem('kds_sound') !== '0'; // Mặc định bật
+function toggleSound() {
+    soundEnabled = !soundEnabled;
+    localStorage.setItem('kds_sound', soundEnabled ? '1' : '0');
+    updateSoundIcon();
+    if(soundEnabled) {
+        document.getElementById('audioNewOrder').play().catch(e=>{});
+    }
+}
+
+function updateSoundIcon() {
+    var btn = document.getElementById('btnSound');
+    if(btn) {
+        btn.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute" style="color:var(--red)"></i>';
+        btn.style.borderColor = soundEnabled ? 'var(--border-md)' : 'var(--red-border)';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    updateSoundIcon();
+    
+    // Play sound logic
+    var currentOrders = [<?= implode(',', array_column($orders, 'id')) ?>];
+    var prevOrdersStr = localStorage.getItem('kds_orders');
+    var prevOrders = prevOrdersStr ? prevOrdersStr.split(',').map(Number) : [];
+
+    var currentUrgent = <?= $urgentOrders ?>;
+    var prevUrgent = parseInt(localStorage.getItem('kds_urgent') || 0);
+
+    if (soundEnabled) {
+        var hasNewOrder = currentOrders.some(id => !prevOrders.includes(id));
+        if (hasNewOrder && prevOrdersStr !== null) {
+            // Có đơn mới
+            document.getElementById('audioNewOrder').play().catch(e=>{});
+            showToast('CÓ ĐƠN ĐẶT BÀN MỚI!', 'success');
+        } else if (currentUrgent > prevUrgent) {
+            // Có đơn chuyển sang khẩn cấp
+            document.getElementById('audioUrgent').play().catch(e=>{});
+            showToast('Chú ý: Có đơn vừa chuyển sang trạng thái KHẨN!', 'error');
+        }
+    }
+
+    localStorage.setItem('kds_orders', currentOrders.join(','));
+    localStorage.setItem('kds_urgent', currentUrgent);
+});
 </script>
 </body>
 </html>

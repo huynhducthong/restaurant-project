@@ -11,9 +11,10 @@ try {
     // - Chưa được nhắc (is_reminded = 0)
     // - Thời gian đến trong vòng 30 phút tính từ hiện tại, nhưng lớn hơn hiện tại (để không nhắc đơn trong quá khứ)
     $stmt = $db->query("
-        SELECT sb.*, t.table_code 
+        SELECT sb.*, t.table_code, u.email 
         FROM service_bookings sb
         LEFT JOIN restaurant_tables t ON sb.table_id = t.id
+        LEFT JOIN users u ON sb.user_id = u.id
         WHERE sb.status = 'Confirmed' 
           AND sb.is_reminded = 0 
           AND sb.booking_date > NOW() 
@@ -47,6 +48,11 @@ try {
 
         // Gửi Telegram
         $result = sendTelegramNotification($msg);
+
+        // Gửi Email Nhắc nhở cho khách hàng (nếu có email)
+        if (!empty($b['email'])) {
+            @sendBookingReminderEmail($b['email'], $b);
+        }
 
         // Đánh dấu là đã nhắc nhở
         $update = $db->prepare("UPDATE service_bookings SET is_reminded = 1 WHERE id = ?");

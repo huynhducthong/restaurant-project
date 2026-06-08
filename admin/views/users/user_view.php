@@ -14,6 +14,32 @@
         <div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
     <?php endif; ?>
 
+    <!-- Thanh tìm kiếm & Lọc -->
+    <div class="card shadow-sm border-0 mb-4 p-3 bg-white">
+        <form method="GET" action="UserController.php" class="row g-3 align-items-center">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" name="search" class="form-control border-start-0" placeholder="Tìm theo tên, SĐT, Username..." value="<?= htmlspecialchars($search) ?>">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select name="role" class="form-select">
+                    <option value="">-- Tất cả vai trò --</option>
+                    <option value="customer" <?= $filter_role === 'customer' ? 'selected' : '' ?>>Khách hàng</option>
+                    <option value="admin" <?= $filter_role === 'admin' ? 'selected' : '' ?>>Quản trị (Admin)</option>
+                    <option value="cashier" <?= $filter_role === 'cashier' ? 'selected' : '' ?>>Thu ngân</option>
+                    <option value="chef" <?= $filter_role === 'chef' ? 'selected' : '' ?>>Bếp</option>
+                    <option value="waiter" <?= $filter_role === 'waiter' ? 'selected' : '' ?>>Phục vụ</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary fw-bold"><i class="fas fa-filter me-2"></i>Lọc dữ liệu</button>
+                <a href="UserController.php" class="btn btn-light border"><i class="fas fa-redo me-2"></i>Làm mới</a>
+            </div>
+        </form>
+    </div>
+
     <div class="card shadow-sm border-0 overflow-hidden">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-dark">
@@ -91,6 +117,26 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Phân trang -->
+    <?php if ($total_pages > 1): ?>
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                    <a class="page-link" href="?page=<?= $page - 1 ?>&search=<?= urlencode($search) ?>&role=<?= urlencode($filter_role) ?>">Trước</a>
+                </li>
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                    <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
+                        <a class="page-link" href="?page=<?= $i ?>&search=<?= urlencode($search) ?>&role=<?= urlencode($filter_role) ?>"><?= $i ?></a>
+                    </li>
+                <?php endfor; ?>
+                <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
+                    <a class="page-link" href="?page=<?= $page + 1 ?>&search=<?= urlencode($search) ?>&role=<?= urlencode($filter_role) ?>">Sau</a>
+                </li>
+            </ul>
+        </nav>
+    <?php endif; ?>
+
 </div>
 
 <!-- Modal Thêm/Sửa User -->

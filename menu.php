@@ -618,7 +618,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 
     <!-- A La Carte -->
     <div class="menu-section a-la-carte-section">
-        <h2 class="menu-section-title">A La Carte</h2>
+        <h2 class="menu-section-title">MÓN ĂN</h2>
         <div class="menu-section-subtitle">Tuyển chọn nghệ thuật</div>
         
         <?php 
@@ -665,8 +665,15 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                             <?php if($has_al): ?>
                             <br><span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; margin-top:5px; display:inline-block;">* Chứa thành phần dị ứng với bạn</span>
                             <?php endif; ?>
-                            <?php if(isset($f['ai_score']) && $f['ai_score'] > 0): ?>
-                            <span style="color:var(--gold); font-size:13px; font-weight:500; font-family:var(--font-sans); font-style:normal; margin-left:10px;"><i class="fas fa-star"></i> Gợi ý VIP</span>
+                            <?php 
+                                $is_hist = isset($user_history_counts[$f['id']]);
+                                $flav_score = isset($f['ai_score']) ? $f['ai_score'] - ($is_hist ? min(10, $user_history_counts[$f['id']] * 2) : 0) : 0;
+                            ?>
+                            <?php if($is_hist): ?>
+                            <span style="color:#17a2b8; font-size:13px; font-weight:500; font-family:var(--font-sans); font-style:normal; margin-left:10px;"><i class="fas fa-history"></i> Món quen</span>
+                            <?php endif; ?>
+                            <?php if($flav_score > 0): ?>
+                            <span style="color:var(--gold); font-size:13px; font-weight:500; font-family:var(--font-sans); font-style:normal; margin-left:10px;"><i class="fas fa-star"></i> Gợi ý</span>
                             <?php endif; ?>
                         </p>
                     </div>

@@ -717,76 +717,7 @@ body{
           </div>
         </form>
 
-        <hr style="border-color:var(--border); margin:40px 0;">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h5 style="font-family:'Playfair Display',serif; color:var(--F); font-weight:600; margin-bottom:0;">
-            <i class="bi bi-journal-bookmark me-2"></i>Nhật ký Ẩm thực (Gastronomy Journal)
-          </h5>
-          <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#journalCollapse" aria-expanded="false" aria-controls="journalCollapse" style="font-size: 13px; border-color: var(--gold); color: var(--gold);">
-            <i class="bi bi-chevron-down"></i> Mở xem Nhật ký
-          </button>
-        </div>
-        
-        <div class="collapse" id="journalCollapse">
-          <div style="border-left:2px solid var(--F-pale); padding-left:20px; margin-left:10px; margin-bottom: 30px;">
-            <?php
-              // Lấy danh sách các đơn đã hoàn thành
-              $journal_stmt = $db->prepare("SELECT sb.*, rt.table_number, c.name as combo_name 
-                                            FROM service_bookings sb 
-                                            LEFT JOIN restaurant_tables rt ON sb.table_id = rt.id 
-                                            LEFT JOIN combos c ON sb.combo_id = c.id 
-                                            WHERE sb.user_id = ? AND sb.status = 'Completed' 
-                                            ORDER BY sb.booking_date DESC");
-              $journal_stmt->execute([$user_id]);
-              $journals = $journal_stmt->fetchAll();
-              
-              if (empty($journals)):
-            ?>
-              <p class="text-muted" style="font-size:13px; margin:0;">Bạn chưa có trải nghiệm dùng bữa nào được ghi lại.</p>
-            <?php else: foreach($journals as $j): ?>
-              <div style="position:relative; margin-bottom:25px;">
-                <!-- Timeline dot -->
-                <div style="position:absolute; left:-27px; top:0; width:12px; height:12px; border-radius:50%; background:var(--F); border:2px solid #fff; box-shadow:0 0 0 2px var(--F-pale);"></div>
-                
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                  <div style="font-size:12px; font-weight:600; color:var(--F);">
-                    <?= date('d/m/Y - H:i', strtotime($j['booking_date'])) ?>
-                  </div>
-                </div>
-                
-                <div class="bk-card" style="margin:0; border-left:none; padding:15px; background:var(--bg2);">
-                  <div style="font-size:14px; color:var(--ink); font-weight:500; margin-bottom:6px;">
-                    Trải nghiệm tại <?= $j['table_id'] ? 'Bàn '.$j['table_number'] : 'Nhà hàng' ?>
-                  </div>
-                  <ul style="margin:0; padding-left:15px; font-size:13px; color:var(--ink2);">
-                    <?php if($j['combo_id']): ?>
-                      <li>Thưởng thức: <strong><?= htmlspecialchars($j['combo_name']) ?></strong></li>
-                    <?php endif; ?>
-                    <?php if($j['guests']): ?>
-                      <li>Đi cùng: <?= $j['guests'] ?> người</li>
-                    <?php endif; ?>
-                    <?php if($j['event_type']): ?>
-                      <li>Dịp: <?= htmlspecialchars($j['event_type']) ?></li>
-                    <?php endif; ?>
-                    <?php if($j['decor_package']): ?>
-                      <li>Không gian: <?= htmlspecialchars($j['decor_package']) ?></li>
-                    <?php endif; ?>
-                    <?php if($j['has_cake'] || $j['has_flower']): ?>
-                      <li>Dịch vụ kèm: <?= implode(', ', array_filter([$j['has_cake']?'Bánh kem':null, $j['has_flower']?'Hoa tươi':null])) ?></li>
-                    <?php endif; ?>
-                    <li>Mã đặt bàn: #BK-<?= $j['id'] ?></li>
-                  </ul>
-                  
-                  <div class="mt-3">
-                    <button type="button" onclick="viewBookingDetails(<?= $j['id'] ?>)" class="btn btn-sm btn-outline-success" style="font-size: 11px; padding: 4px 10px;">
-                      <i class="bi bi-eye me-1"></i>Xem chi tiết đơn
-                    </button>
-                  </div>
-                </div>
-              </div>
-            <?php endforeach; endif; ?>
-          </div>
-        </div>
+
 
         <!-- ── TAB: ĐẶT BÀN ── -->
         <?php elseif($tab=='bookings'): ?>

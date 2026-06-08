@@ -45,7 +45,7 @@ if (isset($_POST['create_po'])) {
         }
         
         $db->commit();
-        header("Location: POController.php?msg=po_created");
+        header("Location: InventoryController.php?tab=po&msg=po_created");
         exit;
     } catch (Exception $e) {
         $db->rollBack();
@@ -184,7 +184,7 @@ if (isset($_POST['receive_po_final'])) {
         sendTelegramNotification($msg);
 
         $db->commit();
-        header("Location: POController.php?msg=success");
+        header("Location: InventoryController.php?tab=po&msg=success");
         exit;
     } catch (Exception $e) {
         $db->rollBack();
@@ -193,21 +193,12 @@ if (isset($_POST['receive_po_final'])) {
 }
 
 // ==========================================================
-// 3. TRUY VẤN DỮ LIỆU ĐỂ HIỂN THỊ LÊN VIEW
+// 3. REDIRECT ON GET REQUEST
 // ==========================================================
-
-// Danh sách Phiếu đặt hàng (Hiển thị ngoài bảng)
-$pos = $db->query("
-    SELECT p.*, s.name as supplier_name 
-    FROM purchase_orders p
-    LEFT JOIN suppliers s ON p.supplier_id = s.id
-    ORDER BY p.created_at DESC
-")->fetchAll(PDO::FETCH_ASSOC);
-
-// Danh sách phục vụ cho Modal Tạo PO Mới
-$suppliers = $db->query("SELECT id, name FROM suppliers ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
-$ingredients = $db->query("SELECT id, item_name, unit_name, cost_price FROM inventory ORDER BY item_name ASC")->fetchAll(PDO::FETCH_ASSOC);
-
-// Gọi giao diện
-require_once __DIR__ . '/../views/po/po_list.php';
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    // Chuyển hướng người dùng về trang Quản lý Kho, tab PO
+    $query = $_SERVER['QUERY_STRING'] ? '&' . $_SERVER['QUERY_STRING'] : '';
+    header("Location: InventoryController.php?tab=po" . $query);
+    exit;
+}
 ?>
