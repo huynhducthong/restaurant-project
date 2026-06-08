@@ -43,7 +43,8 @@ if ($type !== 'chef') {
 }
 
 $foods_raw  = $db->query("
-    SELECT f.*, t.name as theme_name 
+    SELECT f.*, t.name as theme_name,
+    (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients 
     FROM foods f 
     LEFT JOIN themes t ON f.theme_id = t.id 
     WHERE f.status=1 ORDER BY t.created_at DESC, f.name ASC
@@ -80,9 +81,40 @@ if (isset($_SESSION['user_id'])) {
 
 $user_flavor = [];
 $user_fav = [];
+$user_disliked = [];
 if ($user_info) {
     if ($user_info['flavor_profile']) $user_flavor = array_map('trim', explode(',', mb_strtolower($user_info['flavor_profile'], 'UTF-8')));
     if ($user_info['fav_ingredients']) $user_fav = array_map('trim', explode(',', mb_strtolower($user_info['fav_ingredients'], 'UTF-8')));
+    if ($user_info['disliked_ingredients']) $user_disliked = array_map('trim', explode(',', mb_strtolower($user_info['disliked_ingredients'], 'UTF-8')));
+}
+
+function hasAllergenBooking($food, $user_allergies) {
+    if (empty($user_allergies)) return false;
+    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '');
+    $food_allergens = array_map('trim', explode(',', mb_strtolower($all_food_ingredients, 'UTF-8')));
+    foreach($user_allergies as $ua) {
+        foreach($food_allergens as $fa) {
+            if (!empty($fa) && strpos($fa, $ua) !== false) return true;
+        }
+    }
+    return false;
+}
+
+function hasDislikeBooking($food, $user_dislikes) {
+    if (empty($user_dislikes)) return false;
+    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '');
+    $food_ingredients = array_map('trim', explode(',', mb_strtolower($all_food_ingredients, 'UTF-8')));
+    foreach($user_dislikes as $ud) {
+        foreach($food_ingredients as $fi) {
+            if (!empty($fi) && strpos($fi, $ud) !== false) return true;
+        }
+    }
+    return false;
+}
+
+$user_allergies = [];
+if ($user_info && $user_info['allergies']) {
+    $user_allergies = array_map('trim', explode(',', mb_strtolower($user_info['allergies'], 'UTF-8')));
 }
 
 function removeVietnameseAccentsBooking($str) {
@@ -599,6 +631,9 @@ select.input-lux {
                                                     <?php endif; ?>
                                                     <?php if($flav_score > 0): ?>
                                                         <span class="badge bg-warning text-dark ms-2" style="font-size: 10px; border: 1px solid var(--gold);"><i class="fas fa-magic me-1"></i> Gợi ý</span>
+                                                    <?php endif; ?>
+                                                    <?php if(hasAllergenBooking($fd, $user_allergies)): ?>
+                                                        <span class="badge bg-danger text-white ms-2" style="font-size: 10px;"><i class="fas fa-exclamation-triangle me-1"></i> Dị ứng</span>
                                                     <?php endif; ?>
                                                 </div>
                                                 <div style="font-size:12px; color:var(--gold)"><?= number_format($fd['price']) ?> đ</div>

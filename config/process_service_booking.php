@@ -43,7 +43,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $flower_preference = $_POST['flower_preference'] ?? null;
     $music_playlist = $_POST['music_playlist'] ?? null;
     $light_tone = $_POST['light_tone'] ?? null;
-    $msg = trim($_POST['message'] ?? '');
     
     // Xử lý yêu cầu Phục vụ riêng
     $dedicated_server = $_POST['dedicated_server'] ?? '';

@@ -33,11 +33,22 @@
                     <option value="waiter" <?= $filter_role === 'waiter' ? 'selected' : '' ?>>Phục vụ</option>
                 </select>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-5">
                 <button type="submit" class="btn btn-primary fw-bold"><i class="fas fa-filter me-2"></i>Lọc dữ liệu</button>
                 <a href="UserController.php" class="btn btn-light border"><i class="fas fa-redo me-2"></i>Làm mới</a>
+                <button type="button" class="btn btn-success fw-bold ms-2 shadow-sm" onclick="exportExcel()">
+                    <i class="fas fa-file-excel me-2"></i>Xuất Excel
+                </button>
             </div>
         </form>
+        <script>
+        function exportExcel() {
+            // Lấy URL hiện tại bao gồm các tham số search và role, sau đó thêm &export_excel=1
+            const url = new URL(window.location.href);
+            url.searchParams.set('export_excel', '1');
+            window.location.href = url.toString();
+        }
+        </script>
     </div>
 
     <div class="card shadow-sm border-0 overflow-hidden">

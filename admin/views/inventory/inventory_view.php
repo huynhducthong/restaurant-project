@@ -461,7 +461,10 @@ include '../../public/admin_layout_header.php';
             <div class="tab-pane" id="tab-reorder">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4 class="fw-bold m-0 text-danger"><i class="fas fa-cart-plus me-2"></i>Cần Đặt Hàng</h4>
-                    <a href="POController.php" class="btn btn-danger btn-sm fw-bold"><i class="fas fa-arrow-right me-1"></i>Đến trang PO</a>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-warning btn-sm fw-bold shadow-sm" onclick="switchTab('po'); setTimeout(() => { const m = new bootstrap.Modal(document.getElementById('modalCreatePO')); m.show(); document.getElementById('modalCreatePO').addEventListener('shown.bs.modal', function () { loadSuggestions({target: document.getElementById('modalCreatePO')}); }, { once: true }); }, 300);"><i class="fas fa-magic me-1"></i>Tạo PO tự động (Tất cả)</button>
+                        <button class="btn btn-danger btn-sm fw-bold shadow-sm" onclick="switchTab('po')"><i class="fas fa-arrow-right me-1"></i>Đến trang PO</button>
+                    </div>
                 </div>
                 <div class="card shadow-sm border-0 overflow-hidden">
                     <table class="table table-hover mb-0">
@@ -477,7 +480,13 @@ include '../../public/admin_layout_header.php';
                                 <tr>
                                     <td><strong><?= htmlspecialchars($r['item_name']) ?></strong></td>
                                     <td class="text-danger fw-bold"><?= (float)$r['total_stock'] ?> / <?= (float)$r['min_stock'] ?> <?= $r['unit_name'] ?></td>
-                                    <td><span class="badge bg-success fs-6">+ <?= number_format(($r['min_stock'] - $r['total_stock']) + ($r['min_stock'] * 0.5), 1) ?> <?= $r['unit_name'] ?></span></td>
+                                    <td>
+                                        <?php $suggest_qty = number_format(($r['min_stock'] - $r['total_stock']) + ($r['min_stock'] * 0.5), 1, '.', ''); ?>
+                                        <span class="badge bg-success fs-6 me-2">+ <?= $suggest_qty ?> <?= $r['unit_name'] ?></span>
+                                        <button class="btn btn-sm btn-outline-primary fw-bold shadow-sm" onclick="switchTab('po'); setTimeout(() => { const m = new bootstrap.Modal(document.getElementById('modalCreatePO')); m.show(); document.getElementById('modalCreatePO').addEventListener('shown.bs.modal', function () { const firstRow = $('#poBody tr').first(); firstRow.find('.item-select').val('<?= $r['id'] ?>').trigger('change'); firstRow.find('.qty-input').val('<?= $suggest_qty ?>').trigger('input'); }, { once: true }); }, 300);">
+                                            <i class="fas fa-file-invoice-dollar me-1"></i> Đặt hàng
+                                        </button>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                             <?php if (empty($reorder_list)): ?>
@@ -830,7 +839,7 @@ include '../../public/admin_layout_header.php';
 <!-- ================= CÁC FORM MODAL ẨN ================= -->
 
 <!-- MODALS PO -->
-<div class="modal fade" id="modalCreatePO" tabindex="-1">
+<div class="modal fade" id="modalCreatePO" tabindex="-1" data-bs-focus="false">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <form class="modal-content border-0 shadow-lg" method="POST" action="POController.php" style="border-radius:20px;overflow:hidden;">
             <input type="hidden" name="create_po" value="1">
@@ -1003,9 +1012,9 @@ include '../../public/admin_layout_header.php';
                 <div class="mb-3">
                     <label class="small fw-bold">Danh mục</label>
                     <select id="quick-ing-cat" class="form-select form-select-sm">
-                        <option value="Gia vị">Gia vị</option>
-                        <option value="Thực phẩm">Thực phẩm</option>
-                        <option value="Khác">Khác</option>
+                        <?php foreach ($cats as $c): ?>
+                            <option value="<?= htmlspecialchars($c['name']) ?>"><?= htmlspecialchars($c['name']) ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
                 <button type="button" class="btn btn-primary btn-sm w-100 fw-bold" id="btnSaveQuickIng">LƯU & CHỌN</button>
@@ -2057,7 +2066,6 @@ $(document).ready(function() {
         });
     };
 });
-</script
 
     // ================= KHỞI CHẠY =================
     $(function() {

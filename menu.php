@@ -12,14 +12,14 @@ foreach ($active_themes as &$t) {
     $t_combos->execute([$t['id']]);
     $t['combos'] = $t_combos->fetchAll(PDO::FETCH_ASSOC);
     
-    $t_foods = $db->prepare("SELECT f.*, c.name as cat_name FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.theme_id = ? AND f.is_active = 1");
+    $t_foods = $db->prepare("SELECT f.*, c.name as cat_name, (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.theme_id = ? AND f.is_active = 1");
     $t_foods->execute([$t['id']]);
     $t['foods'] = $t_foods->fetchAll(PDO::FETCH_ASSOC);
 }
 unset($t);
 
-$all_foods      = $db->query("SELECT f.*, c.name as cat_name FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND (f.theme_id IS NULL OR f.theme_id = 0) ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
-$chef_foods     = $db->query("SELECT f.*, c.name as cat_name FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND f.is_chef_recommended = 1 AND (f.theme_id IS NULL OR f.theme_id = 0) ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
+$all_foods      = $db->query("SELECT f.*, c.name as cat_name, (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND (f.theme_id IS NULL OR f.theme_id = 0) ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
+$chef_foods     = $db->query("SELECT f.*, c.name as cat_name, (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND f.is_chef_recommended = 1 AND (f.theme_id IS NULL OR f.theme_id = 0) ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -27,16 +27,18 @@ if (session_status() === PHP_SESSION_NONE) {
 $user_allergies = [];
 $user_flavor = [];
 $user_fav = [];
+$user_dislikes = [];
 $user_history_counts = [];
 
 if (isset($_SESSION['user_id'])) {
-    $stmt = $db->prepare("SELECT allergies, flavor_profile, fav_ingredients FROM users WHERE id = ?");
+    $stmt = $db->prepare("SELECT allergies, flavor_profile, fav_ingredients, disliked_ingredients FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
     $u = $stmt->fetch();
     if ($u) {
         if ($u['allergies']) $user_allergies = array_map('trim', explode(',', mb_strtolower($u['allergies'], 'UTF-8')));
         if ($u['flavor_profile']) $user_flavor = array_map('trim', explode(',', mb_strtolower($u['flavor_profile'], 'UTF-8')));
         if ($u['fav_ingredients']) $user_fav = array_map('trim', explode(',', mb_strtolower($u['fav_ingredients'], 'UTF-8')));
+        if ($u['disliked_ingredients']) $user_dislikes = array_map('trim', explode(',', mb_strtolower($u['disliked_ingredients'], 'UTF-8')));
     }
 
     $h_stmt = $db->prepare("
@@ -51,9 +53,27 @@ if (isset($_SESSION['user_id'])) {
 }
 
 function hasAllergen($food, $user_allergies) {
-    if (empty($user_allergies) || empty($food['allergens'])) return false;
-    $food_allergens = array_map('trim', explode(',', mb_strtolower($food['allergens'], 'UTF-8')));
-    return !empty(array_intersect($user_allergies, $food_allergens));
+    if (empty($user_allergies)) return false;
+    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '');
+    $food_allergens = array_map('trim', explode(',', mb_strtolower($all_food_ingredients, 'UTF-8')));
+    foreach($user_allergies as $ua) {
+        foreach($food_allergens as $fa) {
+            if (!empty($fa) && strpos($fa, $ua) !== false) return true;
+        }
+    }
+    return false;
+}
+
+function hasDislike($food, $user_dislikes) {
+    if (empty($user_dislikes)) return false;
+    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '');
+    $food_ingredients = array_map('trim', explode(',', mb_strtolower($all_food_ingredients, 'UTF-8')));
+    foreach($user_dislikes as $ud) {
+        foreach($food_ingredients as $fi) {
+            if (!empty($fi) && strpos($fi, $ud) !== false) return true;
+        }
+    }
+    return false;
 }
 
 function removeVietnameseAccents($str) {
@@ -497,6 +517,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                                 <div class="menu-list" style="margin-top: 30px;">
                                     <?php foreach($t['foods'] as $f): 
                                         $has_al = hasAllergen($f, $user_allergies);
+                                        $has_dl = hasDislike($f, $user_dislikes);
                                         $modalData = htmlspecialchars(json_encode([
                                             'name' => $f['name'], 'desc' => $f['description'],
                                             'price' => number_format($f['price'],0,',','.'),
@@ -514,6 +535,11 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                                         </div>
                                         <p class="menu-item-desc">
                                             <?= htmlspecialchars($f['description']) ?>
+                                            <?php if($has_al): ?>
+                                            <br><span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; margin-top:5px; display:inline-block;">* Chứa thành phần dị ứng với bạn</span>
+                                            <?php elseif($has_dl): ?>
+                                            <br><span style="color:#e67e22; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; margin-top:5px; display:inline-block;">* Có chứa nguyên liệu bạn không thích</span>
+                                            <?php endif; ?>
                                         </p>
                                     </div>
                                     <?php endforeach; ?>
@@ -587,6 +613,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                 <div class="menu-list">
                     <?php foreach($chef_foods as $f): 
                         $has_al = hasAllergen($f, $user_allergies);
+                        $has_dl = hasDislike($f, $user_dislikes);
                         $modalData = htmlspecialchars(json_encode([
                             'name' => $f['name'], 'desc' => $f['description'],
                             'price' => number_format($f['price'],0,',','.'),
@@ -594,9 +621,10 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                             'cat' => "Chef's Choice"
                         ]));
                     ?>
-                    <div class="menu-item <?= $has_al ? 'allergy-item' : '' ?>" 
+                    <div class="menu-item menu-hover-trigger <?= $has_al ? 'allergy-item' : '' ?>" 
+                         data-img="public/assets/img/menu/<?= htmlspecialchars($f['image'] ?: 'default-food.jpg') ?>"
                          onmouseenter="changeFeaturedImage('cat-img-chef', 'public/assets/img/menu/<?= htmlspecialchars($f['image'] ?: 'default.jpg') ?>')"
-                         onclick="openEdModal(<?= $modalData ?>)">
+                         onclick="openEdModal(<?= $modalData ?>)" style="cursor:pointer; transition: background 0.3s ease;">
                         <div class="menu-item-header">
                             <span class="menu-item-name"><?= htmlspecialchars($f['name']) ?></span>
                             <span class="menu-item-dots"></span>
@@ -604,6 +632,11 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                         </div>
                         <p class="menu-item-desc">
                             <?= htmlspecialchars($f['description']) ?>
+                            <?php if($has_al): ?>
+                            <br><span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; margin-top:5px; display:inline-block;">* Chứa thành phần dị ứng với bạn</span>
+                            <?php elseif($has_dl): ?>
+                            <br><span style="color:#e67e22; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; margin-top:5px; display:inline-block;">* Có chứa nguyên liệu bạn không thích</span>
+                            <?php endif; ?>
                         </p>
                     </div>
                     <?php endforeach; ?>
@@ -643,6 +676,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                 <div class="menu-list">
                     <?php foreach($cat_foods as $f): 
                         $has_al = hasAllergen($f, $user_allergies);
+                        $has_dl = hasDislike($f, $user_dislikes);
                         
                         $modalData = htmlspecialchars(json_encode([
                             'name' => $f['name'],
@@ -664,6 +698,8 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                             <?= htmlspecialchars($f['description']) ?>
                             <?php if($has_al): ?>
                             <br><span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; margin-top:5px; display:inline-block;">* Chứa thành phần dị ứng với bạn</span>
+                            <?php elseif($has_dl): ?>
+                            <br><span style="color:#e67e22; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; margin-top:5px; display:inline-block;">* Có chứa nguyên liệu bạn không thích</span>
                             <?php endif; ?>
                             <?php 
                                 $is_hist = isset($user_history_counts[$f['id']]);

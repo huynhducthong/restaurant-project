@@ -579,6 +579,9 @@ $pos = $db->query("
     ORDER BY p.created_at DESC
 ")->fetchAll(PDO::FETCH_ASSOC);
 
+// DANH SÁCH NGUYÊN LIỆU CHO MODAL TẠO PO
+$ingredients = $db->query("SELECT id, item_name, unit_name, cost_price FROM inventory WHERE is_active = 1 ORDER BY item_name ASC")->fetchAll(PDO::FETCH_ASSOC);
+
 $msg = $_GET['msg'] ?? '';
 
 // Gọi View
