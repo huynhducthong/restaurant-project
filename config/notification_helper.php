@@ -179,7 +179,7 @@ function generateEndOfDayRevenueReport(PDO $db, ?string $forDateYmd = null): str
     $count_all = (int) $stmt->fetchColumn();
 
     $stmt = $db->prepare("
-        SELECT IFNULL(SUM(total_amount), 0) FROM service_bookings
+        SELECT IFNULL(SUM(CASE WHEN status = 'No-Show' THEN deposit_amount ELSE total_amount END), 0) FROM service_bookings
         WHERE DATE(booking_date) = ? AND is_archived = 0 AND status != 'Cancelled'
     ");
     $stmt->execute([$forDateYmd]);
@@ -291,6 +291,78 @@ function sendBookingEmailConfirmation($emailNguoiNhan, $booking_info) {
                     <p style='color: #555; line-height: 1.6;'>Vui lòng có mặt đúng giờ để chúng tôi có thể phục vụ quý khách một cách chu đáo nhất. Mọi thay đổi về lịch trình xin vui lòng liên hệ Hotline: <strong>0123 456 789</strong>.</p>
                     
                     <p style='color: #555; line-height: 1.6; margin-bottom: 0;'>Hân hạnh được đón tiếp quý khách!</p>
+                </div>
+            </div>";
+
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+/**
+ * Gửi Email Nhắc Nhở Đặt Bàn (30 Phút) cho Khách hàng
+ */
+function sendBookingReminderEmail($emailNguoiNhan, $booking_info) {
+    if (empty($emailNguoiNhan)) return false;
+    
+    // Nạp thư viện nếu chưa có
+    if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+        require_once __DIR__ . '/../vendor/autoload.php';
+    }
+
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host       = $_ENV['MAIL_HOST'] ?? 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $_ENV['MAIL_USERNAME'] ?? ''; 
+        $mail->Password   = $_ENV['MAIL_PASSWORD'] ?? ''; 
+        $mail->SMTPSecure = $_ENV['MAIL_ENCRYPTION'] ?? 'tls';
+        $mail->Port       = $_ENV['MAIL_PORT'] ?? 587;
+        $mail->CharSet    = 'UTF-8';
+
+        $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'] ?? 'noreply@restaurantly.com', 'Restaurantly Admin');
+        $mail->addAddress($emailNguoiNhan);
+
+        $mail->isHTML(true);
+        $mail->Subject = 'Nhắc Nhở: Sắp Đến Giờ Đặt Bàn - Restaurantly';
+        
+        $svc = htmlspecialchars($booking_info['service_type'] ?? 'Dịch vụ', ENT_QUOTES);
+        if ($svc === 'table') $svc = 'Đặt bàn tiêu chuẩn';
+        if ($svc === 'birthday') $svc = 'Tiệc kỷ niệm / Phòng VIP';
+        if ($svc === 'chef') $svc = 'Đầu bếp tại gia';
+        if ($svc === 'bespoke') $svc = 'Thiết kế riêng';
+
+        $timeStr = date('H:i - d/m/Y', strtotime($booking_info['booking_date']));
+        $name = htmlspecialchars($booking_info['customer_name'] ?? 'Quý khách', ENT_QUOTES);
+
+        $mail->Body = "
+            <div style='max-width: 600px; margin: auto; border: 2px solid #C9A66B; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
+                <div style='background-color: #0c0b09; padding: 20px; text-align: center;'>
+                    <h1 style='color: #C9A66B; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
+                    <p style='color: #fff; margin: 5px 0 0; font-size: 14px;'>Fine Dining Experience</p>
+                </div>
+                <div style='padding: 30px; background-color: #fff;'>
+                    <h2 style='color: #2c2c2c; margin-top: 0;'>Kính chào $name,</h2>
+                    <p style='color: #555; line-height: 1.6;'>Đây là lời nhắc nhở tự động từ nhà hàng Restaurantly. Bạn có một lịch hẹn đặt bàn sẽ diễn ra trong khoảng <strong>30 phút nữa</strong>.</p>
+                    
+                    <div style='background-color: #f9f6f0; padding: 20px; border-left: 4px solid #C9A66B; margin: 25px 0;'>
+                        <h3 style='margin-top: 0; color: #C9A66B;'>Thông Tin Đặt Bàn (#{$booking_info['id']})</h3>
+                        <table style='width: 100%; border-collapse: collapse; font-size: 15px;'>
+                            <tr><td style='padding: 8px 0; color: #666; width: 40%;'>Thời gian:</td><td style='padding: 8px 0; font-weight: bold; color: #d32f2f;'>$timeStr</td></tr>
+                            <tr><td style='padding: 8px 0; color: #666;'>Dịch vụ:</td><td style='padding: 8px 0; font-weight: bold;'>$svc</td></tr>
+                            <tr><td style='padding: 8px 0; color: #666;'>Số khách:</td><td style='padding: 8px 0; font-weight: bold;'>{$booking_info['guests']} người</td></tr>
+                        </table>
+                    </div>
+                    
+                    <p style='color: #555; line-height: 1.6;'>Vui lòng có mặt đúng giờ để chúng tôi có thể phục vụ quý khách một cách chu đáo nhất. Nếu quý khách đến muộn quá 15 phút mà không thông báo trước, hệ thống có thể sẽ tự động hủy lịch đặt.</p>
+                    
+                    <p style='color: #555; line-height: 1.6;'>Mọi thay đổi về lịch trình xin vui lòng liên hệ gấp qua Hotline: <strong>0123 456 789</strong>.</p>
+                    
+                    <p style='color: #555; line-height: 1.6; margin-bottom: 0;'>Hẹn gặp lại quý khách tại nhà hàng!</p>
                 </div>
             </div>";
 

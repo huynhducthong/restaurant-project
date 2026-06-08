@@ -138,7 +138,7 @@ include 'views/client/layouts/header.php';
 ?>
 
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
 /* === MINIMALIST TOKENS === */
 :root {
@@ -348,13 +348,13 @@ select.input-lux {
                 </div>
                 <div class="row-lux">
                     <div class="input-group-lux">
-                        <input type="datetime-local" name="booking_date" id="bd" class="input-lux" placeholder=" " required onchange="us()">
+                        <input type="text" name="booking_date" id="bd" class="input-lux" placeholder="Chọn Ngày & Giờ *" required onchange="us()">
                         <label class="label-lux">Ngày & Giờ <?= $type==='chef' ? 'phục vụ' : 'đến' ?> *</label>
                     </div>
                     <div class="input-group-lux">
                         <div class="guest-lux">
                             <button type="button" class="btn-qty" onclick="cg(-1)">-</button>
-                            <input type="number" name="guests" id="gi" value="2" min="1" max="50" readonly onchange="us()">
+                            <input type="number" name="guests" id="gi" value="2" min="1" max="16" readonly onchange="us()">
                             <button type="button" class="btn-qty" onclick="cg(1)">+</button>
                         </div>
                         <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: #fff; padding: 0 5px; letter-spacing: 1px; text-transform: uppercase; z-index: 2; font-weight: 600;">Số lượng khách *</label>
@@ -590,8 +590,15 @@ select.input-lux {
                                             <div>
                                                 <div style="font-size:14px;">
                                                     <?= htmlspecialchars($fd['name']) ?>
-                                                    <?php if(isset($fd['ai_score']) && $fd['ai_score'] > 0): ?>
-                                                        <span class="badge bg-warning text-dark ms-2" style="font-size: 10px; border: 1px solid var(--gold);"><i class="fas fa-magic me-1"></i> Gợi ý VIP</span>
+                                                    <?php 
+                                                        $is_hist = isset($user_history_counts[$fd['id']]);
+                                                        $flav_score = isset($fd['ai_score']) ? $fd['ai_score'] - ($is_hist ? min(10, $user_history_counts[$fd['id']] * 2) : 0) : 0;
+                                                    ?>
+                                                    <?php if($is_hist): ?>
+                                                        <span class="badge bg-info text-white ms-2" style="font-size: 10px;"><i class="fas fa-history me-1"></i> Đã từng gọi</span>
+                                                    <?php endif; ?>
+                                                    <?php if($flav_score > 0): ?>
+                                                        <span class="badge bg-warning text-dark ms-2" style="font-size: 10px; border: 1px solid var(--gold);"><i class="fas fa-magic me-1"></i> Gợi ý</span>
                                                     <?php endif; ?>
                                                 </div>
                                                 <div style="font-size:12px; color:var(--gold)"><?= number_format($fd['price']) ?> đ</div>
@@ -717,25 +724,42 @@ select.input-lux {
                     <div class="col-md-4 mb-3 mb-md-0">
                         <label class="fw-bold mb-3" style="color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;"><i class="fas fa-leaf me-1"></i> Chế độ ăn</label>
                         <div class="d-flex flex-column gap-2" style="font-size: 0.95rem;">
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Healthy" class="form-check-input me-2" style="cursor:pointer"> Healthy</label>
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Vegetarian" class="form-check-input me-2" style="cursor:pointer"> Vegetarian</label>
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Vegan" class="form-check-input me-2" style="cursor:pointer"> Vegan</label>
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Keto" class="form-check-input me-2" style="cursor:pointer"> Keto</label>
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Không yêu cầu" class="form-check-input me-2" style="cursor:pointer" checked> Không yêu cầu</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Healthy" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Healthy</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Vegetarian" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Vegetarian</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Vegan" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Vegan</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Keto" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Keto</label>
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <label class="fw-bold mb-3" style="color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;"><i class="fas fa-glass-cheers me-1"></i> Mục đích</label>
                         <div class="d-flex flex-column gap-2" style="font-size: 0.95rem;">
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Hẹn hò" class="form-check-input me-2" style="cursor:pointer"> Hẹn hò</label>
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Sinh nhật" class="form-check-input me-2" style="cursor:pointer"> Sinh nhật</label>
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Kỷ niệm" class="form-check-input me-2" style="cursor:pointer"> Kỷ niệm</label>
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Tiếp khách" class="form-check-input me-2" style="cursor:pointer"> Tiếp khách</label>
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Cầu hôn" class="form-check-input me-2" style="cursor:pointer"> Cầu hôn</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Hẹn hò" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Hẹn hò</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Sinh nhật" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Sinh nhật</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Kỷ niệm" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Kỷ niệm</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Tiếp khách" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Tiếp khách</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Cầu hôn" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Cầu hôn</label>
                         </div>
                     </div>
                 </div>
+
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    let radios = document.querySelectorAll('.toggle-radio');
+                    radios.forEach(radio => {
+                        radio.addEventListener('click', function(e) {
+                            if (this.dataset.wasChecked === 'true') {
+                                this.checked = false;
+                                this.dataset.wasChecked = 'false';
+                            } else {
+                                // Reset all other radios in the same group
+                                document.querySelectorAll(`input[name="${this.name}"]`).forEach(r => r.dataset.wasChecked = 'false');
+                                this.dataset.wasChecked = 'true';
+                            }
+                        });
+                    });
+                });
+                </script>
 
                 <div class="input-group-lux mb-0 mt-4">
                     <textarea name="message" class="input-lux" rows="2" placeholder=" "></textarea>
@@ -864,7 +888,7 @@ select.input-lux {
                         <div class="<?= $type === 'birthday' ? 'map-grid' : 'vip-grid' ?>">
                             <?php foreach($t_room as $r): $st=$r['is_available']?'available':'booked'; ?>
                             <div class="seat-lux <?= $st ?>" style="padding: 25px 10px;" data-id="<?= $r['id'] ?>" data-price="<?= $r['price'] ?>" data-code="Phòng VIP <?= htmlspecialchars($r['table_code']) ?>" data-cat="room">
-                                <span class="seat-code">VIP <?= htmlspecialchars($r['table_code']) ?></span>
+                                <span class="seat-code"><?= htmlspecialchars($r['table_code']) ?></span>
                                 <span class="seat-info"><?= htmlspecialchars($r['table_location']??'') ?><br>Tối đa 16 khách<br><?= number_format($r['price']) ?>đ</span>
                             </div>
                             <?php endforeach; ?>
@@ -889,6 +913,8 @@ select.input-lux {
 <?php endif; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
 <script>
 // ==========================================
 // KỊCH BẢN JAVASCRIPT GIỮ NGUYÊN HOÀN TOÀN
@@ -918,7 +944,12 @@ function togBespoke(cb) {
 
 function cg(d){
     var i=document.getElementById('gi');
-    i.value=Math.max(1,Math.min(50,parseInt(i.value||2)+d));
+    var guests = Math.max(1,Math.min(16,parseInt(i.value||2)+d));
+    i.value = guests;
+    if (guests > 6 && selCat === 'open') {
+        alert('Bàn thường chỉ chứa tối đa 6 khách. Vui lòng chọn Phòng VIP hoặc giảm số lượng khách.');
+        clrSeat();
+    }
     us();
 }
 
@@ -1052,9 +1083,15 @@ function saveFoodOption() {
     document.querySelectorAll('.seat-lux').forEach(function(s){
         s.addEventListener('click',function(){
             if(!s.classList.contains('available')) return;
+            var cat = s.dataset.cat || '';
+            var guests = parseInt(document.getElementById('gi').value) || 1;
+            if (cat === 'open' && guests > 6) {
+                alert('Bàn thường chỉ chứa tối đa 6 khách. Khách hàng đi trên 6 người vui lòng chọn Phòng VIP.');
+                return;
+            }
             document.querySelectorAll('.seat-lux').forEach(function(x){x.classList.remove('selected');});
             s.classList.add('selected');
-            selId=s.dataset.id; selCode=s.dataset.code; selPrice=parseFloat(s.dataset.price||0); selCat=s.dataset.cat||'';
+            selId=s.dataset.id; selCode=s.dataset.code; selPrice=parseFloat(s.dataset.price||0); selCat=cat;
         });
     });
 
@@ -1093,10 +1130,17 @@ function saveFoodOption() {
 
 function fromDrop(sel){
     var opt=sel.options[sel.selectedIndex];
+    var cat = opt.dataset.cat||'';
+    var guests = parseInt(document.getElementById('gi').value) || 1;
+    if (cat === 'open' && guests > 6) {
+        alert('Bàn thường chỉ chứa tối đa 6 khách. Khách hàng đi trên 6 người vui lòng chọn Phòng VIP.');
+        sel.value = '';
+        return;
+    }
     selId=sel.value;
     selPrice=parseFloat(opt.dataset.price||0);
     selCode=opt.dataset.code||opt.text.split('—')[0].trim();
-    selCat=opt.dataset.cat||'';
+    selCat=cat;
     document.getElementById('tid').value=selId;
     document.querySelectorAll('.seat-lux').forEach(function(x){x.classList.remove('selected');});
     var m=document.querySelector('.seat-lux[data-id="'+selId+'"]');
@@ -1287,9 +1331,24 @@ document.getElementById('bk-form').addEventListener('submit',function(){
 
 /* KHỞI TẠO TIME TỐI THIỂU */
 (function(){
-    var inp=document.getElementById('bd');
-    var now=new Date(); now.setHours(now.getHours()+2);
-    if(inp) inp.min=now.toISOString().slice(0,16);
+    var inp = document.getElementById('bd');
+    var now = new Date(); 
+    now.setHours(now.getHours() + 2);
+    
+    if(inp) {
+        flatpickr(inp, {
+            locale: "vn",
+            enableTime: true,
+            dateFormat: "Y-m-d\\TH:i",
+            altInput: true,
+            altFormat: "d/m/Y h:i K", // Hiển thị AM/PM chuẩn xác
+            minDate: now,
+            time_24hr: false,
+            minuteIncrement: 15,
+            disableMobile: "true", // Bắt buộc dùng flatpickr trên điện thoại
+            onChange: function() { us(); }
+        });
+    }
     us();
 })();
 </script>

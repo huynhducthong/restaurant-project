@@ -571,6 +571,14 @@ $warehouse_values = $db->query("
     GROUP BY w.id, w.name
 ")->fetchAll(PDO::FETCH_ASSOC);
 
+// DỮ LIỆU PHIẾU ĐẶT HÀNG (PO)
+$pos = $db->query("
+    SELECT p.*, s.name as supplier_name 
+    FROM purchase_orders p
+    LEFT JOIN suppliers s ON p.supplier_id = s.id
+    ORDER BY p.created_at DESC
+")->fetchAll(PDO::FETCH_ASSOC);
+
 $msg = $_GET['msg'] ?? '';
 
 // Gọi View

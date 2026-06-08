@@ -302,6 +302,54 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
         exit;
     }
     
+    // B2. NO-SHOW (Khách không đến)
+    elseif ($action == 'no_show') {
+        $db->beginTransaction();
+        try {
+            $stmt_chk = $db->prepare("SELECT table_id, status FROM service_bookings WHERE id = ?");
+            $stmt_chk->execute([$id]);
+            $b = $stmt_chk->fetch();
+            if ($b) {
+                // Hoàn kho nếu đơn đã Confirmed
+                if ($b['status'] === 'Confirmed') {
+                    $stmt_deduct = $db->prepare("SELECT ingredient_id, warehouse_id, quantity FROM booking_inventory_deductions WHERE booking_id = ?");
+                    $stmt_deduct->execute([$id]);
+                    $deductions = $stmt_deduct->fetchAll(PDO::FETCH_ASSOC);
+
+                    foreach ($deductions as $d) {
+                        $db->prepare("UPDATE inventory_stocks SET quantity = quantity + ? WHERE ingredient_id = ? AND warehouse_id = ?")
+                           ->execute([$d['quantity'], $d['ingredient_id'], $d['warehouse_id']]);
+                        
+                        $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, 'import', ?, ?)")
+                           ->execute([$d['ingredient_id'], $d['warehouse_id'], $d['quantity'], ($current_user ?? 'Admin') . ' (Hoàn kho No-Show #' . $id . ')']);
+                        
+                        $db->prepare("UPDATE inventory_stocks SET quantity = quantity - ? WHERE ingredient_id = ? AND warehouse_id = 6")
+                           ->execute([$d['quantity'], $d['ingredient_id']]);
+                    }
+                    $db->prepare("DELETE FROM booking_inventory_deductions WHERE booking_id = ?")->execute([$id]);
+                }
+
+                // Giải phóng bàn nếu có
+                if ($b['table_id']) {
+                    $db->prepare("UPDATE restaurant_tables SET is_available = 1 WHERE id = ?")->execute([$b['table_id']]);
+                }
+                
+                // Cập nhật trạng thái thành No-Show (giữ trong danh sách hoặc lưu trữ)
+                $db->prepare("UPDATE service_bookings SET status = 'No-Show', is_archived = 1 WHERE id = ?")->execute([$id]);
+            }
+            $db->commit();
+        } catch (Exception $e) {
+            $db->rollBack();
+        }
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'success', 'table_id' => $b['table_id'] ?? null]);
+            exit;
+        }
+        header("Location: manage_services.php?msg=noshow");
+        exit;
+    }
+
     // C. HOÀN THÀNH (COMPLETED)
     elseif ($action == 'complete') {
         $db->beginTransaction();
@@ -535,6 +583,8 @@ include '../../public/admin_layout_header.php';
                                     <?php endif; ?>
                                 <?php elseif ($s['status'] == 'Completed'): ?>
                                     <span class="badge-status bg-info text-dark">Đã hoàn thành</span>
+                                <?php elseif ($s['status'] == 'No-Show'): ?>
+                                    <span class="badge-status bg-dark text-white border"><i class="fas fa-user-slash me-1"></i>Không đến</span>
                                 <?php else: ?>
                                     <span class="badge-status bg-secondary"><?= $s['status'] ?></span>
                                 <?php endif; ?>
@@ -565,6 +615,9 @@ include '../../public/admin_layout_header.php';
                                 <?php elseif ($s['status'] == 'Confirmed'): ?>
                                     <button class="btn btn-sm btn-outline-success btn-complete-service" data-id="<?= $s['id'] ?>" title="Khách đã dùng bữa xong">
                                         <i class="fas fa-check-double me-1"></i> Hoàn thành
+                                    </button>
+                                    <button class="btn btn-sm btn-dark btn-noshow-service" data-id="<?= $s['id'] ?>" title="Khách không đến (No-Show)">
+                                        <i class="fas fa-user-slash"></i>
                                     </button>
                                 <?php endif; ?>
 
@@ -822,6 +875,36 @@ include '../../public/admin_layout_header.php';
             btn.prop('disabled', true);
             $.ajax({
                 url: `manage_services.php?action=delete&id=${id}`,
+                type: 'GET',
+                dataType: 'json',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                success: function (response) {
+                    if (response.status === 'success') {
+                        btn.closest('tr').fadeOut(300, function() { $(this).remove(); });
+                        if (response.table_id) {
+                            updateSeatStatus(response.table_id, true);
+                        }
+                    } else {
+                        btn.prop('disabled', false);
+                    }
+                },
+                error: function() {
+                    alert('Lỗi kết nối');
+                    btn.prop('disabled', false);
+                }
+            });
+        });
+
+        // --- NO-SHOW (KHÁCH KHÔNG ĐẾN) BẰNG AJAX ---
+        $(document).on('click', '.btn-noshow-service', function (e) {
+            e.preventDefault();
+            const btn = $(this);
+            const id = btn.data('id');
+            if (!confirm('Khách không đến (No-Show)? Thao tác này sẽ hoàn trả bàn và nguyên liệu, nhưng vẫn tính tiền cọc vào doanh thu.')) return;
+            
+            btn.prop('disabled', true);
+            $.ajax({
+                url: `manage_services.php?action=no_show&id=${id}`,
                 type: 'GET',
                 dataType: 'json',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' },

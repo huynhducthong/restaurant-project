@@ -60,15 +60,39 @@ if (isset($_POST['save_user'])) {
         if ($id) {
             // CẬP NHẬT
             if (!empty($password)) {
-                // Nếu có nhập pass mới -> Mã hóa pass mới và cập nhật
                 $hashed_pass = password_hash($password, PASSWORD_BCRYPT);
                 $stmt = $db->prepare("UPDATE users SET full_name=?, phone=?, email=?, role=?, password=? WHERE id=?");
                 $stmt->execute([$full_name, $phone, $email, $role, $hashed_pass, $id]);
             } else {
-                // Không nhập pass -> Chỉ cập nhật thông tin
                 $stmt = $db->prepare("UPDATE users SET full_name=?, phone=?, email=?, role=? WHERE id=?");
                 $stmt->execute([$full_name, $phone, $email, $role, $id]);
             }
+            
+            // ĐỒNG BỘ NHÂN SỰ KHI CẬP NHẬT
+            $staff_roles = ['waiter', 'chef', 'cashier', 'staff', 'admin'];
+            $u_info = $db->prepare("SELECT employee_id FROM users WHERE id = ?");
+            $u_info->execute([$id]);
+            $current_employee_id = $u_info->fetchColumn();
+
+            if (in_array($role, $staff_roles)) {
+                if (!$current_employee_id) {
+                    // Trở thành nhân viên mới
+                    $stmt_emp = $db->prepare("INSERT INTO employees (full_name, phone, email, position, status) VALUES (?, ?, ?, ?, 'working')");
+                    $stmt_emp->execute([$full_name, $phone, $email, $role]);
+                    $employee_id = $db->lastInsertId();
+                    $db->prepare("UPDATE users SET employee_id = ? WHERE id = ?")->execute([$employee_id, $id]);
+                } else {
+                    // Cập nhật chức vụ nếu đã là nhân viên
+                    $stmt_emp = $db->prepare("UPDATE employees SET full_name=?, phone=?, email=?, position=?, status='working' WHERE id=?");
+                    $stmt_emp->execute([$full_name, $phone, $email, $role, $current_employee_id]);
+                }
+            } else {
+                // Hạ cấp thành khách hàng -> Nghỉ việc
+                if ($current_employee_id) {
+                    $db->prepare("UPDATE employees SET status='resigned' WHERE id=?")->execute([$current_employee_id]);
+                }
+            }
+            
             $_SESSION['msg'] = "Cập nhật người dùng thành công!";
         } else {
             // THÊM MỚI
@@ -84,14 +108,12 @@ if (isset($_POST['save_user'])) {
             $stmt->execute([$username, $hashed_pass, $full_name, $phone, $email, $role]);
             $user_id = $db->lastInsertId();
 
-            // Tự động tạo hồ sơ nhân viên nếu vai trò là nhân viên
-            $staff_roles = ['waiter', 'chef', 'cashier', 'staff'];
+            // Tự động tạo hồ sơ nhân viên
+            $staff_roles = ['waiter', 'chef', 'cashier', 'staff', 'admin'];
             if (in_array($role, $staff_roles)) {
                 $stmt_emp = $db->prepare("INSERT INTO employees (full_name, phone, email, position, status) VALUES (?, ?, ?, ?, 'working')");
                 $stmt_emp->execute([$full_name, $phone, $email, $role]);
                 $employee_id = $db->lastInsertId();
-                
-                // Cập nhật lại employee_id cho user
                 $db->prepare("UPDATE users SET employee_id = ? WHERE id = ?")->execute([$employee_id, $user_id]);
             }
 
@@ -105,15 +127,51 @@ if (isset($_POST['save_user'])) {
 }
 
 // 4. TRUY VẤN DANH SÁCH NGƯỜI DÙNG
-$users = $db->query("
+// 4. TRUY VẤN DANH SÁCH NGƯỜI DÙNG (TÌM KIẾM & PHÂN TRANG)
+$search = trim($_GET['search'] ?? '');
+$filter_role = $_GET['role'] ?? '';
+$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$limit = 20;
+$offset = ($page - 1) * $limit;
+
+$where = ["1=1"];
+$params = [];
+
+if ($search !== '') {
+    $where[] = "(u.full_name LIKE ? OR u.phone LIKE ? OR u.username LIKE ?)";
+    $params[] = "%$search%";
+    $params[] = "%$search%";
+    $params[] = "%$search%";
+}
+
+if ($filter_role !== '') {
+    $where[] = "u.role = ?";
+    $params[] = $filter_role;
+}
+
+$where_clause = implode(' AND ', $where);
+
+// Đếm tổng để phân trang
+$count_query = "SELECT COUNT(*) FROM users u WHERE $where_clause";
+$stmt_count = $db->prepare($count_query);
+$stmt_count->execute($params);
+$total_records = $stmt_count->fetchColumn();
+$total_pages = ceil($total_records / $limit);
+
+$query = "
     SELECT u.*, 
            COUNT(sb.id) as total_bookings, 
            SUM(CASE WHEN sb.status = 'Completed' THEN sb.total_amount ELSE 0 END) as total_spent
     FROM users u
     LEFT JOIN service_bookings sb ON u.id = sb.user_id
+    WHERE $where_clause
     GROUP BY u.id
     ORDER BY u.created_at DESC
-")->fetchAll(PDO::FETCH_ASSOC);
+    LIMIT $limit OFFSET $offset
+";
+$stmt_users = $db->prepare($query);
+$stmt_users->execute($params);
+$users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
 
 // Gọi View
 require_once __DIR__ . '/../views/users/user_view.php';

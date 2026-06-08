@@ -41,6 +41,20 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
     <div class="row g-4">
         <!-- ================= CỘT MENU TRÁI (ĐỒNG BỘ VỚI KHO) ================= -->
         <div class="col-lg-3">
+            <div class="card sidebar-card mb-4 overflow-hidden">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="fw-bold m-0 text-secondary text-uppercase small">Thống kê nhanh</h6>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <?php foreach ($top_used as $t): ?>
+                        <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-3 py-2 small">
+                            <span class="text-muted"><?= htmlspecialchars($t['item_name']) ?></span>
+                            <span class="fw-bold text-dark"><?= (float)$t['total'] ?> <?= $t['unit_name'] ?></span>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+
             <div class="card sidebar-card p-3 mb-4">
                 <h6 class="fw-bold text-secondary text-uppercase small mb-3">Chức năng chính</h6>
                 <a href="InventoryController.php?tab=all" class="btn btn-menu btn-light w-100 mb-2 py-2 fw-bold">
@@ -48,9 +62,15 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
                 </a>
                 <a href="InventoryController.php?tab=transfers" class="btn btn-menu btn-light w-100 mb-2 py-2 fw-bold">
                     <i class="fas fa-exchange-alt me-2"></i> CHUYỂN KHO
+                    <?php if ($pending_transfers_count > 0): ?>
+                        <span class="badge bg-danger ms-auto"><?= $pending_transfers_count ?></span>
+                    <?php endif; ?>
                 </a>
                 <a href="InventoryController.php?tab=distribution" class="btn btn-menu btn-light w-100 mb-2 py-2 fw-bold">
                     <i class="fas fa-th me-2"></i> BÁO CÁO PHÂN BỔ
+                </a>
+                <a href="InventoryController.php?tab=history" class="btn btn-menu btn-light w-100 mb-2 py-2 fw-bold">
+                    <i class="fas fa-history me-2"></i> LỊCH SỬ GD
                 </a>
                 <hr class="my-3 opacity-10">
                 <h6 class="fw-bold text-secondary text-uppercase small mb-3">Mở rộng</h6>
@@ -63,7 +83,23 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
                 <a href="InventoryController.php?tab=chart" class="btn btn-menu btn-light w-100 mb-2 py-2 fw-bold">
                     <i class="fas fa-chart-bar me-2"></i> BIỂU ĐỒ KHO
                 </a>
+                <hr class="my-3 opacity-10">
+                <h6 class="fw-bold text-secondary text-uppercase small mb-3">Cài đặt danh mục</h6>
+                <button class="btn btn-menu btn-outline-secondary w-100 mb-2 py-2 fw-bold" onclick="window.location.href='InventoryController.php'">
+                    <i class="fas fa-tags me-2"></i> DANH MỤC
+                </button>
+                <button class="btn btn-menu btn-outline-secondary w-100 mb-2 py-2 fw-bold" onclick="window.location.href='InventoryController.php'">
+                    <i class="fas fa-ruler me-2"></i> ĐƠN VỊ TÍNH
+                </button>
             </div>
+
+            <?php if ($low_stock_count > 0): ?>
+                <div class="stat-card p-3 mb-3 border-start-danger" style="border-left: 4px solid var(--danger-color); background: #fff; border-radius: 12px; position: relative;">
+                    <div class="small text-danger fw-bold text-uppercase mb-1">Cảnh báo tồn kho</div>
+                    <div class="h5 m-0 fw-bold"><?= $low_stock_count ?> món sắp hết</div>
+                    <a href="InventoryController.php?tab=reorder" class="stretched-link"></a>
+                </div>
+            <?php endif; ?>
         </div>
 
         <!-- ================= CỘT NỘI DUNG CHÍNH (PO LIST) ================= -->
@@ -327,6 +363,18 @@ $(document).ready(function() {
         // Đợi modal hiện xong rồi mới gọi gợi ý
         document.getElementById('modalCreatePO').addEventListener('shown.bs.modal', function () {
             loadSuggestions();
+        }, { once: true });
+    } else if (urlParams.get('add_item')) {
+        const addItemId = urlParams.get('add_item');
+        const addQty = urlParams.get('qty');
+        const myModal = new bootstrap.Modal(document.getElementById('modalCreatePO'));
+        myModal.show();
+        document.getElementById('modalCreatePO').addEventListener('shown.bs.modal', function () {
+            const firstRow = $('#poBody tr').first();
+            firstRow.find('.item-select').val(addItemId).trigger('change');
+            if (addQty) {
+                firstRow.find('.qty-input').val(addQty).trigger('input');
+            }
         }, { once: true });
     }
 
