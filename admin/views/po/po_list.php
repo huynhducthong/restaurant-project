@@ -107,9 +107,14 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
             <div class="main-card p-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h3 class="fw-bold text-uppercase m-0"><i class="fas fa-file-invoice-dollar me-2 text-primary"></i>Phiếu Đặt Hàng (PO)</h3>
-                    <button class="btn btn-primary shadow-sm fw-bold px-4" data-bs-toggle="modal" data-bs-target="#modalCreatePO">
-                        <i class="fas fa-plus me-2"></i>TẠO PHIẾU NHẬP
-                    </button>
+                    <div>
+                        <a href="POController.php?export_excel=1" class="btn btn-success shadow-sm fw-bold px-3 me-2">
+                            <i class="fas fa-file-excel me-2"></i>XUẤT EXCEL (KÈM HSD)
+                        </a>
+                        <button class="btn btn-primary shadow-sm fw-bold px-4" data-bs-toggle="modal" data-bs-target="#modalCreatePO">
+                            <i class="fas fa-plus me-2"></i>TẠO PHIẾU NHẬP
+                        </button>
+                    </div>
                 </div>
 
                 <?php if (isset($_GET['msg'])): ?>
@@ -184,12 +189,15 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
                 </p>
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <select name="supplier_id" class="form-select bg-light border-0 py-2 shadow-sm" required>
+                        <select name="supplier_id" id="po-supplier-select" class="form-select bg-light border-0 py-2 shadow-sm" required>
                             <option value="">-- Chọn Nhà Cung Cấp --</option>
                             <?php foreach($suppliers as $s): ?>
-                                <option value="<?= $s['id'] ?>"><?= $s['name'] ?></option>
+                                <option value="<?= $s['id'] ?>" data-atvstp-expiry="<?= htmlspecialchars($s['atvstp_expiry'] ?? '') ?>"><?= $s['name'] ?></option>
                             <?php endforeach; ?>
                         </select>
+                        <div id="atvstp-warning" class="mt-2 text-danger fw-bold small d-none">
+                            <i class="fas fa-exclamation-triangle me-1"></i>LƯU Ý: Giấy ATVSTP của nhà cung cấp này đã hết hạn (hoặc chưa cập nhật). Vui lòng yêu cầu cấp lại trước khi nhập hàng!
+                        </div>
                     </div>
                 </div>
 
@@ -281,7 +289,7 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
 <!-- MODAL NHẬN HÀNG (GOODS RECEIPT) -->
 <div class="modal fade" id="modalReceivePO" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-centered">
-        <form class="modal-content border-0 shadow-lg" method="POST" action="POController.php" style="border-radius:20px;overflow:hidden;">
+        <form class="modal-content border-0 shadow-lg" method="POST" action="POController.php" style="border-radius:20px;overflow:hidden;" enctype="multipart/form-data">
             <input type="hidden" name="receive_po_final" value="1">
             <input type="hidden" name="po_id" id="receive-po-id">
             <div class="modal-header bg-success text-white py-3 px-4">
@@ -293,6 +301,11 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
             <div class="modal-body p-0">
                 <div class="alert alert-info m-3 py-2 small">
                     <i class="fas fa-info-circle me-1"></i>Vui lòng kiểm tra số lượng và giá thực tế khi nhận hàng. Hàng sẽ được nhập vào <b>Kho Tổng</b>.
+                </div>
+                <div class="m-3 p-3 bg-light border rounded">
+                    <label class="small fw-bold text-danger mb-1"><i class="fas fa-file-invoice me-1"></i>Giấy kiểm dịch lô hàng / CO-CQ (Ảnh/PDF)</label>
+                    <input type="file" name="po_batch_cert" class="form-control form-control-sm" accept=".jpg,.jpeg,.png,.pdf" required>
+                    <div class="small text-muted mt-1">Sẽ được lưu vĩnh viễn vào lịch sử nhập kho của lô hàng này.</div>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0 align-middle">
@@ -356,6 +369,32 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 $(document).ready(function() {
+    $('#po-supplier-select').on('change', function() {
+        const option = $(this).find('option:selected');
+        const expiry = option.data('atvstp-expiry');
+        const warningDiv = $('#atvstp-warning');
+        
+        if (expiry) {
+            const expiryDate = new Date(expiry);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
+            if (expiryDate < today) {
+                warningDiv.removeClass('d-none');
+            } else {
+                warningDiv.addClass('d-none');
+            }
+        } else {
+            // Nếu không có ngày hết hạn, có thể coi là chưa cấp hoặc bỏ qua
+            if ($(this).val() !== "") {
+                // Hiện cảnh báo nếu có chọn NCC nhưng không có HSD
+                warningDiv.removeClass('d-none');
+            } else {
+                warningDiv.addClass('d-none');
+            }
+        }
+    });
+
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('trigger_suggestion') === '1') {
         const myModal = new bootstrap.Modal(document.getElementById('modalCreatePO'));
@@ -462,6 +501,7 @@ $(document).ready(function() {
     window.viewPO = function(id, code) {
         $('#view-po-code').text(code);
         $('#view-po-body').html('<tr><td colspan="4" class="text-center py-5"><div class="spinner-border text-warning"></div></td></tr>');
+        $('#view-po-cert-btn').remove(); // Xóa nút cũ nếu có
         new bootstrap.Modal(document.getElementById('modalViewPO')).show();
         $.post('POController.php', { action: 'get_details', po_id: id }, function(res) {
             if(res.status === 'success') {
@@ -475,6 +515,18 @@ $(document).ready(function() {
                 });
                 html += `<tr class="bg-light"><td colspan="3" class="text-end fw-bold py-3 text-muted">TỔNG CỘNG:</td><td class="text-end fw-bold text-danger py-3 fs-5 pe-4">${grandTotal.toLocaleString('en-US')} đ</td></tr>`;
                 $('#view-po-body').html(html);
+
+                // Nếu có file giấy kiểm dịch, thêm nút vào header
+                if (res.batch_cert_file) {
+                    const btn = `<a href="../../uploads/po_certs/${res.batch_cert_file}" target="_blank" id="view-po-cert-btn" class="btn btn-sm btn-danger ms-3 fw-bold shadow-sm"><i class="fas fa-file-pdf me-1"></i>Xem Chứng Từ Lô Hàng</a>`;
+                    $('#view-po-code').after(btn);
+                }
+                
+                // Nếu có giấy ATVSTP của nhà cung cấp
+                if (res.supplier_atvstp) {
+                    const atvstpBtn = `<a href="../../uploads/suppliers/${res.supplier_atvstp}" target="_blank" id="view-po-supplier-atvstp" class="btn btn-sm btn-outline-warning ms-2"><i class="fas fa-file-certificate me-1"></i>Xem ATVSTP Nhà Cung Cấp</a>`;
+                    $('#view-po-code').after(atvstpBtn);
+                }
             }
         }, 'json');
     };
@@ -490,9 +542,15 @@ $(document).ready(function() {
                 res.data.forEach(item => {
                     let qty = parseFloat(item.expected_qty || 0);
                     let price = parseFloat(item.expected_price || 0);
-                    html += `<tr><td class="ps-4"><div class="fw-bold">${item.item_name}</div><input type="hidden" name="ingredient_id[]" value="${item.ingredient_id}"></td><td class="text-center text-muted">${qty} ${item.unit_name}</td><td><div class="input-group input-group-sm"><input type="number" name="received_qty[]" class="form-control text-center fw-bold" step="0.01" value="${qty}" required><span class="input-group-text">${item.unit_name}</span></div></td><td><input type="text" name="received_price[]" class="form-control form-control-sm text-end money-input" value="${price.toLocaleString('en-US')}" required></td><td><input type="text" name="receiving_temperature[]" class="form-control form-control-sm text-center" placeholder="VD: -18, 4"></td><td class="pe-4"><input type="date" name="expiry_date[]" class="form-control form-control-sm"></td></tr>`;
+                    html += `<tr><td class="ps-4"><div class="fw-bold">${item.item_name}</div><input type="hidden" name="ingredient_id[]" value="${item.ingredient_id}"></td><td class="text-center text-muted">${qty} ${item.unit_name}</td><td><div class="input-group input-group-sm"><input type="number" name="received_qty[]" class="form-control text-center fw-bold" step="0.01" value="${qty}" required><span class="input-group-text">${item.unit_name}</span></div></td><td><input type="text" name="received_price[]" class="form-control form-control-sm text-end money-input" value="${price.toLocaleString('en-US')}" required></td><td><input type="text" name="receiving_temperature[]" class="form-control form-control-sm text-center" placeholder="VD: -18, 4" required></td><td class="pe-4"><input type="date" name="expiry_date[]" class="form-control form-control-sm" required></td></tr>`;
                 });
                 $('#receive-po-body').html(html);
+
+                $('#receive-po-supplier-atvstp').remove(); // Xóa link cũ nếu có
+                if (res.supplier_atvstp) {
+                    const atvstpLink = `<a href="../../uploads/suppliers/${res.supplier_atvstp}" target="_blank" id="receive-po-supplier-atvstp" class="btn btn-sm btn-outline-light ms-3"><i class="fas fa-file-certificate me-1"></i>Xem Giấy ATVSTP Nhà Cung Cấp</a>`;
+                    $('#receive-po-code').after(atvstpLink);
+                }
             }
         }, 'json');
     };

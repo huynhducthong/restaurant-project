@@ -13,6 +13,66 @@ require_once __DIR__ . '/../../config/database.php';
 $db = (new Database())->getConnection();
 
 // ==========================================================
+// 0. XUẤT EXCEL TỒN KHO & HSD (PO EXPORT)
+// ==========================================================
+if (isset($_GET['export_excel'])) {
+    header('Content-Type: application/vnd.ms-excel; charset=utf-8');
+    header('Content-Disposition: attachment; filename="BaoCao_NhapHang_PO_' . date('Ymd_His') . '.xls"');
+    echo "\xEF\xBB\xBF"; // UTF-8 BOM
+
+    $sql = "SELECT 
+                po.created_at, po.po_code, IFNULL(s.name, 'Nhà cung cấp lẻ') as supplier_name, po.status,
+                i.item_name, i.unit_name,
+                pod.expected_qty, pod.expected_price,
+                ib.quantity as received_qty, ib.cost_price as received_price, 
+                ib.expiry_date, ib.receiving_temperature
+            FROM purchase_orders po
+            LEFT JOIN suppliers s ON po.supplier_id = s.id
+            JOIN purchase_order_details pod ON po.id = pod.po_id
+            JOIN inventory i ON pod.ingredient_id = i.id
+            LEFT JOIN inventory_batches ib ON ib.batch_code COLLATE utf8mb4_unicode_ci = po.po_code COLLATE utf8mb4_unicode_ci AND ib.ingredient_id = pod.ingredient_id
+            ORDER BY po.created_at DESC";
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    echo '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
+    echo '<head><meta charset="utf-8"></head><body>';
+    echo '<table border="1" style="border-collapse:collapse; text-align:center;">';
+    echo '<tr style="background-color:#2c3e50; color:white; font-weight:bold;">';
+    echo '<th>Ngày Lập PO</th>';
+    echo '<th>Mã Phiếu (PO Code)</th>';
+    echo '<th>Nhà Cung Cấp</th>';
+    echo '<th>Trạng Thái</th>';
+    echo '<th>Tên Nguyên Liệu</th>';
+    echo '<th>SL Đặt</th>';
+    echo '<th>Giá Đặt (VNĐ)</th>';
+    echo '<th>SL Thực Nhận</th>';
+    echo '<th>Giá Nhập Thực (VNĐ)</th>';
+    echo '<th style="background-color:#e74c3c;">Ngày Hết Hạn (HSD)</th>';
+    echo '<th>Nhiệt Độ Nhận</th>';
+    echo '</tr>';
+
+    foreach ($data as $row) {
+        $status_text = $row['status'] === 'completed' ? 'Đã Nhập' : ($row['status'] === 'pending' ? 'Chưa Nhập' : 'Đã Hủy');
+        echo '<tr>';
+        echo '<td>' . date('d/m/Y H:i', strtotime($row['created_at'])) . '</td>';
+        echo '<td style="mso-number-format:\'@\';">' . htmlspecialchars($row['po_code']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['supplier_name']) . '</td>';
+        echo '<td>' . $status_text . '</td>';
+        echo '<td style="text-align:left;">' . htmlspecialchars($row['item_name']) . '</td>';
+        echo '<td>' . (float)$row['expected_qty'] . ' ' . $row['unit_name'] . '</td>';
+        echo '<td>' . number_format($row['expected_price']) . '</td>';
+        echo '<td>' . ($row['received_qty'] !== null ? (float)$row['received_qty'] . ' ' . $row['unit_name'] : '-') . '</td>';
+        echo '<td>' . ($row['received_price'] !== null ? number_format($row['received_price']) : '-') . '</td>';
+        echo '<td style="font-weight:bold; color:#e74c3c;">' . ($row['expiry_date'] ? date('d/m/Y', strtotime($row['expiry_date'])) : 'Không có') . '</td>';
+        echo '<td>' . htmlspecialchars($row['receiving_temperature'] ?? '-') . '</td>';
+        echo '</tr>';
+    }
+    echo '</table></body></html>';
+    exit;
+}
+
+// ==========================================================
 // 1. XỬ LÝ TẠO PHIẾU ĐẶT HÀNG (PO) MỚI
 // ==========================================================
 if (isset($_POST['create_po'])) {
@@ -71,7 +131,17 @@ if (isset($_POST['action']) && $_POST['action'] === 'get_details') {
         ");
         $stmt->execute([$po_id]);
         $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode(['status' => 'success', 'data' => $details]);
+
+        $po_info = $db->prepare("SELECT p.batch_cert_file, s.atvstp_file AS supplier_atvstp FROM purchase_orders p LEFT JOIN suppliers s ON p.supplier_id = s.id WHERE p.id = ?");
+        $po_info->execute([$po_id]);
+        $po_data = $po_info->fetch(PDO::FETCH_ASSOC) ?: ['batch_cert_file' => null, 'supplier_atvstp' => null];
+
+        echo json_encode([
+            'status' => 'success', 
+            'data' => $details, 
+            'batch_cert_file' => $po_data['batch_cert_file'],
+            'supplier_atvstp' => $po_data['supplier_atvstp']
+        ]);
     } catch (Exception $e) {
         echo json_encode(['status' => 'error', 'msg' => $e->getMessage()]);
     }
@@ -169,8 +239,20 @@ if (isset($_POST['receive_po_final'])) {
             $ins_history->execute([$ing_id, $main_warehouse_id, $new_qty, $current_user . " (Nhận hàng PO #" . $po_id . ")"]);
         }
 
-        // Đổi trạng thái PO thành hoàn tất
-        $db->prepare("UPDATE purchase_orders SET status = 'completed' WHERE id = ?")->execute([$po_id]);
+        // Xử lý upload Giấy kiểm dịch (Batch Certificate)
+        $batch_cert = null;
+        if (isset($_FILES['po_batch_cert']) && $_FILES['po_batch_cert']['error'] == UPLOAD_ERR_OK) {
+            $ext = pathinfo($_FILES['po_batch_cert']['name'], PATHINFO_EXTENSION);
+            $batch_cert = 'cert_po_' . $po_id . '_' . time() . '.' . $ext;
+            move_uploaded_file($_FILES['po_batch_cert']['tmp_name'], __DIR__ . '/../../uploads/po_certs/' . $batch_cert);
+        }
+
+        // Đổi trạng thái PO thành hoàn tất và lưu file
+        if ($batch_cert) {
+            $db->prepare("UPDATE purchase_orders SET status = 'completed', batch_cert_file = ? WHERE id = ?")->execute([$batch_cert, $po_id]);
+        } else {
+            $db->prepare("UPDATE purchase_orders SET status = 'completed' WHERE id = ?")->execute([$po_id]);
+        }
 
         // Gửi thông báo Telegram
         require_once __DIR__ . '/../../config/notification_helper.php';

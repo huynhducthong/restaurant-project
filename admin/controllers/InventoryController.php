@@ -94,11 +94,32 @@ if (isset($_GET['export_csv'])) {
 
 // --- Quản lý NCC & Tags ---
 if (isset($_POST['save_supplier'])) {
-    $data = [trim($_POST['s_name']), trim($_POST['s_phone']), trim($_POST['s_address']), trim($_POST['s_email']), trim($_POST['s_contact'])];
+    $expiry = !empty($_POST['s_atvstp_expiry']) ? $_POST['s_atvstp_expiry'] : null;
+    $data = [
+        trim($_POST['s_name']), 
+        trim($_POST['s_phone']), 
+        trim($_POST['s_address']), 
+        trim($_POST['s_email']), 
+        trim($_POST['s_contact']),
+        $expiry
+    ];
+    
+    $file_name = null;
+    if (isset($_FILES['s_atvstp_file']) && $_FILES['s_atvstp_file']['error'] == UPLOAD_ERR_OK) {
+        $ext = pathinfo($_FILES['s_atvstp_file']['name'], PATHINFO_EXTENSION);
+        $file_name = 'atvstp_' . time() . '_' . rand(100,999) . '.' . $ext;
+        move_uploaded_file($_FILES['s_atvstp_file']['tmp_name'], __DIR__ . '/../../uploads/suppliers/' . $file_name);
+    }
+
     if (!empty($_POST['supplier_id'])) {
-        $db->prepare("UPDATE suppliers SET name=?, phone=?, address=?, email=?, contact_person=? WHERE id=?")->execute([...$data, (int)$_POST['supplier_id']]);
+        $supplier_id = (int)$_POST['supplier_id'];
+        if ($file_name) {
+            $db->prepare("UPDATE suppliers SET name=?, phone=?, address=?, email=?, contact_person=?, atvstp_expiry=?, atvstp_file=? WHERE id=?")->execute([...$data, $file_name, $supplier_id]);
+        } else {
+            $db->prepare("UPDATE suppliers SET name=?, phone=?, address=?, email=?, contact_person=?, atvstp_expiry=? WHERE id=?")->execute([...$data, $supplier_id]);
+        }
     } else {
-        $db->prepare("INSERT INTO suppliers (name, phone, address, email, contact_person) VALUES (?, ?, ?, ?, ?)")->execute($data);
+        $db->prepare("INSERT INTO suppliers (name, phone, address, email, contact_person, atvstp_expiry, atvstp_file) VALUES (?, ?, ?, ?, ?, ?, ?)")->execute([...$data, $file_name]);
     }
     header("Location: InventoryController.php?tab=suppliers");
     exit;
@@ -123,23 +144,20 @@ if (isset($_POST['manage_tag'])) {
 
 // --- Thêm/Sửa Nguyên liệu (Bỏ stock_quantity) ---
 if (isset($_POST['save_inventory'])) {
-    $supplier_id = !empty($_POST['supplier_id']) ? (int)$_POST['supplier_id'] : null;
-    $min_stock = max(0, (float)($_POST['min_stock'] ?? 0));
-    $storage_temp = trim($_POST['storage_temperature'] ?? '');
-
     $data = [
         trim($_POST['item_name']),
-        $_POST['category'],
-        $_POST['unit_name'],
-        $supplier_id,
-        $min_stock,
-        $storage_temp
+        trim($_POST['category']),
+        trim($_POST['unit_name']),
+        !empty($_POST['supplier_id']) ? $_POST['supplier_id'] : null,
+        (float)($_POST['min_stock'] ?? 0),
+        trim($_POST['storage_temperature'] ?? ''),
+        isset($_POST['allergens']) && is_array($_POST['allergens']) ? implode(', ', $_POST['allergens']) : trim($_POST['allergens'] ?? '')
     ];
 
     if (!empty($_POST['item_id'])) {
-        $db->prepare("UPDATE inventory SET item_name=?, category=?, unit_name=?, supplier_id=?, min_stock=?, storage_temperature=? WHERE id=?")->execute([...$data, (int)$_POST['item_id']]);
+        $db->prepare("UPDATE inventory SET item_name=?, category=?, unit_name=?, supplier_id=?, min_stock=?, storage_temperature=?, allergens=? WHERE id=?")->execute([...$data, (int)$_POST['item_id']]);
     } else {
-        $db->prepare("INSERT INTO inventory (item_name, category, unit_name, supplier_id, min_stock, storage_temperature) VALUES (?, ?, ?, ?, ?, ?)")->execute($data);
+        $db->prepare("INSERT INTO inventory (item_name, category, unit_name, supplier_id, min_stock, storage_temperature, allergens) VALUES (?, ?, ?, ?, ?, ?, ?)")->execute($data);
     }
     header("Location: InventoryController.php");
     exit;

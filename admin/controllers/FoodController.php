@@ -213,11 +213,11 @@ if ($action === 'edit') {
         $old['category_id'] = trim($_POST['category_id'] ?? '');
         $old['price'] = trim($_POST['price'] ?? '');
         $old['description'] = trim($_POST['description'] ?? '');
-        $old['allergens'] = trim($_POST['allergens'] ?? '');
         $old['wine_pairing_id'] = !empty($_POST['wine_pairing_id']) ? (int)$_POST['wine_pairing_id'] : null;
         $old['chef_note'] = trim($_POST['chef_note'] ?? '');
         $theme_id = !empty($_POST['theme_id']) ? (int)$_POST['theme_id'] : null;
         $old['theme_id'] = $theme_id;
+        $old['allergens'] = isset($_POST['allergens']) && is_array($_POST['allergens']) ? implode(', ', $_POST['allergens']) : trim($_POST['allergens'] ?? '');
 
         if ($old['name'] === '')
             $errors[] = 'Tên món ăn không được để trống.';

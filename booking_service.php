@@ -44,12 +44,24 @@ if ($type !== 'chef') {
 
 $foods_raw  = $db->query("
     SELECT f.*, t.name as theme_name,
-    (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients 
+    (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, ''), ',', IFNULL(i.allergens, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients 
     FROM foods f 
     LEFT JOIN themes t ON f.theme_id = t.id 
     WHERE f.status=1 ORDER BY t.created_at DESC, f.name ASC
 ")->fetchAll(PDO::FETCH_ASSOC);
 
+$combos_raw = $db->query("
+    SELECT c.*, t.name as theme_name, t.description as theme_desc, t.image as theme_img,
+    (
+        SELECT GROUP_CONCAT(f.name SEPARATOR ', ') 
+        FROM combo_items ci 
+        JOIN foods f ON ci.food_id = f.id 
+        WHERE ci.combo_id = c.id
+    ) as list_foods
+    FROM combos c 
+    LEFT JOIN themes t ON c.theme_id = t.id 
+    WHERE c.status=1
+")->fetchAll(PDO::FETCH_ASSOC);
 
 
 $chefs = $db->query("SELECT id, name FROM chefs WHERE is_active = 1 ORDER BY sort_order ASC, id DESC")->fetchAll(PDO::FETCH_ASSOC);
@@ -90,11 +102,13 @@ if ($user_info) {
 
 function hasAllergenBooking($food, $user_allergies) {
     if (empty($user_allergies)) return false;
-    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '');
-    $food_allergens = array_map('trim', explode(',', mb_strtolower($all_food_ingredients, 'UTF-8')));
+    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '') . ',' . ($food['name'] ?? '');
+    $food_allergens = array_map('trim', explode(',', removeVietnameseAccentsBooking($all_food_ingredients)));
     foreach($user_allergies as $ua) {
+        $ua_clean = trim(removeVietnameseAccentsBooking($ua));
+        if (empty($ua_clean)) continue;
         foreach($food_allergens as $fa) {
-            if (!empty($fa) && strpos($fa, $ua) !== false) return true;
+            if (!empty($fa) && (strpos($fa, $ua_clean) !== false || strpos($ua_clean, $fa) !== false)) return true;
         }
     }
     return false;
@@ -106,7 +120,7 @@ function hasDislikeBooking($food, $user_dislikes) {
     $food_ingredients = array_map('trim', explode(',', mb_strtolower($all_food_ingredients, 'UTF-8')));
     foreach($user_dislikes as $ud) {
         foreach($food_ingredients as $fi) {
-            if (!empty($fi) && strpos($fi, $ud) !== false) return true;
+            if (!empty($fi) && (strpos($fi, $ud) !== false || strpos($ud, $fi) !== false)) return true;
         }
     }
     return false;
@@ -132,7 +146,7 @@ function removeVietnameseAccentsBooking($str) {
 foreach ($foods_raw as &$f) {
     $score = 0;
     $f_tags = removeVietnameseAccentsBooking($f['tags'] ?? '');
-    $f_ingr = removeVietnameseAccentsBooking($f['ingredients'] ?? '');
+    $f_ingr = removeVietnameseAccentsBooking($f['recipe_ingredients'] ?? '');
     $f_name = removeVietnameseAccentsBooking($f['name'] ?? '');
 
     foreach ($user_flavor as $flav) {
@@ -626,11 +640,14 @@ select.input-lux {
                                                         $is_hist = isset($user_history_counts[$fd['id']]);
                                                         $flav_score = isset($fd['ai_score']) ? $fd['ai_score'] - ($is_hist ? min(10, $user_history_counts[$fd['id']] * 2) : 0) : 0;
                                                     ?>
+                                                    <?php if(!empty($fd['is_chef_recommended']) && $fd['is_chef_recommended'] == 1): ?>
+                                                        <span class="badge bg-success text-white ms-2" style="font-size: 10px;"><i class="fas fa-star me-1"></i> Chef's Choice</span>
+                                                    <?php endif; ?>
                                                     <?php if($is_hist): ?>
                                                         <span class="badge bg-info text-white ms-2" style="font-size: 10px;"><i class="fas fa-history me-1"></i> Đã từng gọi</span>
                                                     <?php endif; ?>
                                                     <?php if($flav_score > 0): ?>
-                                                        <span class="badge bg-warning text-dark ms-2" style="font-size: 10px; border: 1px solid var(--gold);"><i class="fas fa-magic me-1"></i> Gợi ý</span>
+                                                        <span class="badge bg-warning text-dark ms-2" style="font-size: 10px; border: 1px solid var(--gold);"><i class="fas fa-magic me-1"></i> Smart AI</span>
                                                     <?php endif; ?>
                                                     <?php if(hasAllergenBooking($fd, $user_allergies)): ?>
                                                         <span class="badge bg-danger text-white ms-2" style="font-size: 10px;"><i class="fas fa-exclamation-triangle me-1"></i> Dị ứng</span>
