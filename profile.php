@@ -139,7 +139,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $flavor_profile = isset($_POST['flavor_profile']) ? implode(', ', $_POST['flavor_profile']) : '';
         $fav_ingredients = isset($_POST['fav_ingredients']) ? implode(', ', $_POST['fav_ingredients']) : '';
         $disliked_ingredients = isset($_POST['disliked_ingredients']) ? implode(', ', $_POST['disliked_ingredients']) : '';
-        $allergies = isset($_POST['allergies']) ? implode(', ', $_POST['allergies']) : '';
+        
+        $allergies_arr = isset($_POST['allergies']) ? $_POST['allergies'] : [];
+        if (!empty($_POST['other_allergies'])) {
+            $other_arr = array_map('trim', explode(',', $_POST['other_allergies']));
+            $allergies_arr = array_merge($allergies_arr, $other_arr);
+        }
+        $allergies_arr = array_unique(array_filter($allergies_arr));
+        $allergies = implode(', ', $allergies_arr);
         
         $db->prepare("UPDATE users SET doneness=?, flavor_profile=?, fav_ingredients=?, disliked_ingredients=?, allergies=? WHERE id=?")
            ->execute([$doneness, $flavor_profile, $fav_ingredients, $disliked_ingredients, $allergies, $user_id]);
@@ -700,12 +707,22 @@ body{
             <div class="col-md-6 mb-2">
               <h6 style="color:#d64545; font-family:'Playfair Display',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-exclamation-triangle-fill me-2"></i>Dị ứng Y Tế (Allergies)</h6>
               <div class="d-flex flex-wrap gap-2 mt-3">
-                <?php $algopts = ['Đậu phộng', 'Gluten', 'Sữa', 'Hải sản có vỏ', 'Trứng', 'Đậu nành']; 
+                <?php 
+                $algopts = ['Sữa', 'Trứng', 'Đậu phộng', 'Hạt cây', 'Đậu nành', 'Lúa mì / Gluten', 'Cá', 'Động vật có vỏ', 'Động vật thân mềm', 'Mè / Vừng', 'Mù tạt', 'Cần tây', 'Sulphites', 'Đậu Lupin']; 
+                $my_allergies = array_map('trim', explode(',', $current_user['allergies'] ?? ''));
+                $other_allergies = array_filter($my_allergies, function($alg) use ($algopts) {
+                    return !in_array($alg, $algopts) && !empty($alg);
+                });
+                $other_allergies_str = implode(', ', $other_allergies);
                 foreach($algopts as $alg): ?>
                 <label class="d-flex align-items-center gap-2" style="cursor:pointer; font-size:14px; color:#d64545; width:45%; font-weight:500;">
                   <input type="checkbox" name="allergies[]" value="<?= $alg ?>" <?= in_array($alg, $my_allergies) ? 'checked' : '' ?> style="accent-color:#d64545;"> <?= $alg ?>
                 </label>
                 <?php endforeach; ?>
+              </div>
+              <div class="mt-3">
+                <label class="small fw-bold" style="color:#d64545;">Dị ứng khác (nếu có, phân cách bằng dấu phẩy)</label>
+                <input type="text" name="other_allergies" class="form-control form-control-sm mt-1" value="<?= htmlspecialchars($other_allergies_str) ?>" placeholder="Ví dụ: Dâu tây, Mật ong...">
               </div>
             </div>
 

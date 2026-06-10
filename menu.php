@@ -12,14 +12,14 @@ foreach ($active_themes as &$t) {
     $t_combos->execute([$t['id']]);
     $t['combos'] = $t_combos->fetchAll(PDO::FETCH_ASSOC);
     
-    $t_foods = $db->prepare("SELECT f.*, c.name as cat_name, (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.theme_id = ? AND f.is_active = 1");
+    $t_foods = $db->prepare("SELECT f.*, c.name as cat_name, (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, ''), ',', IFNULL(i.allergens, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.theme_id = ? AND f.is_active = 1");
     $t_foods->execute([$t['id']]);
     $t['foods'] = $t_foods->fetchAll(PDO::FETCH_ASSOC);
 }
 unset($t);
 
-$all_foods      = $db->query("SELECT f.*, c.name as cat_name, (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND (f.theme_id IS NULL OR f.theme_id = 0) ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
-$chef_foods     = $db->query("SELECT f.*, c.name as cat_name, (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND f.is_chef_recommended = 1 AND (f.theme_id IS NULL OR f.theme_id = 0) ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
+$all_foods      = $db->query("SELECT f.*, c.name as cat_name, (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, ''), ',', IFNULL(i.allergens, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND (f.theme_id IS NULL OR f.theme_id = 0) ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
+$chef_foods     = $db->query("SELECT f.*, c.name as cat_name, (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, ''), ',', IFNULL(i.allergens, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND f.is_chef_recommended = 1 AND (f.theme_id IS NULL OR f.theme_id = 0) ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -54,11 +54,13 @@ if (isset($_SESSION['user_id'])) {
 
 function hasAllergen($food, $user_allergies) {
     if (empty($user_allergies)) return false;
-    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '');
-    $food_allergens = array_map('trim', explode(',', mb_strtolower($all_food_ingredients, 'UTF-8')));
+    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '') . ',' . ($food['name'] ?? '');
+    $food_allergens = array_map('trim', explode(',', removeVietnameseAccents($all_food_ingredients)));
     foreach($user_allergies as $ua) {
+        $ua_clean = trim(removeVietnameseAccents($ua));
+        if (empty($ua_clean)) continue;
         foreach($food_allergens as $fa) {
-            if (!empty($fa) && strpos($fa, $ua) !== false) return true;
+            if (!empty($fa) && (strpos($fa, $ua_clean) !== false || strpos($ua_clean, $fa) !== false)) return true;
         }
     }
     return false;
@@ -70,7 +72,7 @@ function hasDislike($food, $user_dislikes) {
     $food_ingredients = array_map('trim', explode(',', mb_strtolower($all_food_ingredients, 'UTF-8')));
     foreach($user_dislikes as $ud) {
         foreach($food_ingredients as $fi) {
-            if (!empty($fi) && strpos($fi, $ud) !== false) return true;
+            if (!empty($fi) && (strpos($fi, $ud) !== false || strpos($ud, $fi) !== false)) return true;
         }
     }
     return false;
@@ -91,7 +93,7 @@ function removeVietnameseAccents($str) {
 foreach ($all_foods as &$f) {
     $score = 0;
     $f_tags = removeVietnameseAccents($f['tags'] ?? '');
-    $f_ingr = removeVietnameseAccents($f['ingredients'] ?? '');
+    $f_ingr = removeVietnameseAccents($f['recipe_ingredients'] ?? '');
     $f_name = removeVietnameseAccents($f['name'] ?? '');
 
     foreach ($user_flavor as $flav) {
@@ -651,7 +653,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 
     <!-- A La Carte -->
     <div class="menu-section a-la-carte-section">
-        <h2 class="menu-section-title">MÓN ĂN</h2>
+        <h2 class="menu-section-title">THỰC ĐƠN</h2>
         <div class="menu-section-subtitle">Tuyển chọn nghệ thuật</div>
         
         <?php 

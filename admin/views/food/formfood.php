@@ -145,10 +145,18 @@ $form_action = $is_edit
                         </div>
                         
                         <div class="mb-4">
-                            <label class="form-label fw-bold small text-muted">Thành phần dễ dị ứng (Allergens) <span class="badge bg-light text-muted border ms-1" style="font-size:10px;font-weight:400">Tùy chọn</span></label>
-                            <textarea name="allergens" class="form-control bg-light border-0" rows="2"
-                                      placeholder="Ví dụ: Đậu phộng, Hải sản, Sữa..."><?= htmlspecialchars($old['allergens'] ?? '') ?></textarea>
-                            <div class="form-text small">Nhập tên các thành phần cách nhau bằng dấu phẩy. Hệ thống sẽ cảnh báo khách hàng nếu họ có tiền sử dị ứng với các thành phần này.</div>
+                            <label class="form-label fw-bold small text-muted">Chất gây dị ứng (FDA Standard) <span class="badge bg-light text-muted border ms-1" style="font-size:10px;font-weight:400">Tùy chọn</span></label>
+                            <div class="d-flex flex-wrap gap-2 p-3 bg-light rounded" style="border: 1px solid #f0f0f0;">
+                                <?php 
+                                $algopts = ['Sữa', 'Trứng', 'Đậu phộng', 'Hạt cây', 'Đậu nành', 'Lúa mì / Gluten', 'Cá', 'Động vật có vỏ', 'Động vật thân mềm', 'Mè / Vừng', 'Mù tạt', 'Cần tây', 'Sulphites', 'Đậu Lupin'];
+                                $current_algs = array_map('trim', explode(',', $old['allergens'] ?? ''));
+                                foreach($algopts as $alg): ?>
+                                <label class="d-flex align-items-center gap-2 m-0" style="cursor:pointer; font-size:13px; width:30%; font-weight:500;">
+                                    <input type="checkbox" name="allergens[]" value="<?= $alg ?>" <?= in_array($alg, $current_algs) ? 'checked' : '' ?> style="accent-color:#d64545; width:16px; height:16px;"> <?= $alg ?>
+                                </label>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="form-text small mt-2">Đánh dấu nếu món ăn chứa các thành phần dị ứng tiêu chuẩn.</div>
                         </div>
 
                         <!-- Trải nghiệm Fine Dining (Wine Pairing & Chef Note) -->
