@@ -118,7 +118,7 @@ if (!empty($logo_path)) {
 
     <!-- GOOGLE FONT -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
     <!-- BOOTSTRAP -->
@@ -232,7 +232,7 @@ if (!empty($logo_path)) {
 
             color: #fff;
 
-            font-family: "Libre Baskerville", serif;
+            font-family: "Montserrat", sans-serif;
 
             white-space: nowrap;
         }
@@ -258,7 +258,7 @@ if (!empty($logo_path)) {
 
             color: #fff;
 
-            font-family: "Libre Baskerville", serif;
+            font-family: "Montserrat", sans-serif;
             font-size: 14px;
             font-weight: 600;
 
@@ -290,7 +290,7 @@ if (!empty($logo_path)) {
 
             text-decoration: none;
 
-            font-family: "Libre Baskerville", serif;
+            font-family: "Montserrat", sans-serif;
             font-size: 14px;
             font-weight: 600;
 
@@ -371,7 +371,7 @@ if (!empty($logo_path)) {
 
             text-decoration: none;
 
-            font-family: "Libre Baskerville", serif;
+            font-family: "Montserrat", sans-serif;
             font-size: 14px;
             font-weight: 600;
 
@@ -425,7 +425,7 @@ if (!empty($logo_path)) {
             background-color: #F6F2E9; /* Cream */
             color: #4F5B3A; /* Olive */
             padding: 8px 16px;
-            font-family: "Libre Baskerville", serif;
+            font-family: "Montserrat", sans-serif;
             font-size: 14px;
             font-weight: 600;
             letter-spacing: 1px;
@@ -472,7 +472,7 @@ if (!empty($logo_path)) {
         .oriental-item {
             text-decoration: none;
             color: #4F5B3A; /* Olive */
-            font-family: "Libre Baskerville", serif;
+            font-family: "Montserrat", sans-serif;
             font-size: 14px;
             font-weight: 600;
             padding: 15px 20px;
