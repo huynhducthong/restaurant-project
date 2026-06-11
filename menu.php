@@ -8,18 +8,18 @@ $all_categories = $db->query("SELECT * FROM categories ORDER BY id ASC")->fetchA
 // Fetch Active Themes
 $active_themes = $db->query("SELECT * FROM themes WHERE is_active = 1 AND (start_date IS NULL OR start_date <= NOW()) AND (end_date IS NULL OR end_date >= NOW()) ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
 foreach ($active_themes as &$t) {
-    $t_combos = $db->prepare("SELECT * FROM combos WHERE theme_id = ? AND is_active = 1");
+    $t_combos = $db->prepare("SELECT c.*, GROUP_CONCAT(f.name SEPARATOR '|') as list_foods FROM combos c LEFT JOIN combo_items ci ON c.id = ci.combo_id LEFT JOIN foods f ON ci.food_id = f.id WHERE c.theme_id = ? AND c.is_active = 1 GROUP BY c.id");
     $t_combos->execute([$t['id']]);
     $t['combos'] = $t_combos->fetchAll(PDO::FETCH_ASSOC);
     
-    $t_foods = $db->prepare("SELECT f.*, c.name as cat_name, (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, ''), ',', IFNULL(i.allergens, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.theme_id = ? AND f.is_active = 1");
+    $t_foods = $db->prepare("SELECT f.*, c.name as cat_name, (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients, (SELECT GROUP_CONCAT(CONCAT(tp.name, ' (+', FORMAT(tp.price, 0), 'đ)') SEPARATOR ' | ') FROM food_toppings ft JOIN toppings tp ON ft.topping_id = tp.id WHERE ft.food_id = f.id AND tp.status=1) as list_toppings FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.theme_id = ? AND f.is_active = 1");
     $t_foods->execute([$t['id']]);
     $t['foods'] = $t_foods->fetchAll(PDO::FETCH_ASSOC);
 }
 unset($t);
 
-$all_foods      = $db->query("SELECT f.*, c.name as cat_name, (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, ''), ',', IFNULL(i.allergens, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND (f.theme_id IS NULL OR f.theme_id = 0) ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
-$chef_foods     = $db->query("SELECT f.*, c.name as cat_name, (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, ''), ',', IFNULL(i.allergens, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND f.is_chef_recommended = 1 AND (f.theme_id IS NULL OR f.theme_id = 0) ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
+$all_foods      = $db->query("SELECT f.*, c.name as cat_name, (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients, (SELECT GROUP_CONCAT(CONCAT(tp.name, ' (+', FORMAT(tp.price, 0), 'đ)') SEPARATOR ' | ') FROM food_toppings ft JOIN toppings tp ON ft.topping_id = tp.id WHERE ft.food_id = f.id AND tp.status=1) as list_toppings FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND (f.theme_id IS NULL OR f.theme_id = 0) ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
+$chef_foods     = $db->query("SELECT f.*, c.name as cat_name, (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients, (SELECT GROUP_CONCAT(CONCAT(tp.name, ' (+', FORMAT(tp.price, 0), 'đ)') SEPARATOR ' | ') FROM food_toppings ft JOIN toppings tp ON ft.topping_id = tp.id WHERE ft.food_id = f.id AND tp.status=1) as list_toppings FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.is_active = 1 AND f.is_chef_recommended = 1 AND (f.theme_id IS NULL OR f.theme_id = 0) ORDER BY f.id DESC")->fetchAll(PDO::FETCH_ASSOC);
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -54,13 +54,11 @@ if (isset($_SESSION['user_id'])) {
 
 function hasAllergen($food, $user_allergies) {
     if (empty($user_allergies)) return false;
-    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '') . ',' . ($food['name'] ?? '');
-    $food_allergens = array_map('trim', explode(',', removeVietnameseAccents($all_food_ingredients)));
+    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '');
+    $food_allergens = array_map('trim', explode(',', mb_strtolower($all_food_ingredients, 'UTF-8')));
     foreach($user_allergies as $ua) {
-        $ua_clean = trim(removeVietnameseAccents($ua));
-        if (empty($ua_clean)) continue;
         foreach($food_allergens as $fa) {
-            if (!empty($fa) && (strpos($fa, $ua_clean) !== false || strpos($ua_clean, $fa) !== false)) return true;
+            if (!empty($fa) && strpos($fa, $ua) !== false) return true;
         }
     }
     return false;
@@ -72,7 +70,7 @@ function hasDislike($food, $user_dislikes) {
     $food_ingredients = array_map('trim', explode(',', mb_strtolower($all_food_ingredients, 'UTF-8')));
     foreach($user_dislikes as $ud) {
         foreach($food_ingredients as $fi) {
-            if (!empty($fi) && (strpos($fi, $ud) !== false || strpos($ud, $fi) !== false)) return true;
+            if (!empty($fi) && strpos($fi, $ud) !== false) return true;
         }
     }
     return false;
@@ -93,7 +91,7 @@ function removeVietnameseAccents($str) {
 foreach ($all_foods as &$f) {
     $score = 0;
     $f_tags = removeVietnameseAccents($f['tags'] ?? '');
-    $f_ingr = removeVietnameseAccents($f['recipe_ingredients'] ?? '');
+    $f_ingr = removeVietnameseAccents($f['ingredients'] ?? '');
     $f_name = removeVietnameseAccents($f['name'] ?? '');
 
     foreach ($user_flavor as $flav) {
@@ -524,7 +522,8 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                                             'name' => $f['name'], 'desc' => $f['description'],
                                             'price' => number_format($f['price'],0,',','.'),
                                             'img' => 'public/assets/img/menu/' . ($f['image'] ?: 'default.jpg'),
-                                            'cat' => "A La Carte"
+                                            'cat' => "A La Carte",
+                                            'toppings' => $f['list_toppings'] ?? ''
                                         ]));
                                     ?>
                                     <div class="menu-item menu-hover-trigger <?= $has_al ? 'allergy-item' : '' ?>" 
@@ -620,7 +619,8 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                             'name' => $f['name'], 'desc' => $f['description'],
                             'price' => number_format($f['price'],0,',','.'),
                             'img' => 'public/assets/img/menu/' . ($f['image'] ?: 'default.jpg'),
-                            'cat' => "Chef's Choice"
+                            'cat' => "Chef's Choice",
+                            'toppings' => $f['list_toppings'] ?? ''
                         ]));
                     ?>
                     <div class="menu-item menu-hover-trigger <?= $has_al ? 'allergy-item' : '' ?>" 
@@ -653,7 +653,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 
     <!-- A La Carte -->
     <div class="menu-section a-la-carte-section">
-        <h2 class="menu-section-title">THỰC ĐƠN</h2>
+        <h2 class="menu-section-title">MÓN ĂN</h2>
         <div class="menu-section-subtitle">Tuyển chọn nghệ thuật</div>
         
         <?php 
@@ -685,7 +685,8 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                             'desc' => $f['description'],
                             'price' => number_format($f['price'],0,',','.'),
                             'img' => 'public/assets/img/menu/' . ($f['image'] ?: 'default.jpg'),
-                            'cat' => $cat['name']
+                            'cat' => $cat['name'],
+                            'toppings' => $f['list_toppings'] ?? ''
                         ]));
                     ?>
                     <div class="menu-item <?= $has_al ? 'allergy-item' : '' ?>" 
@@ -745,6 +746,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
       <h2 class="ed-m-name" id="ed-m-name"></h2>
       <p class="ed-m-desc" id="ed-m-desc"></p>
       <div class="ed-m-price" id="ed-m-price"></div>
+      <div class="ed-m-toppings" id="ed-m-toppings" style="font-size:12px; color:var(--text-muted); margin-bottom:15px; font-style:italic;"></div>
       <a href="booking_service.php" class="btn-reserve-solid" style="width: fit-content;">ĐẶT BÀN NGAY</a>
     </div>
   </div>
@@ -818,6 +820,15 @@ function openEdModal(data) {
     document.getElementById('ed-m-name').textContent = data.name;
     document.getElementById('ed-m-desc').textContent = data.desc;
     document.getElementById('ed-m-price').textContent = data.price + ' VND';
+    
+    var topEl = document.getElementById('ed-m-toppings');
+    if (data.toppings && data.toppings.trim() !== '') {
+        topEl.innerHTML = '<strong style="color:var(--gold); font-style:normal;">Topping tùy chọn:</strong><br>' + data.toppings.replace(/\|/g, '<br>');
+        topEl.style.display = 'block';
+    } else {
+        topEl.style.display = 'none';
+        topEl.innerHTML = '';
+    }
     
     document.getElementById('edModal').classList.add('open');
     document.body.style.overflow = 'hidden';

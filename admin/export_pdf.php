@@ -36,13 +36,32 @@ if (!$s) {
 
 // Lấy danh sách món ăn
 $detail_stmt = $db->prepare(
-    "SELECT f.name, bd.quantity, f.price
+    "SELECT f.name, bd.quantity, f.price, bd.notes, bd.toppings_info
      FROM booking_details bd
      JOIN foods f ON bd.menu_id = f.id
      WHERE bd.booking_id = ?"
 );
 $detail_stmt->execute([$id]);
 $items = $detail_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Resolve toppings
+foreach ($items as &$it) {
+    $it['toppings_list'] = [];
+    $it['toppings_price'] = 0;
+    if (!empty($it['toppings_info'])) {
+        $t_ids = explode(',', $it['toppings_info']);
+        $t_ids_str = implode(',', array_map('intval', $t_ids));
+        if (!empty($t_ids_str)) {
+            $toppings_query = $db->query("SELECT name, price FROM toppings WHERE id IN ($t_ids_str)")->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($toppings_query as $tq) {
+                $it['toppings_list'][] = $tq['name'] . " (+" . number_format($tq['price']) . "đ)";
+                $it['toppings_price'] += $tq['price'];
+            }
+        }
+    }
+    $it['price'] += $it['toppings_price']; // Add topping price to item price
+}
+unset($it);
 
 // Lấy thông tin nhà hàng từ settings
 $settings_raw = $db->query("SELECT key_name, key_value FROM settings")->fetchAll(PDO::FETCH_ASSOC);
@@ -197,12 +216,26 @@ if (!empty($items)) {
     foreach ($items as $index => $item) {
         $sub = $item['price'] * $item['quantity'];
         $bg = ($index % 2 === 0) ? '#fff' : '#f9f9f9';
+        
+        $topping_str = '';
+        if (!empty($item['toppings_list'])) {
+            $topping_str = '<div style="font-size:10px; color:#cda45e; margin-top:3px;"><span style="font-weight:bold;">+ Toppings:</span> ' . implode(', ', $item['toppings_list']) . '</div>';
+        }
+        $note_str = '';
+        if (!empty($item['notes'])) {
+            $note_str = '<div style="font-size:10px; color:#c0392b; margin-top:3px; font-style:italic;"><span style="font-weight:bold;">* Ghi chú:</span> ' . htmlspecialchars($item['notes']) . '</div>';
+        }
+        
         $html .= '
             <tr style="background:' . $bg . ';">
-                <td style="padding:10px 15px; border-bottom:1px solid #eee;">' . htmlspecialchars($item['name']) . '</td>
-                <td style="padding:10px 15px; border-bottom:1px solid #eee; text-align:center;">' . (int)$item['quantity'] . '</td>
-                <td style="padding:10px 15px; border-bottom:1px solid #eee; text-align:right;">' . number_format($item['price'], 0, ',', '.') . 'đ</td>
-                <td style="padding:10px 15px; border-bottom:1px solid #eee; text-align:right; font-weight:bold;">' . number_format($sub, 0, ',', '.') . 'đ</td>
+                <td style="padding:10px 15px; border-bottom:1px solid #eee; line-height: 1.4;">
+                    <span style="font-weight:bold; color:#111;">' . htmlspecialchars($item['name']) . '</span>
+                    ' . $topping_str . '
+                    ' . $note_str . '
+                </td>
+                <td style="padding:10px 15px; border-bottom:1px solid #eee; text-align:center; vertical-align:top;">' . (int)$item['quantity'] . '</td>
+                <td style="padding:10px 15px; border-bottom:1px solid #eee; text-align:right; vertical-align:top;">' . number_format($item['price'], 0, ',', '.') . 'đ</td>
+                <td style="padding:10px 15px; border-bottom:1px solid #eee; text-align:right; font-weight:bold; vertical-align:top;">' . number_format($sub, 0, ',', '.') . 'đ</td>
             </tr>';
     }
 } else {

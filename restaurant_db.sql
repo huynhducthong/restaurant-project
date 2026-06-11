@@ -456,6 +456,8 @@ CREATE TABLE `booking_details` (
   `id` int(11) NOT NULL,
   `booking_id` int(11) NOT NULL,
   `menu_id` int(11) NOT NULL,
+  `excluded_combo_items` varchar(255) DEFAULT NULL,
+  `toppings_info` varchar(500) DEFAULT NULL,
   `item_type` enum('food','combo','service') NOT NULL DEFAULT 'food',
   `quantity` int(11) NOT NULL DEFAULT 1,
   `notes` varchar(255) DEFAULT NULL,
@@ -789,6 +791,7 @@ CREATE TABLE `foods` (
   `image` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `status` tinyint(1) DEFAULT 1,
+  `max_toppings` int(11) DEFAULT 4,
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `is_chef_recommended` tinyint(1) DEFAULT 0,
   `allergens` text DEFAULT NULL,
@@ -803,20 +806,20 @@ CREATE TABLE `foods` (
 
 INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`, `is_active`, `is_chef_recommended`, `allergens`, `wine_pairing_id`, `chef_note`, `theme_id`) VALUES
 (1, 2, 'Bò Bít Tết (Beefsteak)', 400000.00, '7d76786780be41b26cea039d.jpg', 'Thăn nội bò nướng than hoa mềm ngọt, kèm sốt tiêu đen đặc biệt.', 1, 1, 1, '', NULL, '', 1),
-(3, 2, 'Cá Hồi Áp Chảo', 180000.00, '1779508455_6a1124e77c5f4.jpg', 'Cá hồi Na Uy tươi áp chảo xém da, dùng kèm sốt chanh leo chua ngọt.', 1, 1, 0, '', NULL, '', NULL),
-(4, 2, 'Sườn Heo Nướng BBQ', 220000.00, '1779508431_6a1124cfdd1c3.jpg', 'Sườn non tẩm ướp sốt BBQ đậm đà nướng chậm trong 4 giờ.', 1, 1, 0, '', NULL, '', NULL),
+(3, 2, 'Cá Hồi Áp Chảo', 180000.00, 'ca_hoi_ap_chao_new.jpg', 'Cá hồi Na Uy tươi áp chảo xém da, dùng kèm sốt chanh leo chua ngọt.', 1, 1, 0, '', NULL, '', 1),
+(4, 2, 'Sườn Heo Nướng BBQ', 220000.00, '1779508431_6a1124cfdd1c3.jpg', 'Sườn non tẩm ướp sốt BBQ đậm đà nướng chậm trong 4 giờ.', 1, 1, 0, '', NULL, '', 1),
 (5, 2, 'Mì Ý Hải Sản', 150000.00, '1779508403_6a1124b3b9104.webp', 'Mì Spaghetti xào tôm, mực, vẹm xanh sốt cà chua cay nhẹ.', 1, 1, 0, '', NULL, '', NULL),
 (6, 5, 'Salad Cá Ngừ', 95000.00, '1779508380_6a11249cb4e61.png', 'Rau xanh tổng hợp mix cá ngừ đại dương, trứng cút và sốt dầu giấm.', 1, 1, 1, '', NULL, '', NULL),
-(7, 3, 'Soup Kem Nấm', 85000.00, '1779508350_6a11247ee9fae.jpg', 'Soup nấm hương nấm mỡ xay mịn nấu cùng kem tươi béo ngậy.', 1, 1, 0, '', NULL, '', NULL),
-(8, 2, 'Pizza Gà Nấm', 145000.00, '1779508327_6a112467d05fd.jpg', 'Bánh pizza đế mỏng nướng củi, phô mai mozzarella kéo sợi phủ thịt gà và nấm.', 1, 1, 0, 'đậu phộng', NULL, '', NULL),
-(9, 1, 'Tôm Sú Rang Muối Ớt', 195000.00, '1779508300_6a11244c4b361.jpg', 'Tôm sú tươi sống chiên giòn xóc muối ớt kiểu Hồng Kông.', 1, 1, 0, '', NULL, '', NULL),
+(7, 3, 'Soup Kem Nấm', 85000.00, 'soup_kem_nam_new.jpg', 'Soup nấm hương nấm mỡ xay mịn nấu cùng kem tươi béo ngậy.', 1, 1, 0, '', NULL, '', NULL),
+(8, 2, 'Pizza Gà Nấm', 145000.00, 'pizza_ga_nam_new.jpg', 'Bánh pizza đế mỏng nướng củi, phô mai mozzarella kéo sợi phủ thịt gà và nấm.', 1, 1, 0, 'đậu phộng', NULL, '', NULL),
+(9, 1, 'Tôm Sú Rang Muối Ớt', 195000.00, '1779508300_6a11244c4b361.jpg', 'Tôm sú tươi sống chiên giòn xóc muối ớt kiểu Hồng Kông.', 1, 1, 0, '', NULL, '', 1),
 (11, 5, 'Bánh Mì Bơ Tỏi', 70000.00, '1779508232_6a112408d74a9.webp', 'Bánh mì baguette nướng giòn rụm phết bơ tỏi và lá thơm băm nhỏ.', 1, 1, 1, '', NULL, '', 1),
 (12, 2, 'Beef Wellington', 850000.00, '1780713599_6a23887fcefe9.jpg', 'Thăn bò hảo hạng cuộn trong lớp nấm truffles và vỏ bánh ngàn lớp nướng vàng rụm.', 1, 1, 0, '', NULL, '', 1),
-(13, 2, 'Duck Breast with Cherry Reduction', 650000.00, '1780713649_6a2388b12a6a1.jpg', 'Ức vịt áp chảo mềm mọng dùng kèm sốt cherry đỏ cô đặc chua ngọt tinh tế.', 1, 1, 0, '', NULL, '', NULL),
-(14, 2, 'Herb-Crusted Lamb Rack', 750000.00, '1780713689_6a2388d90ba6f.jpg', 'Sườn cừu Pháp nướng phủ lớp vụn bánh mì và thảo mộc thơm lừng.', 1, 1, 0, '', NULL, '', NULL),
-(15, 2, 'Seared Hokkaido Scallops', 950000.00, '1780713718_6a2388f69f231.jpg', 'Cồi sò điệp Hokkaido áp chảo dùng kèm sốt bơ chanh vàng béo ngậy.', 1, 1, 0, '', NULL, '', NULL),
+(13, 2, 'Duck Breast with Cherry Reduction', 650000.00, '1780713649_6a2388b12a6a1.jpg', 'Ức vịt áp chảo mềm mọng dùng kèm sốt cherry đỏ cô đặc chua ngọt tinh tế.', 1, 1, 0, '', NULL, '', 1),
+(14, 2, 'Herb-Crusted Lamb Rack', 750000.00, '1780713689_6a2388d90ba6f.jpg', 'Sườn cừu Pháp nướng phủ lớp vụn bánh mì và thảo mộc thơm lừng.', 1, 1, 0, '', NULL, '', 1),
+(15, 2, 'Seared Hokkaido Scallops', 950000.00, '1780713718_6a2388f69f231.jpg', 'Cồi sò điệp Hokkaido áp chảo dùng kèm sốt bơ chanh vàng béo ngậy.', 1, 1, 0, '', NULL, '', 1),
 (16, 1, 'Burrata & Heirloom Tomato', 350000.00, '1780713742_6a23890e80b50.jpg', 'Phô mai Burrata tươi béo ngậy ăn cùng cà chua Heirloom và sốt dầu giấm balsamic.', 1, 1, 1, '', NULL, '', 1),
-(17, 1, 'Tuna Tartare', 450000.00, '1780713767_6a238927e7dd3.jpg', 'Cá ngừ đại dương xắt lựu tẩm ướp tinh tế, dùng kèm quả bơ và bánh quy giòn.', 1, 1, 0, '', NULL, '', NULL);
+(17, 1, 'Tuna Tartare', 450000.00, '1780713767_6a238927e7dd3.jpg', 'Cá ngừ đại dương xắt lựu tẩm ướp tinh tế, dùng kèm quả bơ và bánh quy giòn.', 1, 1, 0, '', NULL, '', 1);
 
 -- --------------------------------------------------------
 
@@ -2508,8 +2511,275 @@ INSERT INTO `warehouses` (`id`, `name`, `type`, `status`) VALUES
 (9, 'Kho Nguyên Liệu Khô (Gia vị, đồ khô)', '', 1);
 
 --
+-- Table structure for table `toppings`
+--
+
+DROP TABLE IF EXISTS `toppings`;
+CREATE TABLE `toppings` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `description` varchar(500) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `price` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `image` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `selection_type` varchar(50) COLLATE utf8mb4_general_ci DEFAULT 'checkbox',
+  `topping_group` varchar(100) COLLATE utf8mb4_general_ci DEFAULT 'Topping thêm',
+  `status` tinyint(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `toppings`
+--
+
+LOCK TABLES `toppings` WRITE;
+INSERT INTO `toppings` (`id`, `name`, `description`, `price`, `image`, `selection_type`, `topping_group`, `status`) VALUES
+(1,'Thêm phô mai','Phô mai Mozzarella béo mịn, tan chảy hoàn hảo khi nướng',20000.00,NULL,'checkbox','Topping thêm',1),
+(2,'Gấp đôi sốt nấm truffles','Sốt nấm truffles đen nhập khẩu, hương vị đậm đà tinh tế',50000.00,NULL,'checkbox','Topping thêm',1),
+(3,'Thêm bánh mì nướng','Bánh mì baguette nướng giòn phết bơ tỏi thơm',15000.00,NULL,'checkbox','Topping thêm',1),
+(4,'Thêm trứng chần','Trứng gà tươi chần trong nước sôi nhẹ, lòng đào mịn mướt',15000.00,NULL,'checkbox','Topping thêm',1),
+(5,'Đế mỏng giòn','Đế bánh mỏng siêu giòn nướng củi theo phong cách Napoli',0.00,NULL,'radio','Đế bánh',1),
+(6,'Đế thường (tiêu chuẩn)','Đế bánh tiêu chuẩn dày vừa, mềm bên trong giòn bên ngoài',0.00,NULL,'radio','Đế bánh',1),
+(7,'Đế dày viền phô mai','Đế dày viền nhồi đầy phô mai Mozzarella béo ngậy',30000.00,NULL,'radio','Đế bánh',1),
+(8,'Xúc xích Đức thêm','Xúc xích Đức Bratwurst hun khói nguyên chất, đậm vị',30000.00,NULL,'checkbox','Topping thêm',1),
+(9,'Trứng lòng đào thêm','Trứng gà ta lòng đào mềm mượt, chần trong nước 63°C',15000.00,NULL,'checkbox','Topping thêm',1),
+(10,'Tái (Rare)','Bên ngoài se, bên trong hồng đỏ — 52°C',0.00,NULL,'radio','Độ chín',1),
+(11,'Tái vừa (Medium Rare)','Hồng đậm mềm mọng, nhiều nước thịt nhất — 57°C',0.00,NULL,'radio','Độ chín',1),
+(12,'Chín vừa (Medium)','Hồng nhạt, cân bằng giữa mềm và chắc — 63°C',0.00,NULL,'radio','Độ chín',1),
+(13,'Chín (Medium Well)','Hơi hồng ở giữa, chắc thịt — 68°C',0.00,NULL,'radio','Độ chín',1),
+(14,'Chín hẳn (Well Done)','Chín toàn bộ, không còn màu hồng — 74°C',0.00,NULL,'radio','Độ chín',1),
+(15,'Sốt tiêu đen','Sốt tiêu đen đặc biệt từ hạt tiêu Kampot, đậm đà cay nhẹ',0.00,NULL,'radio','Chọn sốt',1),
+(16,'Sốt nấm truffles','Sốt nấm truffles đen sang trọng, thơm nồng nàn',15000.00,NULL,'radio','Chọn sốt',1),
+(17,'Sốt bơ tỏi','Bơ lạt đun tan cùng tỏi phi, đơn giản nhưng cực ngon',0.00,NULL,'radio','Chọn sốt',1),
+(18,'Thêm gan ngỗng (Foie Gras)','Gan ngỗng béo ngậy áp chảo, đặc sản hảo hạng',150000.00,NULL,'checkbox','Topping thêm',1),
+(19,'Thêm tôm sú nướng','Tôm sú tươi sống nướng lửa than kèm bơ tỏi',80000.00,NULL,'checkbox','Topping thêm',1),
+(20,'Sốt cà chua Marinara','Cà chua San Marzano thơm nhẹ, thêm lá húng quế tươi',0.00,NULL,'radio','Chọn sốt pasta',1),
+(21,'Sốt kem Alfredo','Kem tươi 35% fat, phô mai Parmesan cào tươi, béo ngậy',0.00,NULL,'radio','Chọn sốt pasta',1),
+(22,'Sốt pesto Genovese','Sốt lá húng quế, hạt thông, dầu olive extra virgin, phô mai Pecorino',15000.00,NULL,'radio','Chọn sốt pasta',1),
+(23,'Sốt cay arrabbiata','Cà chua đun với ớt khô và tỏi phi, cay nồng ấm bụng',0.00,NULL,'radio','Chọn sốt pasta',1),
+(24,'Thêm tôm sú','Tôm sú tươi xào sốt tỏi bơ thêm vào mì',50000.00,NULL,'checkbox','Topping thêm',1),
+(25,'Thêm mực ống','Mực ống tươi thái khoanh xào cùng mì',40000.00,NULL,'checkbox','Topping thêm',1),
+(26,'Thêm vẹm xanh','Vẹm xanh New Zealand hấp mở cùng sốt pasta',35000.00,NULL,'checkbox','Topping thêm',1),
+(27,'Thêm bacon xông khói','Thịt xông khói giòn rụm thái hạt lựu rắc lên mì',30000.00,NULL,'checkbox','Topping thêm',1),
+(28,'Thêm phô mai Parmesan bào','Phô mai Parmigiano-Reggiano bào tươi ngay khi phục vụ',20000.00,NULL,'checkbox','Topping thêm',1),
+(29,'Sốt dầu giấm balsamic','Giấm balsamic 12 tuổi pha dầu olive, chua ngọt thanh',0.00,NULL,'radio','Chọn sốt salad',1),
+(30,'Sốt Caesar','Sốt Caesar truyền thống với cá cơm, tỏi, chanh và phô mai',0.00,NULL,'radio','Chọn sốt salad',1),
+(31,'Sốt mù tạt mật ong','Mù tạt Dijon pha mật ong nguyên chất, vị ngọt cay dịu',10000.00,NULL,'radio','Chọn sốt salad',1),
+(32,'Thêm trứng cút luộc','Trứng cút luộc chín đúng tầm, ngon ngọt',10000.00,NULL,'checkbox','Topping thêm',1),
+(33,'Thêm bánh mì crouton','Bánh mì cắt hạt lựu nướng bơ tỏi giòn tan',15000.00,NULL,'checkbox','Topping thêm',1),
+(34,'Thêm hạt thông nướng','Hạt thông Ý rang khô thơm bùi',25000.00,NULL,'checkbox','Topping thêm',1),
+(35,'Thêm phô mai feta','Phô mai dê muối trắng vỡ vụn, mặn mặn chua nhẹ',30000.00,NULL,'checkbox','Topping thêm',1),
+(36,'Sốt chanh leo chua ngọt','Chanh leo nhiệt đới vắt tươi pha nước mắm nhạt, rất thơm',0.00,NULL,'radio','Chọn sốt cá',1),
+(37,'Sốt bơ chanh vàng','Bơ lạt đun tan với nước cốt chanh vàng Eureka, béo thanh',0.00,NULL,'radio','Chọn sốt cá',1),
+(38,'Sốt muối ớt chanh','Muối ớt cay kiểu Hồng Kông pha nước chanh, đậm đà',0.00,NULL,'radio','Chọn sốt cá',1),
+(39,'Thêm rong biển Wakame','Rong biển xanh non trụng nước sôi, thanh mát',20000.00,NULL,'checkbox','Topping thêm',1),
+(40,'Thêm trứng cá hồi (Ikura)','Trứng cá hồi tươi muối tương, mặn mọng nổ trong miệng',60000.00,NULL,'checkbox','Topping thêm',1),
+(41,'Thêm đậu phụ non','Đậu phụ non mềm mịn Nhật Bản, thanh đạm',15000.00,NULL,'checkbox','Topping thêm',1),
+(42,'Thêm lát chanh tươi','Chanh ta tươi thái lát mỏng, thêm vào khi dùng',5000.00,NULL,'checkbox','Topping thêm',1),
+(43,'Không hành / tỏi','Yêu cầu đặc biệt: bỏ toàn bộ hành và tỏi trong món',0.00,NULL,'checkbox','Yêu cầu đặc biệt',1),
+(44,'Không cay','Yêu cầu đặc biệt: không cho ớt và tiêu cay',0.00,NULL,'checkbox','Yêu cầu đặc biệt',1),
+(45,'Ít muối / Ít mặn','Yêu cầu đặc biệt: giảm lượng muối và gia vị mặn',0.00,NULL,'checkbox','Yêu cầu đặc biệt',1);
+UNLOCK TABLES;
+
+--
+-- Additional combos for Doug K. Vega theme
+--
+INSERT IGNORE INTO `combos` (`id`, `name`, `description`, `price`, `image`, `status`, `is_active`, `theme_id`) VALUES
+(3, 'The Vega Grand Tasting', 'Bữa thưởng thức cao cấp 5 món - khai vị, chính, tráng miệng. Hành trình ẩm thực Michelin đẳng cấp cho 2 người.', 2500000.00, 'vega_grand_tasting.jpg', 1, 1, 1),
+(4, 'Vega Ocean Prestige', 'Set menu hải sản thượng hạng: cá hồi áp chảo, sò điệp Hokkaido, tôm sú, tuna tartare và soup kem nấm. Dành cho người yêu biển.', 1800000.00, 'vega_seafood_platter.jpg', 1, 1, 1);
+
+--
+-- Full combo_items for all combos
+--
+DELETE FROM `combo_items` WHERE `combo_id` IN (1,2,3,4);
+INSERT INTO `combo_items` (`id`, `combo_id`, `food_id`) VALUES
+(1, 1, 9), (2, 1, 7), (3, 1, 11), (4, 1, 12), (5, 1, 13),
+(6, 2, 1), (7, 2, 3), (8, 2, 12), (9, 2, 14), (10, 2, 15),
+(11, 3, 17), (12, 3, 16), (13, 3, 12), (14, 3, 13), (15, 3, 15),
+(16, 4, 3), (17, 4, 9), (18, 4, 15), (19, 4, 17), (20, 4, 7);
+
+--
+-- Table structure for table `food_toppings`
+--
+
+DROP TABLE IF EXISTS `food_toppings`;
+CREATE TABLE `food_toppings` (
+  `id` int(11) NOT NULL,
+  `food_id` int(11) NOT NULL,
+  `topping_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `food_toppings`
+--
+
+LOCK TABLES `food_toppings` WRITE;
+INSERT INTO `food_toppings` (`id`, `food_id`, `topping_id`) VALUES
+(6,1,15),
+(7,1,16),
+(8,1,17),
+(9,1,1),
+(10,1,2),
+(11,1,4),
+(12,1,18),
+(13,1,19),
+(14,1,43),
+(15,1,44),
+(16,1,45),
+(17,3,36),
+(18,3,37),
+(19,3,38),
+(20,3,39),
+(21,3,40),
+(22,3,41),
+(23,3,42),
+(24,3,43),
+(25,3,44),
+(26,3,45),
+(27,4,1),
+(28,4,3),
+(29,4,8),
+(30,4,43),
+(31,4,44),
+(32,4,45),
+(33,5,20),
+(34,5,21),
+(35,5,22),
+(36,5,23),
+(37,5,24),
+(38,5,25),
+(39,5,26),
+(40,5,27),
+(41,5,28),
+(42,5,43),
+(43,5,44),
+(44,5,45),
+(45,6,29),
+(46,6,30),
+(47,6,31),
+(48,6,32),
+(49,6,33),
+(50,6,34),
+(51,6,35),
+(52,6,42),
+(53,6,43),
+(54,6,44),
+(55,6,45),
+(56,7,3),
+(57,7,1),
+(58,7,2),
+(59,7,43),
+(60,7,44),
+(61,7,45),
+(62,8,1),
+(63,8,5),
+(64,8,6),
+(65,8,7),
+(66,8,8),
+(67,8,9),
+(68,8,43),
+(69,8,44),
+(70,8,45),
+(71,9,38),
+(72,9,37),
+(73,9,42),
+(74,9,4),
+(75,9,39),
+(76,9,43),
+(77,9,44),
+(78,9,45),
+(79,11,1),
+(80,11,28),
+(81,11,4),
+(82,11,42),
+(83,11,43),
+(84,11,44),
+(85,11,45),
+(91,12,15),
+(92,12,16),
+(93,12,17),
+(94,12,18),
+(95,12,1),
+(96,12,2),
+(97,12,43),
+(98,12,44),
+(99,12,45),
+(105,13,15),
+(106,13,16),
+(107,13,1),
+(108,13,4),
+(109,13,43),
+(110,13,44),
+(111,13,45),
+(117,14,15),
+(118,14,17),
+(119,14,18),
+(120,14,1),
+(121,14,43),
+(122,14,44),
+(123,14,45),
+(124,15,36),
+(125,15,37),
+(126,15,40),
+(127,15,39),
+(128,15,42),
+(129,15,43),
+(130,15,44),
+(131,15,45),
+(132,16,29),
+(133,16,31),
+(134,16,34),
+(135,16,33),
+(136,16,42),
+(137,16,43),
+(138,16,44),
+(139,16,45),
+(140,17,36),
+(141,17,38),
+(142,17,40),
+(143,17,39),
+(144,17,41),
+(145,17,42),
+(146,17,43),
+(147,17,44),
+(148,17,45);
+UNLOCK TABLES;
+
+--
+-- Table structure for table `order_item_toppings`
+--
+
+DROP TABLE IF EXISTS `order_item_toppings`;
+CREATE TABLE `order_item_toppings` (
+  `id` int(11) NOT NULL,
+  `order_item_id` int(11) NOT NULL,
+  `topping_id` int(11) NOT NULL,
+  `price` decimal(15,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `toppings`
+--
+ALTER TABLE `toppings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `food_toppings`
+--
+ALTER TABLE `food_toppings`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `food_id` (`food_id`),
+  ADD KEY `topping_id` (`topping_id`);
+
+--
+-- Indexes for table `order_item_toppings`
+--
+ALTER TABLE `order_item_toppings`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `order_item_id` (`order_item_id`),
+  ADD KEY `topping_id` (`topping_id`);
 
 --
 -- Indexes for table `about_categories`
@@ -2846,6 +3116,24 @@ ALTER TABLE `warehouses`
 --
 
 --
+-- AUTO_INCREMENT for table `toppings`
+--
+ALTER TABLE `toppings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+
+--
+-- AUTO_INCREMENT for table `food_toppings`
+--
+ALTER TABLE `food_toppings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=128;
+
+--
+-- AUTO_INCREMENT for table `order_item_toppings`
+--
+ALTER TABLE `order_item_toppings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `about_categories`
 --
 ALTER TABLE `about_categories`
@@ -3154,6 +3442,20 @@ ALTER TABLE `warehouses`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `food_toppings`
+--
+ALTER TABLE `food_toppings`
+  ADD CONSTRAINT `fk_food_toppings_food` FOREIGN KEY (`food_id`) REFERENCES `foods` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_food_toppings_topping` FOREIGN KEY (`topping_id`) REFERENCES `toppings` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `order_item_toppings`
+--
+ALTER TABLE `order_item_toppings`
+  ADD CONSTRAINT `fk_order_item_toppings_order_item` FOREIGN KEY (`order_item_id`) REFERENCES `booking_details` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_order_item_toppings_topping` FOREIGN KEY (`topping_id`) REFERENCES `toppings` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `combos`

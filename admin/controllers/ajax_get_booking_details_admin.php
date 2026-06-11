@@ -27,9 +27,28 @@ if (!$booking) {
 }
 
 // Fetch items
-$detail_stmt = $db->prepare("SELECT f.name, bd.quantity, f.price FROM booking_details bd JOIN foods f ON bd.menu_id = f.id WHERE bd.booking_id = ?");
+$detail_stmt = $db->prepare("SELECT f.name, bd.quantity, f.price, bd.notes, bd.toppings_info FROM booking_details bd JOIN foods f ON bd.menu_id = f.id WHERE bd.booking_id = ?");
 $detail_stmt->execute([$booking_id]);
 $items = $detail_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+foreach ($items as &$it) {
+    $it['toppings_list'] = [];
+    $it['toppings_price'] = 0;
+    if (!empty($it['toppings_info'])) {
+        $t_ids = explode(',', $it['toppings_info']);
+        $t_ids_str = implode(',', array_map('intval', $t_ids));
+        if (!empty($t_ids_str)) {
+            $toppings_query = $db->query("SELECT name, price FROM toppings WHERE id IN ($t_ids_str)")->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($toppings_query as $tq) {
+                $it['toppings_list'][] = $tq['name'] . " (+" . number_format($tq['price']) . "đ)";
+                $it['toppings_price'] += $tq['price'];
+            }
+        }
+    }
+    $it['final_price'] = $it['price'] + $it['toppings_price'];
+    $it['subtotal'] = $it['final_price'] * $it['quantity'];
+}
+unset($it);
 
 $total = 0;
 ?>
@@ -75,13 +94,24 @@ $total = 0;
             </thead>
             <tbody>
                 <?php foreach($items as $it): 
-                    $sub = $it['price'] * $it['quantity'];
-                    $total += $sub;
+                    $total += $it['subtotal'];
                 ?>
                 <tr>
-                    <td style="padding:8px; border-bottom:1px solid #f0f0f0;"><?= htmlspecialchars($it['name']) ?></td>
-                    <td style="padding:8px; border-bottom:1px solid #f0f0f0; text-align:center;">x<?= $it['quantity'] ?></td>
-                    <td style="padding:8px; border-bottom:1px solid #f0f0f0; text-align:right; font-weight:500;"><?= number_format($sub) ?>đ</td>
+                    <td style="padding:8px; border-bottom:1px solid #f0f0f0;">
+                        <strong style="color:#222;"><?= htmlspecialchars($it['name']) ?></strong>
+                        <?php if (!empty($it['toppings_list'])): ?>
+                            <div style="font-size:11px; color:#cda45e; margin-top:2px;">
+                                <i class="fas fa-plus-circle me-1" style="font-size:10px;"></i>Topping: <?= implode(', ', $it['toppings_list']) ?>
+                            </div>
+                        <?php endif; ?>
+                        <?php if (!empty($it['notes'])): ?>
+                            <div style="font-size:11px; color:#c0392b; margin-top:2px; font-style:italic;">
+                                <i class="fas fa-pen me-1" style="font-size:9px;"></i><?= htmlspecialchars($it['notes']) ?>
+                            </div>
+                        <?php endif; ?>
+                    </td>
+                    <td style="padding:8px; border-bottom:1px solid #f0f0f0; text-align:center; vertical-align:top;">x<?= $it['quantity'] ?></td>
+                    <td style="padding:8px; border-bottom:1px solid #f0f0f0; text-align:right; font-weight:500; vertical-align:top;"><?= number_format($it['subtotal']) ?>đ</td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>

@@ -119,4 +119,36 @@ function createBatch($db, $ingredient_id, $warehouse_id, $quantity, $expiry_date
     $stmt = $db->prepare("INSERT INTO inventory_batches (ingredient_id, warehouse_id, quantity, expiry_date, cost_price, batch_code) VALUES (?, ?, ?, ?, ?, ?)");
     return $stmt->execute([$ingredient_id, $warehouse_id, $quantity, $expiry_date ?: null, $cost_price, $batch_code]);
 }
+
+/**
+ * Tính toán số lượng tồn kho khả dụng của món ăn dựa trên nguyên liệu trong kho
+ */
+function getFoodInventory($db, $food_id) {
+    $stmt = $db->prepare("
+        SELECT fr.ingredient_id, fr.quantity_required, fr.unit as recipe_unit,
+               i.unit_name as inv_unit,
+               IFNULL((SELECT SUM(quantity) FROM inventory_stocks WHERE ingredient_id = fr.ingredient_id), 0) as total_stock
+        FROM food_recipes fr
+        JOIN inventory i ON fr.ingredient_id = i.id
+        WHERE fr.food_id = ?
+    ");
+    $stmt->execute([$food_id]);
+    $recipes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if (empty($recipes)) {
+        return 99; // Mặc định không giới hạn
+    }
+
+    $min_stock = 999999;
+    foreach ($recipes as $r) {
+        $req_qty = convert_to_base_unit($r['quantity_required'], $r['recipe_unit'], $r['inv_unit']);
+        if ($req_qty <= 0) continue;
+        $possible = floor((float)$r['total_stock'] / $req_qty);
+        if ($possible < $min_stock) {
+            $min_stock = $possible;
+        }
+    }
+
+    return (int)max(0, $min_stock);
+}
 ?>

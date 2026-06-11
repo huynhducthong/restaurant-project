@@ -28,10 +28,41 @@ include 'views/client/layouts/header.php';
 
 $is_success = isset($_GET['success']) && isset($_GET['id']);
 $booking = null;
+$booking_items = [];
 if ($is_success) {
     $stmt = $db->prepare("SELECT s.*, t.table_code FROM service_bookings s LEFT JOIN restaurant_tables t ON s.table_id = t.id WHERE s.id = ?");
     $stmt->execute([$_GET['id']]);
     $booking = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($booking) {
+        $detail_stmt = $db->prepare("
+            SELECT bd.quantity, bd.notes, bd.toppings_info, f.name as food_name, f.price as food_price
+            FROM booking_details bd
+            JOIN foods f ON bd.menu_id = f.id
+            WHERE bd.booking_id = ?
+        ");
+        $detail_stmt->execute([$_GET['id']]);
+        $booking_items = $detail_stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach ($booking_items as &$it) {
+            $it['toppings_list'] = [];
+            $it['toppings_total_price'] = 0;
+            if (!empty($it['toppings_info'])) {
+                $t_ids = explode(',', $it['toppings_info']);
+                $t_ids_str = implode(',', array_map('intval', $t_ids));
+                if (!empty($t_ids_str)) {
+                    $toppings_query = $db->query("SELECT name, price FROM toppings WHERE id IN ($t_ids_str)")->fetchAll(PDO::FETCH_ASSOC);
+                    foreach ($toppings_query as $tq) {
+                        $it['toppings_list'][] = $tq['name'] . " (+" . number_format($tq['price']) . "đ)";
+                        $it['toppings_total_price'] += $tq['price'];
+                    }
+                }
+            }
+            $it['final_unit_price'] = $it['food_price'] + $it['toppings_total_price'];
+            $it['final_subtotal'] = $it['final_unit_price'] * $it['quantity'];
+        }
+        unset($it);
+    }
 }
 ?>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -955,6 +986,46 @@ if ($is_success) {
                             </div>
                         <?php endif; ?>
                     </div>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <?php if (!empty($booking_items)): ?>
+            <div style="margin-bottom: 40px;">
+                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--g1); margin-bottom: 15px;"><i class="fas fa-utensils me-2" style="color:var(--gold);"></i> Thực Đơn Đã Chọn</h4>
+                <div style="border: 1px solid rgba(20, 59, 54, 0.1); border-radius: 12px; padding: 20px; background: #fff;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid rgba(20, 59, 54, 0.1); color: var(--g1); font-weight: bold; text-align: left;">
+                                <th style="padding: 10px 5px;">Món ăn</th>
+                                <th style="padding: 10px 5px; text-align: center;">SL</th>
+                                <th style="padding: 10px 5px; text-align: right;">Đơn giá</th>
+                                <th style="padding: 10px 5px; text-align: right;">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($booking_items as $it): ?>
+                            <tr style="border-bottom: 1px solid rgba(0, 0, 0, 0.05); vertical-align: top;">
+                                <td style="padding: 12px 5px;">
+                                    <strong style="color: var(--g1); font-size: 14px;"><?= htmlspecialchars($it['food_name']) ?></strong>
+                                    <?php if (!empty($it['toppings_list'])): ?>
+                                        <div style="font-size: 11px; color: var(--gold); margin-top: 4px;">
+                                            <i class="fas fa-plus-circle me-1"></i>Topping: <?= implode(', ', $it['toppings_list']) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($it['notes'])): ?>
+                                        <div style="font-size: 11px; color: #c0392b; margin-top: 4px; font-style: italic;">
+                                            <i class="fas fa-pen me-1"></i><?= htmlspecialchars($it['notes']) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </td>
+                                <td style="padding: 12px 5px; text-align: center; color: var(--g2);">x<?= $it['quantity'] ?></td>
+                                <td style="padding: 12px 5px; text-align: right; color: var(--g2);"><?= number_format($it['final_unit_price']) ?>đ</td>
+                                <td style="padding: 12px 5px; text-align: right; font-weight: bold; color: var(--g1);"><?= number_format($it['final_subtotal']) ?>đ</td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <?php endif; ?>

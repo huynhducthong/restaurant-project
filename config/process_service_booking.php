@@ -5,6 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $user_id = $_SESSION['user_id'] ?? null;
 
 require_once 'database.php';
+require_once 'inventory_helper.php';
 $db = (new Database())->getConnection();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -84,6 +85,78 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
+    // Validation and Sanitization phase for menu items
+    $validated_menu_items = [];
+    if (!empty($_POST['menu_items'])) {
+        foreach ($_POST['menu_items'] as $m_id) {
+            $m_id = (int)$m_id;
+            // Fetch food info
+            $f_stmt = $db->prepare("SELECT id, name, price, max_toppings FROM foods WHERE id = ? AND status = 1");
+            $f_stmt->execute([$m_id]);
+            $food = $f_stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$food) {
+                // Invalid or inactive food item
+                continue;
+            }
+            
+            // Check stock limit
+            $qty = isset($_POST['quantity'][$m_id]) ? (int)$_POST['quantity'][$m_id] : 1;
+            if ($qty < 1) $qty = 1;
+            $stock = getFoodInventory($db, $m_id);
+            if ($qty > $stock) {
+                echo "<script>alert('Món {$food['name']} vượt quá tồn kho khả dụng (Tồn kho: {$stock}).'); window.history.back();</script>";
+                exit;
+            }
+            
+            // Validate toppings
+            $selected_topping_ids = $_POST['food_toppings'][$m_id] ?? [];
+            $valid_toppings = [];
+            $checkbox_count = 0;
+            
+            if (!empty($selected_topping_ids)) {
+                foreach ($selected_topping_ids as $t_id) {
+                    $t_id = (int)$t_id;
+                    // Check if topping is associated with this food and is active
+                    $ft_stmt = $db->prepare("
+                        SELECT t.id, t.name, t.price, t.selection_type, t.topping_group 
+                        FROM food_toppings ft
+                        JOIN toppings t ON ft.topping_id = t.id
+                        WHERE ft.food_id = ? AND ft.topping_id = ? AND t.status = 1
+                    ");
+                    $ft_stmt->execute([$m_id, $t_id]);
+                    $topping = $ft_stmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if ($topping) {
+                        $valid_toppings[] = $topping;
+                        if ($topping['selection_type'] === 'checkbox') {
+                            $checkbox_count++;
+                        }
+                    }
+                }
+            }
+            
+            // Validate max checkbox toppings count against max_toppings
+            if ($checkbox_count > $food['max_toppings']) {
+                echo "<script>alert('Số lượng topping của món {$food['name']} vượt quá giới hạn tối đa cho phép ({$food['max_toppings']}).'); window.history.back();</script>";
+                exit;
+            }
+            
+            // Sanitize notes
+            $note = isset($_POST['food_notes'][$m_id]) ? $_POST['food_notes'][$m_id] : '';
+            $note = strip_tags($note);
+            $note = mb_substr(trim($note), 0, 255, 'UTF-8');
+            
+            $validated_menu_items[$m_id] = [
+                'id' => $m_id,
+                'name' => $food['name'],
+                'base_price' => (float)$food['price'],
+                'qty' => $qty,
+                'toppings' => $valid_toppings,
+                'note' => $note
+            ];
+        }
+    }
+
     try {
         // Bắt đầu giao dịch (Transaction)
         $db->beginTransaction();
@@ -99,13 +172,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Tính tiền món ăn khách chọn lẻ
-        if (!empty($_POST['menu_items'])) {
-            $food_ids = implode(',', array_map('intval', $_POST['menu_items']));
-            $f_stmt = $db->query("SELECT id, price FROM foods WHERE id IN ($food_ids)");
-            $foods_price = $f_stmt->fetchAll(PDO::FETCH_KEY_PAIR);
-            foreach ($_POST['menu_items'] as $m_id) {
-                $qty = $_POST['quantity'][$m_id] ?? 1;
-                $total_amount += ($foods_price[$m_id] ?? 0) * $qty;
+        if (!empty($validated_menu_items)) {
+            foreach ($validated_menu_items as $item) {
+                $item_price = $item['base_price'];
+                foreach ($item['toppings'] as $tp) {
+                    $item_price += (float)$tp['price'];
+                }
+                $total_amount += $item_price * $item['qty'];
             }
         }
         
@@ -156,13 +229,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt_booking->execute([$user_id, $type, $name, $phone, $date, $guests, $msg, $table_id, $combo_id, $total_amount, $deposit_amount, $event_type, $decor_package, $has_cake, $has_flower, $has_candle, $has_handwritten_card, $card_message, $flower_preference, $music_playlist, $light_tone, $chef_requirements]);
         $last_id = $db->lastInsertId();
 
-        // 3. Lưu chi tiết các món ăn khách chọn lẻ
-        if (!empty($_POST['menu_items'])) {
-            $stmt_details = $db->prepare("INSERT INTO booking_details (booking_id, menu_id, item_type, quantity, notes) VALUES (?, ?, 'food', ?, ?)");
-            foreach ($_POST['menu_items'] as $menu_id) {
-                $qty = $_POST['quantity'][$menu_id] ?? 1;
-                $note = $_POST['food_notes'][$menu_id] ?? '';
-                $stmt_details->execute([$last_id, $menu_id, $qty, $note]);
+        // 3. Lưu chi tiết các món ăn khách chọn lẻ và toppings
+        if (!empty($validated_menu_items)) {
+            $stmt_details = $db->prepare("INSERT INTO booking_details (booking_id, menu_id, item_type, quantity, notes, toppings_info) VALUES (?, ?, 'food', ?, ?, ?)");
+            $stmt_order_item_topping = $db->prepare("INSERT INTO order_item_toppings (order_item_id, topping_id, price) VALUES (?, ?, ?)");
+            
+            foreach ($validated_menu_items as $item) {
+                $toppings_info = null;
+                if (!empty($item['toppings'])) {
+                    $topping_ids = array_map(function($t) { return $t['id']; }, $item['toppings']);
+                    $toppings_info = implode(',', $topping_ids);
+                }
+                
+                // Insert into booking_details
+                $stmt_details->execute([$last_id, $item['id'], $item['qty'], $item['note'], $toppings_info]);
+                $detail_id = $db->lastInsertId();
+                
+                // Insert into order_item_toppings
+                if (!empty($item['toppings'])) {
+                    foreach ($item['toppings'] as $tp) {
+                        $stmt_order_item_topping->execute([$detail_id, $tp['id'], $tp['price']]);
+                    }
+                }
             }
         }
 
@@ -172,9 +260,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_combo_foods->execute([$combo_id]);
             $combo_foods = $stmt_combo_foods->fetchAll(PDO::FETCH_ASSOC);
 
-            $stmt_combo_details = $db->prepare("INSERT INTO booking_details (booking_id, menu_id, item_type, quantity) VALUES (?, ?, 'food', 1)");
+            // Fetch excluded items
+            $excluded_str = $_POST['excluded_combo_items'][$combo_id] ?? '';
+            $excluded_items = array_filter(explode(',', $excluded_str));
+
+            $stmt_combo_details = $db->prepare("INSERT INTO booking_details (booking_id, menu_id, item_type, quantity, excluded_combo_items) VALUES (?, ?, 'food', 1, ?)");
             foreach ($combo_foods as $cf) {
-                $stmt_combo_details->execute([$last_id, $cf['food_id']]);
+                if(!in_array($cf['food_id'], $excluded_items)) {
+                    $stmt_combo_details->execute([$last_id, $cf['food_id'], null]);
+                } else {
+                    // Món bị bỏ khỏi combo, có thể lưu để báo bếp hoặc không lưu. Ở đây mình chọn không chèn item này vào booking_details, hoặc chèn với ghi chú "Excluded".
+                    // Quyết định tốt nhất: Bỏ qua (không insert) nhưng có thể thêm dòng thông tin chung vào ghi chú tổng.
+                }
             }
         }
 

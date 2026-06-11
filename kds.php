@@ -50,13 +50,28 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Lấy danh sách các món ăn lẻ (A la Carte) cho từng đơn
 foreach ($orders as &$order) {
     $stmt_details = $db->prepare("
-        SELECT bd.quantity, bd.notes as special_notes, f.name as food_name
+        SELECT bd.quantity, bd.notes as special_notes, f.name as food_name, bd.toppings_info
         FROM booking_details bd
         JOIN foods f ON bd.menu_id = f.id
         WHERE bd.booking_id = ?
     ");
     $stmt_details->execute([$order['id']]);
-    $order['foods'] = $stmt_details->fetchAll(PDO::FETCH_ASSOC);
+    $foods_list = $stmt_details->fetchAll(PDO::FETCH_ASSOC);
+    
+    foreach ($foods_list as &$f) {
+        $f['toppings'] = [];
+        if (!empty($f['toppings_info'])) {
+            $t_ids = explode(',', $f['toppings_info']);
+            $t_ids_str = implode(',', array_map('intval', $t_ids));
+            if (!empty($t_ids_str)) {
+                $toppings_query = $db->query("SELECT name FROM toppings WHERE id IN ($t_ids_str)")->fetchAll(PDO::FETCH_COLUMN);
+                $f['toppings'] = $toppings_query;
+            }
+        }
+    }
+    unset($f);
+    
+    $order['foods'] = $foods_list;
 }
 unset($order);
 
@@ -955,9 +970,18 @@ $normalOrders = $totalOrders - $urgentOrders;
           <?php foreach ($order['foods'] as $f): ?>
             <div class="food-item">
               <div class="food-name">
-                <?= htmlspecialchars($f['food_name']) ?>
+                <span style="font-weight: 700;"><?= htmlspecialchars($f['food_name']) ?></span>
+                <?php if (!empty($f['toppings'])): ?>
+                  <br>
+                  <span class="food-note" style="background: rgba(201, 166, 107, 0.1); color: var(--gold); border: 1px solid rgba(201, 166, 107, 0.2); font-weight: bold; font-style: normal; margin-top: 2px;">
+                    <i class="fas fa-plus-circle" style="font-size:9px; margin-right:3px;"></i>Topping: <?= htmlspecialchars(implode(', ', $f['toppings'])) ?>
+                  </span>
+                <?php endif; ?>
                 <?php if (!empty($f['special_notes'])): ?>
-                  <span class="food-note"><i class="fas fa-exclamation-circle" style="font-size:10px; margin-right:3px;"></i><?= htmlspecialchars($f['special_notes']) ?></span>
+                  <br>
+                  <span class="food-note" style="background: rgba(192, 57, 43, 0.08); color: #c0392b; border: 1px solid rgba(192, 57, 43, 0.15); font-weight: bold; font-style: italic; margin-top: 2px;">
+                    <i class="fas fa-exclamation-circle" style="font-size:9px; margin-right:3px;"></i><?= htmlspecialchars($f['special_notes']) ?>
+                  </span>
                 <?php endif; ?>
               </div>
               <div class="food-qty">x<?= $f['quantity'] ?></div>

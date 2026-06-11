@@ -21,6 +21,9 @@ $form_action = $is_edit
 .img-preview.show{display:block}
 .recipe-row{background:#f8f9fa;border-radius:10px;padding:10px 12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .recipe-row select,.recipe-row input{flex:1;min-width:120px;font-size:13px}
+.topping-card{background:#f8f9fa;border:1px solid #eee;border-radius:10px;cursor:pointer;transition:.2s;padding:10px;}
+.topping-card:hover{background:#fef6e4 !important;border-color:#cda45e;transform:translateY(-2px);box-shadow:0 4px 6px rgba(0,0,0,0.05)}
+.topping-card.active-checked{background:#fef6e4 !important;border:1px solid #cda45e !important}
 </style>
 
 <div class="content-wrapper p-4">
@@ -135,6 +138,19 @@ $form_action = $is_edit
                                     <span class="input-group-text bg-light border-0 text-muted small">đ</span>
                                 </div>
                                 <div class="form-text small" id="price-display"></div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-muted">Giới hạn Toppings tối đa</label>
+                                <div class="input-group">
+                                    <input type="number" name="max_toppings" class="form-control bg-light border-0 py-2"
+                                           value="<?= htmlspecialchars($old['max_toppings'] ?? '4') ?>"
+                                           min="0" step="1" required placeholder="4">
+                                    <span class="input-group-text bg-light border-0 text-muted small">toppings</span>
+                                </div>
+                                <div class="form-text small">Đặt 0 nếu không giới hạn số lượng topping được chọn.</div>
                             </div>
                         </div>
 
@@ -286,6 +302,53 @@ $form_action = $is_edit
                         </button>
                         <?php endif; ?>
 
+                        <!-- Định mức nguyên liệu và Toppings -->
+                        <?php 
+                        $grouped_toppings = [];
+                        if (!empty($toppings)) {
+                            foreach ($toppings as $t) {
+                                $group = $t['topping_group'] ?: 'Khác';
+                                $grouped_toppings[$group][] = $t;
+                            }
+                        }
+                        if (!empty($grouped_toppings)):
+                        ?>
+                        <p class="fw-bold small text-uppercase text-muted mb-3 border-bottom pb-2 mt-4">
+                            <i class="fas fa-plus-circle me-1 text-warning"></i>Danh sách Toppings cho món ăn
+                            <span class="badge bg-light text-muted border ms-1" style="font-size:10px;font-weight:400">Tùy chọn</span>
+                        </p>
+                        <div class="mb-4">
+                            <div class="row g-3">
+                                <?php foreach ($grouped_toppings as $group => $items): ?>
+                                    <div class="col-12 mb-2">
+                                        <h6 class="fw-bold text-dark border-bottom pb-1" style="font-size: 13px; color: #cda45e !important;">
+                                            <i class="fas fa-tags me-1"></i><?= htmlspecialchars($group) ?>
+                                        </h6>
+                                        <div class="row g-2">
+                                            <?php foreach ($items as $item): 
+                                                $is_checked = !empty($current_toppings) && in_array($item['id'], $current_toppings);
+                                            ?>
+                                                <div class="col-md-6 col-lg-4">
+                                                    <div class="topping-card d-flex align-items-center gap-2" data-topping-id="<?= $item['id'] ?>">
+                                                        <div class="form-check m-0 d-flex align-items-center">
+                                                            <input class="form-check-input topping-checkbox" type="checkbox" name="toppings[]" 
+                                                                   value="<?= $item['id'] ?>" id="topping_<?= $item['id'] ?>"
+                                                                   <?= $is_checked ? 'checked' : '' ?> style="cursor: pointer; width: 1.1rem; height: 1.1rem; border-color: #cda45e;">
+                                                        </div>
+                                                        <label class="form-check-label flex-grow-1" for="topping_<?= $item['id'] ?>" style="cursor: pointer; font-size: 12.5px; user-select: none;">
+                                                            <strong class="text-dark d-block" style="line-height: 1.2;"><?= htmlspecialchars($item['name']) ?></strong>
+                                                            <span class="text-muted" style="font-size: 11px;">+<?= number_format($item['price']) ?>đ</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
                         <!-- Nút submit -->
                         <div class="d-grid gap-2 mt-4">
                             <button type="submit" class="btn btn-warning py-3 rounded-pill fw-bold text-white shadow-sm"
@@ -421,6 +484,27 @@ var IS_EDIT           = <?= $is_edit ? 'true' : 'false' ?>;
     }
 
     if (btnAddRecipe) btnAddRecipe.addEventListener('click', function () { addRecipeRow('', '', ''); });
+
+    // Toggle active style and selection on topping cards
+    document.querySelectorAll('.topping-checkbox').forEach(function(cb) {
+        var card = cb.closest('.topping-card');
+        if (cb.checked) {
+            card.classList.add('active-checked');
+        }
+        cb.addEventListener('change', function() {
+            if (this.checked) {
+                card.classList.add('active-checked');
+            } else {
+                card.classList.remove('active-checked');
+            }
+        });
+        card.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'LABEL') {
+                cb.checked = !cb.checked;
+                cb.dispatchEvent(new Event('change'));
+            }
+        });
+    });
 
     document.getElementById('form-food').addEventListener('submit', function (e) {
         if (fileErr && fileErr.textContent !== '') { e.preventDefault(); return; }
