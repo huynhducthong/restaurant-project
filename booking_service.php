@@ -266,7 +266,7 @@ select.input-lux {
 .map-btn-lux:hover { background: var(--forest); color: #fff; }
 
 .card-select {
-    border: 1px solid var(--glass-border); background: #fff; border-radius: 0; padding: 20px; cursor: pointer; transition: all 0.3s var(--ease); position: relative; overflow: hidden;
+    border: 1px solid var(--glass-border); background: #fff; border-radius: 0; padding: 20px; cursor: pointer; transition: all 0.3s ease; position: relative; margin-bottom: 15px; overflow: hidden;
 }
 .card-select:hover { border-color: var(--forest); }
 .card-select.active { border-color: var(--forest); background: rgba(79, 91, 58, 0.05); }
@@ -299,6 +299,11 @@ select.input-lux {
     width: 100%; padding: 16px; background: var(--gold); border: 1px solid var(--gold); border-radius: 0; color: #fff; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-size: 13px; cursor: pointer; transition: all 0.3s ease;
 }
 .btn-gold-grad:hover { background: transparent; color: var(--gold); }
+
+.btn-outline-lux {
+    background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 10px 25px; border-radius: 0; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-size: 13px; cursor: pointer; transition: all 0.3s ease;
+}
+.btn-outline-lux:hover { background: var(--text-muted); color: #fff; }
 
 /* === MAP MODAL VIP === */
 .modal-content.dark-lux { background: #fff; border: 1px solid var(--forest); border-radius: 0; color: var(--text-main); }
@@ -942,40 +947,13 @@ select.input-lux {
                 <h5 class="modal-title lux">Sơ Đồ Nhà Hàng</h5>
                 <button type="button" class="btn-close btn-close-lux" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body cinematic-map">
-                <div class="row">
-                    <?php if ($type !== 'birthday'): ?>
-                    <div class="col-md-8 border-end border-secondary">
-                        <p style="color:var(--gold); font-size:12px; letter-spacing:2px; text-transform:uppercase; margin-bottom:20px; text-align:center;">Khu Vực Sảnh Chính</p>
-                        <div class="map-grid">
-                            <?php foreach($t_open as $t): $st=$t['is_available']?'available':'booked'; ?>
-                            <div class="seat-lux <?= $st ?>" data-id="<?= $t['id'] ?>" data-price="<?= $t['price'] ?>" data-code="Bàn <?= htmlspecialchars($t['table_code']) ?>" data-cat="open">
-                                <span class="seat-code"><?= htmlspecialchars($t['table_code']) ?></span>
-                                <span class="seat-info"><?= htmlspecialchars($t['table_location']??'') ?><br>Tối đa 6 khách<br><?= number_format($t['price']) ?>đ</span>
-                            </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                    <div class="<?= $type === 'birthday' ? 'col-md-12' : 'col-md-4' ?>">
-                        <p style="color:var(--gold); font-size:12px; letter-spacing:2px; text-transform:uppercase; margin-bottom:20px; text-align:center;">Hệ Thống Phòng VIP</p>
-                        <div class="<?= $type === 'birthday' ? 'map-grid' : 'vip-grid' ?>">
-                            <?php foreach($t_room as $r): $st=$r['is_available']?'available':'booked'; ?>
-                            <div class="seat-lux <?= $st ?>" style="padding: 25px 10px;" data-id="<?= $r['id'] ?>" data-price="<?= $r['price'] ?>" data-code="Phòng VIP <?= htmlspecialchars($r['table_code']) ?>" data-cat="room">
-                                <span class="seat-code">VIP <?= htmlspecialchars($r['table_code']) ?></span>
-                                <span class="seat-info"><?= htmlspecialchars($r['table_location']??'') ?><br>Tối đa 16 khách<br><?= number_format($r['price']) ?>đ</span>
-                            </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                </div>
+            <div class="modal-body cinematic-map" style="padding: 0; background: var(--bg-cream);">
+                <?php
+                    $is_admin = false; // Client view
+                    include 'views/shared/floor_plan.php';
+                ?>
             </div>
-            <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1); display:flex; justify-content:space-between; align-items:center;">
-                <div style="display:flex; gap:20px; font-size:12px; color:var(--text-muted)">
-                    <span><span style="display:inline-block; width:12px; height:12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.2); margin-right:5px;"></span> Còn trống</span>
-                    <span><span style="display:inline-block; width:12px; height:12px; background:rgba(212,176,106,0.2); border:1px solid var(--gold); margin-right:5px;"></span> Đang chọn</span>
-                    <span><span style="display:inline-block; width:12px; height:12px; background:#222; margin-right:5px;"></span> Đã đặt</span>
-                </div>
+            <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1); display:flex; justify-content:flex-end; align-items:center;">
                 <div>
                     <button type="button" class="btn-outline-lux me-2" data-bs-dismiss="modal">Hủy bỏ</button>
                     <button type="button" class="btn-gold-grad" id="mapConfirm" data-bs-dismiss="modal" style="width:auto; padding:10px 30px;">Xác Nhận Chọn Bàn</button>

@@ -382,6 +382,11 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
   font-style: italic;
   max-width: 85%;
   line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* === BUTTON === */
@@ -778,6 +783,11 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const tooltip = document.getElementById('hoverImageTooltip');
+    if (tooltip) {
+        tooltip.onerror = function() {
+            this.src = 'https://placehold.co/800x600/F6F2E9/4F5B3A?text=No+Image';
+        };
+    }
     const triggers = document.querySelectorAll('.menu-hover-trigger');
     
     triggers.forEach(trigger => {
@@ -809,6 +819,10 @@ function changeFeaturedImage(imgId, newSrc) {
     
     imgEl.style.opacity = 0.6;
     imageTimeoutIds[imgId] = setTimeout(function() {
+        imgEl.onerror = function() {
+            this.onerror = null;
+            this.src = 'https://placehold.co/800x600/F6F2E9/4F5B3A?text=No+Image';
+        };
         imgEl.src = newSrc;
         imgEl.style.opacity = 1;
     }, 150); // Fast enough to not feel laggy

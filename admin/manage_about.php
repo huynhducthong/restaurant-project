@@ -14,7 +14,14 @@ function create_slug($s){
 }
 
 if(isset($_GET['delete'])){
-    $db->prepare("DELETE FROM about_content WHERE id=?")->execute([$_GET['delete']]);
+    $del_id = $_GET['delete'];
+    $stmt_del = $db->prepare("SELECT thumbnail FROM about_content WHERE id=?");
+    $stmt_del->execute([$del_id]);
+    $del_row = $stmt_del->fetch(PDO::FETCH_ASSOC);
+    if($del_row && !empty($del_row['thumbnail'])) {
+        @unlink('../public/assets/img/about/'.$del_row['thumbnail']);
+    }
+    $db->prepare("DELETE FROM about_content WHERE id=?")->execute([$del_id]);
     $message="<div class='alert alert-success'>Đã xóa!</div>";
 }
 if(isset($_POST['btn_save'])){
@@ -28,7 +35,11 @@ if(isset($_POST['btn_save'])){
         if(!empty($_FILES['thumbnail']['name'])){
             $dir='../public/assets/img/about/'; if(!is_dir($dir)) mkdir($dir,0777,true);
             $thumb=time().'_'.basename($_FILES['thumbnail']['name']);
-            move_uploaded_file($_FILES['thumbnail']['tmp_name'],$dir.$thumb);
+            if(move_uploaded_file($_FILES['thumbnail']['tmp_name'],$dir.$thumb)){
+                if($id && !empty($_POST['old_thumbnail']) && file_exists($dir.$_POST['old_thumbnail'])) {
+                    @unlink($dir.$_POST['old_thumbnail']);
+                }
+            }
         }
         if($id){ $db->prepare("UPDATE about_content SET title=?,slug=?,content=?,category_id=?,thumbnail=?,display_order=?,is_pinned=?,status=? WHERE id=?")->execute([$title,$slug,$content,$cat,$thumb,$ord,$pin,$st,$id]); $message="<div class='alert alert-success'>Cập nhật thành công!</div>"; }
         else { $db->prepare("INSERT INTO about_content(title,slug,content,category_id,thumbnail,display_order,is_pinned,status) VALUES(?,?,?,?,?,?,?,?)")->execute([$title,$slug,$content,$cat,$thumb,$ord,$pin,$st]); $message="<div class='alert alert-success'>Thêm thành công!</div>"; }

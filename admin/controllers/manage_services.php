@@ -483,35 +483,13 @@ include '../../public/admin_layout_header.php';
             <i class="fas fa-th-large" style="color: var(--gold); font-size: 1.5rem;"></i>
             <h4 class="fw-bold m-0">Sơ đồ bàn & Phòng VIP</h4>
         </div>
-        <div class="row">
-            <div class="col-md-8">
-                <p class="fw-bold small mb-2">BÀN LẺ (tối đa 6 người)</p>
-                <div class="grid-4-cols">
-                    <?php foreach ($tables as $t):
-                        $next_time = $upcoming_stmt[$t['id']] ?? null;
-                        $status_class = $next_time ? 'seat-booked' : 'seat-available';
-                        ?>
-                        <div class="admin-seat <?= $status_class ?>" data-table-id="<?= $t['id'] ?>" <?= $next_time ? 'title="Có khách đặt lúc '.date('H:i d/m', strtotime($next_time)).'"' : '' ?>>
-                            <span><?= htmlspecialchars($t['table_code']) ?></span>
-                            <small style="font-size: 10px;"><?= $next_time ? 'Hẹn: ' . date('H:i d/m', strtotime($next_time)) : 'Trống' ?></small>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <p class="fw-bold small mb-2">PHÒNG VIP</p>
-                <div class="grid-2-cols">
-                    <?php foreach ($rooms as $r):
-                        $next_time = $upcoming_stmt[$r['id']] ?? null;
-                        $status_class = $next_time ? 'seat-booked' : 'seat-available';
-                        ?>
-                        <div class="admin-seat <?= $status_class ?>" data-table-id="<?= $r['id'] ?>" <?= $next_time ? 'title="Có khách đặt lúc '.date('H:i d/m', strtotime($next_time)).'"' : '' ?>>
-                            <span><?= htmlspecialchars($r['table_code']) ?></span>
-                            <small style="font-size: 10px;"><?= $next_time ? 'Hẹn: ' . date('H:i d/m', strtotime($next_time)) : 'Trống' ?></small>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
+        <div class="floor-plan-wrapper" style="background: var(--bg-cream); border-radius: 10px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1);">
+            <?php 
+                $is_admin = true;
+                $t_open = $tables;
+                $t_room = $rooms;
+                include '../../views/shared/floor_plan.php'; 
+            ?>
         </div>
     </div>
 

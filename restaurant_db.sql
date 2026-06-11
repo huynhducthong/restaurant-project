@@ -1,8 +1,20 @@
 -- MariaDB dump 10.19  Distrib 10.4.32-MariaDB, for Win64 (AMD64)
 --
+<<<<<<< HEAD
 -- Host: localhost    Database: restaurant_db
 -- ------------------------------------------------------
 -- Server version	10.4.32-MariaDB
+=======
+-- Host: 127.0.0.1
+-- Generation Time: Jun 11, 2026 at 09:41 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+>>>>>>> origin/main
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -272,11 +284,184 @@ CREATE TABLE `about_shares` (
 -- Dumping data for table `about_shares`
 --
 
+<<<<<<< HEAD
 LOCK TABLES `about_shares` WRITE;
 /*!40000 ALTER TABLE `about_shares` DISABLE KEYS */;
 INSERT INTO `about_shares` VALUES (1,1,'view','::1','2026-05-14 14:28:16'),(2,1,'view','::1','2026-05-14 14:28:20'),(3,1,'view','::1','2026-05-14 14:28:24'),(4,1,'view','::1','2026-05-14 14:38:21'),(5,1,'facebook','::1','2026-05-14 14:38:28'),(6,1,'link','::1','2026-05-14 14:38:36'),(7,1,'facebook','::1','2026-05-14 14:38:39'),(8,1,'view','::1','2026-05-14 14:39:34'),(9,1,'view','::1','2026-05-14 14:39:40'),(10,1,'view','::1','2026-05-14 14:39:46'),(11,1,'view','::1','2026-05-14 14:39:48'),(12,1,'link','::1','2026-05-14 14:40:19'),(13,1,'link','::1','2026-05-14 14:40:20'),(14,1,'link','::1','2026-05-14 14:40:22'),(15,1,'view','::1','2026-05-14 14:40:32'),(16,1,'view','::1','2026-05-14 14:40:41'),(17,1,'facebook','::1','2026-05-14 14:40:42'),(18,1,'view','::1','2026-05-14 14:41:12'),(19,1,'view','::1','2026-05-14 14:41:48'),(20,1,'view','::1','2026-05-14 14:43:32'),(21,1,'view','::1','2026-05-14 14:44:03'),(22,1,'view','::1','2026-05-14 14:48:33'),(23,1,'view','::1','2026-05-14 14:49:28'),(24,1,'view','::1','2026-05-14 14:52:03'),(25,1,'view','::1','2026-05-14 14:52:10'),(26,1,'view','::1','2026-05-14 14:52:12'),(27,1,'view','::1','2026-05-14 14:52:14'),(28,1,'view','::1','2026-05-14 14:52:20'),(29,1,'view','::1','2026-05-14 14:52:53'),(30,1,'view','::1','2026-05-14 14:53:35'),(31,1,'facebook','::1','2026-05-14 14:53:41'),(32,1,'link','::1','2026-05-14 14:53:44'),(33,1,'view','::1','2026-05-14 14:54:07'),(34,1,'view','::1','2026-05-14 14:56:15'),(35,1,'view','::1','2026-05-14 14:56:36'),(36,1,'view','::1','2026-05-14 14:56:41'),(37,1,'view','::1','2026-05-14 15:01:09'),(38,1,'view','::1','2026-05-14 15:02:41'),(39,1,'view','::1','2026-05-14 15:10:44'),(40,1,'view','::1','2026-05-14 18:24:09'),(41,1,'view','::1','2026-05-14 18:24:13'),(42,1,'view','::1','2026-05-14 18:24:16'),(43,1,'view','::1','2026-05-14 18:26:30'),(44,1,'view','::1','2026-05-14 18:31:05'),(45,1,'view','::1','2026-05-14 18:32:02'),(46,1,'view','::1','2026-05-14 18:49:45'),(47,1,'view','::1','2026-05-14 18:50:44'),(48,1,'view','::1','2026-05-14 18:51:33'),(49,1,'view','::1','2026-05-14 18:51:58'),(50,1,'view','::1','2026-05-14 18:52:08'),(51,1,'view','::1','2026-05-14 18:52:46'),(52,1,'view','::1','2026-05-14 18:54:15'),(53,1,'view','::1','2026-05-14 18:54:57'),(54,1,'view','::1','2026-05-14 18:56:23'),(55,1,'view','::1','2026-05-14 18:56:43'),(56,1,'view','::1','2026-05-14 18:59:11'),(57,1,'view','::1','2026-05-14 18:59:57'),(58,1,'view','::1','2026-05-14 19:01:02'),(59,1,'view','::1','2026-05-14 19:01:04'),(60,1,'view','::1','2026-05-14 19:01:20'),(61,1,'view','::1','2026-05-14 19:01:22'),(62,1,'view','::1','2026-05-14 19:02:52'),(63,1,'view','::1','2026-05-14 19:03:17'),(64,1,'view','::1','2026-05-14 19:03:31'),(65,1,'view','::1','2026-05-14 19:05:35'),(66,1,'view','::1','2026-05-14 19:05:38'),(67,1,'view','::1','2026-05-14 19:08:04'),(68,1,'view','::1','2026-05-14 19:08:06'),(69,1,'view','::1','2026-05-14 19:08:27'),(70,1,'view','::1','2026-05-14 19:08:28'),(71,1,'view','::1','2026-05-14 19:09:53'),(72,1,'view','::1','2026-05-14 19:10:07'),(73,1,'view','::1','2026-05-14 19:10:22'),(74,1,'view','::1','2026-05-14 19:10:28'),(75,1,'view','::1','2026-05-14 19:10:35'),(76,1,'view','::1','2026-05-14 19:10:39'),(77,1,'view','::1','2026-05-14 19:11:00'),(78,1,'view','::1','2026-05-14 19:12:11'),(79,1,'view','::1','2026-05-14 19:12:13'),(80,1,'view','::1','2026-05-14 19:12:45'),(81,1,'view','::1','2026-05-14 19:12:51'),(82,1,'view','::1','2026-05-14 19:12:52'),(83,1,'view','::1','2026-05-14 19:12:54'),(84,1,'view','::1','2026-05-14 19:13:08'),(85,1,'view','::1','2026-05-14 19:13:37'),(86,1,'view','::1','2026-05-14 19:21:47'),(87,1,'view','::1','2026-05-14 19:21:50'),(88,1,'view','::1','2026-05-14 19:24:17'),(89,1,'view','::1','2026-05-14 19:24:27'),(90,1,'view','::1','2026-05-14 19:25:18'),(91,1,'view','::1','2026-05-14 19:27:21'),(92,1,'view','::1','2026-05-14 19:27:23'),(93,1,'view','::1','2026-05-14 19:30:40'),(94,1,'view','::1','2026-05-14 19:31:31'),(95,1,'view','::1','2026-05-14 19:31:41'),(96,1,'view','::1','2026-05-14 19:32:36'),(97,1,'view','::1','2026-05-14 19:40:10'),(98,1,'view','::1','2026-05-14 19:40:30'),(99,1,'view','::1','2026-05-14 19:48:43'),(100,1,'view','::1','2026-05-14 19:53:09'),(101,1,'view','::1','2026-05-14 19:55:48'),(102,1,'view','::1','2026-05-14 20:00:46'),(103,1,'view','::1','2026-05-14 20:00:54'),(104,1,'view','::1','2026-05-14 20:01:23'),(105,1,'view','::1','2026-05-14 20:03:02'),(106,1,'view','::1','2026-05-14 20:06:08'),(107,1,'view','::1','2026-05-14 20:07:49'),(108,1,'view','::1','2026-05-14 20:08:06'),(109,1,'view','::1','2026-05-14 20:08:20'),(110,1,'view','::1','2026-05-14 20:10:03'),(111,1,'view','::1','2026-05-14 20:12:41'),(112,1,'view','::1','2026-05-14 20:14:27'),(113,1,'view','::1','2026-05-14 20:15:43'),(114,1,'view','::1','2026-05-17 13:53:04'),(115,1,'view','::1','2026-05-17 13:53:52'),(116,1,'view','::1','2026-05-17 13:56:19'),(117,1,'view','::1','2026-05-17 13:57:07'),(118,1,'view','::1','2026-05-17 14:07:32'),(119,1,'view','::1','2026-05-17 14:08:22'),(120,1,'view','::1','2026-05-17 14:08:54'),(121,1,'view','::1','2026-05-17 14:10:22'),(122,1,'view','::1','2026-05-17 14:10:25'),(123,1,'view','::1','2026-05-17 14:16:36'),(124,1,'view','::1','2026-05-17 14:16:40'),(125,1,'view','::1','2026-05-17 14:17:58'),(126,1,'view','::1','2026-05-17 14:20:42'),(127,1,'view','::1','2026-05-17 14:21:54'),(128,1,'view','::1','2026-05-17 14:23:55'),(129,1,'view','::1','2026-05-17 14:23:58'),(130,1,'view','::1','2026-05-17 14:29:27'),(131,1,'view','::1','2026-05-17 14:37:03'),(132,1,'view','::1','2026-05-17 14:44:00'),(133,1,'view','::1','2026-05-17 14:45:04'),(134,1,'view','::1','2026-05-17 15:37:40'),(135,1,'view','::1','2026-05-17 15:37:44'),(136,1,'view','::1','2026-05-17 15:43:01'),(137,1,'view','::1','2026-05-17 15:46:03'),(138,1,'view','::1','2026-05-17 15:49:44'),(139,1,'view','::1','2026-05-17 15:55:06'),(140,1,'view','::1','2026-05-20 09:19:50'),(141,1,'view','::1','2026-05-20 09:20:00'),(142,1,'view','::1','2026-05-20 09:21:25'),(143,1,'view','::1','2026-05-20 09:24:19'),(144,1,'view','::1','2026-05-20 09:26:02'),(145,1,'view','::1','2026-05-20 09:26:05'),(146,1,'view','::1','2026-05-20 09:27:41'),(147,1,'view','::1','2026-05-20 09:27:52'),(148,1,'view','::1','2026-05-20 09:28:11'),(149,1,'view','::1','2026-05-20 13:27:47'),(150,1,'view','::1','2026-05-20 13:27:57'),(151,1,'view','::1','2026-05-21 03:44:49'),(152,1,'view','::1','2026-05-21 03:44:54'),(153,1,'view','::1','2026-05-21 03:44:58'),(154,1,'view','::1','2026-05-23 08:06:35'),(155,1,'view','::1','2026-05-24 14:26:22'),(156,1,'view','::1','2026-06-05 03:33:28'),(157,1,'view','::1','2026-06-05 03:33:44'),(158,1,'view','::1','2026-06-05 03:34:49'),(159,1,'view','::1','2026-06-05 03:36:34'),(160,1,'view','::1','2026-06-05 03:39:13'),(161,1,'view','::1','2026-06-07 21:21:17'),(162,1,'view','::1','2026-06-08 00:09:47'),(163,1,'view','::1','2026-06-08 00:09:57'),(164,1,'view','::1','2026-06-08 00:10:04'),(165,1,'view','::1','2026-06-09 07:03:31'),(166,1,'view','::1','2026-06-09 07:13:53');
 /*!40000 ALTER TABLE `about_shares` ENABLE KEYS */;
 UNLOCK TABLES;
+=======
+INSERT INTO `about_shares` (`id`, `content_id`, `platform`, `user_ip`, `created_at`) VALUES
+(1, 1, 'view', '::1', '2026-05-14 14:28:16'),
+(2, 1, 'view', '::1', '2026-05-14 14:28:20'),
+(3, 1, 'view', '::1', '2026-05-14 14:28:24'),
+(4, 1, 'view', '::1', '2026-05-14 14:38:21'),
+(5, 1, 'facebook', '::1', '2026-05-14 14:38:28'),
+(6, 1, 'link', '::1', '2026-05-14 14:38:36'),
+(7, 1, 'facebook', '::1', '2026-05-14 14:38:39'),
+(8, 1, 'view', '::1', '2026-05-14 14:39:34'),
+(9, 1, 'view', '::1', '2026-05-14 14:39:40'),
+(10, 1, 'view', '::1', '2026-05-14 14:39:46'),
+(11, 1, 'view', '::1', '2026-05-14 14:39:48'),
+(12, 1, 'link', '::1', '2026-05-14 14:40:19'),
+(13, 1, 'link', '::1', '2026-05-14 14:40:20'),
+(14, 1, 'link', '::1', '2026-05-14 14:40:22'),
+(15, 1, 'view', '::1', '2026-05-14 14:40:32'),
+(16, 1, 'view', '::1', '2026-05-14 14:40:41'),
+(17, 1, 'facebook', '::1', '2026-05-14 14:40:42'),
+(18, 1, 'view', '::1', '2026-05-14 14:41:12'),
+(19, 1, 'view', '::1', '2026-05-14 14:41:48'),
+(20, 1, 'view', '::1', '2026-05-14 14:43:32'),
+(21, 1, 'view', '::1', '2026-05-14 14:44:03'),
+(22, 1, 'view', '::1', '2026-05-14 14:48:33'),
+(23, 1, 'view', '::1', '2026-05-14 14:49:28'),
+(24, 1, 'view', '::1', '2026-05-14 14:52:03'),
+(25, 1, 'view', '::1', '2026-05-14 14:52:10'),
+(26, 1, 'view', '::1', '2026-05-14 14:52:12'),
+(27, 1, 'view', '::1', '2026-05-14 14:52:14'),
+(28, 1, 'view', '::1', '2026-05-14 14:52:20'),
+(29, 1, 'view', '::1', '2026-05-14 14:52:53'),
+(30, 1, 'view', '::1', '2026-05-14 14:53:35'),
+(31, 1, 'facebook', '::1', '2026-05-14 14:53:41'),
+(32, 1, 'link', '::1', '2026-05-14 14:53:44'),
+(33, 1, 'view', '::1', '2026-05-14 14:54:07'),
+(34, 1, 'view', '::1', '2026-05-14 14:56:15'),
+(35, 1, 'view', '::1', '2026-05-14 14:56:36'),
+(36, 1, 'view', '::1', '2026-05-14 14:56:41'),
+(37, 1, 'view', '::1', '2026-05-14 15:01:09'),
+(38, 1, 'view', '::1', '2026-05-14 15:02:41'),
+(39, 1, 'view', '::1', '2026-05-14 15:10:44'),
+(40, 1, 'view', '::1', '2026-05-14 18:24:09'),
+(41, 1, 'view', '::1', '2026-05-14 18:24:13'),
+(42, 1, 'view', '::1', '2026-05-14 18:24:16'),
+(43, 1, 'view', '::1', '2026-05-14 18:26:30'),
+(44, 1, 'view', '::1', '2026-05-14 18:31:05'),
+(45, 1, 'view', '::1', '2026-05-14 18:32:02'),
+(46, 1, 'view', '::1', '2026-05-14 18:49:45'),
+(47, 1, 'view', '::1', '2026-05-14 18:50:44'),
+(48, 1, 'view', '::1', '2026-05-14 18:51:33'),
+(49, 1, 'view', '::1', '2026-05-14 18:51:58'),
+(50, 1, 'view', '::1', '2026-05-14 18:52:08'),
+(51, 1, 'view', '::1', '2026-05-14 18:52:46'),
+(52, 1, 'view', '::1', '2026-05-14 18:54:15'),
+(53, 1, 'view', '::1', '2026-05-14 18:54:57'),
+(54, 1, 'view', '::1', '2026-05-14 18:56:23'),
+(55, 1, 'view', '::1', '2026-05-14 18:56:43'),
+(56, 1, 'view', '::1', '2026-05-14 18:59:11'),
+(57, 1, 'view', '::1', '2026-05-14 18:59:57'),
+(58, 1, 'view', '::1', '2026-05-14 19:01:02'),
+(59, 1, 'view', '::1', '2026-05-14 19:01:04'),
+(60, 1, 'view', '::1', '2026-05-14 19:01:20'),
+(61, 1, 'view', '::1', '2026-05-14 19:01:22'),
+(62, 1, 'view', '::1', '2026-05-14 19:02:52'),
+(63, 1, 'view', '::1', '2026-05-14 19:03:17'),
+(64, 1, 'view', '::1', '2026-05-14 19:03:31'),
+(65, 1, 'view', '::1', '2026-05-14 19:05:35'),
+(66, 1, 'view', '::1', '2026-05-14 19:05:38'),
+(67, 1, 'view', '::1', '2026-05-14 19:08:04'),
+(68, 1, 'view', '::1', '2026-05-14 19:08:06'),
+(69, 1, 'view', '::1', '2026-05-14 19:08:27'),
+(70, 1, 'view', '::1', '2026-05-14 19:08:28'),
+(71, 1, 'view', '::1', '2026-05-14 19:09:53'),
+(72, 1, 'view', '::1', '2026-05-14 19:10:07'),
+(73, 1, 'view', '::1', '2026-05-14 19:10:22'),
+(74, 1, 'view', '::1', '2026-05-14 19:10:28'),
+(75, 1, 'view', '::1', '2026-05-14 19:10:35'),
+(76, 1, 'view', '::1', '2026-05-14 19:10:39'),
+(77, 1, 'view', '::1', '2026-05-14 19:11:00'),
+(78, 1, 'view', '::1', '2026-05-14 19:12:11'),
+(79, 1, 'view', '::1', '2026-05-14 19:12:13'),
+(80, 1, 'view', '::1', '2026-05-14 19:12:45'),
+(81, 1, 'view', '::1', '2026-05-14 19:12:51'),
+(82, 1, 'view', '::1', '2026-05-14 19:12:52'),
+(83, 1, 'view', '::1', '2026-05-14 19:12:54'),
+(84, 1, 'view', '::1', '2026-05-14 19:13:08'),
+(85, 1, 'view', '::1', '2026-05-14 19:13:37'),
+(86, 1, 'view', '::1', '2026-05-14 19:21:47'),
+(87, 1, 'view', '::1', '2026-05-14 19:21:50'),
+(88, 1, 'view', '::1', '2026-05-14 19:24:17'),
+(89, 1, 'view', '::1', '2026-05-14 19:24:27'),
+(90, 1, 'view', '::1', '2026-05-14 19:25:18'),
+(91, 1, 'view', '::1', '2026-05-14 19:27:21'),
+(92, 1, 'view', '::1', '2026-05-14 19:27:23'),
+(93, 1, 'view', '::1', '2026-05-14 19:30:40'),
+(94, 1, 'view', '::1', '2026-05-14 19:31:31'),
+(95, 1, 'view', '::1', '2026-05-14 19:31:41'),
+(96, 1, 'view', '::1', '2026-05-14 19:32:36'),
+(97, 1, 'view', '::1', '2026-05-14 19:40:10'),
+(98, 1, 'view', '::1', '2026-05-14 19:40:30'),
+(99, 1, 'view', '::1', '2026-05-14 19:48:43'),
+(100, 1, 'view', '::1', '2026-05-14 19:53:09'),
+(101, 1, 'view', '::1', '2026-05-14 19:55:48'),
+(102, 1, 'view', '::1', '2026-05-14 20:00:46'),
+(103, 1, 'view', '::1', '2026-05-14 20:00:54'),
+(104, 1, 'view', '::1', '2026-05-14 20:01:23'),
+(105, 1, 'view', '::1', '2026-05-14 20:03:02'),
+(106, 1, 'view', '::1', '2026-05-14 20:06:08'),
+(107, 1, 'view', '::1', '2026-05-14 20:07:49'),
+(108, 1, 'view', '::1', '2026-05-14 20:08:06'),
+(109, 1, 'view', '::1', '2026-05-14 20:08:20'),
+(110, 1, 'view', '::1', '2026-05-14 20:10:03'),
+(111, 1, 'view', '::1', '2026-05-14 20:12:41'),
+(112, 1, 'view', '::1', '2026-05-14 20:14:27'),
+(113, 1, 'view', '::1', '2026-05-14 20:15:43'),
+(114, 1, 'view', '::1', '2026-05-17 13:53:04'),
+(115, 1, 'view', '::1', '2026-05-17 13:53:52'),
+(116, 1, 'view', '::1', '2026-05-17 13:56:19'),
+(117, 1, 'view', '::1', '2026-05-17 13:57:07'),
+(118, 1, 'view', '::1', '2026-05-17 14:07:32'),
+(119, 1, 'view', '::1', '2026-05-17 14:08:22'),
+(120, 1, 'view', '::1', '2026-05-17 14:08:54'),
+(121, 1, 'view', '::1', '2026-05-17 14:10:22'),
+(122, 1, 'view', '::1', '2026-05-17 14:10:25'),
+(123, 1, 'view', '::1', '2026-05-17 14:16:36'),
+(124, 1, 'view', '::1', '2026-05-17 14:16:40'),
+(125, 1, 'view', '::1', '2026-05-17 14:17:58'),
+(126, 1, 'view', '::1', '2026-05-17 14:20:42'),
+(127, 1, 'view', '::1', '2026-05-17 14:21:54'),
+(128, 1, 'view', '::1', '2026-05-17 14:23:55'),
+(129, 1, 'view', '::1', '2026-05-17 14:23:58'),
+(130, 1, 'view', '::1', '2026-05-17 14:29:27'),
+(131, 1, 'view', '::1', '2026-05-17 14:37:03'),
+(132, 1, 'view', '::1', '2026-05-17 14:44:00'),
+(133, 1, 'view', '::1', '2026-05-17 14:45:04'),
+(134, 1, 'view', '::1', '2026-05-17 15:37:40'),
+(135, 1, 'view', '::1', '2026-05-17 15:37:44'),
+(136, 1, 'view', '::1', '2026-05-17 15:43:01'),
+(137, 1, 'view', '::1', '2026-05-17 15:46:03'),
+(138, 1, 'view', '::1', '2026-05-17 15:49:44'),
+(139, 1, 'view', '::1', '2026-05-17 15:55:06'),
+(140, 1, 'view', '::1', '2026-05-20 09:19:50'),
+(141, 1, 'view', '::1', '2026-05-20 09:20:00'),
+(142, 1, 'view', '::1', '2026-05-20 09:21:25'),
+(143, 1, 'view', '::1', '2026-05-20 09:24:19'),
+(144, 1, 'view', '::1', '2026-05-20 09:26:02'),
+(145, 1, 'view', '::1', '2026-05-20 09:26:05'),
+(146, 1, 'view', '::1', '2026-05-20 09:27:41'),
+(147, 1, 'view', '::1', '2026-05-20 09:27:52'),
+(148, 1, 'view', '::1', '2026-05-20 09:28:11'),
+(149, 1, 'view', '::1', '2026-05-20 13:27:47'),
+(150, 1, 'view', '::1', '2026-05-20 13:27:57'),
+(151, 1, 'view', '::1', '2026-05-21 03:44:49'),
+(152, 1, 'view', '::1', '2026-05-21 03:44:54'),
+(153, 1, 'view', '::1', '2026-05-21 03:44:58'),
+(154, 1, 'view', '::1', '2026-05-23 08:06:35'),
+(155, 1, 'view', '::1', '2026-05-24 14:26:22'),
+(156, 1, 'view', '::1', '2026-06-05 03:33:28'),
+(157, 1, 'view', '::1', '2026-06-05 03:33:44'),
+(158, 1, 'view', '::1', '2026-06-05 03:34:49'),
+(159, 1, 'view', '::1', '2026-06-05 03:36:34'),
+(160, 1, 'view', '::1', '2026-06-05 03:39:13'),
+(161, 1, 'view', '::1', '2026-06-08 04:21:17'),
+(162, 1, 'view', '::1', '2026-06-08 07:09:47'),
+(163, 1, 'view', '::1', '2026-06-08 07:09:57'),
+(164, 1, 'view', '::1', '2026-06-08 07:10:04'),
+(165, 1, 'view', '::1', '2026-06-09 07:03:31'),
+(166, 1, 'view', '::1', '2026-06-09 07:13:53'),
+(167, 1, 'view', '::1', '2026-06-11 03:53:26');
+
+-- --------------------------------------------------------
+>>>>>>> origin/main
 
 --
 -- Table structure for table `admins`
@@ -474,6 +659,8 @@ CREATE TABLE `chefs` (
   `image` varchar(255) DEFAULT NULL,
   `experience` int(11) DEFAULT 0,
   `specialty` varchar(255) DEFAULT NULL,
+  `awards` text DEFAULT NULL,
+  `signature_dishes` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `quote` varchar(255) DEFAULT NULL,
   `facebook` varchar(255) DEFAULT NULL,
@@ -490,11 +677,17 @@ CREATE TABLE `chefs` (
 -- Dumping data for table `chefs`
 --
 
+<<<<<<< HEAD
 LOCK TABLES `chefs` WRITE;
 /*!40000 ALTER TABLE `chefs` DISABLE KEYS */;
 INSERT INTO `chefs` VALUES (1,'Chef Minh','Bếp trưởng','1780661835_6a22be4bb618a.jpg',0,'','','','','','',1,0,0),(2,'Chef long','Bếp phó','1780661805_6a22be2d284cd.jpg',5,'','njzbjkhjfnbinfvi','Mỗi món ăn là một câu chuyện.','https://www.facebook.com/friends/suggestions/?profile_id=61576317195911','','',1,0,0);
 /*!40000 ALTER TABLE `chefs` ENABLE KEYS */;
 UNLOCK TABLES;
+=======
+INSERT INTO `chefs` (`id`, `name`, `position`, `image`, `experience`, `specialty`, `awards`, `signature_dishes`, `description`, `quote`, `facebook`, `instagram`, `email`, `is_active`, `is_featured`, `sort_order`) VALUES
+(1, 'Chef Minh', 'Bếp trưởng', '1780661835_6a22be4bb618a.jpg', 0, '', NULL, NULL, '', '', '', '', '', 1, 0, 0),
+(2, 'Chef long', 'Bếp phó', '1780661805_6a22be2d284cd.jpg', 5, '', NULL, NULL, 'njzbjkhjfnbinfvi', 'Mỗi món ăn là một câu chuyện.', 'https://www.facebook.com/friends/suggestions/?profile_id=61576317195911', '', '', 1, 0, 0);
+>>>>>>> origin/main
 
 --
 -- Table structure for table `combo_items`
@@ -616,11 +809,68 @@ CREATE TABLE `employees` (
 -- Dumping data for table `employees`
 --
 
+<<<<<<< HEAD
 LOCK TABLES `employees` WRITE;
 /*!40000 ALTER TABLE `employees` DISABLE KEYS */;
 INSERT INTO `employees` VALUES (1,'Le Huu Thuan Fat','0867081911','fatqua@gmail.com','','','2026-05-30','male','Thu ngân',1.00,'working',NULL,NULL,NULL,'2026-05-14 03:37:08'),(5,'Huynh Duc Thong','0901 234 567','thongd342@gmail.com','102910382038141','biên hòa','2003-02-03','male','Bếp trưởng',500000.00,'working',NULL,NULL,NULL,'2026-06-02 14:22:51');
 /*!40000 ALTER TABLE `employees` ENABLE KEYS */;
 UNLOCK TABLES;
+=======
+INSERT INTO `employees` (`id`, `full_name`, `phone`, `email`, `identity_card`, `address`, `dob`, `gender`, `position`, `salary`, `status`, `avatar`, `avatar_blob`, `avatar_mime`, `created_at`) VALUES
+(1, 'Le Huu Thuan Fat', '0867081911', 'fatqua@gmail.com', '', '', '2026-05-30', 'male', 'Thu ngân', 1.00, 'working', NULL, NULL, NULL, '2026-05-14 03:37:08'),
+(5, 'Huynh Duc Thong', '0901 234 567', 'thongd342@gmail.com', '102910382038141', 'biên hòa', '2003-02-03', 'male', 'Bếp trưởng', 500000.00, 'working', NULL, NULL, NULL, '2026-06-02 14:22:51');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `foods`
+--
+
+DROP TABLE IF EXISTS `foods`;
+CREATE TABLE `foods` (
+  `id` int(11) NOT NULL,
+  `category_id` int(11) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `price` decimal(15,2) NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `status` tinyint(1) DEFAULT 1,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `is_chef_recommended` tinyint(1) DEFAULT 0,
+  `allergens` text DEFAULT NULL,
+  `wine_pairing_id` int(11) DEFAULT NULL,
+  `chef_note` text DEFAULT NULL,
+  `theme_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `foods`
+--
+
+INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`, `is_active`, `is_chef_recommended`, `allergens`, `wine_pairing_id`, `chef_note`, `theme_id`) VALUES
+(1, 2, 'Bò Bít Tết (Beefsteak)', 400000.00, '7d76786780be41b26cea039d.jpg', 'Thăn nội bò nướng than hoa mềm ngọt, kèm sốt tiêu đen đặc biệt.', 1, 1, 1, '', NULL, '', NULL),
+(3, 2, 'Cá Hồi Áp Chảo', 180000.00, '1779508455_6a1124e77c5f4.jpg', 'Cá hồi Na Uy tươi áp chảo xém da, dùng kèm sốt chanh leo chua ngọt.', 1, 1, 0, '', NULL, '', 1),
+(4, 2, 'Sườn Heo Nướng BBQ', 220000.00, '1779508431_6a1124cfdd1c3.jpg', 'Sườn non tẩm ướp sốt BBQ đậm đà nướng chậm trong 4 giờ.', 1, 1, 0, '', NULL, '', NULL),
+(5, 2, 'Mì Ý Hải Sản', 150000.00, '1779508403_6a1124b3b9104.webp', 'Mì Spaghetti xào tôm, mực, vẹm xanh sốt cà chua cay nhẹ.', 1, 1, 0, '', NULL, '', NULL),
+(6, 5, 'Salad Cá Ngừ', 95000.00, '1779508380_6a11249cb4e61.png', 'Rau xanh tổng hợp mix cá ngừ đại dương, trứng cút và sốt dầu giấm.', 1, 1, 1, '', NULL, '', NULL),
+(7, 3, 'Soup Kem Nấm', 85000.00, '1779508350_6a11247ee9fae.jpg', 'Soup nấm hương nấm mỡ xay mịn nấu cùng kem tươi béo ngậy.', 1, 1, 0, '', NULL, '', NULL),
+(8, 2, 'Pizza Gà Nấm', 145000.00, '1779508327_6a112467d05fd.jpg', 'Bánh pizza đế mỏng nướng củi, phô mai mozzarella kéo sợi phủ thịt gà và nấm.', 1, 1, 0, 'đậu phộng', NULL, '', NULL),
+(9, 1, 'Tôm Sú Rang Muối Ớt', 195000.00, '1779508300_6a11244c4b361.jpg', 'Tôm sú tươi sống chiên giòn xóc muối ớt kiểu Hồng Kông.', 1, 1, 0, '', NULL, '', NULL),
+(11, 5, 'Bánh Mì Bơ Tỏi', 70000.00, '1779508232_6a112408d74a9.webp', 'Bánh mì baguette nướng giòn rụm phết bơ tỏi và lá thơm băm nhỏ.', 1, 1, 1, '', NULL, '', 1),
+(12, 2, 'Beef Wellington', 850000.00, '1780713599_6a23887fcefe9.jpg', 'Thăn bò hảo hạng cuộn trong lớp nấm truffles và vỏ bánh ngàn lớp nướng vàng rụm.', 1, 1, 0, '', NULL, '', NULL),
+(13, 2, 'Duck Breast with Cherry Reduction', 650000.00, '1780713649_6a2388b12a6a1.jpg', 'Ức vịt áp chảo mềm mọng dùng kèm sốt cherry đỏ cô đặc chua ngọt tinh tế.', 1, 1, 0, '', NULL, '', NULL),
+(14, 2, 'Herb-Crusted Lamb Rack', 750000.00, '1780713689_6a2388d90ba6f.jpg', 'Sườn cừu Pháp nướng phủ lớp vụn bánh mì và thảo mộc thơm lừng.', 1, 1, 0, '', NULL, '', NULL),
+(15, 2, 'Seared Hokkaido Scallops', 950000.00, '1780713718_6a2388f69f231.jpg', 'Cồi sò điệp Hokkaido áp chảo dùng kèm sốt bơ chanh vàng béo ngậy.', 1, 1, 0, '', NULL, '', NULL),
+(16, 1, 'Burrata & Heirloom Tomato', 350000.00, '1780713742_6a23890e80b50.jpg', 'Phô mai Burrata tươi béo ngậy ăn cùng cà chua Heirloom và sốt dầu giấm balsamic.', 1, 1, 1, '', NULL, '', 1),
+(17, 1, 'Tuna Tartare', 450000.00, '1780713767_6a238927e7dd3.jpg', 'Cá ngừ đại dương xắt lựu tẩm ướp tinh tế, dùng kèm quả bơ và bánh quy giòn.', 1, 1, 0, '', NULL, '', NULL),
+(18, 4, 'Signature Truffle Martini', 350000.00, '1781149007_6a2a2d4f3f01a.jpg', 'Sự kết hợp hoàn hảo giữa Gin thượng hạng, dầu Nấm Truffle trắng và một chút Vermouth ủ mộc. Sang trọng, đậm đà và vương giả.', 1, 1, 1, '', NULL, '', NULL),
+(19, 4, 'Smoked Rosemary Old Fashioned', 280000.00, '1781148879_6a2a2ccfe97e9.jpg', 'Rượu Bourbon Whiskey ủ lâu năm hòa quyện cùng mật ong nguyên chất rừng sâu, khói hương thảo nướng cháy mang lại hậu vị sâu lắng, rất phù hợp cho những ngày lễ và tiết trời se lạnh mùa này .', 1, 1, 0, '', NULL, '', NULL),
+(20, 4, 'Margarita hoa hồng lựu', 250000.00, '1781148793_6a2a2c79ba047.webp', 'Margarita lựu hoa hồng là một thức uống thơm ngon và đầy không khí lễ hội, không thể thiếu trong bất kỳ bữa tiệc nào. Vị chua thanh của lựu kết hợp tuyệt vời với vị ngọt dịu từ siro hoa hồng. Viền ly bằng một lớp muối hoa hồng và bạn sẽ thấy mình muốn nhâm nhi thức uống này suốt mùa đông.', 1, 1, 0, '', NULL, '', NULL),
+(21, 4, 'cocktail Gold Rush', 450000.00, '1781148667_6a2a2bfb171d5.jpg', 'Vang đỏ Cabernet Sauvignon cao cấp mix cùng trái cây nhiệt đới, điểm xuyết những vảy vàng 24k ăn được. Phù hợp cho những dịp kỷ niệm.', 1, 1, 1, '', NULL, '', NULL),
+(22, 4, 'Zen Garden Elixir', 180000.00, '1781148509_6a2a2b5da1be3.png', 'Thức uống Zen Garden Elixir là sự kết hợp hài hòa, gói gọn tinh thần thanh bình của một khu vườn trà Nhật Bản. Loại cocktail này làm nổi bật hương vị đất, đậm đà của matcha kết hợp với vị ngọt dịu của vải và vị chua thanh của yuzu. Đây là lựa chọn sảng khoái dành cho những ai tìm kiếm trải nghiệm độc đáo và thư thái.', 1, 1, 0, 'Sữa', NULL, '', NULL);
+
+-- --------------------------------------------------------
+>>>>>>> origin/main
 
 --
 -- Table structure for table `food_recipes`
@@ -937,11 +1187,25 @@ CREATE TABLE `inventory_categories` (
 -- Dumping data for table `inventory_categories`
 --
 
+<<<<<<< HEAD
 LOCK TABLES `inventory_categories` WRITE;
 /*!40000 ALTER TABLE `inventory_categories` DISABLE KEYS */;
 INSERT INTO `inventory_categories` VALUES (1,'Thịt',4),(2,'Rau củ',4),(3,'Gia vị',2),(4,'Đồ uống',3),(5,'rau',4),(6,'hạt',2),(7,'Hải sản',2);
 /*!40000 ALTER TABLE `inventory_categories` ENABLE KEYS */;
 UNLOCK TABLES;
+=======
+INSERT INTO `inventory_categories` (`id`, `name`, `default_warehouse_id`) VALUES
+(1, 'Thịt', 4),
+(2, 'Rau củ', 4),
+(3, 'Gia vị', 2),
+(4, 'Đồ uống', 3),
+(5, 'rau', 4),
+(6, 'hạt', 2),
+(7, 'Hải sản', 2),
+(8, 'Đồ uống có cồn', 2);
+
+-- --------------------------------------------------------
+>>>>>>> origin/main
 
 --
 -- Table structure for table `inventory_history`
@@ -1319,19 +1583,78 @@ CREATE TABLE `restaurant_tables` (
   `price` decimal(15,2) DEFAULT 0.00,
   `status` varchar(20) DEFAULT 'available',
   `is_available` tinyint(1) DEFAULT 1,
+<<<<<<< HEAD
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+=======
+  `pos_x` int(11) DEFAULT 0,
+  `pos_y` int(11) DEFAULT 0,
+  `width` int(11) DEFAULT 50,
+  `height` int(11) DEFAULT 50,
+  `shape` enum('rect','circle','oval') DEFAULT 'rect'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+>>>>>>> origin/main
 
 --
 -- Dumping data for table `restaurant_tables`
 --
 
+<<<<<<< HEAD
 LOCK TABLES `restaurant_tables` WRITE;
 /*!40000 ALTER TABLE `restaurant_tables` DISABLE KEYS */;
 INSERT INTO `restaurant_tables` VALUES (1,'T1','1',NULL,'open',6,0.00,'available',1),(2,'T2','2',NULL,'open',6,0.00,'available',1),(3,'T3','3',NULL,'open',6,0.00,'available',1),(4,'T4','4',NULL,'open',6,0.00,'available',1),(5,'T5','5',NULL,'open',6,0.00,'available',1),(6,'T6','6',NULL,'open',6,0.00,'available',1),(7,'T7','7',NULL,'open',6,0.00,'available',1),(8,'T8','8',NULL,'open',6,0.00,'available',1),(9,'T9','9',NULL,'open',6,0.00,'available',1),(10,'T10','10',NULL,'open',6,0.00,'available',1),(11,'T11','11',NULL,'open',6,0.00,'available',1),(12,'T12','12',NULL,'open',6,0.00,'available',1),(13,'T13','13',NULL,'open',6,0.00,'available',1),(14,'T14','14',NULL,'open',6,0.00,'available',1),(15,'T15','15',NULL,'open',6,0.00,'available',1),(16,'T16','16',NULL,'open',6,0.00,'available',1),(17,'VIP1','101',NULL,'room',16,0.00,'available',1),(18,'VIP2','102',NULL,'room',16,0.00,'available',1),(19,'VIP3','103',NULL,'room',16,0.00,'available',1),(20,'VIP4','104',NULL,'room',16,0.00,'available',1),(21,'VIP5','105',NULL,'room',16,0.00,'available',1),(22,'VIP6','106',NULL,'room',16,0.00,'available',1);
 /*!40000 ALTER TABLE `restaurant_tables` ENABLE KEYS */;
 UNLOCK TABLES;
+=======
+INSERT INTO `restaurant_tables` (`id`, `table_code`, `table_number`, `room_type`, `category`, `capacity`, `price`, `status`, `is_available`, `pos_x`, `pos_y`, `width`, `height`, `shape`) VALUES
+(1, 'B1', '1', NULL, 'open', 6, 0.00, 'available', 1, 220, 230, 60, 60, 'rect'),
+(2, 'B2', '2', NULL, 'open', 6, 0.00, 'available', 1, 360, 230, 60, 60, 'rect'),
+(3, 'B3', '3', NULL, 'open', 6, 0.00, 'available', 1, 500, 230, 60, 60, 'rect'),
+(4, 'B4', '4', NULL, 'open', 6, 0.00, 'available', 1, 640, 230, 60, 60, 'rect'),
+(5, 'B5', '5', NULL, 'open', 6, 0.00, 'available', 1, 290, 350, 60, 60, 'rect'),
+(6, 'B6', '6', NULL, 'open', 6, 0.00, 'available', 1, 430, 350, 60, 60, 'rect'),
+(7, 'B7', '7', NULL, 'open', 6, 0.00, 'available', 1, 570, 350, 60, 60, 'rect'),
+(8, 'B8', '8', NULL, 'open', 6, 0.00, 'available', 1, 710, 350, 60, 60, 'rect'),
+(9, 'B9', '9', NULL, 'open', 6, 0.00, 'available', 1, 220, 470, 60, 60, 'rect'),
+(10, 'B10', '10', NULL, 'open', 6, 0.00, 'available', 1, 360, 470, 60, 60, 'rect'),
+(11, 'B11', '11', NULL, 'open', 6, 0.00, 'available', 1, 500, 470, 60, 60, 'rect'),
+(12, 'B12', '12', NULL, 'open', 6, 0.00, 'available', 1, 640, 470, 60, 60, 'rect'),
+(13, 'B13', '13', NULL, 'open', 6, 0.00, 'available', 1, 290, 590, 60, 60, 'rect'),
+(14, 'B14', '14', NULL, 'open', 6, 0.00, 'available', 1, 430, 590, 60, 60, 'rect'),
+(15, 'B15', '15', NULL, 'open', 6, 0.00, 'available', 1, 570, 590, 60, 60, 'rect'),
+(16, 'B16', '16', NULL, 'open', 6, 0.00, 'available', 1, 710, 590, 60, 60, 'rect'),
+(17, 'VIP1', '101', NULL, 'room', 16, 400000.00, 'available', 1, 880, 280, 120, 90, 'rect'),
+(18, 'VIP2', '102', NULL, 'room', 16, 400000.00, 'available', 1, 880, 425, 120, 90, 'rect'),
+(19, 'VIP3', '103', NULL, 'room', 16, 400000.00, 'available', 1, 880, 570, 120, 90, 'rect'),
+(20, 'VIP4', '104', NULL, 'room', 16, 400000.00, 'available', 1, 1000, 280, 120, 90, 'rect'),
+(21, 'VIP5', '105', NULL, 'room', 16, 400000.00, 'available', 1, 1000, 425, 120, 90, 'rect'),
+(22, 'VIP6', '106', NULL, 'room', 16, 400000.00, 'available', 1, 1000, 570, 120, 90, 'rect');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `services`
+--
+
+DROP TABLE IF EXISTS `services`;
+CREATE TABLE `services` (
+  `id` int(11) NOT NULL,
+  `service_name` varchar(255) DEFAULT NULL,
+  `price` decimal(15,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `services`
+--
+
+INSERT INTO `services` (`id`, `service_name`, `price`) VALUES
+(1, 'Đặt bàn thường', 0.00),
+(2, 'Tiệc sinh nhật VIP', 1500000.00),
+(3, 'Đầu bếp riêng tại bàn', 2500000.00);
+
+-- --------------------------------------------------------
+>>>>>>> origin/main
 
 --
 -- Table structure for table `service_bookings`
@@ -1427,11 +1750,43 @@ CREATE TABLE `settings` (
 -- Dumping data for table `settings`
 --
 
+<<<<<<< HEAD
 LOCK TABLES `settings` WRITE;
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
 INSERT INTO `settings` VALUES ('address','biên hòa'),('email',''),('enable_telegram','1'),('facebook_url',''),('footer_text','© 2024 Restaurantly. All Rights Reserved.'),('hotline','0456789124'),('inv_auto_deduct','1'),('inv_expiry_days','7'),('inv_expiry_warning_days','30'),('inv_low_stock','5'),('inv_low_stock_threshold','5'),('last_telegram_alert_date','2026-06-06'),('last_telegram_eod_date','2026-06-05'),('logo_url','assets/img/logo.png'),('logo_ver','1779627100'),('maps_embed',''),('meta_desc',''),('name_position','left'),('open_days','Thứ 3 - Chủ Nhật'),('open_time','09:00 AM - 11:00 PM'),('restaurant_name','Restaurantly'),('telegram_bot_token','8935031959:AAEzSndMhjXuiIyXkeSNCtzTzj4TGoCo81s'),('telegram_chat_id','5676940088'),('telegram_eod_enabled','1'),('telegram_eod_hour','22'),('zalo_url','');
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 UNLOCK TABLES;
+=======
+INSERT INTO `settings` (`key_name`, `key_value`) VALUES
+('address', 'biên hòa'),
+('email', ''),
+('enable_telegram', '1'),
+('facebook_url', ''),
+('footer_text', '© 2024 Restaurantly. All Rights Reserved.'),
+('hotline', '0456789124'),
+('inv_auto_deduct', '1'),
+('inv_expiry_days', '7'),
+('inv_expiry_warning_days', '30'),
+('inv_low_stock', '5'),
+('inv_low_stock_threshold', '5'),
+('last_telegram_alert_date', '2026-06-11'),
+('last_telegram_eod_date', '2026-06-05'),
+('logo_url', 'assets/img/logo.png'),
+('logo_ver', '1779627100'),
+('maps_embed', ''),
+('meta_desc', ''),
+('name_position', 'left'),
+('open_days', 'Thứ 3 - Chủ Nhật'),
+('open_time', '09:00 AM - 11:00 PM'),
+('restaurant_name', 'Restaurantly'),
+('telegram_bot_token', '8935031959:AAEzSndMhjXuiIyXkeSNCtzTzj4TGoCo81s'),
+('telegram_chat_id', '5676940088'),
+('telegram_eod_enabled', '1'),
+('telegram_eod_hour', '22'),
+('zalo_url', '');
+
+-- --------------------------------------------------------
+>>>>>>> origin/main
 
 --
 -- Table structure for table `suppliers`
@@ -1673,6 +2028,7 @@ CREATE TABLE `warehouses` (
 -- Dumping data for table `warehouses`
 --
 
+<<<<<<< HEAD
 LOCK TABLES `warehouses` WRITE;
 /*!40000 ALTER TABLE `warehouses` DISABLE KEYS */;
 INSERT INTO `warehouses` VALUES (1,'Kho Tổng (Tiếp nhận hàng)','main',1),(2,'Kho Bếp (Chế biến thức ăn)','kitchen',1),(3,'Kho Bar (Pha chế đồ uống)','bar',1),(4,'Kho Lạnh (Bảo quản thực phẩm)','',1),(5,'Kho Vật Tư (Đồ dùng tiêu hao)','',1),(6,'Kho Xuất (Hàng đã bán)','',1),(7,'Kho Hủy (Hàng hỏng/Hết hạn)','',1),(8,'Kho Đông (Bảo quản đông lạnh)','',1),(9,'Kho Nguyên Liệu Khô (Gia vị, đồ khô)','',1);
@@ -1683,6 +2039,698 @@ UNLOCK TABLES;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+=======
+INSERT INTO `warehouses` (`id`, `name`, `type`, `status`) VALUES
+(1, 'Kho Tổng (Tiếp nhận hàng)', 'main', 1),
+(2, 'Kho Bếp (Chế biến thức ăn)', 'kitchen', 1),
+(3, 'Kho Bar (Pha chế đồ uống)', 'bar', 1),
+(4, 'Kho Lạnh (Bảo quản thực phẩm)', '', 1),
+(5, 'Kho Vật Tư (Đồ dùng tiêu hao)', '', 1),
+(6, 'Kho Xuất (Hàng đã bán)', '', 1),
+(7, 'Kho Hủy (Hàng hỏng/Hết hạn)', '', 1),
+(8, 'Kho Đông (Bảo quản đông lạnh)', '', 1),
+(9, 'Kho Nguyên Liệu Khô (Gia vị, đồ khô)', '', 1);
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `about_categories`
+--
+ALTER TABLE `about_categories`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `about_comments`
+--
+ALTER TABLE `about_comments`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_content` (`content_id`),
+  ADD KEY `idx_author_ip` (`author_ip`);
+
+--
+-- Indexes for table `about_comment_bans`
+--
+ALTER TABLE `about_comment_bans`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_ip_ban` (`user_ip`),
+  ADD UNIQUE KEY `unique_user_ban` (`user_id`);
+
+--
+-- Indexes for table `about_comment_likes`
+--
+ALTER TABLE `about_comment_likes`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_like` (`comment_id`,`user_id`);
+
+--
+-- Indexes for table `about_comment_reports`
+--
+ALTER TABLE `about_comment_reports`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `about_content`
+--
+ALTER TABLE `about_content`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `category_id` (`category_id`);
+
+--
+-- Indexes for table `about_likes`
+--
+ALTER TABLE `about_likes`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_like` (`content_id`,`user_ip`);
+
+--
+-- Indexes for table `about_saved_posts`
+--
+ALTER TABLE `about_saved_posts`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `user_id` (`user_id`,`post_id`);
+
+--
+-- Indexes for table `about_shares`
+--
+ALTER TABLE `about_shares`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_content` (`content_id`);
+
+--
+-- Indexes for table `admins`
+--
+ALTER TABLE `admins`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `banners`
+--
+ALTER TABLE `banners`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `bookings`
+--
+ALTER TABLE `bookings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `booking_details`
+--
+ALTER TABLE `booking_details`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `booking_inventory_deductions`
+--
+ALTER TABLE `booking_inventory_deductions`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `categories`
+--
+ALTER TABLE `categories`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `chefs`
+--
+ALTER TABLE `chefs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `combos`
+--
+ALTER TABLE `combos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_combo_theme` (`theme_id`);
+
+--
+-- Indexes for table `combo_items`
+--
+ALTER TABLE `combo_items`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `contacts`
+--
+ALTER TABLE `contacts`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `employees`
+--
+ALTER TABLE `employees`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `foods`
+--
+ALTER TABLE `foods`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_food_theme` (`theme_id`);
+
+--
+-- Indexes for table `food_recipes`
+--
+ALTER TABLE `food_recipes`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `footer_links`
+--
+ALTER TABLE `footer_links`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `galleries`
+--
+ALTER TABLE `galleries`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `inventory`
+--
+ALTER TABLE `inventory`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `inventory_audits`
+--
+ALTER TABLE `inventory_audits`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `inventory_audit_details`
+--
+ALTER TABLE `inventory_audit_details`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `inventory_batches`
+--
+ALTER TABLE `inventory_batches`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ingredient_id` (`ingredient_id`),
+  ADD KEY `warehouse_id` (`warehouse_id`),
+  ADD KEY `expiry_date` (`expiry_date`);
+
+--
+-- Indexes for table `inventory_categories`
+--
+ALTER TABLE `inventory_categories`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `inventory_history`
+--
+ALTER TABLE `inventory_history`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `inventory_receipts`
+--
+ALTER TABLE `inventory_receipts`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `inventory_stocks`
+--
+ALTER TABLE `inventory_stocks`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `idx_wh_ing` (`warehouse_id`,`ingredient_id`);
+
+--
+-- Indexes for table `inventory_transfers`
+--
+ALTER TABLE `inventory_transfers`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `inventory_units`
+--
+ALTER TABLE `inventory_units`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `navigation_menu`
+--
+ALTER TABLE `navigation_menu`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `newsletters`
+--
+ALTER TABLE `newsletters`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `notifications`
+--
+ALTER TABLE `notifications`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `order_items`
+--
+ALTER TABLE `order_items`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `positions`
+--
+ALTER TABLE `positions`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `purchase_orders`
+--
+ALTER TABLE `purchase_orders`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `purchase_order_details`
+--
+ALTER TABLE `purchase_order_details`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `restaurant_tables`
+--
+ALTER TABLE `restaurant_tables`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `services`
+--
+ALTER TABLE `services`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `service_bookings`
+--
+ALTER TABLE `service_bookings`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_booking_user` (`user_id`);
+
+--
+-- Indexes for table `settings`
+--
+ALTER TABLE `settings`
+  ADD PRIMARY KEY (`key_name`);
+
+--
+-- Indexes for table `suppliers`
+--
+ALTER TABLE `suppliers`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `themes`
+--
+ALTER TABLE `themes`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `transfer_details`
+--
+ALTER TABLE `transfer_details`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `employee_id` (`employee_id`);
+
+--
+-- Indexes for table `user_addresses`
+--
+ALTER TABLE `user_addresses`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `videos`
+--
+ALTER TABLE `videos`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `warehouses`
+--
+ALTER TABLE `warehouses`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `about_categories`
+--
+ALTER TABLE `about_categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `about_comments`
+--
+ALTER TABLE `about_comments`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+
+--
+-- AUTO_INCREMENT for table `about_comment_bans`
+--
+ALTER TABLE `about_comment_bans`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `about_comment_likes`
+--
+ALTER TABLE `about_comment_likes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `about_comment_reports`
+--
+ALTER TABLE `about_comment_reports`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `about_content`
+--
+ALTER TABLE `about_content`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `about_likes`
+--
+ALTER TABLE `about_likes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+
+--
+-- AUTO_INCREMENT for table `about_saved_posts`
+--
+ALTER TABLE `about_saved_posts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `about_shares`
+--
+ALTER TABLE `about_shares`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=168;
+
+--
+-- AUTO_INCREMENT for table `admins`
+--
+ALTER TABLE `admins`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `banners`
+--
+ALTER TABLE `banners`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `bookings`
+--
+ALTER TABLE `bookings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `booking_details`
+--
+ALTER TABLE `booking_details`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+
+--
+-- AUTO_INCREMENT for table `booking_inventory_deductions`
+--
+ALTER TABLE `booking_inventory_deductions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=128;
+
+--
+-- AUTO_INCREMENT for table `categories`
+--
+ALTER TABLE `categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `chefs`
+--
+ALTER TABLE `chefs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `combos`
+--
+ALTER TABLE `combos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `combo_items`
+--
+ALTER TABLE `combo_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- AUTO_INCREMENT for table `contacts`
+--
+ALTER TABLE `contacts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `employees`
+--
+ALTER TABLE `employees`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `foods`
+--
+ALTER TABLE `foods`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+
+--
+-- AUTO_INCREMENT for table `food_recipes`
+--
+ALTER TABLE `food_recipes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
+
+--
+-- AUTO_INCREMENT for table `footer_links`
+--
+ALTER TABLE `footer_links`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `galleries`
+--
+ALTER TABLE `galleries`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `inventory`
+--
+ALTER TABLE `inventory`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+
+--
+-- AUTO_INCREMENT for table `inventory_audits`
+--
+ALTER TABLE `inventory_audits`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `inventory_audit_details`
+--
+ALTER TABLE `inventory_audit_details`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `inventory_batches`
+--
+ALTER TABLE `inventory_batches`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+
+--
+-- AUTO_INCREMENT for table `inventory_categories`
+--
+ALTER TABLE `inventory_categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `inventory_history`
+--
+ALTER TABLE `inventory_history`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=376;
+
+--
+-- AUTO_INCREMENT for table `inventory_receipts`
+--
+ALTER TABLE `inventory_receipts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `inventory_stocks`
+--
+ALTER TABLE `inventory_stocks`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=243;
+
+--
+-- AUTO_INCREMENT for table `inventory_transfers`
+--
+ALTER TABLE `inventory_transfers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
+
+--
+-- AUTO_INCREMENT for table `inventory_units`
+--
+ALTER TABLE `inventory_units`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `navigation_menu`
+--
+ALTER TABLE `navigation_menu`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `newsletters`
+--
+ALTER TABLE `newsletters`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `notifications`
+--
+ALTER TABLE `notifications`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `order_items`
+--
+ALTER TABLE `order_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `positions`
+--
+ALTER TABLE `positions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `purchase_orders`
+--
+ALTER TABLE `purchase_orders`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `purchase_order_details`
+--
+ALTER TABLE `purchase_order_details`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
+
+--
+-- AUTO_INCREMENT for table `restaurant_tables`
+--
+ALTER TABLE `restaurant_tables`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+
+--
+-- AUTO_INCREMENT for table `services`
+--
+ALTER TABLE `services`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `service_bookings`
+--
+ALTER TABLE `service_bookings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=85;
+
+--
+-- AUTO_INCREMENT for table `suppliers`
+--
+ALTER TABLE `suppliers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `themes`
+--
+ALTER TABLE `themes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `transfer_details`
+--
+ALTER TABLE `transfer_details`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+
+--
+-- AUTO_INCREMENT for table `user_addresses`
+--
+ALTER TABLE `user_addresses`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `videos`
+--
+ALTER TABLE `videos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `warehouses`
+--
+ALTER TABLE `warehouses`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `combos`
+--
+ALTER TABLE `combos`
+  ADD CONSTRAINT `fk_combo_theme` FOREIGN KEY (`theme_id`) REFERENCES `themes` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `foods`
+--
+ALTER TABLE `foods`
+  ADD CONSTRAINT `fk_food_theme` FOREIGN KEY (`theme_id`) REFERENCES `themes` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `service_bookings`
+--
+ALTER TABLE `service_bookings`
+  ADD CONSTRAINT `fk_booking_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `user_addresses`
+--
+ALTER TABLE `user_addresses`
+  ADD CONSTRAINT `user_addresses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+COMMIT;
+
+>>>>>>> origin/main
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
