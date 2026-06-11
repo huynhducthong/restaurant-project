@@ -502,6 +502,12 @@ try {
                     </a>
                 </li>
 
+                <li class="<?= isActive('manage_toppings.php') ?>">
+                    <a href="/restaurant-project/admin/controllers/manage_toppings.php">
+                        <i class="fas fa-cheese"></i> Quản lý Topping
+                    </a>
+                </li>
+
                 <li class="<?= ($current_page == 'ComboController.php' || $current_page == 'add_combo.php' || $current_page == 'edit_combo.php') ? 'active' : '' ?>">
                     <a href="/restaurant-project/admin/controllers/ComboController.php">
                         <i class="fas fa-layer-group"></i> Quản lý Set
@@ -634,6 +640,7 @@ try {
                 $page_titles = [
                     'admin_dashboard.php'     => 'Bảng Điều Khiển Tổng Quan',
                     'FoodController.php'      => 'Quản Lý Thực Đơn',
+                    'manage_toppings.php'     => 'Quản Lý Topping / Tùy Chọn',
                     'ComboController.php'     => 'Quản Lý Set',
                     'list_combos.php'         => 'Quản Lý Set',
                     'add_combo.php'           => 'Thêm Set',

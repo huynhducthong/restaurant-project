@@ -68,6 +68,15 @@ try {
             $item_recipes = $recipes_by_food[$item['menu_id']] ?? [];
             $item['recipes'] = $item_recipes;
             
+            $item['toppings_list'] = [];
+            if (!empty($item['toppings_info'])) {
+                $t_ids = explode(',', $item['toppings_info']);
+                $t_ids_str = implode(',', array_map('intval', $t_ids));
+                if (!empty($t_ids_str)) {
+                    $item['toppings_list'] = $db->query("SELECT name FROM toppings WHERE id IN ($t_ids_str)")->fetchAll(PDO::FETCH_COLUMN);
+                }
+            }
+            
             // Tính toán tổng nguyên liệu cần thiết cho cả đơn hàng
             foreach ($item_recipes as $rcp) {
                 $ing_id = $rcp['ingredient_id'];

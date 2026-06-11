@@ -41,13 +41,24 @@ function saveRecipes(PDO $db, int $food_id): void
     }
 }
 
+function saveToppings(PDO $db, int $food_id): void
+{
+    $db->prepare("DELETE FROM food_toppings WHERE food_id = ?")->execute([$food_id]);
+    if (empty($_POST['toppings']))
+        return;
+    $stmt = $db->prepare("INSERT INTO food_toppings (food_id, topping_id) VALUES (?, ?)");
+    foreach ($_POST['toppings'] as $topping_id) {
+        $stmt->execute([$food_id, (int)$topping_id]);
+    }
+}
+
 // ============================================================
 // AJAX: Toggle ẩn / hiện món
 // ============================================================
 if ($action === 'toggle' && isset($_POST['food_id'])) {
     header('Content-Type: application/json');
     $fid = (int) $_POST['food_id'];
-    $db->prepare("UPDATE foods SET is_active = NOT is_active WHERE id = ?")->execute([$fid]);
+    $db->prepare("UPDATE foods SET is_active = NOT is_active, status = NOT status WHERE id = ?")->execute([$fid]);
     $s = $db->prepare("SELECT is_active FROM foods WHERE id = ?");
     $s->execute([$fid]);
     echo json_encode(['status' => 'success', 'is_active' => (int) $s->fetchColumn()]);
@@ -105,7 +116,7 @@ if ($action === 'delete' && isset($_GET['id'])) {
 if ($action === 'add') {
     $errors = [];
     $success = false;
-    $old = ['name' => '', 'category_id' => '', 'price' => '', 'description' => ''];
+    $old = ['name' => '', 'category_id' => '', 'price' => '', 'description' => '', 'max_toppings' => 4];
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $old['name'] = trim($_POST['name'] ?? '');
@@ -115,6 +126,7 @@ if ($action === 'add') {
         $old['allergens'] = trim($_POST['allergens'] ?? '');
         $old['wine_pairing_id'] = !empty($_POST['wine_pairing_id']) ? (int)$_POST['wine_pairing_id'] : null;
         $old['chef_note'] = trim($_POST['chef_note'] ?? '');
+        $old['max_toppings'] = isset($_POST['max_toppings']) ? (int)$_POST['max_toppings'] : 4;
         $theme_id = !empty($_POST['theme_id']) ? (int)$_POST['theme_id'] : null;
 
         if ($old['name'] === '')
@@ -138,8 +150,8 @@ if ($action === 'add') {
             $db->beginTransaction();
             try {
                 $db->prepare(
-                    "INSERT INTO foods (name, category_id, price, description, allergens, wine_pairing_id, chef_note, image, is_active, is_chef_recommended, theme_id)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)"
+                    "INSERT INTO foods (name, category_id, price, description, allergens, wine_pairing_id, chef_note, image, is_active, is_chef_recommended, theme_id, max_toppings)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?)"
                 )->execute([
                             $old['name'],
                             (int) $old['category_id'],
@@ -150,12 +162,15 @@ if ($action === 'add') {
                             $old['chef_note'],
                             $image_name,
                             isset($_POST['is_chef_recommended']) ? 1 : 0,
-                            $theme_id
+                            $theme_id,
+                            $old['max_toppings']
                         ]);
-                saveRecipes($db, (int) $db->lastInsertId());
+                $new_food_id = (int)$db->lastInsertId();
+                saveRecipes($db, $new_food_id);
+                saveToppings($db, $new_food_id);
                 $db->commit();
                 $success = true;
-                $old = ['name' => '', 'category_id' => '', 'price' => '', 'description' => ''];
+                $old = ['name' => '', 'category_id' => '', 'price' => '', 'description' => '', 'max_toppings' => 4];
             } catch (Exception $e) {
                 $db->rollBack();
                 $errors[] = 'Lỗi hệ thống: ' . htmlspecialchars($e->getMessage());
@@ -169,6 +184,9 @@ if ($action === 'add') {
     $all_units = $db->query("SELECT name FROM inventory_units ORDER BY name ASC")->fetchAll(PDO::FETCH_COLUMN);
     $drinks = $db->query("SELECT id, name FROM foods WHERE is_active = 1 AND category_id IN (SELECT id FROM categories WHERE name LIKE '%uống%') ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
     $all_themes = $db->query("SELECT id, name FROM themes WHERE is_active = 1 ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $toppings = $db->query("SELECT * FROM toppings WHERE status = 1 AND topping_group != 'Độ chín' ORDER BY topping_group ASC, name ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $special_requests = $db->query("SELECT * FROM toppings WHERE status = 1 AND topping_group = 'Độ chín' ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $current_toppings = [];
 
     require_once __DIR__ . '/../views/food/formfood.php';
     exit;
@@ -200,6 +218,10 @@ if ($action === 'edit') {
     $recipe_stmt->execute([$id]);
     $current_recipes = $recipe_stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    $t_stmt = $db->prepare("SELECT topping_id FROM food_toppings WHERE food_id = ?");
+    $t_stmt->execute([$id]);
+    $current_toppings = $t_stmt->fetchAll(PDO::FETCH_COLUMN);
+
     $errors = [];
     $success = false;
     $old = [
@@ -212,6 +234,7 @@ if ($action === 'edit') {
         'chef_note' => $food['chef_note'],
         'is_chef_recommended' => $food['is_chef_recommended'],
         'theme_id' => $food['theme_id'],
+        'max_toppings' => $food['max_toppings'] ?? 4,
     ];
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -221,6 +244,7 @@ if ($action === 'edit') {
         $old['description'] = trim($_POST['description'] ?? '');
         $old['wine_pairing_id'] = !empty($_POST['wine_pairing_id']) ? (int)$_POST['wine_pairing_id'] : null;
         $old['chef_note'] = trim($_POST['chef_note'] ?? '');
+        $old['max_toppings'] = isset($_POST['max_toppings']) ? (int)$_POST['max_toppings'] : 4;
         $theme_id = !empty($_POST['theme_id']) ? (int)$_POST['theme_id'] : null;
         $old['theme_id'] = $theme_id;
         $old['allergens'] = isset($_POST['allergens']) && is_array($_POST['allergens']) ? implode(', ', $_POST['allergens']) : trim($_POST['allergens'] ?? '');
@@ -243,7 +267,7 @@ if ($action === 'edit') {
             $db->beginTransaction();
             try {
                 $db->prepare(
-                    "UPDATE foods SET name=?, category_id=?, price=?, description=?, allergens=?, wine_pairing_id=?, chef_note=?, image=?, is_chef_recommended=?, theme_id=? WHERE id=?"
+                    "UPDATE foods SET name=?, category_id=?, price=?, description=?, allergens=?, wine_pairing_id=?, chef_note=?, image=?, is_chef_recommended=?, theme_id=?, max_toppings=? WHERE id=?"
                 )->execute([
                             $old['name'],
                             (int) $old['category_id'],
@@ -255,9 +279,11 @@ if ($action === 'edit') {
                             $final_image,
                             isset($_POST['is_chef_recommended']) ? 1 : 0,
                             $theme_id,
+                            $old['max_toppings'],
                             $id
                         ]);
                 saveRecipes($db, $id);
+                saveToppings($db, $id);
                 $db->commit();
                 $success = true;
 
@@ -266,6 +292,8 @@ if ($action === 'edit') {
                 $food = $stmt->fetch(PDO::FETCH_ASSOC);
                 $recipe_stmt->execute([$id]);
                 $current_recipes = $recipe_stmt->fetchAll(PDO::FETCH_ASSOC);
+                $t_stmt->execute([$id]);
+                $current_toppings = $t_stmt->fetchAll(PDO::FETCH_COLUMN);
                 $old = [
                     'name' => $food['name'],
                     'category_id' => $food['category_id'],
@@ -275,6 +303,7 @@ if ($action === 'edit') {
                     'wine_pairing_id' => $food['wine_pairing_id'],
                     'chef_note' => $food['chef_note'],
                     'theme_id' => $food['theme_id'],
+                    'max_toppings' => $food['max_toppings'] ?? 4,
                 ];
             } catch (Exception $e) {
                 $db->rollBack();
@@ -289,6 +318,8 @@ if ($action === 'edit') {
     $all_units = $db->query("SELECT name FROM inventory_units ORDER BY name ASC")->fetchAll(PDO::FETCH_COLUMN);
     $drinks = $db->query("SELECT id, name FROM foods WHERE is_active = 1 AND category_id IN (SELECT id FROM categories WHERE name LIKE '%uống%') ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
     $all_themes = $db->query("SELECT id, name FROM themes WHERE is_active = 1 ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $toppings = $db->query("SELECT * FROM toppings WHERE status = 1 AND topping_group != 'Độ chín' ORDER BY topping_group ASC, name ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $special_requests = $db->query("SELECT * FROM toppings WHERE status = 1 AND topping_group = 'Độ chín' ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
 
     require_once __DIR__ . '/../views/food/formfood.php';
     exit;

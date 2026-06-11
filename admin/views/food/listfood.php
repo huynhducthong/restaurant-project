@@ -166,8 +166,10 @@ tr.inactive-row td:first-child::after { content:''; }
                     <td>
                         <div class="fw-bold text-dark"><?= htmlspecialchars($row['name']) ?></div>
                         <div class="d-flex gap-1 flex-wrap mt-1">
-                            <?php if (!$is_active): ?>
-                                <span class="badge bg-secondary" style="font-size:9px">ĐÃ ẨN</span>
+                            <?php if ($is_active): ?>
+                                <span class="badge bg-success badge-status" style="font-size:9px">Còn</span>
+                            <?php else: ?>
+                                <span class="badge bg-danger badge-status" style="font-size:9px">Không còn</span>
                             <?php endif; ?>
                             <?php if ($in_combo > 0): ?>
                                 <span class="badge bg-danger" style="font-size:9px">ĐANG TRONG COMBO</span>
@@ -234,11 +236,11 @@ tr.inactive-row td:first-child::after { content:''; }
                                 <i class="fas fa-edit"></i>
                             </a>
 
-                            <button class="btn btn-sm <?= $is_active ? 'btn-outline-secondary' : 'btn-secondary' ?> btn-toggle-food"
+                            <button class="btn btn-sm <?= $is_active ? 'btn-outline-success' : 'btn-outline-danger' ?> btn-toggle-food"
                                     data-id="<?= $fid ?>"
                                     data-active="<?= $is_active ?>"
-                                    title="<?= $is_active ? 'Ẩn món khỏi thực đơn' : 'Hiện lại món' ?>">
-                                <i class="fas <?= $is_active ? 'fa-eye-slash' : 'fa-eye' ?>"></i>
+                                    title="<?= $is_active ? 'Đánh dấu Không còn' : 'Đánh dấu Còn' ?>">
+                                <i class="fas <?= $is_active ? 'fa-check-circle' : 'fa-times-circle' ?>"></i>
                             </button>
 
                             <button class="btn btn-sm btn-outline-danger btn-delete-food"
@@ -364,12 +366,17 @@ $(function () {
             if (r.status !== 'success') return;
             const active = r.is_active;
             btn.data('active', active);
-            btn.attr('title', active ? 'Ẩn món khỏi thực đơn' : 'Hiện lại món');
-            btn.toggleClass('btn-outline-secondary', !!active).toggleClass('btn-secondary', !active);
-            btn.find('i').toggleClass('fa-eye-slash', !!active).toggleClass('fa-eye', !active);
+            btn.attr('title', active ? 'Đánh dấu Không còn' : 'Đánh dấu Còn');
+            btn.toggleClass('btn-outline-success', !!active).toggleClass('btn-outline-danger', !active);
+            btn.find('i').toggleClass('fa-check-circle', !!active).toggleClass('fa-times-circle', !active);
             row.toggleClass('inactive-row', !active);
-            const hiddenBadge = row.find('.badge.bg-secondary');
-            if (!active) { if (!hiddenBadge.length) row.find('.fw-bold.text-dark').after('<span class="badge bg-secondary ms-1" style="font-size:9px">ĐÃ ẨN</span>'); } else { hiddenBadge.remove(); }
+            
+            const badge = row.find('.badge-status');
+            if (active) {
+                badge.removeClass('bg-danger').addClass('bg-success').text('Còn');
+            } else {
+                badge.removeClass('bg-success').addClass('bg-danger').text('Không còn');
+            }
         }, 'json');
     });
 

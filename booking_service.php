@@ -1,6 +1,7 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 require_once 'config/database.php';
+require_once 'config/inventory_helper.php';
 if (!isset($_SESSION['user_id'])) {
     header('Location: public/login.php'); exit;
 }
@@ -43,25 +44,17 @@ if ($type !== 'chef') {
 }
 
 $foods_raw  = $db->query("
-    SELECT f.*, t.name as theme_name,
-    (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, ''), ',', IFNULL(i.allergens, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients 
+    SELECT f.*, t.name as theme_name, c.name as cat_name,
+           (SELECT GROUP_CONCAT(CONCAT(tp.id, '::', tp.name, '::', tp.price, '::', IFNULL(tp.image, ''), '::', tp.selection_type, '::', IFNULL(tp.topping_group, ''), '::', IFNULL(tp.description, '')) SEPARATOR '|')
+            FROM food_toppings ft
+            JOIN toppings tp ON ft.topping_id = tp.id
+            WHERE ft.food_id = f.id AND tp.status = 1) as list_toppings
     FROM foods f 
     LEFT JOIN themes t ON f.theme_id = t.id 
+    LEFT JOIN categories c ON f.category_id = c.id
     WHERE f.status=1 ORDER BY t.created_at DESC, f.name ASC
 ")->fetchAll(PDO::FETCH_ASSOC);
 
-$combos_raw = $db->query("
-    SELECT c.*, t.name as theme_name, t.description as theme_desc, t.image as theme_img,
-    (
-        SELECT GROUP_CONCAT(f.name SEPARATOR ', ') 
-        FROM combo_items ci 
-        JOIN foods f ON ci.food_id = f.id 
-        WHERE ci.combo_id = c.id
-    ) as list_foods
-    FROM combos c 
-    LEFT JOIN themes t ON c.theme_id = t.id 
-    WHERE c.status=1
-")->fetchAll(PDO::FETCH_ASSOC);
 
 
 $chefs = $db->query("SELECT id, name FROM chefs WHERE is_active = 1 ORDER BY sort_order ASC, id DESC")->fetchAll(PDO::FETCH_ASSOC);
@@ -93,42 +86,20 @@ if (isset($_SESSION['user_id'])) {
 
 $user_flavor = [];
 $user_fav = [];
-$user_disliked = [];
+$user_allergies = [];
 if ($user_info) {
     if ($user_info['flavor_profile']) $user_flavor = array_map('trim', explode(',', mb_strtolower($user_info['flavor_profile'], 'UTF-8')));
     if ($user_info['fav_ingredients']) $user_fav = array_map('trim', explode(',', mb_strtolower($user_info['fav_ingredients'], 'UTF-8')));
-    if ($user_info['disliked_ingredients']) $user_disliked = array_map('trim', explode(',', mb_strtolower($user_info['disliked_ingredients'], 'UTF-8')));
+    if (!empty($user_info['allergies'])) $user_allergies = array_map('trim', explode(',', mb_strtolower($user_info['allergies'], 'UTF-8')));
 }
 
 function hasAllergenBooking($food, $user_allergies) {
     if (empty($user_allergies)) return false;
-    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '') . ',' . ($food['name'] ?? '');
-    $food_allergens = array_map('trim', explode(',', removeVietnameseAccentsBooking($all_food_ingredients)));
-    foreach($user_allergies as $ua) {
-        $ua_clean = trim(removeVietnameseAccentsBooking($ua));
-        if (empty($ua_clean)) continue;
-        foreach($food_allergens as $fa) {
-            if (!empty($fa) && (strpos($fa, $ua_clean) !== false || strpos($ua_clean, $fa) !== false)) return true;
-        }
+    $allergens = array_map('trim', explode(',', mb_strtolower($food['allergens'] ?? '', 'UTF-8')));
+    foreach ($user_allergies as $ua) {
+        if (in_array($ua, $allergens)) return true;
     }
     return false;
-}
-
-function hasDislikeBooking($food, $user_dislikes) {
-    if (empty($user_dislikes)) return false;
-    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '');
-    $food_ingredients = array_map('trim', explode(',', mb_strtolower($all_food_ingredients, 'UTF-8')));
-    foreach($user_dislikes as $ud) {
-        foreach($food_ingredients as $fi) {
-            if (!empty($fi) && (strpos($fi, $ud) !== false || strpos($ud, $fi) !== false)) return true;
-        }
-    }
-    return false;
-}
-
-$user_allergies = [];
-if ($user_info && $user_info['allergies']) {
-    $user_allergies = array_map('trim', explode(',', mb_strtolower($user_info['allergies'], 'UTF-8')));
 }
 
 function removeVietnameseAccentsBooking($str) {
@@ -146,7 +117,7 @@ function removeVietnameseAccentsBooking($str) {
 foreach ($foods_raw as &$f) {
     $score = 0;
     $f_tags = removeVietnameseAccentsBooking($f['tags'] ?? '');
-    $f_ingr = removeVietnameseAccentsBooking($f['recipe_ingredients'] ?? '');
+    $f_ingr = removeVietnameseAccentsBooking($f['ingredients'] ?? '');
     $f_name = removeVietnameseAccentsBooking($f['name'] ?? '');
 
     foreach ($user_flavor as $flav) {
@@ -184,7 +155,7 @@ include 'views/client/layouts/header.php';
 ?>
 
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 <style>
 /* === MINIMALIST TOKENS === */
 :root {
@@ -399,13 +370,13 @@ select.input-lux {
                 </div>
                 <div class="row-lux">
                     <div class="input-group-lux">
-                        <input type="text" name="booking_date" id="bd" class="input-lux" placeholder="Chọn Ngày & Giờ *" required onchange="us()">
+                        <input type="datetime-local" name="booking_date" id="bd" class="input-lux" placeholder=" " required onchange="us()">
                         <label class="label-lux">Ngày & Giờ <?= $type==='chef' ? 'phục vụ' : 'đến' ?> *</label>
                     </div>
                     <div class="input-group-lux">
                         <div class="guest-lux">
                             <button type="button" class="btn-qty" onclick="cg(-1)">-</button>
-                            <input type="number" name="guests" id="gi" value="2" min="1" max="16" readonly onchange="us()">
+                            <input type="number" name="guests" id="gi" value="2" min="1" max="50" readonly onchange="us()">
                             <button type="button" class="btn-qty" onclick="cg(1)">+</button>
                         </div>
                         <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: #fff; padding: 0 5px; letter-spacing: 1px; text-transform: uppercase; z-index: 2; font-weight: 600;">Số lượng khách *</label>
@@ -629,44 +600,63 @@ select.input-lux {
                 <?php if ($type !== 'bespoke'): ?>
                 <div id="addon-foods-section">
                     <?php if(!empty($grouped_foods)): ?>
-                        <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px; letter-spacing:1px; text-transform:uppercase;">Thực Đơn Chọn Trước (Add-on)</p>
+                        <p id="addon-foods-label" style="font-size:12px; color:var(--text-muted); margin-bottom:10px; letter-spacing:1px; text-transform:uppercase;">Thực Đơn Chọn Trước (Add-on)</p>
                         <div style="max-height: 400px; overflow-y: auto; padding-right:10px;">
                             <?php foreach($grouped_foods as $t_name => $t_foods): ?>
-                                <div style="margin-bottom: 20px;">
+                                <div class="addon-group-block" style="margin-bottom: 20px;">
                                     <h5 style="color:var(--gold); font-size:12px; text-transform:uppercase; border-bottom:1px dashed rgba(212,176,106,0.3); padding-bottom:5px; margin-bottom:10px;">MÓN LẺ THUỘC CHỦ ĐỀ: <?= htmlspecialchars($t_name) ?></h5>
-                                    <?php foreach($t_foods as $fd): ?>
-                                    <div class="menu-item-lux" id="mr<?= $fd['id'] ?>" data-name="<?= htmlspecialchars($fd['name']) ?>">
-                                        <div style="display:flex; align-items:center; gap:15px;">
-                                            <input type="checkbox" class="menu-checkbox" name="menu_items[]" value="<?= $fd['id'] ?>" onchange="togMrow(this,<?= $fd['id'] ?>,<?= (float)$fd['price'] ?>)">
-                                            <div>
-                                                <div style="font-size:14px;">
-                                                    <?= htmlspecialchars($fd['name']) ?>
-                                                    <?php 
-                                                        $is_hist = isset($user_history_counts[$fd['id']]);
-                                                        $flav_score = isset($fd['ai_score']) ? $fd['ai_score'] - ($is_hist ? min(10, $user_history_counts[$fd['id']] * 2) : 0) : 0;
-                                                    ?>
-                                                    <?php if(!empty($fd['is_chef_recommended']) && $fd['is_chef_recommended'] == 1): ?>
-                                                        <span class="badge bg-success text-white ms-2" style="font-size: 10px;"><i class="fas fa-star me-1"></i> Chef's Choice</span>
-                                                    <?php endif; ?>
-                                                    <?php if($is_hist): ?>
-                                                        <span class="badge bg-info text-white ms-2" style="font-size: 10px;"><i class="fas fa-history me-1"></i> Đã từng gọi</span>
-                                                    <?php endif; ?>
-                                                    <?php if($flav_score > 0): ?>
-                                                        <span class="badge bg-warning text-dark ms-2" style="font-size: 10px; border: 1px solid var(--gold);"><i class="fas fa-magic me-1"></i> Smart AI</span>
-                                                    <?php endif; ?>
-                                                    <?php if(hasAllergenBooking($fd, $user_allergies)): ?>
-                                                        <span class="badge bg-danger text-white ms-2" style="font-size: 10px;"><i class="fas fa-exclamation-triangle me-1"></i> Dị ứng</span>
-                                                    <?php endif; ?>
-                                                </div>
-                                                <div style="font-size:12px; color:var(--gold)"><?= number_format($fd['price']) ?> đ</div>
-                                            </div>
-                                        </div>
-                                        <div style="display: flex; gap: 10px; align-items: center;">
-                                            <input type="text" class="menu-note-input" name="food_notes[<?= $fd['id'] ?>]" id="fn<?= $fd['id'] ?>" placeholder="Ghi chú (vd: không hành, cho khách...)" style="font-size:11px; padding: 4px 8px; border: 1px solid var(--glass-border); border-radius: 0; outline: none;">
-                                            <input type="number" class="menu-qty-input" name="quantity[<?= $fd['id'] ?>]" id="q<?= $fd['id'] ?>" value="1" min="1" onchange="us()">
-                                        </div>
-                                    </div>
-                                    <?php endforeach; ?>
+                                    <?php foreach($t_foods as $fd): 
+                                         $stock = getFoodInventory($db, $fd['id']);
+                                         $is_out_of_stock = ($stock <= 0);
+                                     ?>
+                                     <div class="menu-item-lux flex-column align-items-stretch" id="mr<?= $fd['id'] ?>" 
+                                          data-name="<?= htmlspecialchars($fd['name']) ?>"
+                                          data-price="<?= (float)$fd['price'] ?>"
+                                          data-img="public/assets/img/menu/<?= htmlspecialchars($fd['image'] ?: 'default.jpg') ?>"
+                                          data-desc="<?= htmlspecialchars($fd['description'] ?? '') ?>"
+                                          data-ingredients="<?= htmlspecialchars(($fd['ingredients'] ?? '') . (!empty($fd['recipe_ingredients']) ? ', ' . $fd['recipe_ingredients'] : '')) ?>"
+                                          data-toppings-raw="<?= htmlspecialchars($fd['list_toppings'] ?? '') ?>"
+                                          data-category="<?= htmlspecialchars($fd['cat_name'] ?? 'Món lẻ') ?>"
+                                          data-max-toppings="<?= (int)($fd['max_toppings'] ?? 4) ?>"
+                                          data-stock="<?= $stock ?>"
+                                          style="border-bottom: 1px solid var(--glass-border); padding: 15px 0; display: flex;">
+                                         <div class="d-flex justify-content-between align-items-center w-100">
+                                             <div style="display:flex; align-items:center; gap:15px; flex-grow: 1;">
+                                                 <input type="checkbox" class="menu-checkbox" name="menu_items[]" value="<?= $fd['id'] ?>" <?= $is_out_of_stock ? 'disabled' : '' ?> onchange="togMrow(this,<?= $fd['id'] ?>,<?= (float)$fd['price'] ?>)">
+                                                 <div class="food-details-clickable" onclick="<?= $is_out_of_stock ? 'void(0)' : 'openFoodOptionModal(' . $fd['id'] . ')' ?>" style="cursor:<?= $is_out_of_stock ? 'not-allowed' : 'pointer' ?>; flex-grow: 1;">
+                                                     <div style="font-size:14px; display:flex; align-items:center; font-weight: 500;">
+                                                         <?= htmlspecialchars($fd['name']) ?>
+                                                         <?php 
+                                                             $is_hist = isset($user_history_counts[$fd['id']]);
+                                                             $flav_score = isset($fd['ai_score']) ? $fd['ai_score'] - ($is_hist ? min(10, $user_history_counts[$fd['id']] * 2) : 0) : 0;
+                                                         ?>
+                                                         <?php if($is_hist): ?>
+                                                             <span class="badge bg-info text-white ms-2" style="font-size: 10px;"><i class="fas fa-history me-1"></i> Đã từng gọi</span>
+                                                         <?php endif; ?>
+                                                         <?php if($flav_score > 0): ?>
+                                                             <span class="badge bg-warning text-dark ms-2" style="font-size: 10px; border: 1px solid var(--gold);"><i class="fas fa-magic me-1"></i> Gợi ý</span>
+                                                         <?php endif; ?>
+                                                         <?php if(hasAllergenBooking($fd, $user_allergies)): ?>
+                                                             <span class="badge bg-danger text-white ms-2" style="font-size: 10px;"><i class="fas fa-exclamation-triangle me-1"></i> Dị ứng</span>
+                                                         <?php endif; ?>
+                                                         <?php if ($is_out_of_stock): ?>
+                                                             <span class="badge bg-secondary text-white ms-2" style="font-size: 10px;"><i class="fas fa-ban me-1"></i> Hết món</span>
+                                                         <?php endif; ?>
+                                                     </div>
+                                                     <div style="font-size:12px; color:var(--gold); margin-top: 2px;">
+                                                         <?= number_format($fd['price']) ?> đ
+                                                         <span style="font-size:11px; color:var(--text-muted); margin-left:10px;">
+                                                             (<?= $is_out_of_stock ? '<span class="text-danger">Hết hàng</span>' : '<span class="text-success">Còn hàng</span>' ?>)
+                                                         </span>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                              <input type="hidden" name="quantity[<?= $fd['id'] ?>]" id="q<?= $fd['id'] ?>" value="1">
+                                         </div>
+                                         <input type="hidden" name="food_notes[<?= $fd['id'] ?>]" id="fn<?= $fd['id'] ?>" value="">
+                                         <div class="opt-note-display mt-2" style="font-size:11px; color:var(--gold); font-style:italic; display:none; padding-left:33px;"></div>
+                                     </div>
+                                     <?php endforeach; ?>
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -781,42 +771,25 @@ select.input-lux {
                     <div class="col-md-4 mb-3 mb-md-0">
                         <label class="fw-bold mb-3" style="color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;"><i class="fas fa-leaf me-1"></i> Chế độ ăn</label>
                         <div class="d-flex flex-column gap-2" style="font-size: 0.95rem;">
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Healthy" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Healthy</label>
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Vegetarian" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Vegetarian</label>
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Vegan" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Vegan</label>
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Keto" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Keto</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Healthy" class="form-check-input me-2" style="cursor:pointer"> Healthy</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Vegetarian" class="form-check-input me-2" style="cursor:pointer"> Vegetarian</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Vegan" class="form-check-input me-2" style="cursor:pointer"> Vegan</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Keto" class="form-check-input me-2" style="cursor:pointer"> Keto</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Không yêu cầu" class="form-check-input me-2" style="cursor:pointer" checked> Không yêu cầu</label>
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <label class="fw-bold mb-3" style="color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;"><i class="fas fa-glass-cheers me-1"></i> Mục đích</label>
                         <div class="d-flex flex-column gap-2" style="font-size: 0.95rem;">
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Hẹn hò" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Hẹn hò</label>
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Sinh nhật" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Sinh nhật</label>
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Kỷ niệm" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Kỷ niệm</label>
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Tiếp khách" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Tiếp khách</label>
-                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Cầu hôn" class="form-check-input me-2 toggle-radio" style="cursor:pointer"> Cầu hôn</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Hẹn hò" class="form-check-input me-2" style="cursor:pointer"> Hẹn hò</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Sinh nhật" class="form-check-input me-2" style="cursor:pointer"> Sinh nhật</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Kỷ niệm" class="form-check-input me-2" style="cursor:pointer"> Kỷ niệm</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Tiếp khách" class="form-check-input me-2" style="cursor:pointer"> Tiếp khách</label>
+                            <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Cầu hôn" class="form-check-input me-2" style="cursor:pointer"> Cầu hôn</label>
                         </div>
                     </div>
                 </div>
-
-                <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    let radios = document.querySelectorAll('.toggle-radio');
-                    radios.forEach(radio => {
-                        radio.addEventListener('click', function(e) {
-                            if (this.dataset.wasChecked === 'true') {
-                                this.checked = false;
-                                this.dataset.wasChecked = 'false';
-                            } else {
-                                // Reset all other radios in the same group
-                                document.querySelectorAll(`input[name="${this.name}"]`).forEach(r => r.dataset.wasChecked = 'false');
-                                this.dataset.wasChecked = 'true';
-                            }
-                        });
-                    });
-                });
-                </script>
 
                 <div class="input-group-lux mb-0 mt-4">
                     <textarea name="message" class="input-lux" rows="2" placeholder=" "></textarea>
@@ -850,6 +823,13 @@ select.input-lux {
             <div class="sum-row"><span>Bespoke Dịch vụ</span> <span class="sum-val highlight" id="s-bespoke">0 đ</span></div>
             <div class="sum-row"><span>Bộ Sưu Tập Hương Vị / Món</span> <span class="sum-val" id="sm">0 đ</span></div>
             
+            <div id="selected-foods-list" style="margin-top: 15px; border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 15px; display: none;">
+                <div style="font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 10px;">Chi tiết món đã chọn:</div>
+                <div id="selected-foods-container" style="display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; padding-right: 5px;">
+                    <!-- Dynamic selected food items will go here -->
+                </div>
+            </div>
+            
             <div class="total-box">
                 <div class="deposit-label">TIỀN CỌC TRƯỚC (30%)</div>
                 <div class="deposit-amount" id="sdep">0<span style="font-size:1.2rem; color:#fff;"> đ</span></div>
@@ -864,39 +844,81 @@ select.input-lux {
     </div>
 </section>
 
-<!-- MODAL TÙY CHỌN MÓN ĂN -->
+<!-- MODAL CHI TIẾT & TÙY CHỌN MÓN ĂN -->
 <div class="modal fade" id="foodOptionModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
-    <div class="modal-content" style="background:#fff; border:1px solid var(--forest); border-radius:0;">
-      <div class="modal-header" style="border-bottom:1px solid rgba(212,176,106,0.2);">
-        <h5 class="modal-title" style="color:var(--gold); font-family:'Playfair Display', serif;"><i class="fas fa-utensils me-2"></i>Tùy chọn: <span id="foodOptName" style="margin-left: 5px;">Món</span></h5>
-        <button type="button" class="btn-close btn-close-white" onclick="cancelFoodOption()"></button>
-      </div>
-      <div class="modal-body">
-        <div id="donenessWrap" style="display:none; margin-bottom:15px;">
-            <label style="color:var(--gold); font-size:13px; font-weight:500; margin-bottom:5px;">Mức độ chín (Dành cho bò/steak):</label>
-            <select id="foodOptDoneness" class="form-select form-select-sm" style="background:var(--glass-bg); color:var(--text-main); border:1px solid var(--glass-border);">
-                <option value="">-- Mặc định --</option>
-                <option value="Rare (Tái)">Rare (Tái)</option>
-                <option value="Medium Rare (Tái vừa)">Medium Rare (Tái vừa)</option>
-                <option value="Medium (Chín vừa)">Medium (Chín vừa)</option>
-                <option value="Medium Well (Chín tới)">Medium Well (Chín tới)</option>
-                <option value="Well Done (Chín kỹ)">Well Done (Chín kỹ)</option>
-            </select>
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 750px;">
+    <div class="modal-content" style="background:#fff; border:1px solid var(--forest); border-radius:0; position:relative; overflow:hidden;">
+      <div class="modal-body p-0">
+        <button type="button" class="btn-close" onclick="cancelFoodOption()" style="position:absolute; top:15px; right:15px; z-index:10; background:none; border:none; font-size:20px; color:var(--text-muted); line-height:1;">✕</button>
+        <div class="row g-0">
+          <div class="col-md-5" style="position:relative; min-height:350px; background:#f6f2e9;">
+            <img id="foodOptImg" src="" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;" alt="Food Image" onerror="this.onerror=null; this.src='https://placehold.co/800x600/F6F2E9/4F5B3A?text=No+Image'">
+          </div>
+          <div class="col-md-7" style="padding: 40px; display:flex; flex-direction:column; justify-content:space-between; background:#fff; max-height: 85vh; overflow-y: auto;">
+            <div>
+              <div style="font-size:10px; font-family:var(--font-sans); letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:5px;">Chi tiết món ăn</div>
+              <h4 id="foodOptName" style="color:var(--forest); font-family:'Cormorant Garamond', serif; font-size:1.8rem; font-weight:600; margin-bottom:5px;">Tên món</h4>
+              <div id="foodOptCategory" style="font-size:12px; color:var(--text-muted); margin-bottom:5px;">Danh mục: ...</div>
+              <div id="foodOptStatus" style="font-size:12px; margin-bottom:10px; font-weight:bold;">Trạng thái: ...</div>
+              <div id="foodOptPrice" style="font-size:1.1rem; color:var(--gold); font-weight:600; margin-bottom:15px;">Giá gốc: 0 đ</div>
+              <p id="foodOptDesc" style="font-size:13px; color:var(--text-muted); font-style:italic; line-height:1.6; margin-bottom:20px;"></p>
+              
+              <!-- Ingredients List -->
+              <div id="ingredientsWrap" style="margin-bottom:20px; display:none;">
+                <label style="color:var(--forest); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:8px;">Thành phần có sẵn:</label>
+                <div id="ingredientsList" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+              </div>
+              
+              <!-- Doneness Wrap -->
+              <div id="donenessWrap" style="display:none; margin-bottom:20px;">
+                <label style="color:var(--forest); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:8px;">Độ chín thịt (Meat Doneness):</label>
+                <select id="foodOptDoneness" class="form-select form-select-sm" style="border:1px solid var(--glass-border); border-radius:0; font-size:13px; background:#fff;" onchange="updateModalPrice()">
+                    <option value="">-- Mặc định --</option>
+                    <option value="Rare (Tái)">Rare (Tái)</option>
+                    <option value="Medium Rare (Tái vừa)">Medium Rare (Tái vừa)</option>
+                    <option value="Medium (Chín vừa)">Medium (Chín vừa)</option>
+                    <option value="Medium Well (Chín tới)">Medium Well (Chín tới)</option>
+                    <option value="Well Done (Chín kỹ)">Well Done (Chín kỹ)</option>
+                </select>
+              </div>
+              
+              <!-- Toppings Wrap -->
+              <div id="toppingsWrap" style="margin-bottom:20px;">
+                <label style="color:var(--forest); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:8px;">Topping tùy chọn:</label>
+                <div id="toppingsList" style="display:flex; flex-direction:column; gap:8px;"></div>
+                <div id="noToppingsMsg" style="font-size:12px; color:var(--text-muted); font-style:italic; display:none;">Món này không có topping bổ sung</div>
+                <div id="maxToppingsLimitMsg" style="font-size:11px; color:#c0392b; margin-top:5px; display:none; font-weight:600;"></div>
+              </div>
+              
+              <!-- Note Wrap -->
+              <div style="margin-bottom:20px;">
+                <label style="color:var(--forest); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:8px;">Ghi chú cho nhà bếp:</label>
+                <textarea id="foodOptNote" class="form-control" rows="2" maxlength="255" placeholder="Ví dụ: ít cay, không hành, thêm sốt riêng..." style="border:1px solid var(--glass-border); border-radius:0; font-size:13px; background:#fff;"></textarea>
+              </div>
+            </div>
+            
+            <div style="border-top:1px dashed var(--glass-border); padding-top:20px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:11px; color:var(--text-muted);">Số lượng:</div>
+                <div style="display:flex; align-items:center; border:1px solid var(--glass-border); margin-top:5px; width:fit-content; background:#fff;">
+                  <button type="button" class="btn btn-sm" onclick="adjustModalQty(-1)" style="padding:4px 12px; border:none; background:none; font-weight:bold;">-</button>
+                  <input type="number" id="foodOptQty" value="1" min="1" style="width:40px; text-align:center; border:none; background:none; font-weight:600; font-size:13px;" readonly>
+                  <button type="button" class="btn btn-sm" onclick="adjustModalQty(1)" style="padding:4px 12px; border:none; background:none; font-weight:bold;">+</button>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:11px; color:var(--text-muted);">Tổng tạm tính:</div>
+                <div id="foodOptTotalDisplay" style="font-size:1.4rem; color:var(--gold); font-weight:600; margin-bottom:8px;">0 đ</div>
+                <button type="button" class="btn-reserve-solid" onclick="saveFoodOption()" style="padding:10px 20px; font-size:11px; display:inline-block; border-radius:0; width:fit-content;">Thêm vào đơn</button>
+              </div>
+            </div>
+          </div>
         </div>
-        <div style="margin-bottom:10px;">
-            <label style="color:var(--gold); font-size:13px; font-weight:500; margin-bottom:5px;">Ghi chú / Topping thêm:</label>
-            <textarea id="foodOptNote" class="form-control" rows="2" placeholder="Ví dụ: Không hành, thêm phô mai, ít cay..." style="background:var(--glass-bg); color:var(--text-main); border:1px solid var(--glass-border); font-size:13px;"></textarea>
-        </div>
-      </div>
-      <div class="modal-footer" style="border-top:1px solid rgba(212,176,106,0.2); border-bottom-left-radius:12px; border-bottom-right-radius:12px; padding:10px;">
-        <button type="button" class="btn btn-sm" style="color:var(--text-muted);" onclick="cancelFoodOption()">Hủy bỏ</button>
-        <button type="button" class="btn btn-sm" style="background:var(--gold); color:var(--bg-dark); font-weight:600;" onclick="saveFoodOption()">Xác nhận</button>
       </div>
     </div>
   </div>
 </div>
-<!-- KẾT THÚC MODAL TÙY CHỌN MÓN ĂN -->
+<!-- KẾT THÚC MODAL CHI TIẾT & TÙY CHỌN MÓN ĂN -->
 
 <!-- MODAL CHI TIẾT CHỦ ĐỀ -->
 <div class="modal fade" id="themeInfoModal" tabindex="-1" aria-hidden="true">
@@ -943,8 +965,6 @@ select.input-lux {
 <?php endif; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
 <script>
 // ==========================================
 // KỊCH BẢN JAVASCRIPT GIỮ NGUYÊN HOÀN TOÀN
@@ -965,6 +985,21 @@ function showThemeInfo(data) {
     modal.show();
 }
 
+<?php
+// Build combo->foods map for JS filtering
+$combo_food_map = [];
+$cfRows = $db->query("SELECT combo_id, food_id FROM combo_items ORDER BY combo_id")->fetchAll(PDO::FETCH_ASSOC);
+foreach ($cfRows as $row) {
+    $combo_food_map[$row['combo_id']][] = (int)$row['food_id'];
+}
+// Build combo name map
+$combo_name_map = [];
+foreach ($combos_raw as $cb) {
+    $combo_name_map[$cb['id']] = $cb['name'];
+}
+?>
+const comboFoods = <?= json_encode($combo_food_map, JSON_UNESCAPED_UNICODE) ?>;
+const comboNames = <?= json_encode($combo_name_map, JSON_UNESCAPED_UNICODE) ?>;
 let comboId = 0, selId=0, selCode='', selPrice=0, selCat='', selComboPr=0, menuPr={};
 
 function togBespoke(cb) {
@@ -974,12 +1009,7 @@ function togBespoke(cb) {
 
 function cg(d){
     var i=document.getElementById('gi');
-    var guests = Math.max(1,Math.min(16,parseInt(i.value||2)+d));
-    i.value = guests;
-    if (guests > 6 && selCat === 'open') {
-        alert('Bàn thường chỉ chứa tối đa 6 khách. Vui lòng chọn Phòng VIP hoặc giảm số lượng khách.');
-        clrSeat();
-    }
+    i.value=Math.max(1,Math.min(50,parseInt(i.value||2)+d));
     us();
 }
 
@@ -990,20 +1020,64 @@ function selCombo(id,el){
     selComboPr=parseFloat(el.dataset.price||0);
 
     var bespokeFields = document.getElementById('bespoke-menu-fields');
-    var addonSection = document.getElementById('addon-foods-section');
-    var detailInput = document.getElementById('creq_detail');
+    var addonSection  = document.getElementById('addon-foods-section');
+    var detailInput   = document.getElementById('creq_detail');
 
     if (id === -1) {
         if (bespokeFields) bespokeFields.style.display = 'block';
-        if (addonSection) addonSection.style.display = 'none';
-        if (detailInput) detailInput.setAttribute('required', 'required');
+        if (addonSection)  addonSection.style.display  = 'none';
+        if (detailInput)   detailInput.setAttribute('required','required');
     } else {
         if (bespokeFields) bespokeFields.style.display = 'none';
-        if (addonSection) addonSection.style.display = 'block';
-        if (detailInput) detailInput.removeAttribute('required');
+        if (addonSection)  addonSection.style.display  = 'block';
+        if (detailInput)   detailInput.removeAttribute('required');
     }
+
+    filterFoodsByCombo(id);
     updateChefReq();
     us();
+}
+
+function filterFoodsByCombo(id) {
+    var allRows     = document.querySelectorAll('.menu-item-lux[id^="mr"]');
+    var groupBlocks = document.querySelectorAll('.addon-group-block');
+    var label       = document.getElementById('addon-foods-label');
+
+    if (id === 0) {
+        // Gọi Món Tự Do → hiện tất cả
+        allRows.forEach(function(r){ r.style.display = 'flex'; });
+        groupBlocks.forEach(function(g){ g.style.display = 'block'; });
+        if (label) label.textContent = 'Thực Đơn Chọn Trước (Add-on)';
+        return;
+    }
+
+    var allowed = comboFoods[id] || [];
+
+    // Ẩn/hiện từng món
+    allRows.forEach(function(row){
+        var fid = parseInt(row.id.replace('mr',''));
+        if (allowed.indexOf(fid) !== -1) {
+            row.style.display = 'flex';
+        } else {
+            row.style.display = 'none';
+            // Bỏ tích nếu món đang được chọn nhưng không thuộc set
+            var cb = row.querySelector('.menu-checkbox');
+            if (cb && cb.checked) { cb.checked = false; cb.dispatchEvent(new Event('change')); }
+        }
+    });
+
+    // Ẩn/hiện block nhóm dựa vào có món nào visible không
+    groupBlocks.forEach(function(g){
+        var hasVisible = Array.from(g.querySelectorAll('.menu-item-lux[id^="mr"]'))
+                              .some(function(r){ return r.style.display !== 'none'; });
+        g.style.display = hasVisible ? 'block' : 'none';
+    });
+
+    // Cập nhật tiêu đề
+    if (label) {
+        var name = comboNames[id] || ('Set Menu #' + id);
+        label.innerHTML = '<i class="fas fa-utensils me-1"></i> Món trong set "<strong>' + name + '</strong>" — chọn thêm tùy thích';
+    }
 }
 
 function updateChefReq() {
@@ -1037,91 +1111,381 @@ function updateChefReq() {
         reqInput.value = parts.join("\n");
     }
 }
-function togMrow(cb,id,pr){
+function togMrow(cb, id, pr) {
     var row = document.getElementById('mr'+id);
     if(cb.checked){
-        // Mở popup tùy chọn
-        openFoodOption(cb, id, pr);
+        openFoodOptionModal(id);
     } else {
-        // Hủy chọn
         row.classList.remove('checked');
         delete menuPr[id];
-        document.getElementById('fn'+id).value = ''; // clear note
+        
+        // Reset inputs
+        document.getElementById('fn'+id).value = '';
+        var noteEl = document.getElementById('note-'+id);
+        if(noteEl) noteEl.value = '';
+        var doneEl = document.getElementById('doneness-'+id);
+        if(doneEl) doneEl.value = '';
+        row.querySelectorAll('.topping-inline-cb').forEach(function(c){ c.checked = false; });
+        row.querySelectorAll('input[name="food_toppings['+id+'][]"]').forEach(function(el){el.remove();});
+        var disp = row.querySelector('.opt-note-display');
+        if(disp) disp.style.display = 'none';
+        
         us();
     }
 }
 
-var curFoodCb = null, curFoodId = 0, curFoodPr = 0;
-function openFoodOption(cb, id, pr) {
-    curFoodCb = cb; curFoodId = id; curFoodPr = pr;
-    var row = document.getElementById('mr'+id);
-    var foodName = row.getAttribute('data-name').toLowerCase();
-    
-    document.getElementById('foodOptName').textContent = row.getAttribute('data-name');
-    document.getElementById('foodOptNote').value = '';
-    document.getElementById('foodOptDoneness').value = '';
-    
-    // Nếu là Bò / Steak thì hiện chọn độ chín
-    if (foodName.includes('bò') || foodName.includes('steak') || foodName.includes('beef')) {
-        document.getElementById('donenessWrap').style.display = 'block';
-    } else {
-        document.getElementById('donenessWrap').style.display = 'none';
+function validateQty(input, id) {
+    var max = parseInt(input.getAttribute('max') || 99);
+    var val = parseInt(input.value || 1);
+    if (val > max) {
+        alert("Số lượng vượt quá tồn kho khả dụng (" + max + ").");
+        input.value = max;
     }
-    
-    var myModal = new bootstrap.Modal(document.getElementById('foodOptionModal'));
-    myModal.show();
+    if (val < 1) {
+        input.value = 1;
+    }
 }
 
-function cancelFoodOption() {
-    if(curFoodCb) curFoodCb.checked = false; // rollback checkbox
-    bootstrap.Modal.getInstance(document.getElementById('foodOptionModal')).hide();
+function openFoodOptionModal(id) {
+    var row = document.getElementById('mr' + id);
+    if (!row) return;
+    
+    var name = row.getAttribute('data-name');
+    var price = parseFloat(row.getAttribute('data-price') || 0);
+    var img = row.getAttribute('data-img');
+    var desc = row.getAttribute('data-desc');
+    var ingredients = row.getAttribute('data-ingredients');
+    var toppingsRaw = row.getAttribute('data-toppings-raw');
+    var category = row.getAttribute('data-category');
+    var maxToppings = parseInt(row.getAttribute('data-max-toppings') || 4);
+    var stock = parseInt(row.getAttribute('data-stock') || 99);
+    
+    // Set modal content
+    document.getElementById('foodOptName').textContent = name;
+    document.getElementById('foodOptCategory').textContent = "Danh mục: " + category;
+    
+    var statusEl = document.getElementById('foodOptStatus');
+    if (stock > 0) {
+        statusEl.innerHTML = 'Trạng thái: <span style="color:#28a745;"><i class="fas fa-check-circle"></i> Còn món</span>';
+    } else {
+        statusEl.innerHTML = 'Trạng thái: <span style="color:#dc3545;"><i class="fas fa-times-circle"></i> Hết món</span>';
+    }
+    
+    document.getElementById('foodOptPrice').textContent = "Giá gốc: " + price.toLocaleString('vi-VN') + " đ";
+    document.getElementById('foodOptDesc').textContent = desc || "Món ăn thượng hạng được chuẩn bị bởi đầu bếp Restaurantly.";
+    document.getElementById('foodOptImg').src = img;
+    
+    // Ingredients
+    var ingList = document.getElementById('ingredientsList');
+    ingList.innerHTML = '';
+    if (ingredients && ingredients.trim() !== '') {
+        var ingArray = ingredients.split(',');
+        var hasIng = false;
+        ingArray.forEach(function(ing) {
+            var trimIng = ing.trim().split(',')[0].trim();
+            if (trimIng !== '') {
+                hasIng = true;
+                var span = document.createElement('span');
+                span.style.cssText = "background:#f6f2e9; color:var(--forest); padding:4px 10px; font-size:12px; font-weight:500; border-radius:0; border: 1px solid var(--glass-border);";
+                span.textContent = trimIng;
+                ingList.appendChild(span);
+            }
+        });
+        if (hasIng) {
+            document.getElementById('ingredientsWrap').style.display = 'block';
+        } else {
+            document.getElementById('ingredientsWrap').style.display = 'none';
+        }
+    } else {
+        document.getElementById('ingredientsWrap').style.display = 'none';
+        var ingWrap = document.getElementById('ingredientsWrap');
+        ingWrap.style.display = 'block';
+        var span = document.createElement('span');
+        span.style.cssText = "font-size:12px; color:var(--text-muted); font-style:italic;";
+        span.textContent = "Thông tin thành phần đang cập nhật.";
+        ingList.appendChild(span);
+    }
+    
+    // Toppings
+    var topList = document.getElementById('toppingsList');
+    topList.innerHTML = '';
+    var noTops = document.getElementById('noToppingsMsg');
+    var limitMsg = document.getElementById('maxToppingsLimitMsg');
+    if (maxToppings > 0) {
+        limitMsg.textContent = "Chỉ được chọn tối đa " + maxToppings + " topping.";
+        limitMsg.style.display = 'block';
+    } else {
+        limitMsg.style.display = 'none';
+    }
+    
+    var selectedToppings = [];
+    row.querySelectorAll('input[name="food_toppings['+id+'][]"]').forEach(function(input) {
+        selectedToppings.push(input.value);
+    });
+    
+    var hasToppings = false;
+    if (toppingsRaw && toppingsRaw.trim() !== '') {
+        var tops = toppingsRaw.split('|');
+        
+        var grouped = {};
+        tops.forEach(function(tp) {
+            var parts = tp.split('::');
+            if (parts.length >= 3) {
+                var tpId = parts[0];
+                var tpName = parts[1];
+                var tpPrice = parseFloat(parts[2]);
+                var tpImg = parts.length > 3 ? parts[3] : '';
+                var tpType = parts.length > 4 ? parts[4] : 'checkbox';
+                var tpGroup = parts.length > 5 ? parts[5] : 'Topping';
+                var tpDesc = parts.length > 6 ? parts[6] : '';
+                
+                if (tpGroup === 'Độ chín') {
+                    tpGroup = 'Yêu cầu đặc biệt (Độ chín)';
+                }
+                
+                if (!grouped[tpGroup]) grouped[tpGroup] = [];
+                grouped[tpGroup].push({id: tpId, name: tpName, price: tpPrice, img: tpImg, type: tpType, desc: tpDesc});
+            }
+        });
+        
+        // Sort grouped keys so 'Yêu cầu đặc biệt' appears first
+        var groupKeys = Object.keys(grouped).sort(function(a, b) {
+            if (a.includes('Yêu cầu đặc biệt')) return -1;
+            if (b.includes('Yêu cầu đặc biệt')) return 1;
+            return a.localeCompare(b);
+        });
+
+        for (var i = 0; i < groupKeys.length; i++) {
+            var groupName = groupKeys[i];
+            hasToppings = true;
+            var groupHeader = document.createElement('div');
+            var isSpecial = groupName.includes('Yêu cầu đặc biệt');
+            groupHeader.style.cssText = "font-weight:600; font-size:12px; border-bottom: 1px dashed var(--glass-border); padding-bottom:3px; margin-top:10px; margin-bottom:5px;";
+            if (isSpecial) {
+                groupHeader.style.color = '#dc3545';
+                groupHeader.innerHTML = '<i class="fas fa-star me-1"></i>' + groupName;
+            } else {
+                groupHeader.style.color = 'var(--forest)';
+                groupHeader.textContent = groupName;
+            }
+            topList.appendChild(groupHeader);
+            
+            grouped[groupName].forEach(function(tp) {
+                var wrapper = document.createElement('div');
+                wrapper.style.cssText = 'margin-bottom: 6px;';
+                
+                var label = document.createElement('label');
+                label.style.cssText = 'font-size:13px; display:flex; align-items:center; gap:10px; cursor:pointer; color:var(--text-main); width:100%; justify-content:space-between;';
+                
+                var isChecked = selectedToppings.includes(tp.id) ? 'checked' : '';
+                var inputHtml = '';
+                if (tp.type === 'radio') {
+                    inputHtml = '<input type="radio" class="modal-topping-cb" name="modal_toppings_group_' + groupName.replace(/\s+/g, '_') + '" value="' + tp.id + '" data-name="' + tp.name + '" data-price="' + tp.price + '" data-group="' + groupName + '" data-type="radio" ' + isChecked + ' onchange="updateModalPrice()">';
+                } else {
+                    inputHtml = '<input type="checkbox" class="modal-topping-cb" value="' + tp.id + '" data-name="' + tp.name + '" data-price="' + tp.price + '" data-group="' + groupName + '" data-type="checkbox" ' + isChecked + ' onchange="validateToppingLimit(this, ' + maxToppings + ')">';
+                }
+                
+                var imgHtml = tp.img ? '<img src="public/assets/img/toppings/' + tp.img + '" style="width:25px; height:25px; object-fit:cover; border-radius:4px;" onerror="this.style.display=\'none\'">' : '';
+                
+                label.innerHTML = '<div style="display:flex; align-items:center; gap:8px;">' + inputHtml + imgHtml + '<span>' + tp.name + '</span></div><strong style="color:var(--gold);">+' + tp.price.toLocaleString('vi-VN') + 'đ</strong>';
+                topList.appendChild(label);
+            });
+        }
+    }
+    
+    if (hasToppings) {
+        noTops.style.display = 'none';
+        topList.style.display = 'flex';
+    } else {
+        noTops.style.display = 'none';
+        topList.style.display = 'block';
+        var noMsg = document.createElement('div');
+        noMsg.style.cssText = "font-size:12px; color:var(--text-muted); font-style:italic;";
+        noMsg.textContent = "Món ăn này không hỗ trợ topping bổ sung.";
+        topList.appendChild(noMsg);
+    }
+    
+    // Note
+    var noteEl = document.getElementById('fn' + id);
+    var rawNote = noteEl ? noteEl.value : '';
+    var cleanNote = rawNote;
+    if (rawNote.includes('] ')) {
+        cleanNote = rawNote.split('] ').slice(1).join('] ');
+    } else if (rawNote.startsWith('[') && rawNote.endsWith(']')) {
+        cleanNote = '';
+    }
+    document.getElementById('foodOptNote').value = cleanNote;
+    
+    // Doneness
+    var donenessWrap = document.getElementById('donenessWrap');
+    var donenessEl = document.getElementById('foodOptDoneness');
+    var foodNameLower = name.toLowerCase();
+    if (foodNameLower.includes('bò') || foodNameLower.includes('steak') || foodNameLower.includes('beef') || foodNameLower.includes('cừu') || foodNameLower.includes('lamb') || foodNameLower.includes('vịt') || foodNameLower.includes('duck')) {
+        donenessWrap.style.display = 'block';
+        var match = rawNote.match(/Độ chín:\s*([^.]+)\./);
+        donenessEl.value = match ? match[1] : '';
+    } else {
+        donenessWrap.style.display = 'none';
+        if (donenessEl) donenessEl.value = '';
+    }
+    
+    // Quantity
+    var currentQty = parseInt(document.getElementById('q' + id).value || 1);
+    document.getElementById('foodOptQty').value = currentQty;
+    
+    var modalEl = document.getElementById('foodOptionModal');
+    modalEl.dataset.currentFoodId = id;
+    modalEl.dataset.basePrice = price;
+    modalEl.dataset.maxToppings = maxToppings;
+    modalEl.dataset.stock = stock;
+    
+    updateModalPrice();
+    
+    var modal = new bootstrap.Modal(modalEl);
+    modal.show();
+}
+
+function validateToppingLimit(checkbox, limit) {
+    if (limit <= 0) {
+        updateModalPrice();
+        return;
+    }
+    
+    var checkedCheckboxes = document.querySelectorAll('.modal-topping-cb[data-type="checkbox"]:checked');
+    if (checkedCheckboxes.length > limit) {
+        alert("Bạn chỉ có thể chọn tối đa " + limit + " topping thêm.");
+        checkbox.checked = false;
+    }
+    updateModalPrice();
+}
+
+function updateModalPrice() {
+    var modalEl = document.getElementById('foodOptionModal');
+    var basePrice = parseFloat(modalEl.dataset.basePrice || 0);
+    var qty = parseInt(document.getElementById('foodOptQty').value || 1);
+    var addedPrice = 0;
+    
+    document.querySelectorAll('.modal-topping-cb:checked').forEach(function(cb) {
+        addedPrice += parseFloat(cb.getAttribute('data-price') || 0);
+    });
+    
+    var singleTotal = basePrice + addedPrice;
+    var grandTotal = singleTotal * qty;
+    
+    document.getElementById('foodOptTotalDisplay').textContent = grandTotal.toLocaleString('vi-VN') + ' đ';
+}
+
+function adjustModalQty(delta) {
+    var modalEl = document.getElementById('foodOptionModal');
+    var stock = parseInt(modalEl.dataset.stock || 99);
+    var qtyEl = document.getElementById('foodOptQty');
+    var val = parseInt(qtyEl.value || 1) + delta;
+    if (val < 1) val = 1;
+    if (val > stock) {
+        alert("Số lượng vượt quá tồn kho khả dụng (" + stock + ").");
+        val = stock;
+    }
+    qtyEl.value = val;
+    updateModalPrice();
 }
 
 function saveFoodOption() {
-    var doneness = document.getElementById('foodOptDoneness').value;
-    var note = document.getElementById('foodOptNote').value;
-    var finalNote = '';
-    if (doneness) finalNote += "Độ chín: " + doneness + ". ";
-    if (note) finalNote += note;
+    var modalEl = document.getElementById('foodOptionModal');
+    var id = modalEl.dataset.currentFoodId;
+    var basePrice = parseFloat(modalEl.dataset.basePrice || 0);
+    var stock = parseInt(modalEl.dataset.stock || 99);
     
-    document.getElementById('fn'+curFoodId).value = finalNote.trim();
-    
-    var row = document.getElementById('mr'+curFoodId);
-    row.classList.add('checked');
-    menuPr[curFoodId] = curFoodPr;
-    us();
-    
-    // Thêm style nhỏ hiển thị có note
-    if (finalNote.trim() !== '') {
-        var noteDisplay = row.querySelector('.opt-note-display');
-        if(!noteDisplay) {
-            noteDisplay = document.createElement('div');
-            noteDisplay.className = 'opt-note-display';
-            noteDisplay.style.fontSize = '11px';
-            noteDisplay.style.color = 'var(--gold)';
-            noteDisplay.style.fontStyle = 'italic';
-            noteDisplay.style.marginTop = '2px';
-            row.querySelector('.menu-qty-input').insertAdjacentElement('beforebegin', noteDisplay);
-        }
-        noteDisplay.textContent = "📝 " + finalNote.trim();
+    var qty = parseInt(document.getElementById('foodOptQty').value || 1);
+    if (qty > stock) {
+        alert("Số lượng vượt quá tồn kho khả dụng (" + stock + ").");
+        qty = stock;
+        document.getElementById('foodOptQty').value = qty;
+        updateModalPrice();
+        return;
     }
     
-    bootstrap.Modal.getInstance(document.getElementById('foodOptionModal')).hide();
+    var note = document.getElementById('foodOptNote').value.trim();
+    if (note.length > 255) {
+        alert("Ghi chú tối đa 255 ký tự.");
+        return;
+    }
+    
+    var donenessEl = document.getElementById('foodOptDoneness');
+    var doneness = (donenessEl && donenessEl.value) ? donenessEl.value : '';
+    
+    var row = document.getElementById('mr' + id);
+    var cb = row.querySelector('.menu-checkbox');
+    
+    document.getElementById('q' + id).value = qty;
+    
+    row.querySelectorAll('input[name="food_toppings['+id+'][]"]').forEach(function(el){el.remove();});
+    
+    var toppingCbs = document.querySelectorAll('.modal-topping-cb:checked');
+    var addedPrice = 0;
+    var tpNotes = [];
+    
+    toppingCbs.forEach(function(mCb) {
+        var tId = mCb.value;
+        var tName = mCb.getAttribute('data-name');
+        var tPrice = parseFloat(mCb.getAttribute('data-price'));
+        
+        tpNotes.push(tName);
+        addedPrice += tPrice;
+        
+        var hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = 'food_toppings['+id+'][]';
+        hidden.value = tId;
+        row.appendChild(hidden);
+    });
+    
+    var finalNote = '';
+    if (doneness) finalNote += "Độ chín: " + doneness + ". ";
+    if (tpNotes.length > 0) finalNote += "[Topping: " + tpNotes.join(', ') + "] ";
+    if (note) finalNote += note;
+    
+    document.getElementById('fn' + id).value = finalNote.trim();
+    
+    var disp = row.querySelector('.opt-note-display');
+    if (disp) {
+        if (finalNote.trim() !== '') {
+            disp.style.display = 'block';
+            disp.innerHTML = '<strong>📝 Ghi chú:</strong> ' + finalNote.trim();
+        } else {
+            disp.style.display = 'none';
+        }
+    }
+    
+    cb.checked = true;
+    row.classList.add('checked');
+    
+    menuPr[id] = basePrice + addedPrice;
+    
+    bootstrap.Modal.getInstance(modalEl).hide();
+    us();
+}
+
+function cancelFoodOption() {
+    var modalEl = document.getElementById('foodOptionModal');
+    var id = modalEl.dataset.currentFoodId;
+    
+    var row = document.getElementById('mr' + id);
+    var cb = row.querySelector('.menu-checkbox');
+    
+    if (!row.classList.contains('checked')) {
+        cb.checked = false;
+    }
+    
+    bootstrap.Modal.getInstance(modalEl).hide();
 }
 
 /* SỰ KIỆN CHỌN BÀN & AJAX KHẢ DỤNG ĐỘNG */
     document.querySelectorAll('.seat-lux').forEach(function(s){
         s.addEventListener('click',function(){
             if(!s.classList.contains('available')) return;
-            var cat = s.dataset.cat || '';
-            var guests = parseInt(document.getElementById('gi').value) || 1;
-            if (cat === 'open' && guests > 6) {
-                alert('Bàn thường chỉ chứa tối đa 6 khách. Khách hàng đi trên 6 người vui lòng chọn Phòng VIP.');
-                return;
-            }
             document.querySelectorAll('.seat-lux').forEach(function(x){x.classList.remove('selected');});
             s.classList.add('selected');
-            selId=s.dataset.id; selCode=s.dataset.code; selPrice=parseFloat(s.dataset.price||0); selCat=cat;
+            selId=s.dataset.id; selCode=s.dataset.code; selPrice=parseFloat(s.dataset.price||0); selCat=s.dataset.cat||'';
         });
     });
 
@@ -1160,17 +1524,10 @@ function saveFoodOption() {
 
 function fromDrop(sel){
     var opt=sel.options[sel.selectedIndex];
-    var cat = opt.dataset.cat||'';
-    var guests = parseInt(document.getElementById('gi').value) || 1;
-    if (cat === 'open' && guests > 6) {
-        alert('Bàn thường chỉ chứa tối đa 6 khách. Khách hàng đi trên 6 người vui lòng chọn Phòng VIP.');
-        sel.value = '';
-        return;
-    }
     selId=sel.value;
     selPrice=parseFloat(opt.dataset.price||0);
     selCode=opt.dataset.code||opt.text.split('—')[0].trim();
-    selCat=cat;
+    selCat=opt.dataset.cat||'';
     document.getElementById('tid').value=selId;
     document.querySelectorAll('.seat-lux').forEach(function(x){x.classList.remove('selected');});
     var m=document.querySelector('.seat-lux[data-id="'+selId+'"]');
@@ -1266,6 +1623,8 @@ function us(){
     if (sid === -1) {
         document.getElementById('sm').textContent = "Thiết kế riêng (Liên hệ báo giá)";
         food = 0;
+        var listWrap = document.getElementById('selected-foods-list');
+        if (listWrap) listWrap.style.display = 'none';
     } else {
         var mt=0;
         for(var id in menuPr){
@@ -1274,6 +1633,83 @@ function us(){
         }
         food=selComboPr>0?selComboPr:mt;
         document.getElementById('sm').textContent=food.toLocaleString('vi-VN')+' đ';
+        
+        // Cập nhật chi tiết danh sách món đã chọn ở sidebar
+        var listWrap = document.getElementById('selected-foods-list');
+        var listContainer = document.getElementById('selected-foods-container');
+        if (listWrap && listContainer) {
+            listContainer.innerHTML = '';
+            var hasSelectedFoods = false;
+            
+            for (var id in menuPr) {
+                var row = document.getElementById('mr' + id);
+                if (!row) continue;
+                
+                var cb = row.querySelector('.menu-checkbox');
+                if (!cb || !cb.checked) continue;
+                
+                hasSelectedFoods = true;
+                
+                var name = row.getAttribute('data-name');
+                var qty = parseInt(document.getElementById('q' + id).value || 1);
+                var itemPrice = menuPr[id];
+                var totalPrice = itemPrice * qty;
+                var note = document.getElementById('fn' + id).value;
+                
+                var itemDiv = document.createElement('div');
+                itemDiv.style.cssText = "background: rgba(255,255,255,0.05); padding: 10px; border-left: 3px solid var(--gold); font-size: 12px; margin-bottom: 5px;";
+                
+                var titleDiv = document.createElement('div');
+                titleDiv.style.cssText = "display: flex; justify-content: space-between; font-weight: 600; color: #fff;";
+                titleDiv.innerHTML = '<span>' + name + ' x' + qty + '</span><span>' + totalPrice.toLocaleString('vi-VN') + ' đ</span>';
+                itemDiv.appendChild(titleDiv);
+                
+                if (note && note.trim() !== '') {
+                    var noteDiv = document.createElement('div');
+                    noteDiv.style.cssText = "color: rgba(255,255,255,0.7); font-size: 11px; margin-top: 4px; font-style: italic; word-break: break-word;";
+                    noteDiv.textContent = note;
+                    itemDiv.appendChild(noteDiv);
+                }
+                
+                var actionDiv = document.createElement('div');
+                actionDiv.style.cssText = "display: flex; gap: 10px; margin-top: 8px; justify-content: flex-end;";
+                
+                var editBtn = document.createElement('button');
+                editBtn.type = 'button';
+                editBtn.style.cssText = "background: none; border: none; color: var(--gold); font-size: 11px; cursor: pointer; padding: 0;";
+                editBtn.innerHTML = '<i class="fas fa-edit me-1"></i>Sửa';
+                editBtn.onclick = (function(foodId) {
+                    return function() { openFoodOptionModal(foodId); };
+                })(id);
+                
+                var deleteBtn = document.createElement('button');
+                deleteBtn.type = 'button';
+                deleteBtn.style.cssText = "background: none; border: none; color: #ff6b6b; font-size: 11px; cursor: pointer; padding: 0;";
+                deleteBtn.innerHTML = '<i class="fas fa-trash me-1"></i>Xóa';
+                deleteBtn.onclick = (function(foodId) {
+                    return function() {
+                        var foodRow = document.getElementById('mr' + foodId);
+                        var foodCb = foodRow.querySelector('.menu-checkbox');
+                        if (foodCb) {
+                            foodCb.checked = false;
+                            togMrow(foodCb, foodId, parseFloat(foodRow.getAttribute('data-price') || 0));
+                        }
+                    };
+                })(id);
+                
+                actionDiv.appendChild(editBtn);
+                actionDiv.appendChild(deleteBtn);
+                itemDiv.appendChild(actionDiv);
+                
+                listContainer.appendChild(itemDiv);
+            }
+            
+            if (hasSelectedFoods) {
+                listWrap.style.display = 'block';
+            } else {
+                listWrap.style.display = 'none';
+            }
+        }
     }
   
     var evType = document.querySelector('[name="event_type"]');
@@ -1361,24 +1797,9 @@ document.getElementById('bk-form').addEventListener('submit',function(){
 
 /* KHỞI TẠO TIME TỐI THIỂU */
 (function(){
-    var inp = document.getElementById('bd');
-    var now = new Date(); 
-    now.setHours(now.getHours() + 2);
-    
-    if(inp) {
-        flatpickr(inp, {
-            locale: "vn",
-            enableTime: true,
-            dateFormat: "Y-m-d\\TH:i",
-            altInput: true,
-            altFormat: "d/m/Y h:i K", // Hiển thị AM/PM chuẩn xác
-            minDate: now,
-            time_24hr: false,
-            minuteIncrement: 15,
-            disableMobile: "true", // Bắt buộc dùng flatpickr trên điện thoại
-            onChange: function() { us(); }
-        });
-    }
+    var inp=document.getElementById('bd');
+    var now=new Date(); now.setHours(now.getHours()+2);
+    if(inp) inp.min=now.toISOString().slice(0,16);
     us();
 })();
 </script>
