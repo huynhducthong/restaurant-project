@@ -1259,18 +1259,35 @@ function openFoodOptionModal(id) {
                 var tpGroup = parts.length > 5 ? parts[5] : 'Topping';
                 var tpDesc = parts.length > 6 ? parts[6] : '';
                 
-                if (tpGroup === 'Độ chín') return;
+                if (tpGroup === 'Độ chín') {
+                    tpGroup = 'Yêu cầu đặc biệt (Độ chín)';
+                }
                 
                 if (!grouped[tpGroup]) grouped[tpGroup] = [];
                 grouped[tpGroup].push({id: tpId, name: tpName, price: tpPrice, img: tpImg, type: tpType, desc: tpDesc});
             }
         });
         
-        for (var groupName in grouped) {
+        // Sort grouped keys so 'Yêu cầu đặc biệt' appears first
+        var groupKeys = Object.keys(grouped).sort(function(a, b) {
+            if (a.includes('Yêu cầu đặc biệt')) return -1;
+            if (b.includes('Yêu cầu đặc biệt')) return 1;
+            return a.localeCompare(b);
+        });
+
+        for (var i = 0; i < groupKeys.length; i++) {
+            var groupName = groupKeys[i];
             hasToppings = true;
             var groupHeader = document.createElement('div');
-            groupHeader.style.cssText = "font-weight:600; font-size:12px; color:var(--forest); border-bottom: 1px dashed var(--glass-border); padding-bottom:3px; margin-top:10px; margin-bottom:5px;";
-            groupHeader.textContent = groupName;
+            var isSpecial = groupName.includes('Yêu cầu đặc biệt');
+            groupHeader.style.cssText = "font-weight:600; font-size:12px; border-bottom: 1px dashed var(--glass-border); padding-bottom:3px; margin-top:10px; margin-bottom:5px;";
+            if (isSpecial) {
+                groupHeader.style.color = '#dc3545';
+                groupHeader.innerHTML = '<i class="fas fa-star me-1"></i>' + groupName;
+            } else {
+                groupHeader.style.color = 'var(--forest)';
+                groupHeader.textContent = groupName;
+            }
             topList.appendChild(groupHeader);
             
             grouped[groupName].forEach(function(tp) {

@@ -302,6 +302,38 @@ $form_action = $is_edit
                         </button>
                         <?php endif; ?>
 
+                        <!-- Yêu cầu đặc biệt (Độ chín) -->
+                        <?php if (!empty($special_requests)): ?>
+                        <p class="fw-bold small text-uppercase text-muted mb-3 border-bottom pb-2 mt-4">
+                            <i class="fas fa-star me-1 text-danger"></i>Yêu cầu đặc biệt (Special Requests)
+                            <span class="badge bg-light text-muted border ms-1" style="font-size:10px;font-weight:400">Tùy chọn</span>
+                        </p>
+                        <div class="mb-4">
+                            <div class="row g-3">
+                                <div class="col-12 mb-2">
+                                    <div class="row g-2">
+                                        <?php foreach ($special_requests as $sr): 
+                                            $is_checked = !empty($current_toppings) && in_array($sr['id'], $current_toppings);
+                                        ?>
+                                            <div class="col-md-6 col-lg-4">
+                                                <div class="topping-card d-flex align-items-center gap-2" data-topping-id="<?= $sr['id'] ?>" style="border-left: 3px solid #dc3545;">
+                                                    <div class="form-check m-0 d-flex align-items-center">
+                                                        <input class="form-check-input topping-checkbox" type="checkbox" name="toppings[]" 
+                                                               value="<?= $sr['id'] ?>" id="special_req_<?= $sr['id'] ?>"
+                                                               <?= $is_checked ? 'checked' : '' ?> style="cursor: pointer; width: 1.1rem; height: 1.1rem; border-color: #dc3545; accent-color: #dc3545;">
+                                                    </div>
+                                                    <label class="form-check-label flex-grow-1" for="special_req_<?= $sr['id'] ?>" style="cursor: pointer; font-size: 12.5px; user-select: none;">
+                                                        <strong class="text-dark d-block" style="line-height: 1.2;"><?= htmlspecialchars($sr['name']) ?></strong>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
                         <!-- Định mức nguyên liệu và Toppings -->
                         <?php 
                         $grouped_toppings = [];

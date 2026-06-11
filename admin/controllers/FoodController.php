@@ -179,6 +179,7 @@ if ($action === 'add') {
     $drinks = $db->query("SELECT id, name FROM foods WHERE is_active = 1 AND category_id IN (SELECT id FROM categories WHERE name LIKE '%uống%') ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
     $all_themes = $db->query("SELECT id, name FROM themes WHERE is_active = 1 ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
     $toppings = $db->query("SELECT * FROM toppings WHERE status = 1 AND topping_group != 'Độ chín' ORDER BY topping_group ASC, name ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $special_requests = $db->query("SELECT * FROM toppings WHERE status = 1 AND topping_group = 'Độ chín' ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
     $current_toppings = [];
 
     require_once __DIR__ . '/../views/food/formfood.php';
@@ -312,6 +313,7 @@ if ($action === 'edit') {
     $drinks = $db->query("SELECT id, name FROM foods WHERE is_active = 1 AND category_id IN (SELECT id FROM categories WHERE name LIKE '%uống%') ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
     $all_themes = $db->query("SELECT id, name FROM themes WHERE is_active = 1 ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
     $toppings = $db->query("SELECT * FROM toppings WHERE status = 1 AND topping_group != 'Độ chín' ORDER BY topping_group ASC, name ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $special_requests = $db->query("SELECT * FROM toppings WHERE status = 1 AND topping_group = 'Độ chín' ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
 
     require_once __DIR__ . '/../views/food/formfood.php';
     exit;
