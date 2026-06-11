@@ -640,7 +640,9 @@ select.input-lux {
                                                      </div>
                                                      <div style="font-size:12px; color:var(--gold); margin-top: 2px;">
                                                          <?= number_format($fd['price']) ?> đ
-                                                         <span style="font-size:11px; color:var(--text-muted); margin-left:10px;">(Tồn kho: <?= $stock ?>)</span>
+                                                         <span style="font-size:11px; color:var(--text-muted); margin-left:10px;">
+                                                             (<?= $is_out_of_stock ? '<span class="text-danger">Hết hàng</span>' : '<span class="text-success">Còn hàng</span>' ?>)
+                                                         </span>
                                                      </div>
                                                  </div>
                                              </div>
