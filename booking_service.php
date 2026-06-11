@@ -1188,7 +1188,7 @@ function openFoodOptionModal(id) {
     
     var statusEl = document.getElementById('foodOptStatus');
     if (stock > 0) {
-        statusEl.innerHTML = 'Trạng thái: <span style="color:#28a745;"><i class="fas fa-check-circle"></i> Còn món (Sẵn có: ' + stock + ')</span>';
+        statusEl.innerHTML = 'Trạng thái: <span style="color:#28a745;"><i class="fas fa-check-circle"></i> Còn món</span>';
     } else {
         statusEl.innerHTML = 'Trạng thái: <span style="color:#dc3545;"><i class="fas fa-times-circle"></i> Hết món</span>';
     }
