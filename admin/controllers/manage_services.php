@@ -1019,7 +1019,13 @@ include '../../public/admin_layout_header.php';
                     let foodsHtml = '';
                     if (data.foods && data.foods.length > 0) {
                         data.foods.forEach(f => {
-                            foodsHtml += `<div class="small">- ${f.food_name} (x${f.quantity})</div>`;
+                            foodsHtml += `<div class="small fw-bold text-dark" style="margin-top: 5px;">- ${f.food_name} (x${f.quantity})</div>`;
+                            if (f.toppings_list && f.toppings_list.length > 0) {
+                                foodsHtml += `<div class="small text-muted" style="margin-left: 10px; font-size: 11.5px; color: #cda45e !important;"><i class="fas fa-plus-circle me-1" style="font-size:10px;"></i>${f.toppings_list.join(', ')}</div>`;
+                            }
+                            if (f.notes && f.notes.trim() !== '') {
+                                foodsHtml += `<div class="small text-danger" style="margin-left: 10px; font-size: 11.5px; font-style: italic;"><i class="fas fa-pen me-1" style="font-size:9px;"></i>${f.notes}</div>`;
+                            }
                         });
                     } else {
                         foodsHtml = 'Không có';
