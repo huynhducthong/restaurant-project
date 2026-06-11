@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 10, 2026 at 09:37 AM
+-- Generation Time: Jun 11, 2026 at 09:41 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -371,7 +371,8 @@ INSERT INTO `about_shares` (`id`, `content_id`, `platform`, `user_ip`, `created_
 (163, 1, 'view', '::1', '2026-06-08 07:09:57'),
 (164, 1, 'view', '::1', '2026-06-08 07:10:04'),
 (165, 1, 'view', '::1', '2026-06-09 07:03:31'),
-(166, 1, 'view', '::1', '2026-06-09 07:13:53');
+(166, 1, 'view', '::1', '2026-06-09 07:13:53'),
+(167, 1, 'view', '::1', '2026-06-11 03:53:26');
 
 -- --------------------------------------------------------
 
@@ -651,6 +652,8 @@ CREATE TABLE `chefs` (
   `image` varchar(255) DEFAULT NULL,
   `experience` int(11) DEFAULT 0,
   `specialty` varchar(255) DEFAULT NULL,
+  `awards` text DEFAULT NULL,
+  `signature_dishes` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `quote` varchar(255) DEFAULT NULL,
   `facebook` varchar(255) DEFAULT NULL,
@@ -665,9 +668,9 @@ CREATE TABLE `chefs` (
 -- Dumping data for table `chefs`
 --
 
-INSERT INTO `chefs` (`id`, `name`, `position`, `image`, `experience`, `specialty`, `description`, `quote`, `facebook`, `instagram`, `email`, `is_active`, `is_featured`, `sort_order`) VALUES
-(1, 'Chef Minh', 'Bếp trưởng', '1780661835_6a22be4bb618a.jpg', 0, '', '', '', '', '', '', 1, 0, 0),
-(2, 'Chef long', 'Bếp phó', '1780661805_6a22be2d284cd.jpg', 5, '', 'njzbjkhjfnbinfvi', 'Mỗi món ăn là một câu chuyện.', 'https://www.facebook.com/friends/suggestions/?profile_id=61576317195911', '', '', 1, 0, 0);
+INSERT INTO `chefs` (`id`, `name`, `position`, `image`, `experience`, `specialty`, `awards`, `signature_dishes`, `description`, `quote`, `facebook`, `instagram`, `email`, `is_active`, `is_featured`, `sort_order`) VALUES
+(1, 'Chef Minh', 'Bếp trưởng', '1780661835_6a22be4bb618a.jpg', 0, '', NULL, NULL, '', '', '', '', '', 1, 0, 0),
+(2, 'Chef long', 'Bếp phó', '1780661805_6a22be2d284cd.jpg', 5, '', NULL, NULL, 'njzbjkhjfnbinfvi', 'Mỗi món ăn là một câu chuyện.', 'https://www.facebook.com/friends/suggestions/?profile_id=61576317195911', '', '', 1, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -802,8 +805,8 @@ CREATE TABLE `foods` (
 --
 
 INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`, `is_active`, `is_chef_recommended`, `allergens`, `wine_pairing_id`, `chef_note`, `theme_id`) VALUES
-(1, 2, 'Bò Bít Tết (Beefsteak)', 400000.00, '7d76786780be41b26cea039d.jpg', 'Thăn nội bò nướng than hoa mềm ngọt, kèm sốt tiêu đen đặc biệt.', 1, 1, 1, '', NULL, '', 1),
-(3, 2, 'Cá Hồi Áp Chảo', 180000.00, '1779508455_6a1124e77c5f4.jpg', 'Cá hồi Na Uy tươi áp chảo xém da, dùng kèm sốt chanh leo chua ngọt.', 1, 1, 0, '', NULL, '', NULL),
+(1, 2, 'Bò Bít Tết (Beefsteak)', 400000.00, '7d76786780be41b26cea039d.jpg', 'Thăn nội bò nướng than hoa mềm ngọt, kèm sốt tiêu đen đặc biệt.', 1, 1, 1, '', NULL, '', NULL),
+(3, 2, 'Cá Hồi Áp Chảo', 180000.00, '1779508455_6a1124e77c5f4.jpg', 'Cá hồi Na Uy tươi áp chảo xém da, dùng kèm sốt chanh leo chua ngọt.', 1, 1, 0, '', NULL, '', 1),
 (4, 2, 'Sườn Heo Nướng BBQ', 220000.00, '1779508431_6a1124cfdd1c3.jpg', 'Sườn non tẩm ướp sốt BBQ đậm đà nướng chậm trong 4 giờ.', 1, 1, 0, '', NULL, '', NULL),
 (5, 2, 'Mì Ý Hải Sản', 150000.00, '1779508403_6a1124b3b9104.webp', 'Mì Spaghetti xào tôm, mực, vẹm xanh sốt cà chua cay nhẹ.', 1, 1, 0, '', NULL, '', NULL),
 (6, 5, 'Salad Cá Ngừ', 95000.00, '1779508380_6a11249cb4e61.png', 'Rau xanh tổng hợp mix cá ngừ đại dương, trứng cút và sốt dầu giấm.', 1, 1, 1, '', NULL, '', NULL),
@@ -811,12 +814,17 @@ INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description
 (8, 2, 'Pizza Gà Nấm', 145000.00, '1779508327_6a112467d05fd.jpg', 'Bánh pizza đế mỏng nướng củi, phô mai mozzarella kéo sợi phủ thịt gà và nấm.', 1, 1, 0, 'đậu phộng', NULL, '', NULL),
 (9, 1, 'Tôm Sú Rang Muối Ớt', 195000.00, '1779508300_6a11244c4b361.jpg', 'Tôm sú tươi sống chiên giòn xóc muối ớt kiểu Hồng Kông.', 1, 1, 0, '', NULL, '', NULL),
 (11, 5, 'Bánh Mì Bơ Tỏi', 70000.00, '1779508232_6a112408d74a9.webp', 'Bánh mì baguette nướng giòn rụm phết bơ tỏi và lá thơm băm nhỏ.', 1, 1, 1, '', NULL, '', 1),
-(12, 2, 'Beef Wellington', 850000.00, '1780713599_6a23887fcefe9.jpg', 'Thăn bò hảo hạng cuộn trong lớp nấm truffles và vỏ bánh ngàn lớp nướng vàng rụm.', 1, 1, 0, '', NULL, '', 1),
+(12, 2, 'Beef Wellington', 850000.00, '1780713599_6a23887fcefe9.jpg', 'Thăn bò hảo hạng cuộn trong lớp nấm truffles và vỏ bánh ngàn lớp nướng vàng rụm.', 1, 1, 0, '', NULL, '', NULL),
 (13, 2, 'Duck Breast with Cherry Reduction', 650000.00, '1780713649_6a2388b12a6a1.jpg', 'Ức vịt áp chảo mềm mọng dùng kèm sốt cherry đỏ cô đặc chua ngọt tinh tế.', 1, 1, 0, '', NULL, '', NULL),
 (14, 2, 'Herb-Crusted Lamb Rack', 750000.00, '1780713689_6a2388d90ba6f.jpg', 'Sườn cừu Pháp nướng phủ lớp vụn bánh mì và thảo mộc thơm lừng.', 1, 1, 0, '', NULL, '', NULL),
 (15, 2, 'Seared Hokkaido Scallops', 950000.00, '1780713718_6a2388f69f231.jpg', 'Cồi sò điệp Hokkaido áp chảo dùng kèm sốt bơ chanh vàng béo ngậy.', 1, 1, 0, '', NULL, '', NULL),
 (16, 1, 'Burrata & Heirloom Tomato', 350000.00, '1780713742_6a23890e80b50.jpg', 'Phô mai Burrata tươi béo ngậy ăn cùng cà chua Heirloom và sốt dầu giấm balsamic.', 1, 1, 1, '', NULL, '', 1),
-(17, 1, 'Tuna Tartare', 450000.00, '1780713767_6a238927e7dd3.jpg', 'Cá ngừ đại dương xắt lựu tẩm ướp tinh tế, dùng kèm quả bơ và bánh quy giòn.', 1, 1, 0, '', NULL, '', NULL);
+(17, 1, 'Tuna Tartare', 450000.00, '1780713767_6a238927e7dd3.jpg', 'Cá ngừ đại dương xắt lựu tẩm ướp tinh tế, dùng kèm quả bơ và bánh quy giòn.', 1, 1, 0, '', NULL, '', NULL),
+(18, 4, 'Signature Truffle Martini', 350000.00, '1781149007_6a2a2d4f3f01a.jpg', 'Sự kết hợp hoàn hảo giữa Gin thượng hạng, dầu Nấm Truffle trắng và một chút Vermouth ủ mộc. Sang trọng, đậm đà và vương giả.', 1, 1, 1, '', NULL, '', NULL),
+(19, 4, 'Smoked Rosemary Old Fashioned', 280000.00, '1781148879_6a2a2ccfe97e9.jpg', 'Rượu Bourbon Whiskey ủ lâu năm hòa quyện cùng mật ong nguyên chất rừng sâu, khói hương thảo nướng cháy mang lại hậu vị sâu lắng, rất phù hợp cho những ngày lễ và tiết trời se lạnh mùa này .', 1, 1, 0, '', NULL, '', NULL),
+(20, 4, 'Margarita hoa hồng lựu', 250000.00, '1781148793_6a2a2c79ba047.webp', 'Margarita lựu hoa hồng là một thức uống thơm ngon và đầy không khí lễ hội, không thể thiếu trong bất kỳ bữa tiệc nào. Vị chua thanh của lựu kết hợp tuyệt vời với vị ngọt dịu từ siro hoa hồng. Viền ly bằng một lớp muối hoa hồng và bạn sẽ thấy mình muốn nhâm nhi thức uống này suốt mùa đông.', 1, 1, 0, '', NULL, '', NULL),
+(21, 4, 'cocktail Gold Rush', 450000.00, '1781148667_6a2a2bfb171d5.jpg', 'Vang đỏ Cabernet Sauvignon cao cấp mix cùng trái cây nhiệt đới, điểm xuyết những vảy vàng 24k ăn được. Phù hợp cho những dịp kỷ niệm.', 1, 1, 1, '', NULL, '', NULL),
+(22, 4, 'Zen Garden Elixir', 180000.00, '1781148509_6a2a2b5da1be3.png', 'Thức uống Zen Garden Elixir là sự kết hợp hài hòa, gói gọn tinh thần thanh bình của một khu vườn trà Nhật Bản. Loại cocktail này làm nổi bật hương vị đất, đậm đà của matcha kết hợp với vị ngọt dịu của vải và vị chua thanh của yuzu. Đây là lựa chọn sảng khoái dành cho những ai tìm kiếm trải nghiệm độc đáo và thư thái.', 1, 1, 0, 'Sữa', NULL, '', NULL);
 
 -- --------------------------------------------------------
 
@@ -1245,7 +1253,8 @@ INSERT INTO `inventory_categories` (`id`, `name`, `default_warehouse_id`) VALUES
 (4, 'Đồ uống', 3),
 (5, 'rau', 4),
 (6, 'hạt', 2),
-(7, 'Hải sản', 2);
+(7, 'Hải sản', 2),
+(8, 'Đồ uống có cồn', 2);
 
 -- --------------------------------------------------------
 
@@ -1990,36 +1999,41 @@ CREATE TABLE `restaurant_tables` (
   `capacity` int(11) DEFAULT 16,
   `price` decimal(15,2) DEFAULT 0.00,
   `status` varchar(20) DEFAULT 'available',
-  `is_available` tinyint(1) DEFAULT 1
+  `is_available` tinyint(1) DEFAULT 1,
+  `pos_x` int(11) DEFAULT 0,
+  `pos_y` int(11) DEFAULT 0,
+  `width` int(11) DEFAULT 50,
+  `height` int(11) DEFAULT 50,
+  `shape` enum('rect','circle','oval') DEFAULT 'rect'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `restaurant_tables`
 --
 
-INSERT INTO `restaurant_tables` (`id`, `table_code`, `table_number`, `room_type`, `category`, `capacity`, `price`, `status`, `is_available`) VALUES
-(1, 'T1', '1', NULL, 'open', 6, 0.00, 'available', 1),
-(2, 'T2', '2', NULL, 'open', 6, 0.00, 'available', 1),
-(3, 'T3', '3', NULL, 'open', 6, 0.00, 'available', 1),
-(4, 'T4', '4', NULL, 'open', 6, 0.00, 'available', 1),
-(5, 'T5', '5', NULL, 'open', 6, 0.00, 'available', 1),
-(6, 'T6', '6', NULL, 'open', 6, 0.00, 'available', 1),
-(7, 'T7', '7', NULL, 'open', 6, 0.00, 'available', 1),
-(8, 'T8', '8', NULL, 'open', 6, 0.00, 'available', 1),
-(9, 'T9', '9', NULL, 'open', 6, 0.00, 'available', 1),
-(10, 'T10', '10', NULL, 'open', 6, 0.00, 'available', 1),
-(11, 'T11', '11', NULL, 'open', 6, 0.00, 'available', 1),
-(12, 'T12', '12', NULL, 'open', 6, 0.00, 'available', 1),
-(13, 'T13', '13', NULL, 'open', 6, 0.00, 'available', 1),
-(14, 'T14', '14', NULL, 'open', 6, 0.00, 'available', 1),
-(15, 'T15', '15', NULL, 'open', 6, 0.00, 'available', 1),
-(16, 'T16', '16', NULL, 'open', 6, 0.00, 'available', 1),
-(17, 'VIP1', '101', NULL, 'room', 16, 400000.00, 'available', 1),
-(18, 'VIP2', '102', NULL, 'room', 16, 400000.00, 'available', 1),
-(19, 'VIP3', '103', NULL, 'room', 16, 400000.00, 'available', 1),
-(20, 'VIP4', '104', NULL, 'room', 16, 400000.00, 'available', 1),
-(21, 'VIP5', '105', NULL, 'room', 16, 400000.00, 'available', 1),
-(22, 'VIP6', '106', NULL, 'room', 16, 400000.00, 'available', 1);
+INSERT INTO `restaurant_tables` (`id`, `table_code`, `table_number`, `room_type`, `category`, `capacity`, `price`, `status`, `is_available`, `pos_x`, `pos_y`, `width`, `height`, `shape`) VALUES
+(1, 'B1', '1', NULL, 'open', 6, 0.00, 'available', 1, 220, 230, 60, 60, 'rect'),
+(2, 'B2', '2', NULL, 'open', 6, 0.00, 'available', 1, 360, 230, 60, 60, 'rect'),
+(3, 'B3', '3', NULL, 'open', 6, 0.00, 'available', 1, 500, 230, 60, 60, 'rect'),
+(4, 'B4', '4', NULL, 'open', 6, 0.00, 'available', 1, 640, 230, 60, 60, 'rect'),
+(5, 'B5', '5', NULL, 'open', 6, 0.00, 'available', 1, 290, 350, 60, 60, 'rect'),
+(6, 'B6', '6', NULL, 'open', 6, 0.00, 'available', 1, 430, 350, 60, 60, 'rect'),
+(7, 'B7', '7', NULL, 'open', 6, 0.00, 'available', 1, 570, 350, 60, 60, 'rect'),
+(8, 'B8', '8', NULL, 'open', 6, 0.00, 'available', 1, 710, 350, 60, 60, 'rect'),
+(9, 'B9', '9', NULL, 'open', 6, 0.00, 'available', 1, 220, 470, 60, 60, 'rect'),
+(10, 'B10', '10', NULL, 'open', 6, 0.00, 'available', 1, 360, 470, 60, 60, 'rect'),
+(11, 'B11', '11', NULL, 'open', 6, 0.00, 'available', 1, 500, 470, 60, 60, 'rect'),
+(12, 'B12', '12', NULL, 'open', 6, 0.00, 'available', 1, 640, 470, 60, 60, 'rect'),
+(13, 'B13', '13', NULL, 'open', 6, 0.00, 'available', 1, 290, 590, 60, 60, 'rect'),
+(14, 'B14', '14', NULL, 'open', 6, 0.00, 'available', 1, 430, 590, 60, 60, 'rect'),
+(15, 'B15', '15', NULL, 'open', 6, 0.00, 'available', 1, 570, 590, 60, 60, 'rect'),
+(16, 'B16', '16', NULL, 'open', 6, 0.00, 'available', 1, 710, 590, 60, 60, 'rect'),
+(17, 'VIP1', '101', NULL, 'room', 16, 400000.00, 'available', 1, 880, 280, 120, 90, 'rect'),
+(18, 'VIP2', '102', NULL, 'room', 16, 400000.00, 'available', 1, 880, 425, 120, 90, 'rect'),
+(19, 'VIP3', '103', NULL, 'room', 16, 400000.00, 'available', 1, 880, 570, 120, 90, 'rect'),
+(20, 'VIP4', '104', NULL, 'room', 16, 400000.00, 'available', 1, 1000, 280, 120, 90, 'rect'),
+(21, 'VIP5', '105', NULL, 'room', 16, 400000.00, 'available', 1, 1000, 425, 120, 90, 'rect'),
+(22, 'VIP6', '106', NULL, 'room', 16, 400000.00, 'available', 1, 1000, 570, 120, 90, 'rect');
 
 -- --------------------------------------------------------
 
@@ -2198,7 +2212,7 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 ('inv_expiry_warning_days', '30'),
 ('inv_low_stock', '5'),
 ('inv_low_stock_threshold', '5'),
-('last_telegram_alert_date', '2026-06-10'),
+('last_telegram_alert_date', '2026-06-11'),
 ('last_telegram_eod_date', '2026-06-05'),
 ('logo_url', 'assets/img/logo.png'),
 ('logo_ver', '1779627100'),
@@ -2897,7 +2911,7 @@ ALTER TABLE `about_saved_posts`
 -- AUTO_INCREMENT for table `about_shares`
 --
 ALTER TABLE `about_shares`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=167;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=168;
 
 --
 -- AUTO_INCREMENT for table `admins`
@@ -2969,7 +2983,7 @@ ALTER TABLE `employees`
 -- AUTO_INCREMENT for table `foods`
 --
 ALTER TABLE `foods`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `food_recipes`
@@ -3017,7 +3031,7 @@ ALTER TABLE `inventory_batches`
 -- AUTO_INCREMENT for table `inventory_categories`
 --
 ALTER TABLE `inventory_categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `inventory_history`

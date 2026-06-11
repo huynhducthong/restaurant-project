@@ -54,6 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     } else {
                         if ($image_name) {
+                            $stmt_old = $db->prepare("SELECT image FROM chefs WHERE id=?");
+                            $stmt_old->execute([$id]);
+                            $old_row = $stmt_old->fetch(PDO::FETCH_ASSOC);
+                            if ($old_row && !empty($old_row['image']) && file_exists("../public/assets/img/chefs/" . $old_row['image'])) {
+                                @unlink("../public/assets/img/chefs/" . $old_row['image']);
+                            }
                             $stmt = $db->prepare("UPDATE chefs SET name=?, position=?, image=?, experience=?, specialty=?, description=?, quote=?, facebook=?, instagram=?, email=?, is_active=?, is_featured=?, sort_order=? WHERE id=?");
                             $success = $stmt->execute([$name, $position, $image_name, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $id]);
                         } else {
@@ -73,6 +79,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($action === 'delete') {
             $id = $_POST['id'] ?? null;
             if ($id) {
+                $stmt_old = $db->prepare("SELECT image FROM chefs WHERE id=?");
+                $stmt_old->execute([$id]);
+                $old_row = $stmt_old->fetch(PDO::FETCH_ASSOC);
+                if ($old_row && !empty($old_row['image']) && file_exists("../public/assets/img/chefs/" . $old_row['image'])) {
+                    @unlink("../public/assets/img/chefs/" . $old_row['image']);
+                }
                 $stmt = $db->prepare("DELETE FROM chefs WHERE id = ?");
                 if ($stmt->execute([$id])) {
                     $message_success = "Đã xóa đầu bếp thành công.";

@@ -69,9 +69,15 @@ if ($action === 'delete' && isset($_GET['id'])) {
 
     $db->beginTransaction();
     try {
-        $stmt = $db->prepare("SELECT name FROM foods WHERE id = ?");
+        $stmt = $db->prepare("SELECT name, image FROM foods WHERE id = ?");
         $stmt->execute([$del_id]);
-        $foodName = $stmt->fetchColumn();
+        $food_data = $stmt->fetch(PDO::FETCH_ASSOC);
+        $foodName = $food_data['name'] ?? '';
+        $old_img = $food_data['image'] ?? '';
+
+        if ($old_img && file_exists(__DIR__ . '/../../public/assets/img/menu/' . $old_img)) {
+            @unlink(__DIR__ . '/../../public/assets/img/menu/' . $old_img);
+        }
 
         $db->prepare("DELETE FROM combo_items  WHERE food_id = ?")->execute([$del_id]);
         $db->prepare("DELETE FROM food_recipes WHERE food_id = ?")->execute([$del_id]);
