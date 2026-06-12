@@ -83,15 +83,16 @@ $all_tables = array_merge($t_open, $t_room);
 }
 
 .fp-table.booked { 
-    background: transparent;
-    border: 2px solid var(--glass-border, #E0DDD5);
-    color: var(--glass-border, #E0DDD5);
+    background: var(--forest, #4F5B3A);
+    border: 2px solid var(--forest, #4F5B3A);
+    color: #ffffff;
     cursor: not-allowed; 
     box-shadow: none;
+    opacity: 0.8;
 }
 .fp-table.booked .fp-t-code,
 .fp-table.booked .fp-t-cap {
-    color: #b0adab; /* Chữ xám nhạt */
+    color: rgba(255,255,255,0.8);
 }
 .fp-table.booked:hover {
     transform: translate(-50%, -50%);
@@ -201,14 +202,13 @@ $all_tables = array_merge($t_open, $t_room);
                  data-cat="<?= $cat ?>"
                  title="<?= htmlspecialchars($t['table_code']) ?> - <?= $st === 'available' ? 'Trống' : 'Đã đặt' ?>">
                 <span class="fp-t-code"><?= htmlspecialchars(str_replace('VIP', 'V', $t['table_code'])) ?></span>
-                <span class="fp-t-cap"><i class="fas fa-user-friends"></i> <?= $t['capacity'] ?></span>
             </div>
         <?php endforeach; ?>
 
         <div class="fp-legend">
             <div class="fp-legend-item"><div class="fp-legend-box" style="background: #ffffff; border: 2px solid var(--forest, #4F5B3A);"></div> Trống</div>
             <div class="fp-legend-item"><div class="fp-legend-box" style="background: var(--gold, #C9A66B);"></div> Đang chọn</div>
-            <div class="fp-legend-item"><div class="fp-legend-box" style="background: transparent; border: 2px solid var(--glass-border, #E0DDD5);"></div> Đã đặt</div>
+            <div class="fp-legend-item"><div class="fp-legend-box" style="background: var(--forest, #4F5B3A); opacity: 0.8;"></div> Đã đặt</div>
         </div>
     </div>
 </div>
