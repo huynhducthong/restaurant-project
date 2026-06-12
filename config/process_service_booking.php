@@ -33,7 +33,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // Anniversary fields
     $event_type = $_POST['event_type'] ?? $_POST['bespoke_occasion'] ?? null;
-    $decor_package = $_POST['decor_package'] ?? null;
     $has_cake = isset($_POST['has_cake']) ? 1 : 0;
     $has_flower = (isset($_POST['has_flower']) || isset($_POST['has_bespoke_flower'])) ? 1 : 0;
     
@@ -83,6 +82,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($name) || empty($phone) || empty($date)) {
         echo "<script>alert('Vui lòng điền đầy đủ các thông tin bắt buộc!'); window.history.back();</script>";
         exit;
+    }
+
+    // TÍNH NĂNG ĐỒNG BỘ: KIỂM TRA TRẠNG THÁI BÀN (Luồng 1 & Luồng 2)
+    if ($table_id) {
+        $booking_timestamp = strtotime($date);
+        $two_hours = 2 * 3600;
+
+        // 1. Kiểm tra Luồng 1 (Đặt trước trùng giờ)
+        // Lấy các đơn 'Pending', 'Confirmed' trong vòng ± 2 tiếng
+        $check_stmt = $db->prepare("
+            SELECT id, booking_date FROM service_bookings 
+            WHERE table_id = ? 
+            AND status IN ('Pending', 'Confirmed') 
+            AND ABS(TIMESTAMPDIFF(SECOND, booking_date, ?)) < ?
+        ");
+        $check_stmt->execute([$table_id, $date, $two_hours]);
+        if ($check_stmt->fetch()) {
+            echo "<script>alert('Bàn này đã có khách đặt trước trong khung giờ này. Vui lòng chọn giờ khác hoặc bàn khác!'); window.history.back();</script>";
+            exit;
+        }
+
+        // 2. Kiểm tra Luồng 2 (Khách vãng lai đang ngồi ăn ở POS)
+        // Nếu giờ đặt bàn nằm trong khoảng từ quá khứ 1 tiếng đến tương lai 2 tiếng so với HIỆN TẠI
+        $time_diff_from_now = $booking_timestamp - time();
+        if ($time_diff_from_now > -3600 && $time_diff_from_now < $two_hours) {
+            $pos_stmt = $db->prepare("SELECT id FROM pos_orders WHERE table_id = ? AND status = 'open'");
+            $pos_stmt->execute([$table_id]);
+            if ($pos_stmt->fetch()) {
+                echo "<script>alert('Bàn này hiện đang có khách ngồi ăn tại quán (Luồng POS). Vui lòng chọn bàn khác!'); window.history.back();</script>";
+                exit;
+            }
+        }
     }
 
     // Validation and Sanitization phase for menu items
@@ -190,10 +221,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Tính tiền trang trí (Sinh nhật / Sự kiện)
+        $decor_id = $_POST['decor_package'] ?? null;
+        $decor_package = null;
+        $decor_price = 0;
+        if ($decor_id) {
+            $stmt_dec = $db->prepare("SELECT name, price FROM decor_packages WHERE id = ?");
+            $stmt_dec->execute([$decor_id]);
+            $dec_data = $stmt_dec->fetch(PDO::FETCH_ASSOC);
+            if ($dec_data) {
+                $decor_package = $dec_data['name'];
+                $decor_price = (float)$dec_data['price'];
+            }
+        }
+
         if ($event_type === 'birthday') {
-            if ($decor_package === 'standard') $total_amount += 500000;
-            if ($decor_package === 'premium') $total_amount += 1500000;
-            if ($decor_package === 'luxury') $total_amount += 3000000;
+            $total_amount += $decor_price;
             if ($has_cake) $total_amount += 300000;
             if ($has_flower) $total_amount += 200000;
         }
@@ -225,8 +267,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $deposit_amount = $total_amount * 0.3;
 
         // 2. Lưu đơn đặt bàn chính vào service_bookings (Bổ sung user_id và deposit_amount)
-        $stmt_booking = $db->prepare("INSERT INTO service_bookings (user_id, service_type, customer_name, customer_phone, booking_date, guests, message, table_id, combo_id, total_amount, deposit_amount, status, event_type, decor_package, has_cake, has_flower, has_candle, has_handwritten_card, card_message, flower_preference, music_playlist, light_tone, chef_requirements) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt_booking->execute([$user_id, $type, $name, $phone, $date, $guests, $msg, $table_id, $combo_id, $total_amount, $deposit_amount, $event_type, $decor_package, $has_cake, $has_flower, $has_candle, $has_handwritten_card, $card_message, $flower_preference, $music_playlist, $light_tone, $chef_requirements]);
+        $stmt_booking = $db->prepare("INSERT INTO service_bookings (user_id, service_type, customer_name, customer_phone, booking_date, guests, message, table_id, combo_id, total_amount, deposit_amount, status, event_type, decor_package, decor_id, has_cake, has_flower, has_candle, has_handwritten_card, card_message, flower_preference, music_playlist, light_tone, chef_requirements) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt_booking->execute([$user_id, $type, $name, $phone, $date, $guests, $msg, $table_id, $combo_id, $total_amount, $deposit_amount, $event_type, $decor_package, $decor_id, $has_cake, $has_flower, $has_candle, $has_handwritten_card, $card_message, $flower_preference, $music_playlist, $light_tone, $chef_requirements]);
         $last_id = $db->lastInsertId();
 
         // 3. Lưu chi tiết các món ăn khách chọn lẻ và toppings

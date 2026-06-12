@@ -1238,6 +1238,36 @@ include '../../public/admin_layout_header.php';
             }
         });
     });
+
+    // DYNAMIC MAP UPDATER (ADMIN OVERVIEW)
+    function updateMapAvailabilityAdmin() {
+        var now = new Date();
+        var date = now.toISOString().split('T')[0];
+        var time = now.toTimeString().substring(0, 5);
+
+        fetch('../../ajax_tables.php?date=' + date + '&time=' + time)
+        .then(res => res.json())
+        .then(data => {
+            document.querySelectorAll('.fp-table').forEach(el => {
+                var tid = el.getAttribute('data-id');
+                if (data[tid]) {
+                    el.classList.remove('available', 'booked');
+                    el.classList.add(data[tid]);
+                    
+                    var code = el.getAttribute('data-code');
+                    var statusText = data[tid] === 'available' ? 'Trống' : 'Đã đặt / Đang bận';
+                    el.setAttribute('title', code + ' - ' + statusText);
+                }
+            });
+        })
+        .catch(e => console.error("Error updating map:", e));
+    }
+
+    $(document).ready(function() {
+        updateMapAvailabilityAdmin();
+        // Refresh every 30 seconds
+        setInterval(updateMapAvailabilityAdmin, 30000);
+    });
 </script>
 </body>
 </html>

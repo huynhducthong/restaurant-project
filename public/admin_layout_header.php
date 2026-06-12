@@ -225,7 +225,7 @@ try {
             color: #ffffff;
         }
 
-        .menu-list li.active a {
+        .menu-list li.active > a {
             background: var(--accent-green);
             color: #ffffff;
             font-weight: 600;
@@ -233,7 +233,7 @@ try {
             border-radius: 0;
         }
 
-        .menu-list li.active a i {
+        .menu-list li.active > a i {
             color: var(--accent-color);
         }
 
@@ -480,6 +480,28 @@ try {
                     </a>
                 </li>
 
+                <!-- Màn Hình Tác Nghiệp -->
+                <?php if (checkMenuAccess($user_role, ['admin', 'manager', 'chef', 'cashier'])): ?>
+                <div class="menu-header">Màn Hình Tác Nghiệp</div>
+                <?php if (checkMenuAccess($user_role, ['admin', 'manager', 'cashier'])): ?>
+                <li class="<?= isActive('pos.php') ?>">
+                    <a href="/restaurant-project/admin/pos.php" target="_blank" style="color: #10b981; font-weight: 600;">
+                        <i class="fas fa-cash-register"></i>
+                        <span>Màn Hình Thu Ngân (POS)</span>
+                    </a>
+                </li>
+                <?php endif; ?>
+                
+                <?php if (checkMenuAccess($user_role, ['admin', 'manager', 'chef'])): ?>
+                <li class="<?= isActive('kds.php') ?>">
+                    <a href="/restaurant-project/kds.php" target="_blank" style="color: #e0b060; font-weight: 600;">
+                        <i class="fas fa-fire-burner"></i>
+                        <span>Màn Hình Bếp (KDS)</span>
+                    </a>
+                </li>
+                <?php endif; ?>
+                <?php endif; ?>
+
                 <!-- Vận hành Nhà hàng -->
                 <div class="menu-header">Vận hành Nhà hàng</div>
 
@@ -516,25 +538,43 @@ try {
                 <?php endif; ?>
 
                 <?php if (checkMenuAccess($user_role, ['waiter', 'cashier'])): ?>
-                <li class="<?= isActive('manage_services.php') ?>">
-                    <a href="/restaurant-project/admin/controllers/manage_services.php">
-                        <i class="fas fa-concierge-bell"></i>
-                        <span>Quản lý Dịch vụ</span>
-                        <?php if ($pending_services_count > 0): ?>
-                            <span class="badge-notify"><?= $pending_services_count ?></span>
-                        <?php endif; ?>
+                <?php 
+                    $isServiceMenu = isActive('manage_services.php') || isActive('manage_events.php') || isActive('manage_decors.php');
+                ?>
+                <li class="<?= $isServiceMenu ? 'active' : '' ?>">
+                    <a href="#servicesSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isServiceMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <i class="fas fa-concierge-bell"></i>
+                            <span>Quản lý Dịch vụ</span>
+                        </div>
+                        <div>
+                            <?php if ($pending_services_count > 0): ?>
+                                <span class="badge-notify d-inline-block position-static ms-0 me-2"><?= $pending_services_count ?></span>
+                            <?php endif; ?>
+                            <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: auto;"></i>
+                        </div>
                     </a>
+                    <ul class="collapse list-unstyled <?= $isServiceMenu ? 'show' : '' ?>" id="servicesSubmenu" style="background: rgba(0,0,0,0.03);">
+                        <li class="<?= isActive('manage_services.php') ?>">
+                            <a href="/restaurant-project/admin/controllers/manage_services.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-list-ul" style="font-size: 12px; margin-right: 6px;"></i> Danh sách Đơn đặt
+                            </a>
+                        </li>
+                        <li class="<?= isActive('manage_events.php') ?>">
+                            <a href="/restaurant-project/admin/manage_events.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-glass-cheers" style="font-size: 12px; margin-right: 6px;"></i> Loại hình Sự Kiện
+                            </a>
+                        </li>
+                        <li class="<?= isActive('manage_decors.php') ?>">
+                            <a href="/restaurant-project/admin/manage_decors.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-gift" style="font-size: 12px; margin-right: 6px;"></i> Gói Trang Trí
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <?php endif; ?>
 
                 <?php if (checkMenuAccess($user_role, ['chef'])): ?>
-                <li class="<?= isActive('kds.php') ?>">
-                    <a href="/restaurant-project/kds.php" target="_blank" style="color: #e0b060; font-weight: 600;">
-                        <i class="fas fa-fire-burner"></i>
-                        <span>Màn Hình Bếp (KDS)</span>
-                    </a>
-                </li>
-                
                 <li class="<?= ($current_page == 'manage_inventory.php') ? 'active' : isActive('InventoryController.php') ?>">
                     <a href="/restaurant-project/admin/controllers/InventoryController.php">
                         <i class="fas fa-warehouse"></i>

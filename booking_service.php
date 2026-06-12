@@ -55,7 +55,8 @@ $foods_raw  = $db->query("
     WHERE f.status=1 ORDER BY t.created_at DESC, f.name ASC
 ")->fetchAll(PDO::FETCH_ASSOC);
 
-
+$event_types = $db->query("SELECT * FROM event_types ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
+$decor_pkgs = $db->query("SELECT * FROM decor_packages ORDER BY price ASC")->fetchAll(PDO::FETCH_ASSOC);
 
 $chefs = $db->query("SELECT id, name FROM chefs WHERE is_active = 1 ORDER BY sort_order ASC, id DESC")->fetchAll(PDO::FETCH_ASSOC);
 
@@ -398,22 +399,25 @@ select.input-lux {
                     <h3 class="section-title-lux" style="font-size: 1.2rem; color: var(--gold); margin-bottom:15px;"><i class="fas fa-gift me-2"></i> Thông Tin Tiệc Kỷ Niệm</h3>
                     <div class="row-lux">
                         <div class="input-group-lux">
-                            <select name="event_type" class="input-lux" onchange="us()">
-                                <option value="Sinh nhật">Tiệc Sinh Nhật</option>
-                                <option value="Kỷ niệm ngày cưới">Kỷ Niệm Ngày Cưới</option>
-                                <option value="Tiệc tỏ tình/Cầu hôn">Tỏ Tình / Cầu Hôn</option>
-                                <option value="Tiệc công ty/Họp mặt">Họp Mặt / Công Ty</option>
-                                <option value="Khác">Khác</option>
+                            <select name="event_type" id="event_type" class="input-lux" onchange="selEvent(); us();">
+                                <option value="" data-id="" data-img="">-- Không chọn --</option>
+                                <?php foreach($event_types as $et): ?>
+                                    <option value="<?= htmlspecialchars($et['name']) ?>" data-id="<?= $et['id'] ?>" data-img="<?= htmlspecialchars($et['image_url']) ?>"><?= htmlspecialchars($et['name']) ?></option>
+                                <?php endforeach; ?>
                             </select>
                             <label class="label-lux" >Loại hình kỷ niệm</label>
+                            <div id="event_img_wrap" style="display:none; margin-top:15px; text-align:center;">
+                                <img id="event_img_preview" src="" style="width:100%; height:140px; object-fit:cover; border-radius:10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--glass-border);">
+                            </div>
                         </div>
-                        <div class="input-group-lux">
-                            <select name="decor_package" class="input-lux" onchange="us()">
-                                <option value="Mặc định">Gói mặc định (Nến & Hoa bàn)</option>
-                                <option value="Lãng mạn">Gói lãng mạn (+ Bóng bay, nhạc nhẹ)</option>
-                                <option value="Hoàng gia">Gói hoàng gia (+ Rượu vang, backdrop)</option>
+                        <div class="input-group-lux w-100">
+                            <select name="decor_package" id="decor_package" class="input-lux" onchange="us()">
+                                <option value="" data-price="0" data-name="" data-img="">-- Không chọn gói trang trí --</option>
                             </select>
-                            <label class="label-lux" >Gói trang trí</label>
+                            <label class="label-lux">Gói trang trí</label>
+                            <div id="decor_img_wrap" style="display:none; margin-top:15px; text-align:center;">
+                                <img id="decor_img_preview" src="" style="width:100%; height:140px; object-fit:cover; border-radius:10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--glass-border);">
+                            </div>
                         </div>
                     </div>
                     <div class="d-flex gap-4 mt-2">
@@ -1576,9 +1580,58 @@ function clrSeat(){
 }
 
 /* CẬP NHẬT TÓM TẮT */
+const decorPackages = <?= json_encode($decor_pkgs) ?>;
+
+function selEvent() {
+    try {
+        let evtSelect = document.getElementById('event_type');
+        if (!evtSelect || evtSelect.selectedIndex === -1) return;
+        
+        let opt = evtSelect.options[evtSelect.selectedIndex];
+        let eventId = opt.getAttribute('data-id');
+        let decorSelect = document.getElementById('decor_package');
+        
+        if (!decorSelect) return;
+        
+        let html = '<option value="" data-price="0" data-name="" data-img="">-- Không chọn gói trang trí --</option>';
+        if (!eventId) {
+            decorSelect.innerHTML = html;
+            us();
+            return;
+        }
+
+        let hasDecor = false;
+        decorPackages.forEach(dp => {
+            if (dp.event_type_id == eventId) {
+                let numPrice = parseInt(dp.price) || 0;
+                let priceStr = numPrice > 0 ? ' (+ ' + new Intl.NumberFormat('vi-VN').format(numPrice) + 'đ)' : '';
+                let imgAttr = dp.image_url ? ' data-img="' + dp.image_url + '"' : ' data-img=""';
+                html += '<option value="' + dp.id + '" data-price="' + numPrice + '" data-name="' + dp.name + '"' + imgAttr + '>' + dp.name + priceStr + '</option>';
+                hasDecor = true;
+            }
+        });
+        
+        if (!hasDecor) {
+            html = '<option value="" data-price="0" data-name="" data-img="">Không có gói trang trí nào</option>';
+        }
+        decorSelect.innerHTML = html;
+        us();
+    } catch (e) {
+        console.error("Lỗi selEvent:", e);
+    }
+}
+
+// Gọi us() ngay khi trang vừa tải
+document.addEventListener('DOMContentLoaded', function() {
+    us();
+});
+
 function us(){
-    // Check table availability remotely
-    checkTableAvailability();
+    try {
+        // Check table availability remotely
+        if (typeof checkTableAvailability === 'function') {
+            checkTableAvailability();
+        }
 
     var n=document.querySelector('[name="customer_name"]');
     document.getElementById('sn').textContent=n&&n.value?n.value:'—';
@@ -1715,30 +1768,43 @@ function us(){
     var evType = document.querySelector('[name="event_type"]');
     var decorPrice = 0;
     if (evType) {
-        document.getElementById('m-event-sum').textContent = evType.value;
+        let eventSum = document.getElementById('m-event-sum');
+        if (eventSum) {
+            if (evType.options && evType.selectedIndex >= 0) {
+                eventSum.textContent = evType.options[evType.selectedIndex].text;
+            } else {
+                eventSum.textContent = evType.value || '—';
+            }
+        }
         
-        let decor = document.querySelector('[name="decor_package"]').value;
-        let cake = document.querySelector('[name="has_cake"]').checked;
-        let flower = document.querySelector('[name="has_flower"]').checked;
-        
-        if (decor.includes('Mặc định')) decorPrice = 500000;
-        else if (decor.includes('Lãng mạn')) decorPrice = 1500000;
-        else if (decor.includes('Hoàng gia')) decorPrice = 3000000;
+        let decorEl = document.querySelector('[name="decor_package"]');
+        let decorName = 'Mặc định';
+        if (decorEl && decorEl.options && decorEl.selectedIndex >= 0 && decorEl.value !== '') {
+            let opt = decorEl.options[decorEl.selectedIndex];
+            decorPrice = parseFloat(opt.getAttribute('data-price')) || 0;
+            decorName = opt.getAttribute('data-name') || 'Gói trang trí';
+        }
+
+        let cakeEl = document.querySelector('[name="has_cake"]');
+        let flowerEl = document.querySelector('[name="has_flower"]');
+        let cake = cakeEl ? cakeEl.checked : false;
+        let flower = flowerEl ? flowerEl.checked : false;
         
         if (cake) decorPrice += 300000;
         if (flower) decorPrice += 200000;
 
-        let addonTxt = decor.split(' ')[0];
+        let addonTxt = decorName;
         if (cake) addonTxt += ' + Bánh';
         if (flower) addonTxt += ' + Hoa';
-        document.getElementById('m-addon-sum').textContent = addonTxt;
+        let addonSum = document.getElementById('m-addon-sum');
+        if (addonSum) addonSum.textContent = addonTxt;
     }
 
     var bespokePrice = 0;
     
     // Tính ngân sách thiết kế riêng (nếu có)
     var budgetSel = document.getElementById('chef_budget');
-    if (budgetSel && typeStr === 'bespoke') {
+    if (budgetSel && typeStr === 'bespoke' && budgetSel.options && budgetSel.selectedIndex >= 0) {
         var opt = budgetSel.options[budgetSel.selectedIndex];
         var bPrice = parseInt(opt.getAttribute('data-price')) || 0;
         bespokePrice += bPrice * guestsNum;
@@ -1780,6 +1846,37 @@ function us(){
                 }
             }
         }
+    }
+
+    // Cập nhật ảnh xem trước cho Sự Kiện
+    var evtSel = document.getElementById('event_type');
+    var evtImgWrap = document.getElementById('event_img_wrap');
+    var evtImgPreview = document.getElementById('event_img_preview');
+    if (evtSel && evtSel.options.length > 0 && evtSel.selectedIndex >= 0) {
+        var evtImgSrc = evtSel.options[evtSel.selectedIndex].getAttribute('data-img');
+        if (evtImgSrc && evtImgSrc.trim() !== '') {
+            evtImgPreview.src = evtImgSrc;
+            evtImgWrap.style.display = 'block';
+        } else {
+            evtImgWrap.style.display = 'none';
+        }
+    }
+
+    // Cập nhật ảnh xem trước cho Gói Trang Trí
+    var dcrSel = document.getElementById('decor_package');
+    var dcrImgWrap = document.getElementById('decor_img_wrap');
+    var dcrImgPreview = document.getElementById('decor_img_preview');
+    if (dcrSel && dcrSel.options.length > 0 && dcrSel.selectedIndex >= 0) {
+        var dcrImgSrc = dcrSel.options[dcrSel.selectedIndex].getAttribute('data-img');
+        if (dcrImgSrc && dcrImgSrc.trim() !== '') {
+            dcrImgPreview.src = dcrImgSrc;
+            dcrImgWrap.style.display = 'block';
+        } else {
+            dcrImgWrap.style.display = 'none';
+        }
+    }
+    } catch (e) {
+        console.error("Lỗi trong hàm us():", e);
     }
 }
 
