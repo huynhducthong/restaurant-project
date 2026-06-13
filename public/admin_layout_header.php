@@ -512,34 +512,46 @@ try {
                 </li>
 
                 <?php if (checkMenuAccess($user_role, ['chef', 'waiter', 'cashier'])): ?>
-                <li class="<?= isActive('manage_themes.php') ?>">
-                    <a href="/restaurant-project/admin/controllers/manage_themes.php">
-                        <i class="fas fa-layer-group"></i> Quản lý Chủ đề Thực đơn
+                <?php 
+                    $isFoodMenu = isActive('manage_themes.php') || isActive('FoodController.php') || isActive('manage_toppings.php') || ($current_page == 'ComboController.php' || $current_page == 'add_combo.php' || $current_page == 'edit_combo.php');
+                ?>
+                <li class="<?= $isFoodMenu ? 'active' : '' ?>">
+                    <a href="#foodSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isFoodMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <i class="fas fa-utensils"></i> Quản Lý Thực Đơn
+                        </div>
+                        <div>
+                            <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: auto;"></i>
+                        </div>
                     </a>
-                </li>
-                
-                <li class="<?= isActive('FoodController.php') ?>">
-                    <a href="/restaurant-project/admin/controllers/FoodController.php">
-                        <i class="fas fa-utensils"></i> Quản lý Món ăn
-                    </a>
-                </li>
-
-                <li class="<?= isActive('manage_toppings.php') ?>">
-                    <a href="/restaurant-project/admin/controllers/manage_toppings.php">
-                        <i class="fas fa-cheese"></i> Quản lý Topping
-                    </a>
-                </li>
-
-                <li class="<?= ($current_page == 'ComboController.php' || $current_page == 'add_combo.php' || $current_page == 'edit_combo.php') ? 'active' : '' ?>">
-                    <a href="/restaurant-project/admin/controllers/ComboController.php">
-                        <i class="fas fa-layer-group"></i> Quản lý Set
-                    </a>
+                    <ul class="collapse list-unstyled <?= $isFoodMenu ? 'show' : '' ?>" id="foodSubmenu" style="background: rgba(0,0,0,0.03);">
+                        <li class="<?= isActive('manage_themes.php') ?>">
+                            <a href="/restaurant-project/admin/controllers/manage_themes.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-layer-group" style="font-size: 12px; margin-right: 6px;"></i> Chủ đề Thực đơn
+                            </a>
+                        </li>
+                        <li class="<?= isActive('FoodController.php') ?>">
+                            <a href="/restaurant-project/admin/controllers/FoodController.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-concierge-bell" style="font-size: 12px; margin-right: 6px;"></i> Món ăn (Món lẻ)
+                            </a>
+                        </li>
+                        <li class="<?= isActive('manage_toppings.php') ?>">
+                            <a href="/restaurant-project/admin/controllers/manage_toppings.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-cheese" style="font-size: 12px; margin-right: 6px;"></i> Topping / Tùy chọn
+                            </a>
+                        </li>
+                        <li class="<?= ($current_page == 'ComboController.php' || $current_page == 'add_combo.php' || $current_page == 'edit_combo.php') ? 'active' : '' ?>">
+                            <a href="/restaurant-project/admin/controllers/ComboController.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-cubes" style="font-size: 12px; margin-right: 6px;"></i> Set Menu (Combo)
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <?php endif; ?>
 
                 <?php if (checkMenuAccess($user_role, ['waiter', 'cashier'])): ?>
                 <?php 
-                    $isServiceMenu = isActive('manage_services.php') || isActive('manage_events.php') || isActive('manage_decors.php');
+                    $isServiceMenu = isActive('manage_services.php') || isActive('manage_events.php') || isActive('manage_decors.php') || isActive('manage_bespoke.php');
                 ?>
                 <li class="<?= $isServiceMenu ? 'active' : '' ?>">
                     <a href="#servicesSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isServiceMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
@@ -568,6 +580,11 @@ try {
                         <li class="<?= isActive('manage_decors.php') ?>">
                             <a href="/restaurant-project/admin/manage_decors.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-gift" style="font-size: 12px; margin-right: 6px;"></i> Gói Trang Trí
+                            </a>
+                        </li>
+                        <li class="<?= isActive('manage_bespoke.php') ?>">
+                            <a href="/restaurant-project/admin/manage_bespoke.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-cogs" style="font-size: 12px; margin-right: 6px;"></i> Cấu hình Bespoke
                             </a>
                         </li>
                     </ul>
@@ -686,6 +703,7 @@ try {
                     'add_combo.php'           => 'Thêm Set',
                     'edit_combo.php'          => 'Chỉnh Sửa Set',
                     'manage_services.php'     => 'Quản Lý Dịch Vụ',
+                    'manage_bespoke.php'      => 'Cấu Hình Bespoke',
                     'InventoryController.php' => 'Quản Lý Kho Nguyên Liệu',
                     'manage_inventory.php'    => 'Quản Lý Kho Nguyên Liệu',
                     'ReportController.php'    => 'Báo Cáo & Thống Kê Kho',

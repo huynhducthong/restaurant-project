@@ -570,7 +570,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             <?php if(!empty($t['foods'])): ?>
               <div class="col-12 mt-5 mb-4">
-                <h4 style="text-align: center; color: #4F5B3A; font-family: 'Playfair Display', serif; margin-bottom: 30px; font-size: 24px; letter-spacing: 2px;">MÓN LẺ (A LA CARTE)</h4>
+                <h4 style="text-align: center; color: #4F5B3A; font-family: 'Playfair Display', serif; margin-bottom: 30px; font-size: 24px; letter-spacing: 2px;">MÓN LẺ</h4>
                 <div class="row g-5 justify-content-center">
                   <?php foreach($t['foods'] as $f): ?>
                     <div class="col-lg-6 col-md-12">

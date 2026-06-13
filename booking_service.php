@@ -28,6 +28,7 @@ foreach($combos_raw as $cb) {
     $t_name = $cb['theme_name'] ? $cb['theme_name'] : 'Thực Đơn Tiêu Chuẩn';
     if(!isset($grouped_combos[$t_name])) {
         $grouped_combos[$t_name] = [
+            'id' => $cb['theme_id'] ?? 0,
             'desc' => $cb['theme_desc'] ?? '',
             'img' => $cb['theme_img'] ?? '',
             'combos' => []
@@ -45,6 +46,7 @@ if ($type !== 'chef') {
 
 $foods_raw  = $db->query("
     SELECT f.*, t.name as theme_name, c.name as cat_name,
+           (SELECT GROUP_CONCAT(i.item_name SEPARATOR ',') FROM food_recipes r JOIN inventory i ON r.ingredient_id = i.id WHERE r.food_id = f.id) as recipe_ingredients,
            (SELECT GROUP_CONCAT(CONCAT(tp.id, '::', tp.name, '::', tp.price, '::', IFNULL(tp.image, ''), '::', tp.selection_type, '::', IFNULL(tp.topping_group, ''), '::', IFNULL(tp.description, '')) SEPARATOR '|')
             FROM food_toppings ft
             JOIN toppings tp ON ft.topping_id = tp.id
@@ -57,6 +59,9 @@ $foods_raw  = $db->query("
 
 $event_types = $db->query("SELECT * FROM event_types ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
 $decor_pkgs = $db->query("SELECT * FROM decor_packages ORDER BY price ASC")->fetchAll(PDO::FETCH_ASSOC);
+
+$bespoke_budgets = $db->query("SELECT * FROM bespoke_budgets ORDER BY sort_order ASC")->fetchAll(PDO::FETCH_ASSOC);
+$bespoke_styles = $db->query("SELECT * FROM bespoke_styles ORDER BY sort_order ASC")->fetchAll(PDO::FETCH_ASSOC);
 
 $chefs = $db->query("SELECT id, name FROM chefs WHERE is_active = 1 ORDER BY sort_order ASC, id DESC")->fetchAll(PDO::FETCH_ASSOC);
 
@@ -96,9 +101,12 @@ if ($user_info) {
 
 function hasAllergenBooking($food, $user_allergies) {
     if (empty($user_allergies)) return false;
-    $allergens = array_map('trim', explode(',', mb_strtolower($food['allergens'] ?? '', 'UTF-8')));
+    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '') . ',' . ($food['cat_name'] ?? '');
+    $food_allergens = array_map('trim', explode(',', mb_strtolower($all_food_ingredients, 'UTF-8')));
     foreach ($user_allergies as $ua) {
-        if (in_array($ua, $allergens)) return true;
+        foreach($food_allergens as $fa) {
+            if (!empty($fa) && strpos($fa, $ua) !== false) return true;
+        }
     }
     return false;
 }
@@ -148,9 +156,27 @@ usort($foods_raw, function($a, $b) {
 
 $grouped_foods = [];
 foreach($foods_raw as $fd) {
-    $t_name = $fd['theme_name'] ? $fd['theme_name'] : 'Món Lẻ (A La Carte)';
-    $grouped_foods[$t_name][] = $fd;
+    $c_name = $fd['cat_name'] ? $fd['cat_name'] : 'Khác';
+    $grouped_foods[$c_name][] = $fd;
 }
+
+$category_order = [
+    'khai vị' => 1,
+    'món chính' => 2,
+    'món ăn kèm' => 3,
+    'tráng miệng' => 4,
+    'đồ uống' => 5
+];
+uksort($grouped_foods, function($a, $b) use ($category_order) {
+    $a_lower = mb_strtolower($a, 'UTF-8');
+    $b_lower = mb_strtolower($b, 'UTF-8');
+    $order_a = 99;
+    foreach($category_order as $k => $v) { if (strpos($a_lower, $k) !== false) { $order_a = $v; break; } }
+    $order_b = 99;
+    foreach($category_order as $k => $v) { if (strpos($b_lower, $k) !== false) { $order_b = $v; break; } }
+    if ($order_a == $order_b) return strcmp($a, $b);
+    return $order_a <=> $order_b;
+});
 
 include 'views/client/layouts/header.php';
 ?>
@@ -218,6 +244,29 @@ body {
 }
 .svc-card-inline:hover { border-color: var(--forest); color: var(--forest); }
 .svc-card-inline.active { background: var(--forest); border-color: var(--forest); color: #fff; font-weight: 600; }
+
+/* === WIZARD STEPS === */
+.booking-step { display: none; animation: fadeInStep 0.4s ease; }
+.booking-step.active { display: block; }
+@keyframes fadeInStep { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.wizard-header { display: flex; justify-content: space-between; position: relative; margin-bottom: 30px; padding: 0 10px; }
+.wizard-header::before { content: ''; position: absolute; top: 15px; left: 30px; right: 30px; height: 2px; background: var(--glass-border); z-index: 1; }
+.step-indicator { position: relative; z-index: 2; text-align: center; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
+.step-circle { width: 32px; height: 32px; border-radius: 50%; background: #fff; border: 2px solid var(--glass-border); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; margin-bottom: 8px; transition: 0.3s; }
+.step-label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; transition: 0.3s; }
+
+.step-indicator.active .step-circle { border-color: var(--gold); background: var(--gold); color: #fff; }
+.step-indicator.active .step-label { color: var(--gold); }
+.step-indicator.completed .step-circle { border-color: var(--forest); background: var(--forest); color: #fff; cursor: pointer; }
+.step-indicator.completed .step-label { color: var(--forest); cursor: pointer; }
+
+.wizard-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px dashed var(--glass-border); }
+.btn-wizard-next { background: var(--forest); color: #fff; border: none; padding: 12px 30px; border-radius: 0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; cursor: pointer; transition: 0.3s; }
+.btn-wizard-next:disabled { background: #dcdcdc; color: #999; cursor: not-allowed; }
+.btn-wizard-next:not(:disabled):hover { background: var(--gold); }
+.btn-wizard-prev { background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border); padding: 12px 30px; border-radius: 0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; cursor: pointer; transition: 0.3s; }
+.btn-wizard-prev:hover { border-color: var(--forest); color: var(--forest); }
 
 /* === MAIN BOOKING AREA === */
 .booking-section { position: relative; max-width: 1200px; margin: -80px auto 100px; padding: 0 20px; z-index: 10; display: grid; grid-template-columns: 1fr 400px; gap: 30px; }
@@ -358,6 +407,26 @@ select.input-lux {
                 </div>
             </div>
 
+            <!-- STEP INDICATORS -->
+            <div class="panel-section pt-0 pb-0" style="border-bottom: none;">
+                <div class="wizard-header">
+                    <div class="step-indicator active" id="ind-1" onclick="goToStep(1)">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">Thông tin</div>
+                    </div>
+                    <div class="step-indicator" id="ind-2" onclick="goToStep(2)">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">Thực đơn</div>
+                    </div>
+                    <div class="step-indicator" id="ind-3" onclick="goToStep(3)">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Yêu cầu</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BƯỚC 1 -->
+            <div id="step-1" class="booking-step active">
             <div class="panel-section pt-0">
                 <div class="row-lux mt-3">
                     <div class="input-group-lux">
@@ -531,10 +600,17 @@ select.input-lux {
                     </script>
                 <?php endif; ?>
             </div>
+                <div class="panel-section" style="border-bottom: none; padding-top:0;">
+                    <div class="wizard-nav">
+                        <div></div>
+                        <button type="button" class="btn-wizard-next" id="btn-next-1" onclick="nextStep(1)">Tiếp theo <i class="fas fa-arrow-right ms-2"></i></button>
+                    </div>
+                </div>
+            </div> <!-- End Step 1 -->
 
-
-
-            <div class="panel-section">
+            <!-- BƯỚC 2 -->
+            <div id="step-2" class="booking-step">
+            <div class="panel-section" style="border-bottom: none;">
                 <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold);">Tinh Hoa Ẩm Thực</h3>
                 
                 <?php if ($type !== 'bespoke'): ?>
@@ -542,7 +618,7 @@ select.input-lux {
                 <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:15px; margin-bottom: 25px;">
                     <div class="card-select cc active" data-price="0" onclick="selCombo(0,this)">
                         <div style="color:var(--gold); font-size:15px; margin-bottom:5px;">Gọi Món Tự Do</div>
-                        <div style="font-size:11px; color:var(--text-muted)">A la Carte</div>
+                        <div style="font-size:11px; color:var(--text-muted)">Món lẻ</div>
                     </div>
                 </div>
 
@@ -563,6 +639,11 @@ select.input-lux {
                             <div style="font-size:12px; color:var(--text-main)"><?= number_format($cb['price']) ?> đ</div>
                         </div>
                     <?php endforeach; ?>
+                    
+                    <div class="card-select cc" data-price="0" onclick="selThemeFoods(<?= $theme_data['id'] ?>, this)">
+                        <div style="color:var(--gold); font-size:15px; margin-bottom:5px;">Món lẻ</div>
+                        <div style="font-size:12px; color:var(--text-muted)">Các món thuộc chủ đề <?= htmlspecialchars($theme_name) ?></div>
+                    </div>
                 </div>
                 <?php endforeach; ?>
 
@@ -574,22 +655,17 @@ select.input-lux {
                     <div class="row-lux mb-3">
                         <div class="input-group-lux">
                             <select name="chef_budget" id="chef_budget" class="input-lux" onchange="updateChefReq(); us(); calcTotal();">
-                                <option value="Thỏa thuận sau khi thiết kế thực đơn" data-price="0">Thỏa thuận sau khi thiết kế</option>
-                                <option value="Dưới 1.500.000 đ / khách" data-price="1500000">Dưới 1.500.000 đ / khách</option>
-                                <option value="1.500.000 đ - 3.000.000 đ / khách" data-price="2000000">1.500.000 đ - 3.000.000 đ / khách</option>
-                                <option value="3.000.000 đ - 5.000.000 đ / khách" data-price="4000000">3.000.000 đ - 5.000.000 đ / khách</option>
-                                <option value="Trên 5.000.000 đ / khách (Siêu cao cấp)" data-price="5000000">Trên 5.000.000 đ / khách (Siêu cao cấp)</option>
+                                <?php foreach($bespoke_budgets as $bb): ?>
+                                    <option value="<?= htmlspecialchars($bb['label']) ?>" data-price="<?= $bb['price_value'] ?>"><?= htmlspecialchars($bb['label']) ?></option>
+                                <?php endforeach; ?>
                             </select>
                             <label class="label-lux" >Ngân sách dự kiến</label>
                         </div>
                         <div class="input-group-lux">
                             <select name="chef_style" id="chef_style" class="input-lux" onchange="updateChefReq(); us();">
-                                <option value="Tùy Bếp trưởng đề xuất">Tùy Bếp trưởng đề xuất</option>
-                                <option value="Ẩm thực Việt Nam Đương Đại (Contemporary Vietnamese)">Ẩm thực Việt Nam Đương Đại</option>
-                                <option value="Ẩm thực Việt Nam Cổ Điển (Traditional Vietnamese)">Ẩm thực Việt Nam Cổ Điển</option>
-                                <option value="Ẩm thực Pháp - Việt Đông Dương (Indochine Fusion)">Ẩm thực Pháp - Việt Đông Dương</option>
-                                <option value="Hải sản Cao cấp (Premium Seafood)">Hải sản Cao cấp</option>
-                                <option value="Thực dưỡng & Chay Thượng hạng (Fine Vegetarian)">Thực dưỡng & Chay Thượng hạng</option>
+                                <?php foreach($bespoke_styles as $bs): ?>
+                                    <option value="<?= htmlspecialchars($bs['name']) ?>"><?= htmlspecialchars($bs['name']) ?></option>
+                                <?php endforeach; ?>
                             </select>
                             <label class="label-lux" >Phong cách ẩm thực</label>
                         </div>
@@ -606,15 +682,16 @@ select.input-lux {
                     <?php if(!empty($grouped_foods)): ?>
                         <p id="addon-foods-label" style="font-size:12px; color:var(--text-muted); margin-bottom:10px; letter-spacing:1px; text-transform:uppercase;">Thực Đơn Chọn Trước (Add-on)</p>
                         <div style="max-height: 400px; overflow-y: auto; padding-right:10px;">
-                            <?php foreach($grouped_foods as $t_name => $t_foods): ?>
+                            <?php foreach($grouped_foods as $c_name => $t_foods): ?>
                                 <div class="addon-group-block" style="margin-bottom: 20px;">
-                                    <h5 style="color:var(--gold); font-size:12px; text-transform:uppercase; border-bottom:1px dashed rgba(212,176,106,0.3); padding-bottom:5px; margin-bottom:10px;">MÓN LẺ THUỘC CHỦ ĐỀ: <?= htmlspecialchars($t_name) ?></h5>
+                                    <h5 style="color:var(--gold); font-size:13px; text-transform:uppercase; border-bottom:1px dashed rgba(212,176,106,0.3); padding-bottom:5px; margin-bottom:10px; font-weight:600;"><i class="fas fa-utensils me-2"></i> <?= htmlspecialchars($c_name) ?></h5>
                                     <?php foreach($t_foods as $fd): 
                                          $stock = getFoodInventory($db, $fd['id']);
                                          $is_out_of_stock = ($stock <= 0);
                                      ?>
                                      <div class="menu-item-lux flex-column align-items-stretch" id="mr<?= $fd['id'] ?>" 
                                           data-name="<?= htmlspecialchars($fd['name']) ?>"
+                                          data-theme="<?= $fd['theme_id'] ?>"
                                           data-price="<?= (float)$fd['price'] ?>"
                                           data-img="public/assets/img/menu/<?= htmlspecialchars($fd['image'] ?: 'default.jpg') ?>"
                                           data-desc="<?= htmlspecialchars($fd['description'] ?? '') ?>"
@@ -650,7 +727,7 @@ select.input-lux {
                                                      <div style="font-size:12px; color:var(--gold); margin-top: 2px;">
                                                          <?= number_format($fd['price']) ?> đ
                                                          <span style="font-size:11px; color:var(--text-muted); margin-left:10px;">
-                                                             (<?= $is_out_of_stock ? '<span class="text-danger">Hết hàng</span>' : '<span class="text-success">Còn hàng</span>' ?>)
+                                                             (<?= $is_out_of_stock ? '<span class="text-danger">Hết món</span>' : '<span class="text-success">Còn món</span>' ?>)
                                                          </span>
                                                      </div>
                                                  </div>
@@ -668,9 +745,16 @@ select.input-lux {
                 </div>
                 <?php endif; // end if type !== bespoke ?>
             </div>
+                <div class="panel-section" style="border-bottom: none; padding-top:0;">
+                    <div class="wizard-nav">
+                        <button type="button" class="btn-wizard-prev" onclick="prevStep(2)"><i class="fas fa-arrow-left me-2"></i> Quay lại</button>
+                        <button type="button" class="btn-wizard-next" id="btn-next-2" onclick="nextStep(2)">Tiếp theo <i class="fas fa-arrow-right ms-2"></i></button>
+                    </div>
+                </div>
+            </div> <!-- End Step 2 -->
 
-
-
+            <!-- BƯỚC 3 -->
+            <div id="step-3" class="booking-step">
             <div class="panel-section" id="bespoke-section">
                 <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold);"><i class="fas fa-gem me-2"></i> Trải nghiệm Cá nhân hóa</h3>
                 <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">Bespoke Booking Experience</p>
@@ -799,9 +883,18 @@ select.input-lux {
                     <textarea name="message" class="input-lux" rows="2" placeholder=" "></textarea>
                     <label class="label-lux"><i class="fas fa-comment-dots me-1"></i> Ghi chú / Yêu cầu đặc biệt khác</label>
                 </div>
-            </div>
+            </div> <!-- Close panel-section (Hồ sơ yêu cầu) -->
+                <div class="panel-section" style="border-bottom: none; padding-top:0;">
+                    <div class="wizard-nav">
+                        <button type="button" class="btn-wizard-prev" onclick="prevStep(3)"><i class="fas fa-arrow-left me-2"></i> Quay lại</button>
+                        <div style="font-size:12px; color:var(--text-muted); align-self:center; font-style:italic;">Hoàn tất tại bảng tóm tắt bên phải <i class="fas fa-arrow-right ms-1"></i></div>
+                    </div>
+                </div>
+            </div> <!-- End Step 3 -->
         </form>
     </div>
+
+
 
     <div>
         <div class="summary-floating">
@@ -847,6 +940,85 @@ select.input-lux {
         </div>
     </div>
 </section>
+
+    <!-- WIZARD JS LOGIC -->
+    <script>
+    let currentStep = 1;
+    function goToStep(step) {
+        if (step > currentStep) {
+            if (step === 2 && !validateStep1()) return;
+            if (step === 3 && (!validateStep1() || !validateStep2())) return;
+        }
+        showStep(step);
+    }
+    function nextStep(step) {
+        if (step === 1 && validateStep1()) showStep(2);
+        if (step === 2 && validateStep2()) showStep(3);
+    }
+    function prevStep(step) { showStep(step - 1); }
+    function showStep(step) {
+        document.querySelectorAll('.booking-step').forEach(el => el.classList.remove('active'));
+        document.getElementById('step-' + step).classList.add('active');
+        for (let i = 1; i <= 3; i++) {
+            let ind = document.getElementById('ind-' + i);
+            ind.classList.remove('active', 'completed');
+            if (i < step) ind.classList.add('completed');
+            if (i === step) ind.classList.add('active');
+        }
+        currentStep = step;
+        checkSubmitButton();
+        window.scrollTo({ top: document.getElementById('booking-form-area').offsetTop - 100, behavior: 'smooth' });
+    }
+    function validateStep1() {
+        let name = document.querySelector('[name="customer_name"]').value.trim();
+        let phone = document.querySelector('[name="customer_phone"]').value.trim();
+        let date = document.getElementById('bd').value;
+        let isValid = name !== '' && phone !== '' && date !== '';
+        let btnNext = document.getElementById('btn-next-1');
+        if (btnNext) btnNext.disabled = !isValid;
+        return isValid;
+    }
+    function validateStep2() {
+        let isValid = true;
+        let btnNext = document.getElementById('btn-next-2');
+        if (btnNext) btnNext.disabled = false;
+        return isValid;
+    }
+    function checkSubmitButton() {
+        let btnGo = document.getElementById('btn-go');
+        if (!btnGo) return;
+        if (currentStep === 3) {
+            btnGo.style.opacity = '1';
+            btnGo.style.pointerEvents = 'auto';
+            if (btnGo.hasAttribute('data-original-text')) {
+                btnGo.innerHTML = btnGo.getAttribute('data-original-text');
+            }
+        } else {
+            if (!btnGo.hasAttribute('data-original-text')) {
+                btnGo.setAttribute('data-original-text', btnGo.innerHTML);
+            }
+            btnGo.style.opacity = '0.5';
+            btnGo.style.pointerEvents = 'none';
+            btnGo.innerHTML = '<i class="fas fa-lock"></i> Vui lòng hoàn thành các bước';
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        const originalUs = window.us || function(){};
+        window.us = function() {
+            originalUs();
+            if (currentStep === 1) validateStep1();
+            if (currentStep === 2) validateStep2();
+        };
+        // bind manual inputs just in case us() misses them
+        document.querySelector('[name="customer_name"]').addEventListener('input', validateStep1);
+        document.querySelector('[name="customer_phone"]').addEventListener('input', validateStep1);
+        document.getElementById('bd').addEventListener('change', validateStep1);
+        
+        validateStep1();
+        validateStep2();
+        checkSubmitButton();
+    });
+    </script>
 
 <!-- MODAL CHI TIẾT & TÙY CHỌN MÓN ĂN -->
 <div class="modal fade" id="foodOptionModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
@@ -1082,6 +1254,50 @@ function filterFoodsByCombo(id) {
         var name = comboNames[id] || ('Set Menu #' + id);
         label.innerHTML = '<i class="fas fa-utensils me-1"></i> Món trong set "<strong>' + name + '</strong>" — chọn thêm tùy thích';
     }
+}
+
+function selThemeFoods(themeId, btn) {
+    document.querySelectorAll('.card-select.cc').forEach(function(c) { c.classList.remove('active'); });
+    btn.classList.add('active');
+    
+    // Ẩn/hiện phần bổ sung nếu là bespoke
+    var bespokeFields = document.getElementById('bespoke-menu-fields');
+    var addonSection  = document.getElementById('addon-foods-section');
+    var detailInput   = document.getElementById('booking_detail');
+    
+    if (bespokeFields) bespokeFields.style.display = 'none';
+    if (addonSection)  addonSection.style.display  = 'block';
+    if (detailInput)   detailInput.removeAttribute('required');
+
+    var allRows     = document.querySelectorAll('.menu-item-lux[id^="mr"]');
+    var groupBlocks = document.querySelectorAll('.addon-group-block');
+    var label       = document.getElementById('addon-foods-label');
+
+    // Filter by theme
+    allRows.forEach(function(row){
+        var rowTheme = parseInt(row.getAttribute('data-theme')) || 0;
+        if (rowTheme === themeId) {
+            row.style.display = 'flex';
+        } else {
+            row.style.display = 'none';
+            var cb = row.querySelector('.menu-checkbox');
+            if (cb && cb.checked) { cb.checked = false; cb.dispatchEvent(new Event('change')); }
+        }
+    });
+
+    groupBlocks.forEach(function(g){
+        var hasVisible = Array.from(g.querySelectorAll('.menu-item-lux[id^="mr"]'))
+                              .some(function(r){ return r.style.display !== 'none'; });
+        g.style.display = hasVisible ? 'block' : 'none';
+    });
+
+    if (label) {
+        label.innerHTML = '<i class="fas fa-utensils me-1"></i> Món lẻ thuộc chủ đề đã chọn';
+    }
+    
+    comboId = 0; 
+    document.getElementById('hidden_combo_id').value = '';
+    calcTotal();
 }
 
 function updateChefReq() {

@@ -97,6 +97,7 @@ $pos_query = "
         oi.item_id as food_id,
         oi.quantity,
         oi.status,
+        oi.notes,
         CASE WHEN oi.item_type = 'food' THEN f.name ELSE c.name END as food_name
     FROM pos_orders o
     JOIN restaurant_tables t ON o.table_id = t.id
@@ -125,7 +126,9 @@ foreach ($pos_items as $item) {
         'order_item_id' => $item['order_item_id'],
         'food_name' => $item['food_name'],
         'quantity' => $item['quantity'],
-        'status' => $item['status']
+        'status' => $item['status'],
+        'toppings' => !empty($item['notes']) ? [str_replace('Topping: ', '', $item['notes'])] : [],
+        'note' => ''
     ];
 }
 
@@ -1080,7 +1083,7 @@ $normalOrders = $totalOrders - $urgentOrders;
             </div>
             <div>
               <div class="course-label">Combo / Thực đơn</div>
-              <div class="course-name"><?= htmlspecialchars($order['combo_name'] ?? 'A la Carte — Gọi Món') ?></div>
+              <div class="course-name"><?= htmlspecialchars($order['combo_name'] ?? 'Món Lẻ — Gọi Món') ?></div>
             </div>
           <?php endif; ?>
         </div>

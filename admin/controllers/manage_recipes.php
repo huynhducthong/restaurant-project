@@ -42,7 +42,7 @@ $units = $db->query("SELECT name FROM inventory_units ORDER BY name ASC")->fetch
                                 <?php else: ?>
                                     <?php foreach($recipes as $r): ?>
                                         <span class="badge bg-info-subtle text-info border me-1">
-                                            <?= $r['item_name'] ?>: <?= $r['quantity_required'] ?><?= $r['unit'] ?>
+                                            <?= $r['item_name'] ?>: <?= (float)$r['quantity_required'] ?><?= $r['unit'] ?>
                                         </span>
                                     <?php endforeach; ?>
                                 <?php endif; ?>

@@ -95,6 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($action === 'delete') {
         $id = $_POST['id'] ?? null;
         if ($id) {
+            // Delete associated user account first to avoid foreign key constraints or orphans
+            $db->prepare("DELETE FROM users WHERE employee_id = ?")->execute([$id]);
+            
             $stmt = $db->prepare("DELETE FROM employees WHERE id = ?");
             if ($stmt->execute([$id])) {
                 $message_success = "Đã xóa nhân sự thành công.";
@@ -406,7 +409,7 @@ $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
             document.getElementById('empGender').value = data.gender;
             document.getElementById('empAddress').value = data.address;
             document.getElementById('empPosition').value = data.position;
-            document.getElementById('empSalary').value = data.salary;
+            document.getElementById('empSalary').value = parseFloat(data.salary) || 0;
             document.getElementById('empStatus').value = data.status;
         }
         

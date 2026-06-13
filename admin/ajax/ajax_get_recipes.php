@@ -13,6 +13,9 @@ if ($food_id > 0) {
     $stmt = $db->prepare($query);
     $stmt->execute([$food_id]);
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($results as &$r) {
+        $r['quantity_required'] = (float)$r['quantity_required'];
+    }
 
     header('Content-Type: application/json');
     echo json_encode($results);

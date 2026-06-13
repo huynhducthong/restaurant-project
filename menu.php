@@ -54,7 +54,7 @@ if (isset($_SESSION['user_id'])) {
 
 function hasAllergen($food, $user_allergies) {
     if (empty($user_allergies)) return false;
-    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '');
+    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '') . ',' . ($food['cat_name'] ?? '');
     $food_allergens = array_map('trim', explode(',', mb_strtolower($all_food_ingredients, 'UTF-8')));
     foreach($user_allergies as $ua) {
         foreach($food_allergens as $fa) {
@@ -66,7 +66,7 @@ function hasAllergen($food, $user_allergies) {
 
 function hasDislike($food, $user_dislikes) {
     if (empty($user_dislikes)) return false;
-    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '');
+    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '') . ',' . ($food['cat_name'] ?? '');
     $food_ingredients = array_map('trim', explode(',', mb_strtolower($all_food_ingredients, 'UTF-8')));
     foreach($user_dislikes as $ud) {
         foreach($food_ingredients as $fi) {
@@ -289,7 +289,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
   margin: 0 15px;
 }
 
-/* === A LA CARTE (FOODS) === */
+/* === MÓN LẺ (FOODS) === */
 .menu-category {
   margin-bottom: 100px;
   display: flex;
@@ -518,7 +518,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                     <?php if(!empty($t['foods'])): ?>
                         <div class="menu-category mt-5" style="display: block;">
                             <div class="category-content-wrap" style="width: 100%; max-width: 100%; padding: 0;">
-                                <h3 class="category-title" style="text-align:center; border:none; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;">Món lẻ (A La Carte)</h3>
+                                <h3 class="category-title" style="text-align:center; border:none; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;">Món lẻ</h3>
                                 <div class="menu-list" style="margin-top: 30px;">
                                     <?php foreach($t['foods'] as $f): 
                                         $has_al = hasAllergen($f, $user_allergies);
@@ -527,7 +527,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                                             'name' => $f['name'], 'desc' => $f['description'],
                                             'price' => number_format($f['price'],0,',','.'),
                                             'img' => 'public/assets/img/menu/' . ($f['image'] ?: 'default.jpg'),
-                                            'cat' => "A La Carte",
+                                            'cat' => "Món lẻ",
                                             'toppings' => $f['list_toppings'] ?? ''
                                         ]));
                                     ?>
@@ -656,7 +656,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
     <div class="menu-divider"><div class="diamond"></div></div>
     <?php endif; ?>
 
-    <!-- A La Carte -->
+    <!-- Món lẻ -->
     <div class="menu-section a-la-carte-section">
         <h2 class="menu-section-title">MÓN ĂN</h2>
         <div class="menu-section-subtitle">Tuyển chọn nghệ thuật</div>

@@ -104,7 +104,7 @@ if (isset($_GET['edit'])) {
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Giá phụ thu (VNĐ)</label>
-                                <input type="number" class="form-control" name="price" value="<?= $edit_decor['price'] ?? 0 ?>" required>
+                                <input type="number" class="form-control" name="price" value="<?= isset($edit_decor['price']) ? (float)$edit_decor['price'] : 0 ?>" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Hình ảnh minh họa</label>

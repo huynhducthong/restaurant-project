@@ -116,7 +116,7 @@ $form_action = $is_edit
                                     </label>
                                     <div class="input-group">
                                         <input type="number" name="price" class="form-control bg-light border-0 py-2"
-                                               value="<?= htmlspecialchars($old['price']) ?>"
+                                               value="<?= isset($old['price']) && $old['price'] !== '' ? (float)$old['price'] : '' ?>"
                                                min="0" step="1000" required placeholder="0">
                                         <span class="input-group-text bg-light border-0 text-muted small">đ</span>
                                     </div>

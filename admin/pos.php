@@ -510,6 +510,7 @@ function renderCart(data) {
                 <img src="${imgPath}" class="cart-item-img" onerror="this.src='../public/assets/img/placeholder.jpg'">
                 <div class="cart-item-info">
                     <div class="cart-item-name">${item.name}</div>
+                    ${item.notes ? `<div style="font-size: 0.75rem; color: #dc2626; margin-top: 2px;">${item.notes}</div>` : ''}
                     <div class="cart-item-price">${formatMoney(item.price)}</div>
                     <div class="cart-item-status ${statusInfo.class}">${statusInfo.label}</div>
                 </div>
@@ -563,7 +564,7 @@ function renderCart(data) {
 }
 
 // Actions
-async function addItemToOrder(item_type, item_id, price) {
+async function addItemToOrder(item_type, item_id, price, notes = '') {
     if (!currentTableId) {
         alert('Vui lòng chọn bàn trước khi gọi món!');
         return;
@@ -578,6 +579,7 @@ async function addItemToOrder(item_type, item_id, price) {
         formData.append('item_id', item_id);
         formData.append('price', price);
         formData.append('quantity', 1);
+        formData.append('notes', notes);
 
         const res = await fetch('controllers/pos_controller.php', {
             method: 'POST',
@@ -915,6 +917,27 @@ function showItemDetail(id, type) {
             recipeHtml += `</div></div>`;
             detailHtml += recipeHtml;
         }
+        if (item.topping_list) {
+            const toppings = item.topping_list.split('||');
+            let toppingHtml = `
+                <div class="text-start p-3 mt-3" style="background: #fdf8f6; border-radius: 8px; border: 1px solid #fecdd3;">
+                    <div style="font-weight: 700; color: #9f1239; margin-bottom: 8px;"><i class="fas fa-plus-circle me-2 text-danger"></i> Topping / Lựa chọn thêm:</div>
+                    <div style="color: #4c0519; font-size: 0.9rem;">
+            `;
+            toppings.forEach((top, index) => {
+                const parts = top.split('(+');
+                const name = parts[0].trim();
+                const priceStr = parts[1] ? parts[1].replace('đ)', '').trim() : '0';
+                const priceNum = parseInt(priceStr.replace(/\./g, '')) || 0;
+                toppingHtml += `
+                    <div class="form-check mb-1">
+                        <input class="form-check-input topping-checkbox" type="checkbox" value="${name}" data-price="${priceNum}" id="top_${item.id}_${index}">
+                        <label class="form-check-label" style="cursor:pointer;" for="top_${item.id}_${index}">${top}</label>
+                    </div>`;
+            });
+            toppingHtml += `</div></div>`;
+            detailHtml += toppingHtml;
+        }
     }
 
     document.getElementById('detail-desc').innerHTML = detailHtml;
@@ -925,7 +948,18 @@ function showItemDetail(id, type) {
 
 function addCurrentDetailItem() {
     if (currentDetailItem) {
-        addItemToOrder(currentDetailItem.type, currentDetailItem.id, currentDetailItem.price);
+        let selectedToppings = [];
+        let extraPrice = 0;
+        
+        document.querySelectorAll('.topping-checkbox:checked').forEach(cb => {
+            selectedToppings.push(cb.value);
+            extraPrice += parseInt(cb.getAttribute('data-price')) || 0;
+        });
+        
+        let notes = selectedToppings.length > 0 ? "Topping: " + selectedToppings.join(", ") : "";
+        let finalPrice = parseInt(currentDetailItem.price) + extraPrice;
+        
+        addItemToOrder(currentDetailItem.type, currentDetailItem.id, finalPrice, notes);
         bootstrap.Modal.getInstance(document.getElementById('itemDetailModal')).hide();
     }
 }
