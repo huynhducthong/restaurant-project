@@ -80,7 +80,7 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
             }
 
             // 3. Lấy danh sách các món ăn trong đơn hàng này
-            $stmt_items = $db->prepare("SELECT menu_id, quantity FROM booking_details WHERE booking_id = ?");
+            $stmt_items = $db->prepare("SELECT menu_id, quantity, toppings_info FROM booking_details WHERE booking_id = ?");
             $stmt_items->execute([$id]);
             $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
 
@@ -104,6 +104,34 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 
                 $stmt_recipe->execute([$food_id]);
                 $recipes = $stmt_recipe->fetchAll(PDO::FETCH_ASSOC);
+
+                // Lấy định mức Topping nếu khách có chọn
+                if (!empty($item['toppings_info'])) {
+                    $t_ids = explode(',', $item['toppings_info']);
+                    $valid_t_ids = [];
+                    foreach ($t_ids as $tid) {
+                        if ((int)$tid > 0) $valid_t_ids[] = (int)$tid;
+                    }
+                    if (!empty($valid_t_ids)) {
+                        $placeholders = implode(',', array_fill(0, count($valid_t_ids), '?'));
+                        $stmt_topping_recipe = $db->prepare("
+                            SELECT tr.item_id as ingredient_id, tr.quantity_required, '' as r_unit, i.item_name, i.unit_name as i_unit, i.category, i.expiry_date,
+                                   ic.default_warehouse_id, w.name as warehouse_name
+                            FROM topping_recipes tr
+                            JOIN inventory i ON tr.item_id = i.id
+                            LEFT JOIN inventory_categories ic ON i.category = ic.name
+                            LEFT JOIN warehouses w ON ic.default_warehouse_id = w.id
+                            WHERE tr.topping_id IN ($placeholders)
+                        ");
+                        $stmt_topping_recipe->execute($valid_t_ids);
+                        $t_recipes = $stmt_topping_recipe->fetchAll(PDO::FETCH_ASSOC);
+                        
+                        // Gộp vào mảng recipes chung để trừ kho
+                        foreach ($t_recipes as $tr) {
+                            $recipes[] = $tr;
+                        }
+                    }
+                }
 
                 foreach ($recipes as $rcp) {
                     // KIỂM TRA HẠN SỬ DỤNG TRƯỚC
@@ -167,7 +195,7 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
                             deductStockFEFO($db, $ing_id, $target_warehouse_id, $deduct_primary, ($current_user ?? 'Admin'), 'export');
 
                             $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, 'export', ?, ?)")
-                               ->execute([$ing_id, $target_warehouse_id, $deduct_primary, 'POS (Xác nhận #' . $id . ')']);
+                               ->execute([$ing_id, $target_warehouse_id, $deduct_primary, 'POS (Xác nhận Món & Topping #' . $id . ')']);
                             // Ghi nhớ để hoàn kho sau này
                             $db->prepare("INSERT INTO booking_inventory_deductions (booking_id, ingredient_id, warehouse_id, quantity) VALUES (?, ?, ?, ?)")
                                ->execute([$id, $ing_id, $target_warehouse_id, $deduct_primary]);

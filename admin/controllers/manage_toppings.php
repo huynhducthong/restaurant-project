@@ -84,6 +84,7 @@ if (isset($_GET['delete'])) {
 
 // Lấy danh sách
 $toppings = $db->query("SELECT * FROM toppings ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
+$inventory_items = $db->query("SELECT id, item_name, unit_name FROM inventory WHERE is_active = 1 ORDER BY item_name")->fetchAll(PDO::FETCH_ASSOC);
 
 include '../../public/admin_layout_header.php';
 ?>
@@ -149,10 +150,13 @@ include '../../public/admin_layout_header.php';
                             <?php endif; ?>
                         </td>
                         <td class="text-end">
-                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editTopping(<?= htmlspecialchars(json_encode($t)) ?>)">
+                            <button class="btn btn-sm btn-outline-success me-1" onclick="openRecipeModal(<?= htmlspecialchars(json_encode($t)) ?>)" title="Định lượng nguyên liệu">
+                                <i class="fas fa-balance-scale"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editTopping(<?= htmlspecialchars(json_encode($t)) ?>)" title="Sửa">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <a href="?delete=<?= $t['id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa topping này? Lưu ý: topping này cũng sẽ bị xóa khỏi các món ăn đang liên kết.');">
+                            <a href="?delete=<?= $t['id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa topping này? Lưu ý: topping này cũng sẽ bị xóa khỏi các món ăn đang liên kết.');" title="Xóa">
                                 <i class="fas fa-trash"></i>
                             </a>
                         </td>
@@ -280,6 +284,65 @@ include '../../public/admin_layout_header.php';
     </div>
 </div>
 
+<!-- Modal Recipe -->
+<div class="modal fade" id="recipeModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow" style="border-radius:14px;">
+            <div class="modal-header bg-light border-0">
+                <h5 class="modal-title fw-bold">Định Lượng Topping: <span id="recipe_topping_name" class="text-primary"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="alert alert-info border-0 shadow-sm" style="font-size:13px;">
+                    <i class="fas fa-info-circle me-2"></i>Cấu hình nguyên liệu bị trừ khi món ăn có chọn Topping này.
+                </div>
+                <input type="hidden" id="recipe_topping_id">
+                
+                <form id="formAddRecipe" class="mb-4 bg-light p-3 rounded border">
+                    <h6 class="fw-bold mb-3 small text-uppercase text-muted">Thêm Nguyên Liệu Mới</h6>
+                    <div class="row align-items-end">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <label class="form-label small fw-bold">Nguyên liệu</label>
+                            <select id="recipe_item_id" class="form-select select2-recipe" required>
+                                <option value="">-- Chọn nguyên liệu --</option>
+                                <?php foreach($inventory_items as $item): ?>
+                                    <option value="<?= $item['id'] ?>"><?= htmlspecialchars($item['item_name']) ?> (<?= htmlspecialchars($item['unit_name']) ?>)</option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <label class="form-label small fw-bold">Số lượng trừ kho</label>
+                            <input type="number" step="0.001" min="0.001" id="recipe_qty" class="form-control" required placeholder="VD: 0.05">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-success w-100 fw-bold"><i class="fas fa-plus me-1"></i>Thêm</button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nguyên liệu</th>
+                                <th>Số lượng trừ</th>
+                                <th>Đơn vị</th>
+                                <th width="80" class="text-center">Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recipe_list_body">
+                            <!-- JS load -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 function editTopping(t) {
@@ -294,4 +357,82 @@ function editTopping(t) {
     var editModal = new bootstrap.Modal(document.getElementById('editModal'));
     editModal.show();
 }
+
+let recipeModal;
+function openRecipeModal(t) {
+    document.getElementById('recipe_topping_name').textContent = t.name;
+    document.getElementById('recipe_topping_id').value = t.id;
+    if(!recipeModal) recipeModal = new bootstrap.Modal(document.getElementById('recipeModal'));
+    recipeModal.show();
+    loadRecipeList();
+}
+
+function loadRecipeList() {
+    const topping_id = document.getElementById('recipe_topping_id').value;
+    const tbody = document.getElementById('recipe_list_body');
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted"><i class="fas fa-spinner fa-spin me-2"></i>Đang tải...</td></tr>';
+    
+    fetch(`../ajax/ajax_manage_topping_recipe.php?action=get&topping_id=${topping_id}`)
+    .then(r => r.json())
+    .then(data => {
+        tbody.innerHTML = '';
+        if(data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Chưa có cấu hình định lượng.</td></tr>';
+            return;
+        }
+        data.forEach(row => {
+            tbody.innerHTML += `
+                <tr>
+                    <td class="fw-bold">${row.item_name}</td>
+                    <td class="text-danger fw-bold">${row.quantity_required}</td>
+                    <td>${row.unit_name}</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteRecipe(${row.id})"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+    });
+}
+
+document.getElementById('formAddRecipe').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const topping_id = document.getElementById('recipe_topping_id').value;
+    const item_id = document.getElementById('recipe_item_id').value;
+    const qty = document.getElementById('recipe_qty').value;
+    
+    const formData = new FormData();
+    formData.append('action', 'add');
+    formData.append('topping_id', topping_id);
+    formData.append('item_id', item_id);
+    formData.append('qty', qty);
+    
+    fetch('../ajax/ajax_manage_topping_recipe.php', { method: 'POST', body: formData })
+    .then(r => r.json())
+    .then(res => {
+        if(res.status === 'success') {
+            document.getElementById('recipe_item_id').value = '';
+            document.getElementById('recipe_qty').value = '';
+            loadRecipeList();
+        } else {
+            alert(res.message);
+        }
+    });
+});
+
+function deleteRecipe(id) {
+    if(!confirm('Xóa nguyên liệu này khỏi định lượng Topping?')) return;
+    const formData = new FormData();
+    formData.append('action', 'delete');
+    formData.append('id', id);
+    
+    fetch('../ajax/ajax_manage_topping_recipe.php', { method: 'POST', body: formData })
+    .then(r => r.json())
+    .then(res => {
+        if(res.status === 'success') loadRecipeList();
+        else alert(res.message);
+    });
+}
 </script>
+
+<?php include '../../public/admin_layout_footer.php'; ?>
