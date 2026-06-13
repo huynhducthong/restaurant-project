@@ -34,11 +34,11 @@ try {
         $booking_info = $stmt_bk->fetch(PDO::FETCH_ASSOC) ?: null;
 
         // 3. Lấy danh sách tất cả các món ăn khách đã đặt
-        $stmt_items = $db->prepare("SELECT menu_id, quantity FROM booking_details WHERE booking_id = ?");
+        $stmt_items = $db->prepare("SELECT menu_id, quantity, toppings_info FROM booking_details WHERE booking_id = ?");
         $stmt_items->execute([$booking_id]);
         $ordered_items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
 
-        // FIX 2: TRIỆT TIÊU LỖI N+1 QUERY - Lấy TẤT CẢ công thức trong 1 lần gọi DB duy nhất
+        // Lấy định mức cho Món ăn
         $recipes_by_food = [];
         $food_ids = array_column($ordered_items, 'menu_id');
         if (!empty($food_ids)) {
@@ -52,6 +52,33 @@ try {
             $query_recipe->execute($food_ids);
             while ($row = $query_recipe->fetch(PDO::FETCH_ASSOC)) {
                 $recipes_by_food[$row['food_id']][] = $row;
+            }
+        }
+
+        // Lấy định mức cho Topping
+        $all_topping_ids = [];
+        foreach ($ordered_items as $item) {
+            if (!empty($item['toppings_info'])) {
+                $t_ids = explode(',', $item['toppings_info']);
+                foreach ($t_ids as $tid) {
+                    $tid = (int)$tid;
+                    if ($tid > 0) $all_topping_ids[$tid] = $tid;
+                }
+            }
+        }
+        
+        $recipes_by_topping = [];
+        if (!empty($all_topping_ids)) {
+            $placeholders_t = implode(',', array_fill(0, count($all_topping_ids), '?'));
+            $query_topping_recipe = $db->prepare("
+                SELECT tr.topping_id, tr.item_id as ingredient_id, tr.quantity_required, i.unit_name as i_unit, i.category
+                FROM topping_recipes tr
+                JOIN inventory i ON tr.item_id = i.id
+                WHERE tr.topping_id IN ($placeholders_t)
+            ");
+            $query_topping_recipe->execute(array_values($all_topping_ids));
+            while ($row = $query_topping_recipe->fetch(PDO::FETCH_ASSOC)) {
+                $recipes_by_topping[$row['topping_id']][] = $row;
             }
         }
 
@@ -70,7 +97,7 @@ try {
 
         $query_history = $db->prepare("
             INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) 
-            VALUES (?, ?, 'export', ?, 'Hệ thống POS (AJAX)')
+            VALUES (?, ?, 'export', ?, 'Hệ thống POS (Trừ kho Món & Topping)')
         ");
 
         // Duyệt qua từng món ăn để gom tổng lượng cần trừ theo từng nguyên liệu + kho đích
@@ -79,32 +106,46 @@ try {
             $food_id = $item['menu_id'];
             $food_qty = (float)$item['quantity'];
 
-            // Lấy công thức từ mảng PHP thay vì gọi DB
+            // Định mức món ăn chính
             $recipes = $recipes_by_food[$food_id] ?? [];
-
-            // Duyệt qua từng nguyên liệu trong định mức
             foreach ($recipes as $r) {
                 $ing_id = $r['ingredient_id'];
                 $qty_req = (float)$r['quantity_required'];
                 $category = $r['category'];
 
-                // Xác định kho tương ứng: Đồ uống -> Bar (3), Khác -> Bếp (2)
                 $target_warehouse_id = ($category === 'Đồ uống') ? 3 : 2;
-                
-                // SỬ DỤNG HELPER ĐỂ QUY ĐỔI ĐƠN VỊ TẬP TRUNG
                 $qty_in_stock_unit = convert_to_base_unit($qty_req, $r['r_unit'], $r['i_unit']);
-
                 $total_reduction = $qty_in_stock_unit * $food_qty;
 
                 $key = $ing_id . ':' . $target_warehouse_id;
                 if (!isset($required_by_stock[$key])) {
-                    $required_by_stock[$key] = [
-                        'ingredient_id' => $ing_id,
-                        'warehouse_id' => $target_warehouse_id,
-                        'quantity' => 0
-                    ];
+                    $required_by_stock[$key] = ['ingredient_id' => $ing_id, 'warehouse_id' => $target_warehouse_id, 'quantity' => 0];
                 }
                 $required_by_stock[$key]['quantity'] += $total_reduction;
+            }
+
+            // Định mức Topping đi kèm
+            if (!empty($item['toppings_info'])) {
+                $t_ids = explode(',', $item['toppings_info']);
+                foreach ($t_ids as $tid) {
+                    $tid = (int)$tid;
+                    if ($tid > 0 && isset($recipes_by_topping[$tid])) {
+                        foreach ($recipes_by_topping[$tid] as $tr) {
+                            $ing_id = $tr['ingredient_id'];
+                            $qty_req = (float)$tr['quantity_required']; // Topping recipe không có r_unit, dùng trực tiếp số lượng chuẩn
+                            $category = $tr['category'];
+
+                            $target_warehouse_id = ($category === 'Đồ uống') ? 3 : 2;
+                            $total_reduction = $qty_req * $food_qty; // Nhân với số lượng món ăn
+
+                            $key = $ing_id . ':' . $target_warehouse_id;
+                            if (!isset($required_by_stock[$key])) {
+                                $required_by_stock[$key] = ['ingredient_id' => $ing_id, 'warehouse_id' => $target_warehouse_id, 'quantity' => 0];
+                            }
+                            $required_by_stock[$key]['quantity'] += $total_reduction;
+                        }
+                    }
+                }
             }
         }
 
