@@ -46,11 +46,17 @@ try {
                 SELECT f.id, f.name, f.price, f.image, f.category_id, f.description, 
                        f.is_chef_recommended, f.allergens, f.chef_note, c.name as category_name,
                        (
-                           SELECT GROUP_CONCAT(CONCAT(inv.item_name, ': ', fr.quantity_required, ' ', COALESCE(fr.unit, inv.unit_name)) SEPARATOR '||')
+                           SELECT GROUP_CONCAT(CONCAT(inv.item_name, ': ', TRIM(TRAILING '.' FROM TRIM(TRAILING '0' FROM CAST(fr.quantity_required AS CHAR))), ' ', COALESCE(fr.unit, inv.unit_name)) SEPARATOR '||')
                            FROM food_recipes fr
                            JOIN inventory inv ON fr.ingredient_id = inv.id
                            WHERE fr.food_id = f.id
-                       ) as recipe_list
+                       ) as recipe_list,
+                       (
+                           SELECT GROUP_CONCAT(CONCAT(t.name, ' (+', FORMAT(t.price, 0), 'đ)') SEPARATOR '||')
+                           FROM food_toppings ft
+                           JOIN toppings t ON ft.topping_id = t.id
+                           WHERE ft.food_id = f.id AND t.status = 1
+                       ) as topping_list
                 FROM foods f 
                 LEFT JOIN categories c ON f.category_id = c.id 
                 WHERE f.is_active = 1
@@ -167,6 +173,7 @@ try {
             $item_id = $_POST['item_id'] ?? 0;
             $price = $_POST['price'] ?? 0;
             $quantity = $_POST['quantity'] ?? 1;
+            $notes = $_POST['notes'] ?? '';
 
             if (!$table_id || !$item_type || !$item_id) {
                 throw new Exception('Thiếu thông tin');
@@ -186,16 +193,16 @@ try {
                 $db->prepare("UPDATE restaurant_tables SET status = 'occupied' WHERE id = ?")->execute([$table_id]);
             }
 
-            // Kiểm tra món đã có trong order chưa (cùng status draft thì cộng dồn)
-            $stmt = $db->prepare("SELECT id, quantity FROM pos_order_items WHERE pos_order_id = ? AND item_type = ? AND item_id = ? AND status = 'draft' LIMIT 1");
-            $stmt->execute([$order_id, $item_type, $item_id]);
+            // Kiểm tra món đã có trong order chưa (cùng status draft và cùng notes thì cộng dồn)
+            $stmt = $db->prepare("SELECT id, quantity FROM pos_order_items WHERE pos_order_id = ? AND item_type = ? AND item_id = ? AND IFNULL(notes, '') = ? AND status = 'draft' LIMIT 1");
+            $stmt->execute([$order_id, $item_type, $item_id, $notes]);
             $existing_item = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($existing_item) {
                 $db->prepare("UPDATE pos_order_items SET quantity = quantity + ? WHERE id = ?")->execute([$quantity, $existing_item['id']]);
             } else {
-                $db->prepare("INSERT INTO pos_order_items (pos_order_id, item_type, item_id, quantity, price, status) VALUES (?, ?, ?, ?, ?, 'draft')")
-                   ->execute([$order_id, $item_type, $item_id, $quantity, $price]);
+                $db->prepare("INSERT INTO pos_order_items (pos_order_id, item_type, item_id, quantity, price, notes, status) VALUES (?, ?, ?, ?, ?, ?, 'draft')")
+                   ->execute([$order_id, $item_type, $item_id, $quantity, $price, $notes]);
             }
 
             // Update total

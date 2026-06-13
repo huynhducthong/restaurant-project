@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 12, 2026 at 06:24 AM
+-- Generation Time: Jun 13, 2026 at 06:31 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -148,7 +148,7 @@ CREATE TABLE `about_content` (
 --
 
 INSERT INTO `about_content` (`id`, `category_id`, `title`, `slug`, `content`, `thumbnail`, `display_order`, `is_pinned`, `status`, `created_at`, `publish_date`) VALUES
-(1, 2, 'ĐỘI NGŨ TÀI NĂNG', 'doi-ngu-tai-nang', '<p><span style=\"font-family: \'times new roman\', times, serif;\">Trong một tập thể, sức mạnh kh&ocirc;ng chỉ đến từ kỹ năng c&aacute; nh&acirc;n m&agrave; c&ograve;n từ sự gắn kết v&agrave; c&aacute; t&iacute;nh độc đ&aacute;o của từng th&agrave;nh vi&ecirc;n. Nh&oacute;m 5 người gồm <strong>Th&ocirc;ng, Long, Ph&aacute;t, Ch&iacute;nh, Dương</strong> ch&iacute;nh l&agrave; minh chứng sống động cho điều đ&oacute;.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">🌟 Th&ocirc;ng &ndash; Người dẫn đường</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Th&ocirc;ng nổi bật với khả năng ph&acirc;n t&iacute;ch v&agrave; định hướng. Anh giống như &ldquo;bộ n&atilde;o&rdquo; của đội, lu&ocirc;n đưa ra chiến lược r&otilde; r&agrave;ng v&agrave; gi&uacute;p cả nh&oacute;m đi đ&uacute;ng hướng.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">🎭 Long &ndash; Qu&yacute; bửu (wibu)</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Long l&agrave; nh&acirc;n tố đặc biệt, một &ldquo;qu&yacute; bửu&rdquo; với niềm đam m&ecirc; văn h&oacute;a Nhật Bản. Sự s&aacute;ng tạo v&agrave; kh&aacute;c biệt của Long mang lại m&agrave;u sắc mới mẻ cho cả đội, đ&ocirc;i khi ch&iacute;nh sự &ldquo;dị biệt&rdquo; ấy lại l&agrave; nguồn cảm hứng để nh&oacute;m t&igrave;m ra &yacute; tưởng độc đ&aacute;o.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">⚡ Ph&aacute;t &ndash; Người truyền năng lượng</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Ph&aacute;t lu&ocirc;n tr&agrave;n đầy nhiệt huyết, l&agrave; &ldquo;động cơ&rdquo; th&uacute;c đẩy tinh thần cả nh&oacute;m. Khi mọi người mệt mỏi, ch&iacute;nh Ph&aacute;t l&agrave; người kh&iacute;ch lệ v&agrave; k&eacute;o mọi người trở lại với mục ti&ecirc;u.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">🛠 Ch&iacute;nh &ndash; Người thực thi</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Ch&iacute;nh c&oacute; khả năng biến &yacute; tưởng th&agrave;nh h&agrave;nh động. Anh l&agrave; người tỉ mỉ, ki&ecirc;n nhẫn, đảm bảo mọi kế hoạch được triển khai một c&aacute;ch chắc chắn v&agrave; hiệu quả.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">🌍 Dương &ndash; Phụ tr&aacute;ch trang Tin Tức</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Dương đảm nhận trang <strong>Tin Tức</strong> &ndash; nơi cập nhật những th&ocirc;ng tin mới nhất về nh&agrave; h&agrave;ng như chương tr&igrave;nh khuyến m&atilde;i, sự kiện đặc biệt, m&oacute;n ăn mới ra mắt v&agrave; c&aacute;c hoạt động nổi bật. Với khả năng kết nối v&agrave; truyền đạt th&ocirc;ng tin kh&eacute;o l&eacute;o, Dương đảm bảo trang tin tức lu&ocirc;n được cập nhật thường xuy&ecirc;n, hấp dẫn v&agrave; dễ đọc, gi&uacute;p kh&aacute;ch h&agrave;ng kh&ocirc;ng bỏ lỡ bất kỳ điều th&uacute; vị n&agrave;o từ nh&agrave; h&agrave;ng.</span></p>\r\n<h3><span style=\"font-family: \'times new roman\', times, serif;\">✨ Kết luận</span></h3>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Năm c&aacute; t&iacute;nh, năm thế mạnh kh&aacute;c nhau, nhưng khi kết hợp lại, họ tạo th&agrave;nh một đội ngũ t&agrave;i năng đầy s&aacute;ng tạo v&agrave; nhiệt huyết. V&agrave; tất nhi&ecirc;n, sự g&oacute;p mặt của Long &ndash; &ldquo;qu&yacute; bửu wibu&rdquo; &ndash; khiến tập thể n&agrave;y c&agrave;ng th&ecirc;m th&uacute; vị, độc đ&aacute;o v&agrave; kh&oacute; qu&ecirc;n.</span></p>', '1778770034_2345.png', 1, 1, 1, '2026-04-27 14:46:46', '2026-04-30');
+(1, 2, 'ĐỘI NGŨ TÀI NĂNG', 'doi-ngu-tai-nang', '<p><span style=\"font-family: \'times new roman\', times, serif;\">Trong một tập thể, sức mạnh kh&ocirc;ng chỉ đến từ kỹ năng c&aacute; nh&acirc;n m&agrave; c&ograve;n từ sự gắn kết v&agrave; c&aacute; t&iacute;nh độc đ&aacute;o của từng th&agrave;nh vi&ecirc;n. Nh&oacute;m 5 người gồm <strong>Th&ocirc;ng, Long, Ph&aacute;t, Ch&iacute;nh, Dương</strong> ch&iacute;nh l&agrave; minh chứng sống động cho điều đ&oacute;.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">🌟 Th&ocirc;ng &ndash; Người dẫn đường</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Th&ocirc;ng nổi bật với khả năng ph&acirc;n t&iacute;ch v&agrave; định hướng. Anh giống như &ldquo;bộ n&atilde;o&rdquo; của đội, lu&ocirc;n đưa ra chiến lược r&otilde; r&agrave;ng v&agrave; gi&uacute;p cả nh&oacute;m đi đ&uacute;ng hướng.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">🎭 Long &ndash; Qu&yacute; bửu (wibu)</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Long l&agrave; nh&acirc;n tố đặc biệt, một &ldquo;qu&yacute; bửu&rdquo; với niềm đam m&ecirc; văn h&oacute;a Nhật Bản. Sự s&aacute;ng tạo v&agrave; kh&aacute;c biệt của Long mang lại m&agrave;u sắc mới mẻ cho cả đội, đ&ocirc;i khi ch&iacute;nh sự &ldquo;dị biệt&rdquo; ấy lại l&agrave; nguồn cảm hứng để nh&oacute;m t&igrave;m ra &yacute; tưởng độc đ&aacute;o.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">⚡ Ph&aacute;t &ndash; Người truyền năng lượng</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Ph&aacute;t lu&ocirc;n tr&agrave;n đầy nhiệt huyết, l&agrave; &ldquo;động cơ&rdquo; th&uacute;c đẩy tinh thần cả nh&oacute;m. Khi mọi người mệt mỏi, ch&iacute;nh Ph&aacute;t l&agrave; người kh&iacute;ch lệ v&agrave; k&eacute;o mọi người trở lại với mục ti&ecirc;u.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">🛠 Ch&iacute;nh &ndash; Người thực thi</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Ch&iacute;nh c&oacute; khả năng biến &yacute; tưởng th&agrave;nh h&agrave;nh động. Anh l&agrave; người tỉ mỉ, ki&ecirc;n nhẫn, đảm bảo mọi kế hoạch được triển khai một c&aacute;ch chắc chắn v&agrave; hiệu quả.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">🌍 Dương &ndash; Phụ tr&aacute;ch trang Tin Tức</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Dương đảm nhận trang <strong>Tin Tức</strong> &ndash; nơi cập nhật những th&ocirc;ng tin mới nhất về nh&agrave; h&agrave;ng như chương tr&igrave;nh khuyến m&atilde;i, sự kiện đặc biệt, m&oacute;n ăn mới ra mắt v&agrave; c&aacute;c hoạt động nổi bật. Với khả năng kết nối v&agrave; truyền đạt th&ocirc;ng tin kh&eacute;o l&eacute;o, Dương đảm bảo trang tin tức lu&ocirc;n được cập nhật thường xuy&ecirc;n, hấp dẫn v&agrave; dễ đọc, gi&uacute;p kh&aacute;ch h&agrave;ng kh&ocirc;ng bỏ lỡ bất kỳ điều th&uacute; vị n&agrave;o từ nh&agrave; h&agrave;ng.</span></p>\r\n<h3><span style=\"font-family: \'times new roman\', times, serif;\">✨ Kết luận</span></h3>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Năm c&aacute; t&iacute;nh, năm thế mạnh kh&aacute;c nhau, nhưng khi kết hợp lại, họ tạo th&agrave;nh một đội ngũ t&agrave;i năng đầy s&aacute;ng tạo v&agrave; nhiệt huyết. V&agrave; tất nhi&ecirc;n, sự g&oacute;p mặt của Long &ndash; &ldquo;qu&yacute; bửu wibu&rdquo; &ndash; khiến tập thể n&agrave;y c&agrave;ng th&ecirc;m th&uacute; vị, độc đ&aacute;o v&agrave; kh&oacute; qu&ecirc;n.</span></p>', '1781320532_u-0Kua4Q50LYO4w87oRwe7ZFosfx5L4dumjmMcK4rTko32X0D5ZdRnb66YAzLT6pSMVOuXVWuoRTAw9R7hsxbYiwk3MiYp4zE7Ip8dck289qMq9OqzP2k-F_AZMUZD_DC69KLhXdISCsut7qIsbjgdf68YEbLeP4mc5frrWKvjrAzuCLI-edcZma26n9MJgL.jpg', 1, 1, 1, '2026-04-27 14:46:46', '2026-04-30');
 
 -- --------------------------------------------------------
 
@@ -373,7 +373,8 @@ INSERT INTO `about_shares` (`id`, `content_id`, `platform`, `user_ip`, `created_
 (165, 1, 'view', '::1', '2026-06-09 07:03:31'),
 (166, 1, 'view', '::1', '2026-06-09 07:13:53'),
 (167, 1, 'view', '::1', '2026-06-11 14:07:17'),
-(168, 1, 'view', '::1', '2026-06-11 14:07:25');
+(168, 1, 'view', '::1', '2026-06-11 14:07:25'),
+(169, 1, 'view', '::1', '2026-06-13 03:15:55');
 
 -- --------------------------------------------------------
 
@@ -426,6 +427,56 @@ CREATE TABLE `banners` (
 INSERT INTO `banners` (`id`, `image_url`, `title`, `description`, `font_family`, `text_color`, `text_align`, `font_style`, `display_order`, `created_at`, `desc_color`, `desc_font_family`, `desc_font_style`, `title_font_size`, `desc_font_size`, `is_active`, `button_text`, `button_link`, `button_color`, `start_date`, `end_date`) VALUES
 (2, 'e1ed0ad828fff1d6a15d.jpg', 'retauranlly', 'ăn ngon', '\'Playfair Display\', serif', '#449518', 'center', 'bold', 1, '2026-04-20 12:14:02', '#c18b8b', '\'Poppins\', sans-serif', 'normal', 48, 24, 1, 'đặt bàn', 'http://localhost/restaurant-project/booking_service.php?type=table', '#cda45e', NULL, NULL),
 (7, 'e9d525284d704a42c194.jpg', 'huhf', 'nbzbn', '\'Playfair Display\', serif', '#d71d1d', 'center', 'bold', 2, '2026-04-20 12:20:10', '#eeeeee', '\'Poppins\', sans-serif', 'normal', 48, 24, 1, '', '', '#cda45e', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bespoke_budgets`
+--
+
+DROP TABLE IF EXISTS `bespoke_budgets`;
+CREATE TABLE `bespoke_budgets` (
+  `id` int(11) NOT NULL,
+  `label` varchar(255) NOT NULL,
+  `price_value` int(11) NOT NULL DEFAULT 0,
+  `sort_order` int(11) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `bespoke_budgets`
+--
+
+INSERT INTO `bespoke_budgets` (`id`, `label`, `price_value`, `sort_order`) VALUES
+(1, 'Thỏa thuận sau khi thiết kế thực đơn', 0, 1),
+(2, 'Dưới 1.500.000 đ / khách', 1500000, 2),
+(3, '1.500.000 đ - 3.000.000 đ / khách', 2000000, 3),
+(4, '3.000.000 đ - 5.000.000 đ / khách', 4000000, 4),
+(5, 'Trên 5.000.000 đ / khách (Siêu cao cấp)', 5000000, 5);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bespoke_styles`
+--
+
+DROP TABLE IF EXISTS `bespoke_styles`;
+CREATE TABLE `bespoke_styles` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `sort_order` int(11) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `bespoke_styles`
+--
+
+INSERT INTO `bespoke_styles` (`id`, `name`, `sort_order`) VALUES
+(1, 'Tùy Bếp trưởng đề xuất', 1),
+(2, 'Ẩm thực Việt Nam Đương Đại ', 2),
+(3, 'Ẩm thực Việt Nam Cổ Điển (Traditional Vietnamese)', 3),
+(4, 'Ẩm thực Pháp - Việt Đông Dương (Indochine Fusion)', 4),
+(5, 'Hải sản Cao cấp (Premium Seafood)', 5),
+(6, 'Thực dưỡng & Chay Thượng hạng (Fine Vegetarian)', 6);
 
 -- --------------------------------------------------------
 
@@ -707,10 +758,10 @@ CREATE TABLE `combos` (
 --
 
 INSERT INTO `combos` (`id`, `name`, `description`, `price`, `image`, `status`, `is_active`, `created_at`, `theme_id`) VALUES
-(1, 'Romantic Evening', 'Bít tết + salad cho 2 người', 850000.00, 'e86b1160c79e65f1cb494d5d.jpg', 1, 1, '2026-05-14 08:00:00', 1),
-(2, 'The Olive Experience', 'hahn', 1200000.00, '7449c8a6ce9351e40490a778.jpg', 1, 1, '2026-05-23 07:15:51', 1),
-(3, 'The Vega Grand Tasting', 'Bữa thưởng thức cao cấp 5 món - khai vị, chính, tráng miệng. Hành trình ẩm thực Michelin đẳng cấp cho 2 người.', 2500000.00, 'vega_grand_tasting.jpg', 1, 1, '2026-06-09 22:39:39', 1),
-(4, 'Vega Ocean Prestige', 'Set menu hải sản thượng hạng: cá hồi áp chảo, sò điệp Hokkaido, tôm sú, tuna tartare và soup kem nấm. Dành cho người yêu biển.', 1800000.00, 'vega_seafood_platter.jpg', 1, 1, '2026-06-09 22:39:39', 1);
+(1, 'Romantic Evening', 'Bít tết + salad cho 2 người', 850000.00, 'e86b1160c79e65f1cb494d5d.jpg', 1, 1, '2026-05-14 08:00:00', NULL),
+(2, 'The Olive Experience', 'hahn', 1200000.00, '7449c8a6ce9351e40490a778.jpg', 1, 1, '2026-05-23 07:15:51', NULL),
+(3, 'The Vega Grand Tasting', 'Bữa thưởng thức cao cấp 5 món - khai vị, chính, tráng miệng. Hành trình ẩm thực Michelin đẳng cấp cho 2 người.', 2500000.00, 'vega_grand_tasting.jpg', 1, 1, '2026-06-09 22:39:39', NULL),
+(4, 'Vega Ocean Prestige', 'Set menu hải sản thượng hạng: cá hồi áp chảo, sò điệp Hokkaido, tôm sú, tuna tartare và soup kem nấm. Dành cho người yêu biển.', 1800000.00, 'vega_seafood_platter.jpg', 1, 1, '2026-06-09 22:39:39', NULL);
 
 -- --------------------------------------------------------
 
@@ -882,7 +933,7 @@ CREATE TABLE `foods` (
 --
 
 INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`, `max_toppings`, `is_active`, `is_chef_recommended`, `allergens`, `wine_pairing_id`, `chef_note`, `theme_id`) VALUES
-(1, 2, 'Bò Bít Tết (Beefsteak)', 400000.00, '7d76786780be41b26cea039d.jpg', 'Thăn nội bò nướng than hoa mềm ngọt, kèm sốt tiêu đen đặc biệt.', 1, 4, 1, 1, '', NULL, '', NULL),
+(1, 2, 'Bò Bít Tết (Beefsteak)', 400000.00, '7d76786780be41b26cea039d.jpg', 'Thăn nội bò nướng than hoa mềm ngọt, kèm sốt tiêu đen đặc biệt.', 1, 4, 1, 1, '', NULL, '', 1),
 (3, 2, 'Cá Hồi Áp Chảo', 180000.00, '1779508455_6a1124e77c5f4.jpg', 'Cá hồi Na Uy tươi áp chảo xém da, dùng kèm sốt chanh leo chua ngọt.', 1, 4, 1, 0, '', NULL, '', NULL),
 (4, 2, 'Sườn Heo Nướng BBQ', 220000.00, '1779508431_6a1124cfdd1c3.jpg', 'Sườn non tẩm ướp sốt BBQ đậm đà nướng chậm trong 4 giờ.', 1, 4, 1, 0, '', NULL, '', NULL),
 (5, 2, 'Mì Ý Hải Sản', 150000.00, '1779508403_6a1124b3b9104.webp', 'Mì Spaghetti xào tôm, mực, vẹm xanh sốt cà chua cay nhẹ.', 1, 4, 1, 0, '', NULL, '', NULL),
@@ -890,8 +941,8 @@ INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description
 (7, 3, 'Soup Kem Nấm', 65000.00, '1779508350_6a11247ee9fae.jpg', 'Soup nấm hương nấm mỡ xay mịn nấu cùng kem tươi béo ngậy.', 1, 4, 1, 0, '', NULL, '', NULL),
 (8, 2, 'Pizza Gà Nấm', 145000.00, '1779508327_6a112467d05fd.jpg', 'Bánh pizza đế mỏng nướng củi, phô mai mozzarella kéo sợi phủ thịt gà và nấm.', 1, 4, 1, 1, 'đậu phộng', NULL, '', NULL),
 (9, 1, 'Tôm Sú Rang Muối Ớt', 195000.00, '1779508300_6a11244c4b361.jpg', 'Tôm sú tươi sống chiên giòn xóc muối ớt kiểu Hồng Kông.', 1, 4, 1, 0, '', NULL, '', NULL),
-(11, 5, 'Bánh Mì Bơ Tỏi', 45000.00, '1779508232_6a112408d74a9.webp', 'Bánh mì baguette nướng giòn rụm phết bơ tỏi và lá thơm băm nhỏ.', 1, 4, 1, 1, '', NULL, '', NULL),
-(12, 2, 'Beef Wellington', 850000.00, '1780713599_6a23887fcefe9.jpg', 'Thăn bò hảo hạng cuộn trong lớp nấm truffles và vỏ bánh ngàn lớp nướng vàng rụm.', 1, 4, 1, 0, '', NULL, '', NULL),
+(11, 5, 'Bánh Mì Bơ Tỏi', 45000.00, '1779508232_6a112408d74a9.webp', 'Bánh mì baguette nướng giòn rụm phết bơ tỏi và lá thơm băm nhỏ.', 1, 4, 1, 1, '', NULL, '', 1),
+(12, 2, 'Beef Wellington', 850000.00, '1780713599_6a23887fcefe9.jpg', 'Thăn bò hảo hạng cuộn trong lớp nấm truffles và vỏ bánh ngàn lớp nướng vàng rụm.', 1, 4, 1, 0, '', NULL, '', 1),
 (13, 2, 'Duck Breast with Cherry Reduction', 650000.00, '1780713649_6a2388b12a6a1.jpg', 'Ức vịt áp chảo mềm mọng dùng kèm sốt cherry đỏ cô đặc chua ngọt tinh tế.', 1, 4, 1, 0, '', NULL, '', NULL),
 (14, 2, 'Herb-Crusted Lamb Rack', 750000.00, '1780713689_6a2388d90ba6f.jpg', 'Sườn cừu Pháp nướng phủ lớp vụn bánh mì và thảo mộc thơm lừng.', 1, 4, 1, 0, '', NULL, '', NULL),
 (15, 2, 'Seared Hokkaido Scallops', 950000.00, '1780713718_6a2388f69f231.jpg', 'Cồi sò điệp Hokkaido áp chảo dùng kèm sốt bơ chanh vàng béo ngậy.', 1, 4, 1, 0, '', NULL, '', NULL),
@@ -1405,7 +1456,6 @@ CREATE TABLE `inventory` (
 --
 
 INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `cost_price`, `supplier_id`, `entry_date`, `expiry_date`, `revenue`, `updated_at`, `min_stock`, `is_active`, `storage_zone`, `storage_temperature`, `allergens`) VALUES
-(1, 'Bánh mì', 'Thực phẩm', 'cái', 5000.00, NULL, '2026-06-03', '2026-06-06', 0.00, '2026-06-03 12:24:03', 50, 1, 'Kho Tổng', NULL, ''),
 (2, 'Bơ lạt', 'Thực phẩm', 'kg', 150000.00, NULL, '2026-06-03', '2026-07-10', 0.00, '2026-06-12 02:57:19', 2, 1, 'Kho Tổng', NULL, ''),
 (3, 'Tỏi', 'Thực phẩm', 'kg', 50000.00, NULL, '2026-06-03', '2026-07-03', 0.00, '2026-06-03 12:24:03', 1, 1, 'Kho Tổng', NULL, ''),
 (4, 'Phô mai', 'Thực phẩm', 'kg', 200000.00, NULL, '2026-06-03', '2026-08-02', 0.00, '2026-06-03 12:24:03', 3, 1, 'Kho Tổng', NULL, ''),
@@ -1426,7 +1476,6 @@ INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `cost_price
 (20, 'Bắp ngọt', 'Rau củ', 'kg', 10000.00, NULL, NULL, '2026-06-19', 0.00, '2026-06-04 02:46:28', 0, 1, 'Kho khô', NULL, ''),
 (21, 'Muối', 'Gia vị', 'kg', 7500.00, NULL, NULL, '2027-06-04', 0.00, '2026-06-04 02:46:28', 0, 1, 'Kho khô', NULL, ''),
 (22, 'Xà lách xanh', 'Rau củ', 'kg', 15000.00, NULL, NULL, '2026-06-11', 0.00, '2026-06-04 02:46:28', 0, 1, 'Kho khô', NULL, ''),
-(23, 'Xà lách tím', 'Rau củ', 'kg', 20000.00, NULL, NULL, '2026-06-11', 0.00, '2026-06-04 02:46:28', 0, 1, 'Kho khô', NULL, ''),
 (25, 'Mật ong', 'Gia vị', 'lít', 100000.00, NULL, NULL, '2028-06-03', 0.00, '2026-06-04 02:46:28', 0, 1, 'Kho khô', NULL, ''),
 (26, 'Nước tương', 'Gia vị', 'lít', 25000.00, NULL, NULL, '2027-06-04', 0.00, '2026-06-04 02:46:28', 0, 1, 'Kho khô', NULL, ''),
 (28, 'Thịt heo muối', 'Thực phẩm', 'kg', 250000.00, NULL, '2026-06-06', '2026-12-03', 0.00, '2026-06-06 02:58:13', 5, 1, 'Kho Tổng', NULL, ''),
@@ -1549,7 +1598,7 @@ INSERT INTO `inventory_batches` (`id`, `ingredient_id`, `warehouse_id`, `batch_c
 (38, 20, 1, 'PO-20260604094628', 10.000, '2026-06-19', 20000.00, NULL, '2026-06-04 02:46:28'),
 (39, 21, 1, 'PO-20260604094628', 10.000, '2027-06-04', 15000.00, NULL, '2026-06-04 02:46:28'),
 (40, 22, 1, 'PO-20260604094628', 8.000, '2026-06-11', 30000.00, NULL, '2026-06-04 02:46:28'),
-(41, 23, 1, 'PO-20260604094628', 8.000, '2026-06-11', 40000.00, NULL, '2026-06-04 02:46:28'),
+(41, 23, 1, 'PO-20260604094628', 0.000, '2026-06-11', 40000.00, NULL, '2026-06-04 02:46:28'),
 (42, 24, 1, 'PO-20260604094628', 15.000, '2026-06-09', 120000.00, NULL, '2026-06-04 02:46:28'),
 (43, 25, 1, 'PO-20260604094628', 5.000, '2028-06-03', 200000.00, NULL, '2026-06-04 02:46:28'),
 (44, 26, 1, 'PO-20260604094628', 5.000, '2027-06-04', 50000.00, NULL, '2026-06-04 02:46:28'),
@@ -1862,7 +1911,10 @@ INSERT INTO `inventory_history` (`id`, `ingredient_id`, `warehouse_id`, `type`, 
 (390, 14, 2, 'export', 0.45, '2026-06-12 02:57:19', 'POS (Xác nhận #87)'),
 (391, 2, 2, 'export', 0.02, '2026-06-12 02:57:19', 'POS (Xác nhận #87)'),
 (392, 12, 2, 'export', 0.00, '2026-06-12 02:57:19', 'POS (Xác nhận #87)'),
-(393, 3, 2, 'export', 0.01, '2026-06-12 02:57:19', 'POS (Xác nhận #87)');
+(393, 3, 2, 'export', 0.01, '2026-06-12 02:57:19', 'POS (Xác nhận #87)'),
+(394, 1, 2, 'loss', 50.00, '2026-06-13 02:12:22', 'Admin'),
+(395, 1, 2, 'loss', 50.00, '2026-06-13 02:13:29', 'Admin'),
+(396, 23, 1, 'loss', 8.00, '2026-06-13 02:13:51', 'Admin');
 
 -- --------------------------------------------------------
 
@@ -1946,7 +1998,7 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 (50, 1, 20, 10.00, '2026-06-04 09:46:28'),
 (51, 1, 21, 0.00, '2026-06-04 09:49:14'),
 (52, 1, 22, 8.00, '2026-06-04 09:46:28'),
-(53, 1, 23, 8.00, '2026-06-04 09:46:28'),
+(53, 1, 23, 0.00, '2026-06-13 09:13:51'),
 (54, 1, 24, 0.00, '2026-06-04 09:48:24'),
 (55, 1, 25, 5.00, '2026-06-04 09:46:28'),
 (56, 1, 26, 0.00, '2026-06-04 09:49:41'),
@@ -1955,7 +2007,7 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 (59, 9, 21, 8.00, '2026-06-04 10:01:20'),
 (60, 9, 26, 5.00, '2026-06-04 09:49:41'),
 (61, 2, 21, 2.00, '2026-06-04 10:01:20'),
-(64, 2, 1, 196.00, '2026-06-06 14:54:29'),
+(64, 2, 1, 96.00, '2026-06-13 09:13:29'),
 (67, 2, 2, 1.81, '2026-06-12 09:57:19'),
 (71, 2, 12, 1.00, '2026-06-04 10:02:57'),
 (79, 2, 3, 2.93, '2026-06-12 09:57:19'),
@@ -2016,7 +2068,9 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 (226, 2, 26, 2.00, '2026-06-08 14:55:07'),
 (227, 9, 6, 2.00, '2026-06-08 14:55:09'),
 (228, 2, 37, 0.80, '2026-06-08 14:55:44'),
-(229, 2, 5, 10.00, '2026-06-08 14:55:47');
+(229, 2, 5, 10.00, '2026-06-08 14:55:47'),
+(261, 7, 1, 100.00, '2026-06-13 09:13:29'),
+(263, 7, 23, 8.00, '2026-06-13 09:13:51');
 
 -- --------------------------------------------------------
 
@@ -2661,7 +2715,7 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 ('inv_expiry_warning_days', '30'),
 ('inv_low_stock', '5'),
 ('inv_low_stock_threshold', '5'),
-('last_telegram_alert_date', '2026-06-12'),
+('last_telegram_alert_date', '2026-06-13'),
 ('last_telegram_eod_date', '2026-06-05'),
 ('logo_url', 'assets/img/logo.png'),
 ('logo_ver', '1779627100'),
@@ -2726,7 +2780,7 @@ CREATE TABLE `themes` (
 --
 
 INSERT INTO `themes` (`id`, `name`, `description`, `start_date`, `end_date`, `image`, `is_active`, `created_at`) VALUES
-(1, 'Doug K. Vega', 'thyndvsaf', '2026-06-05 20:13:00', '2026-12-31 23:59:59', 'public/assets/img/themes/theme_6a22cc01125e5.jpg', 1, '2026-06-05 13:13:58');
+(1, 'Doug K. Vega', 'thyndvsaf', '2026-06-05 20:13:00', '2026-12-31 23:59:00', 'public/assets/img/themes/theme_6a2cc3ee7f984.jpg', 1, '2026-06-05 13:13:58');
 
 -- --------------------------------------------------------
 
@@ -3119,6 +3173,18 @@ ALTER TABLE `banners`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `bespoke_budgets`
+--
+ALTER TABLE `bespoke_budgets`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `bespoke_styles`
+--
+ALTER TABLE `bespoke_styles`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `bookings`
 --
 ALTER TABLE `bookings`
@@ -3477,7 +3543,7 @@ ALTER TABLE `about_saved_posts`
 -- AUTO_INCREMENT for table `about_shares`
 --
 ALTER TABLE `about_shares`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=169;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=170;
 
 --
 -- AUTO_INCREMENT for table `admins`
@@ -3490,6 +3556,18 @@ ALTER TABLE `admins`
 --
 ALTER TABLE `banners`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `bespoke_budgets`
+--
+ALTER TABLE `bespoke_budgets`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `bespoke_styles`
+--
+ALTER TABLE `bespoke_styles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `bookings`
@@ -3621,7 +3699,7 @@ ALTER TABLE `inventory_categories`
 -- AUTO_INCREMENT for table `inventory_history`
 --
 ALTER TABLE `inventory_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=394;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=397;
 
 --
 -- AUTO_INCREMENT for table `inventory_receipts`
@@ -3633,7 +3711,7 @@ ALTER TABLE `inventory_receipts`
 -- AUTO_INCREMENT for table `inventory_stocks`
 --
 ALTER TABLE `inventory_stocks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=261;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=264;
 
 --
 -- AUTO_INCREMENT for table `inventory_transfers`

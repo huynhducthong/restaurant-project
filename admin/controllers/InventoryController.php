@@ -602,5 +602,8 @@ $ingredients = $db->query("SELECT id, item_name, unit_name, cost_price FROM inve
 
 $msg = $_GET['msg'] ?? '';
 
+// FETCH CATEGORIES FOR FILTER DROPDOWN
+$inv_categories = $db->query("SELECT * FROM inventory_categories ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
+
 // Gọi View
 require_once __DIR__ . '/../../admin/views/inventory/inventory_view.php';

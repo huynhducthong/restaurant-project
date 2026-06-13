@@ -248,6 +248,12 @@ include '../../public/admin_layout_header.php';
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <h4 class="fw-bold m-0 text-uppercase">Tồn Kho Đa Vị Trí</h4>
                     <div class="d-flex gap-2">
+                        <select id="categoryFilter" class="form-select form-select-sm" style="width:150px" onchange="filterTable()">
+                            <option value="">Tất cả danh mục</option>
+                            <?php foreach($inv_categories as $c): ?>
+                                <option value="<?= htmlspecialchars($c['name']) ?>"><?= htmlspecialchars($c['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
                         <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="🔍 Tìm kiếm..." style="width:200px" oninput="filterTable()">
                         <button class="btn btn-success fw-bold shadow-sm" onclick="exportFilteredExcel()"><i class="fas fa-file-excel me-1"></i> Xuất Excel</button>
                         <button class="btn btn-warning fw-bold shadow-sm" onclick="openInventoryModal()">+ Thêm Mới</button>
@@ -346,6 +352,7 @@ include '../../public/admin_layout_header.php';
                                     data-low="<?= $isLow ?>"
                                     data-expiry="<?= $isExpiring ?>"
                                     data-expired="<?= $isExpired ?>"
+                                    data-category="<?= htmlspecialchars($i['category'] ?? '') ?>"
                                     data-wh-stock='<?= json_encode($wh_with_stock) ?>'
                                     data-stocks='<?= json_encode($i['stocks']) ?>'
                                     data-visible="1">
@@ -1687,8 +1694,11 @@ include '../../public/admin_layout_header.php';
 
     function filterTable() {
         const q = document.getElementById('searchInput').value.toLowerCase();
+        const catFilter = document.getElementById('categoryFilter').value.toLowerCase();
         document.querySelectorAll('#invBody .inv-row').forEach(r => {
             const nameMatch   = r.dataset.name.includes(q);
+            const rCat = r.dataset.category ? r.dataset.category.toLowerCase() : '';
+            const catMatch    = catFilter === '' || rCat === catFilter;
             const filterMatch = (activeFilter === 'all') ? true
                               : (activeFilter === 'low' ? r.dataset.low === '1' 
                                : (activeFilter === 'expired' ? r.dataset.expired === '1' : r.dataset.expiry === '1'));
@@ -1702,7 +1712,7 @@ include '../../public/admin_layout_header.php';
                 } catch(e) { whMatch = true; }
             }
 
-            r.setAttribute('data-visible', (nameMatch && filterMatch && whMatch) ? '1' : '0');
+            r.setAttribute('data-visible', (nameMatch && catMatch && filterMatch && whMatch) ? '1' : '0');
 
             // --- ĐIỀU CHỈNH HIỂN THỊ CHI TIẾT KHO TRONG DÒNG ---
             const badges = r.querySelectorAll('.wh-badge');

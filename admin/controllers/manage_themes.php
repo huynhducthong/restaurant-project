@@ -249,7 +249,7 @@ include '../../public/admin_layout_header.php';
                             </div>
 
                             <div class="card shadow-sm border-0">
-                                <div class="card-header bg-light fw-bold py-2"><i class="fas fa-utensils text-success me-2"></i>Chọn Món lẻ (A La Carte)</div>
+                                <div class="card-header bg-light fw-bold py-2"><i class="fas fa-utensils text-success me-2"></i>Chọn Món lẻ</div>
                                 <div class="card-body p-0" style="max-height: 200px; overflow-y: auto;">
                                     <ul class="list-group list-group-flush">
                                         <?php foreach ($all_foods as $f): ?>
@@ -336,7 +336,7 @@ include '../../public/admin_layout_header.php';
                             </div>
 
                             <div class="card shadow-sm border-0">
-                                <div class="card-header bg-light fw-bold py-2"><i class="fas fa-utensils text-success me-2"></i>Chọn Món lẻ (A La Carte)</div>
+                                <div class="card-header bg-light fw-bold py-2"><i class="fas fa-utensils text-success me-2"></i>Chọn Món lẻ</div>
                                 <div class="card-body p-0" style="max-height: 200px; overflow-y: auto;">
                                     <ul class="list-group list-group-flush">
                                         <?php foreach ($all_foods as $f): ?>

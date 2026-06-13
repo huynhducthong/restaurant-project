@@ -51,14 +51,28 @@ try {
     $stmt->execute([$year_booking]);
     $total_bookings = $stmt->fetchColumn() ?: 0;
     
+    // Revenue from bookings
     $stmt = $db->prepare("SELECT SUM(total_amount) FROM service_bookings WHERE status != 'Cancelled' AND $where_sql");
     $stmt->execute($params);
-    $selected_revenue = $stmt->fetchColumn() ?: 0;
+    $booking_rev = $stmt->fetchColumn() ?: 0;
+    
+    // Revenue from walk-in POS
+    $stmt = $db->prepare("SELECT SUM(total_amount) FROM pos_orders WHERE status = 'paid' AND booking_id IS NULL AND $where_sql");
+    $stmt->execute($params);
+    $pos_rev = $stmt->fetchColumn() ?: 0;
+    
+    $selected_revenue = $booking_rev + $pos_rev;
     
     for ($m = 1; $m <= 12; $m++) {
-        $stmt = $db->prepare("SELECT SUM(total_amount) FROM service_bookings WHERE status != 'Cancelled' AND MONTH(created_at)=? AND YEAR(created_at)=?");
-        $stmt->execute([$m, $year_revenue]);
-        $chart_revenue[$m - 1] = (int) $stmt->fetchColumn();
+        $stmt1 = $db->prepare("SELECT SUM(total_amount) FROM service_bookings WHERE status != 'Cancelled' AND MONTH(created_at)=? AND YEAR(created_at)=?");
+        $stmt1->execute([$m, $year_revenue]);
+        $b_rev = (int) $stmt1->fetchColumn();
+        
+        $stmt2 = $db->prepare("SELECT SUM(total_amount) FROM pos_orders WHERE status = 'paid' AND booking_id IS NULL AND MONTH(created_at)=? AND YEAR(created_at)=?");
+        $stmt2->execute([$m, $year_revenue]);
+        $p_rev = (int) $stmt2->fetchColumn();
+        
+        $chart_revenue[$m - 1] = $b_rev + $p_rev;
     }
     
     foreach (['Completed', 'Pending', 'Cancelled'] as $i => $st) {
