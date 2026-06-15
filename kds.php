@@ -1083,7 +1083,7 @@ $normalOrders = $totalOrders - $urgentOrders;
             </div>
             <div>
               <div class="course-label">Combo / Thực đơn</div>
-              <div class="course-name"><?= htmlspecialchars($order['combo_name'] ?? 'Món Lẻ — Gọi Món') ?></div>
+              <div class="course-name"><?= htmlspecialchars($order['combo_name'] ?? 'Món tự chọn — Gọi Món') ?></div>
             </div>
           <?php endif; ?>
         </div>

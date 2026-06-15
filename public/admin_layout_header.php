@@ -532,7 +532,7 @@ try {
                         </li>
                         <li class="<?= isActive('FoodController.php') ?>">
                             <a href="/restaurant-project/admin/controllers/FoodController.php" style="padding-left: 42px; font-size: 12.5px;">
-                                <i class="fas fa-concierge-bell" style="font-size: 12px; margin-right: 6px;"></i> Món ăn (Món lẻ)
+                                <i class="fas fa-concierge-bell" style="font-size: 12px; margin-right: 6px;"></i> Món ăn (Món tự chọn)
                             </a>
                         </li>
                         <li class="<?= isActive('manage_toppings.php') ?>">

@@ -23,7 +23,18 @@ $combos_raw = $db->query(
      WHERE c.status=1 GROUP BY c.id ORDER BY t.created_at DESC, c.id DESC"
 )->fetchAll(PDO::FETCH_ASSOC);
 
+$active_themes = $db->query("SELECT * FROM themes WHERE is_active = 1 ORDER BY created_at DESC")->fetchAll(PDO::FETCH_ASSOC);
+
 $grouped_combos = [];
+foreach ($active_themes as $t) {
+    $grouped_combos[$t['name']] = [
+        'id' => $t['id'],
+        'desc' => $t['description'],
+        'img' => $t['image'],
+        'combos' => []
+    ];
+}
+
 foreach($combos_raw as $cb) {
     $t_name = $cb['theme_name'] ? $cb['theme_name'] : 'Thực Đơn Tiêu Chuẩn';
     if(!isset($grouped_combos[$t_name])) {
@@ -269,8 +280,8 @@ body {
 .btn-wizard-prev:hover { border-color: var(--forest); color: var(--forest); }
 
 /* === MAIN BOOKING AREA === */
-.booking-section { position: relative; max-width: 1200px; margin: -80px auto 100px; padding: 0 20px; z-index: 10; display: grid; grid-template-columns: 1fr 400px; gap: 30px; }
-@media (max-width: 992px) { .booking-section { grid-template-columns: 1fr; margin-top: 0; padding-top: 30px; } }
+.booking-section { position: relative; max-width: 1450px; margin: -80px auto 100px; padding: 0 20px; z-index: 10; display: grid; grid-template-columns: 1fr 450px; gap: 40px; }
+@media (max-width: 992px) { .booking-section { grid-template-columns: 1fr; margin-top: 0; padding-top: 30px; gap: 20px; } }
 
 .luxury-panel { background: #fff; border: 1px solid var(--glass-border); border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; }
 .panel-section { padding: 35px 40px; border-bottom: 1px solid var(--glass-border); }
@@ -503,8 +514,8 @@ select.input-lux {
                 <?php endif; ?>
             </div>
 
-            <div class="panel-section">
-                <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold);"><?= $type === 'chef' ? 'Địa Điểm Phục Vụ' : 'Không Gian & Vị Trí' ?></h3>
+            <div class="panel-section" style="padding-top: 20px; padding-bottom: 20px;">
+                <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold); margin-bottom: 15px;"><?= $type === 'chef' ? 'Địa Điểm Phục Vụ' : 'Không Gian & Vị Trí' ?></h3>
                 
                 <?php if ($type !== 'chef'): ?>
                     <div class="map-btn-lux mb-3" data-bs-toggle="modal" data-bs-target="#mapModal">
@@ -611,14 +622,14 @@ select.input-lux {
             <!-- BƯỚC 2 -->
             <div id="step-2" class="booking-step">
             <div class="panel-section" style="border-bottom: none;">
-                <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold);">Tinh Hoa Ẩm Thực</h3>
+                <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold);">Thực Đơn</h3>
                 
                 <?php if ($type !== 'bespoke'): ?>
                 <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">Bộ Sưu Tập Hương Vị</p>
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:15px; margin-bottom: 25px;">
+                <div style="display:grid; grid-template-columns: 1fr; max-width: 350px; gap:15px; margin-bottom: 25px;">
                     <div class="card-select cc active" data-price="0" onclick="selCombo(0,this)">
                         <div style="color:var(--gold); font-size:15px; margin-bottom:5px;">Gọi Món Tự Do</div>
-                        <div style="font-size:11px; color:var(--text-muted)">Món lẻ</div>
+                        <div style="font-size:11px; color:var(--text-muted)">Món tự chọn</div>
                     </div>
                 </div>
 
@@ -632,7 +643,7 @@ select.input-lux {
                 <p style="font-size:13px; color:var(--gold); margin-bottom:10px; font-family:'Playfair Display', serif; text-transform:uppercase; letter-spacing:1px; border-bottom: 1px dashed rgba(212,176,106,0.3); padding-bottom:5px; cursor:pointer;" onclick='showThemeInfo(<?= $themeJson ?>)'>
                     SET MENU TỪ CHỦ ĐỀ: <?= htmlspecialchars($theme_name) ?> <i class="fas fa-info-circle ms-1" style="font-size:11px; opacity:0.7;"></i>
                 </p>
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:15px; margin-bottom: 25px;">
+                <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:15px; margin-bottom: 25px;">
                     <?php foreach($theme_data['combos'] as $cb): ?>
                         <div class="card-select cc" data-price="<?= (float)$cb['price'] ?>" onclick="selCombo(<?= $cb['id'] ?>,this)">
                             <div style="color:var(--gold); font-size:15px; margin-bottom:5px;"><?= htmlspecialchars($cb['name']) ?></div>
@@ -640,10 +651,12 @@ select.input-lux {
                         </div>
                     <?php endforeach; ?>
                     
+                    <?php if ($theme_data['id'] != 0): ?>
                     <div class="card-select cc" data-price="0" onclick="selThemeFoods(<?= $theme_data['id'] ?>, this)">
-                        <div style="color:var(--gold); font-size:15px; margin-bottom:5px;">Món lẻ</div>
+                        <div style="color:var(--gold); font-size:15px; margin-bottom:5px;">Món tự chọn</div>
                         <div style="font-size:12px; color:var(--text-muted)">Các món thuộc chủ đề <?= htmlspecialchars($theme_name) ?></div>
                     </div>
+                    <?php endif; ?>
                 </div>
                 <?php endforeach; ?>
 
@@ -697,7 +710,7 @@ select.input-lux {
                                           data-desc="<?= htmlspecialchars($fd['description'] ?? '') ?>"
                                           data-ingredients="<?= htmlspecialchars(($fd['ingredients'] ?? '') . (!empty($fd['recipe_ingredients']) ? ', ' . $fd['recipe_ingredients'] : '')) ?>"
                                           data-toppings-raw="<?= htmlspecialchars($fd['list_toppings'] ?? '') ?>"
-                                          data-category="<?= htmlspecialchars($fd['cat_name'] ?? 'Món lẻ') ?>"
+                                          data-category="<?= htmlspecialchars($fd['cat_name'] ?? 'Món tự chọn') ?>"
                                           data-max-toppings="<?= (int)($fd['max_toppings'] ?? 4) ?>"
                                           data-stock="<?= $stock ?>"
                                           style="border-bottom: 1px solid var(--glass-border); padding: 15px 0; display: flex;">
@@ -1292,7 +1305,7 @@ function selThemeFoods(themeId, btn) {
     });
 
     if (label) {
-        label.innerHTML = '<i class="fas fa-utensils me-1"></i> Món lẻ thuộc chủ đề đã chọn';
+        label.innerHTML = '<i class="fas fa-utensils me-1"></i> Món tự chọn thuộc chủ đề đã chọn';
     }
     
     comboId = 0; 

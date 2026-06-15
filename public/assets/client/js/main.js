@@ -18,7 +18,7 @@ $(document).ready(function() {
             comboPrice = parseFloat(activeCombo.data('price')) || 0;
         }
 
-        // C. Lấy giá các món lẻ (Duyệt qua các checkbox thực đơn đã tích)
+        // C. Lấy giá các món tự chọn (Duyệt qua các checkbox thực đơn đã tích)
         let menuPrice = 0;
         $('.menu-item-row').each(function() {
             const row = $(this);
@@ -33,7 +33,7 @@ $(document).ready(function() {
             }
         });
 
-        // TỔNG TIỀN = Phí bàn + Giá Combo + Tổng món lẻ
+        // TỔNG TIỀN = Phí bàn + Giá Combo + Tổng món tự chọn
         const total = tablePrice + comboPrice + menuPrice;
         const deposit = total * 0.3; // Đặt cọc 30%
 
