@@ -148,6 +148,28 @@ if (isset($_POST['action']) && $_POST['action'] === 'get_details') {
     exit;
 }
 
+// ================= XỬ LÝ HỦY PHIẾU ĐẶT HÀNG (AJAX) =================
+if (isset($_POST['action']) && $_POST['action'] === 'cancel_po') {
+    header('Content-Type: application/json');
+    $po_id = (int)($_POST['po_id'] ?? 0);
+    
+    try {
+        if (!$po_id) throw new Exception("Thiếu thông tin mã phiếu.");
+        
+        $check_po = $db->prepare("SELECT status FROM purchase_orders WHERE id = ?");
+        $check_po->execute([$po_id]);
+        if ($check_po->fetchColumn() !== 'pending') {
+            throw new Exception("Chỉ có thể hủy phiếu đang ở trạng thái 'Chờ nhận'!");
+        }
+
+        $db->prepare("UPDATE purchase_orders SET status = 'cancelled' WHERE id = ?")->execute([$po_id]);
+        echo json_encode(['status' => 'success', 'message' => 'Hủy phiếu thành công.']);
+    } catch (Exception $e) {
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
 // ================= XỬ LÝ QUICK ADD INGREDIENT (AJAX) =================
 if (isset($_POST['action']) && $_POST['action'] === 'quick_add_ingredient') {
     header('Content-Type: application/json');

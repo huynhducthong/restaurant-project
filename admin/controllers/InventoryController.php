@@ -34,6 +34,42 @@ if (isset($_POST['action']) && $_POST['action'] === 'get_reorder_list') {
     exit;
 }
 
+// API: Dọn dẹp Kho Hủy (ID = 7)
+if (isset($_POST['action']) && $_POST['action'] === 'clear_scrap_warehouse') {
+    header('Content-Type: application/json');
+    $scrap_warehouse_id = 7;
+    try {
+        $db->beginTransaction();
+        
+        // Find all stocks in scrap warehouse > 0
+        $stocks = $db->query("SELECT ingredient_id, quantity FROM inventory_stocks WHERE warehouse_id = $scrap_warehouse_id AND quantity > 0")->fetchAll(PDO::FETCH_ASSOC);
+        
+        if (empty($stocks)) {
+            throw new Exception("Kho Hủy đang trống, không có gì để dọn dẹp.");
+        }
+        
+        $ins_history = $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, 'destroy', ?, ?)");
+        
+        foreach ($stocks as $st) {
+            $ins_history->execute([$st['ingredient_id'], $scrap_warehouse_id, -$st['quantity'], $current_user]);
+        }
+        
+        // Zero out stocks
+        $db->query("UPDATE inventory_stocks SET quantity = 0 WHERE warehouse_id = $scrap_warehouse_id");
+        // Zero out batches
+        $db->query("UPDATE inventory_batches SET quantity = 0 WHERE warehouse_id = $scrap_warehouse_id");
+        
+        $db->commit();
+        echo json_encode(['status' => 'success', 'message' => 'Đã tiêu hủy toàn bộ rác trong Kho Hủy thành công.']);
+    } catch (Exception $e) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
 // Lấy danh sách các kho (Warehouses)
 $warehouses = $db->query("SELECT * FROM warehouses WHERE status = 1")->fetchAll(PDO::FETCH_ASSOC);
 

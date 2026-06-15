@@ -255,6 +255,7 @@ include '../../public/admin_layout_header.php';
                             <?php endforeach; ?>
                         </select>
                         <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="🔍 Tìm kiếm..." style="width:200px" oninput="filterTable()">
+                        <button class="btn btn-danger fw-bold shadow-sm d-none" id="btnClearScrap" onclick="clearScrapWarehouse()"><i class="fas fa-trash-alt me-1"></i> Tiêu hủy toàn bộ</button>
                         <button class="btn btn-success fw-bold shadow-sm" onclick="exportFilteredExcel()"><i class="fas fa-file-excel me-1"></i> Xuất Excel</button>
                         <button class="btn btn-warning fw-bold shadow-sm" onclick="openInventoryModal()">+ Thêm Mới</button>
                     </div>
@@ -823,13 +824,18 @@ include '../../public/admin_layout_header.php';
                                         <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>Chờ nhận</span>
                                     <?php elseif($p['status'] == 'completed'): ?>
                                         <span class="badge bg-success"><i class="fas fa-check me-1"></i>Đã nhập kho</span>
+                                    <?php elseif($p['status'] == 'cancelled'): ?>
+                                        <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Đã hủy</span>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-end">
                                     <button class="btn btn-sm btn-light border fw-bold me-1" onclick="viewPO(<?= $p['id'] ?>, '<?= htmlspecialchars($p['po_code']) ?>')">Xem</button>
                                     <?php if($p['status'] == 'pending'): ?>
-                                        <button class="btn btn-sm btn-success fw-bold" onclick="openReceivePO(<?= $p['id'] ?>, '<?= htmlspecialchars($p['po_code']) ?>')">
+                                        <button class="btn btn-sm btn-success fw-bold me-1" onclick="openReceivePO(<?= $p['id'] ?>, '<?= htmlspecialchars($p['po_code']) ?>')">
                                             <i class="fas fa-arrow-down me-1"></i>Nhận hàng
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger fw-bold" onclick="cancelPO(<?= $p['id'] ?>, '<?= htmlspecialchars($p['po_code']) ?>')">
+                                            <i class="fas fa-times me-1"></i>Hủy
                                         </button>
                                     <?php endif; ?>
                                 </td>
@@ -1325,6 +1331,21 @@ include '../../public/admin_layout_header.php';
     let currentPage = 1;
     let activeFilter = 'all';
 
+    window.clearScrapWarehouse = function() {
+        if(confirm('Bạn có chắc chắn muốn tiêu hủy TOÀN BỘ rác trong Kho Hủy không? Hành động này sẽ làm số lượng về 0 và lưu vào lịch sử.')) {
+            $.post('InventoryController.php', { action: 'clear_scrap_warehouse' }, function(res) {
+                if(res.status === 'success') {
+                    alert(res.message);
+                    location.reload();
+                } else {
+                    alert(res.message || 'Có lỗi xảy ra');
+                }
+            }, 'json').fail(function() {
+                alert('Lỗi kết nối đến máy chủ.');
+            });
+        }
+    };
+
     $(document).ready(function() {
     $('#po-supplier-select').on('change', function() {
         const option = $(this).find('option:selected');
@@ -1499,6 +1520,8 @@ include '../../public/admin_layout_header.php';
         $tbody.find('.trans-unit-label').text('đơn vị');
         $tbody.find('.trans-stock-info').html('');
 
+        filterTransferItems();
+
         // Nếu mở từ nút cụ thể → pre-select mặt hàng đó
         if (id) {
             const $firstSelect = $tbody.find('.trans-item-select').first();
@@ -1536,10 +1559,42 @@ include '../../public/admin_layout_header.php';
     });
 
     $(document).on('change', '#trans-from-wh', function() {
+        filterTransferItems();
         $('#transferBody tr').each(function() {
             updateTransferStock($(this));
         });
     });
+
+    function filterTransferItems() {
+        const fromWhId = $('#trans-from-wh').val();
+        if(!fromWhId) return;
+        
+        $('.trans-item-select').each(function() {
+            const $select = $(this);
+            const currentVal = $select.val();
+            let isCurrentValValid = false;
+
+            $select.find('option').each(function() {
+                if (!$(this).val()) return; // Skip placeholder
+                
+                const stocks = $(this).data('stocks') || {};
+                const qty = parseFloat(stocks[fromWhId]) || 0;
+                
+                if (qty > 0) {
+                    $(this).removeClass('d-none').prop('disabled', false);
+                    if ($(this).val() == currentVal) isCurrentValValid = true;
+                } else {
+                    $(this).addClass('d-none').prop('disabled', true);
+                }
+            });
+
+            if (currentVal && !isCurrentValValid) {
+                $select.val('');
+                $select.closest('tr').find('.trans-stock-info').html('');
+                $select.closest('tr').find('.trans-unit-label').text('đơn vị');
+            }
+        });
+    }
 
     function updateTransferStock($row) {
         const fromWhId = $('#trans-from-wh').val();
@@ -1675,6 +1730,13 @@ include '../../public/admin_layout_header.php';
             };
             $(this).addClass(colorMap[type] || 'btn-secondary');
         }
+
+        if (activeWarehouse === '7') {
+            $('#btnClearScrap').removeClass('d-none');
+        } else {
+            $('#btnClearScrap').addClass('d-none');
+        }
+
         filterTable();
     });
 
@@ -2086,6 +2148,19 @@ $(document).ready(function() {
                 }
             }
         }, 'json');
+    };
+
+    window.cancelPO = function(id, code) {
+        if(confirm(`Bạn có chắc chắn muốn hủy phiếu đặt hàng #${code} không?`)) {
+            $.post('POController.php', { action: 'cancel_po', po_id: id }, function(res) {
+                if(res.status === 'success') {
+                    alert(res.message);
+                    location.reload();
+                } else {
+                    alert(res.message || 'Có lỗi xảy ra');
+                }
+            });
+        }
     };
 
     window.openReceivePO = function(id, code) {

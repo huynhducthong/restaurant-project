@@ -278,9 +278,9 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     elseif ($action == 'delete') {
         $db->beginTransaction();
         try {
-            $stmt_chk = $db->prepare("SELECT table_id, status FROM service_bookings WHERE id = ?");
+            $stmt_chk = $db->prepare("SELECT sb.id, sb.table_id, sb.status, sb.service_type, sb.customer_name, sb.booking_date, sb.guests, u.email FROM service_bookings sb LEFT JOIN users u ON sb.user_id = u.id WHERE sb.id = ?");
             $stmt_chk->execute([$id]);
-            $b = $stmt_chk->fetch();
+            $b = $stmt_chk->fetch(PDO::FETCH_ASSOC);
             if ($b) {
                     // Nếu đơn đã Confirmed → hoàn kho đúng chính xác vị trí đã trừ
                     if ($b['status'] === 'Confirmed') {
@@ -313,6 +313,9 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
                 // Nếu đơn ĐÃ Hoàn Thành, ta GIỮ NGUYÊN trạng thái để Khách hàng xem lại.
                 if ($b['status'] !== 'Completed') {
                     $db->prepare("UPDATE service_bookings SET status = 'Cancelled', is_archived = 1 WHERE id = ?")->execute([$id]);
+                    if ($b['status'] !== 'Cancelled') {
+                        @sendBookingCancelEmail($b['email'] ?? '', $b);
+                    }
                 } else {
                     $db->prepare("UPDATE service_bookings SET is_archived = 1 WHERE id = ?")->execute([$id]);
                 }

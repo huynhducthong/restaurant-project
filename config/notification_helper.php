@@ -372,3 +372,75 @@ function sendBookingReminderEmail($emailNguoiNhan, $booking_info) {
         return false;
     }
 }
+
+/**
+ * Gửi Email Xin Lỗi Khi Hủy Lịch Đặt Bàn
+ */
+function sendBookingCancelEmail($emailNguoiNhan, $booking_info) {
+    if (empty($emailNguoiNhan)) return false;
+    
+    // Nạp thư viện nếu chưa có
+    if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+        require_once __DIR__ . '/../vendor/autoload.php';
+    }
+
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host       = $_ENV['MAIL_HOST'] ?? 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $_ENV['MAIL_USERNAME'] ?? ''; 
+        $mail->Password   = $_ENV['MAIL_PASSWORD'] ?? ''; 
+        $mail->SMTPSecure = $_ENV['MAIL_ENCRYPTION'] ?? 'tls';
+        $mail->Port       = $_ENV['MAIL_PORT'] ?? 587;
+        $mail->CharSet    = 'UTF-8';
+
+        $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'] ?? 'noreply@restaurantly.com', 'Restaurantly Admin');
+        $mail->addAddress($emailNguoiNhan);
+
+        $mail->isHTML(true);
+        $mail->Subject = 'Thông Báo Hủy Lịch Đặt Bàn - Restaurantly';
+        
+        $svc = htmlspecialchars($booking_info['service_type'] ?? 'Dịch vụ', ENT_QUOTES);
+        if ($svc === 'table') $svc = 'Đặt bàn tiêu chuẩn';
+        if ($svc === 'birthday') $svc = 'Tiệc kỷ niệm / Phòng VIP';
+        if ($svc === 'chef') $svc = 'Đầu bếp tại gia';
+        if ($svc === 'bespoke') $svc = 'Thiết kế riêng';
+
+        $timeStr = date('H:i - d/m/Y', strtotime($booking_info['booking_date']));
+        $name = htmlspecialchars($booking_info['customer_name'] ?? 'Quý khách', ENT_QUOTES);
+
+        $mail->Body = "
+            <div style='max-width: 600px; margin: auto; border: 2px solid #C9A66B; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
+                <div style='background-color: #0c0b09; padding: 20px; text-align: center;'>
+                    <h1 style='color: #C9A66B; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
+                    <p style='color: #fff; margin: 5px 0 0; font-size: 14px;'>Fine Dining Experience</p>
+                </div>
+                <div style='padding: 30px; background-color: #fff;'>
+                    <h2 style='color: #d32f2f; margin-top: 0;'>Kính chào $name,</h2>
+                    <p style='color: #555; line-height: 1.6;'>Chúng tôi vô cùng xin lỗi vì sự bất tiện này, nhưng do sự cố khách quan vượt ngoài mong muốn, chúng tôi buộc phải <strong>hủy lịch đặt bàn</strong> của quý khách.</p>
+                    
+                    <div style='background-color: #f9f6f0; padding: 20px; border-left: 4px solid #C9A66B; margin: 25px 0;'>
+                        <h3 style='margin-top: 0; color: #C9A66B;'>Thông Tin Đặt Bàn Đã Hủy (#{$booking_info['id']})</h3>
+                        <table style='width: 100%; border-collapse: collapse; font-size: 15px;'>
+                            <tr><td style='padding: 8px 0; color: #666; width: 40%;'>Thời gian:</td><td style='padding: 8px 0; font-weight: bold;'>$timeStr</td></tr>
+                            <tr><td style='padding: 8px 0; color: #666;'>Dịch vụ:</td><td style='padding: 8px 0; font-weight: bold;'>$svc</td></tr>
+                            <tr><td style='padding: 8px 0; color: #666;'>Số khách:</td><td style='padding: 8px 0; font-weight: bold;'>{$booking_info['guests']} người</td></tr>
+                        </table>
+                    </div>
+                    
+                    <p style='color: #555; line-height: 1.6;'>Nếu quý khách đã tiến hành đặt cọc trực tuyến, hệ thống sẽ tự động đối soát và nhà hàng sẽ liên hệ với quý khách để tiến hành <strong>hoàn tiền 100%</strong> trong vòng 24h.</p>
+                    
+                    <p style='color: #555; line-height: 1.6;'>Quý khách vui lòng liên hệ ngay với quản lý nhà hàng qua Hotline: <strong>0123 456 789</strong> để được hỗ trợ giải quyết nhanh chóng nhất hoặc đặt lại lịch mới với ưu đãi đền bù.</p>
+                    
+                    <p style='color: #555; line-height: 1.6; margin-bottom: 0;'>Một lần nữa xin chân thành cáo lỗi cùng quý khách!</p>
+                </div>
+            </div>";
+
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        return false;
+    }
+}

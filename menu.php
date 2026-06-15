@@ -518,7 +518,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                     <?php if(!empty($t['foods'])): ?>
                         <div class="menu-category mt-5" style="display: block;">
                             <div class="category-content-wrap" style="width: 100%; max-width: 100%; padding: 0;">
-                                <h3 class="category-title" style="text-align:center; border:none; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;">Món lẻ</h3>
+                                <h3 class="category-title" style="text-align:center; border:none; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;">Món tự chọn</h3>
                                 <div class="menu-list" style="margin-top: 30px;">
                                     <?php foreach($t['foods'] as $f): 
                                         $has_al = hasAllergen($f, $user_allergies);
@@ -527,7 +527,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                                             'name' => $f['name'], 'desc' => $f['description'],
                                             'price' => number_format($f['price'],0,',','.'),
                                             'img' => 'public/assets/img/menu/' . ($f['image'] ?: 'default.jpg'),
-                                            'cat' => "Món lẻ",
+                                            'cat' => "Món tự chọn",
                                             'toppings' => $f['list_toppings'] ?? ''
                                         ]));
                                     ?>
