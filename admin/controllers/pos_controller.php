@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../../config/database.php';
+require_once '../../config/inventory_helper.php';
 $database = new Database();
 $db = $database->getConnection();
 
@@ -263,6 +264,7 @@ try {
             if ($order['booking_id']) {
                 $db->prepare("UPDATE service_bookings SET status = 'Completed' WHERE id = ?")->execute([$order['booking_id']]);
             }
+
 
             // Lấy thông tin chi tiết order để trả về cho màn hình In hóa đơn
             $items = $db->query("

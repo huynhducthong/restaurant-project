@@ -82,8 +82,32 @@ if (isset($_GET['delete'])) {
     header('Location: manage_toppings.php'); exit;
 }
 
-// Lấy danh sách
-$toppings = $db->query("SELECT * FROM toppings ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
+// Lấy danh sách + Tìm kiếm + Phân trang
+$search = $_GET['search'] ?? '';
+$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$limit = 20;
+$offset = ($page - 1) * $limit;
+
+$where_sql = "";
+$params = [];
+if ($search !== '') {
+    $where_sql = "WHERE name LIKE ? OR topping_group LIKE ? ";
+    $params[] = "%$search%";
+    $params[] = "%$search%";
+}
+
+// Đếm tổng số
+$total_stmt = $db->prepare("SELECT COUNT(*) FROM toppings $where_sql");
+$total_stmt->execute($params);
+$total_items = $total_stmt->fetchColumn();
+$total_pages = ceil($total_items / $limit);
+
+// Lấy dữ liệu
+$sql = "SELECT * FROM toppings $where_sql ORDER BY id ASC LIMIT $limit OFFSET $offset";
+$stmt = $db->prepare($sql);
+$stmt->execute($params);
+$toppings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 $inventory_items = $db->query("SELECT id, item_name, unit_name FROM inventory WHERE is_active = 1 ORDER BY item_name")->fetchAll(PDO::FETCH_ASSOC);
 
 include '../../public/admin_layout_header.php';
@@ -91,14 +115,20 @@ include '../../public/admin_layout_header.php';
 <link rel="stylesheet" href="../../public/assets/admin/css/admin-style.css">
 
 <div class="content-wrapper p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
             <h3 class="fw-bold m-0"><i class="fas fa-cheese me-2 text-primary"></i>Quản Lý Topping / Lựa Chọn</h3>
             <div class="small text-muted mt-1">Các tùy chọn sẽ hiển thị khi khách hàng chọn món ăn</div>
         </div>
-        <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addModal">
-            <i class="fas fa-plus me-2"></i>Thêm Mới
-        </button>
+        <div class="d-flex gap-2 flex-wrap">
+            <form method="GET" class="d-flex" style="width: 250px;">
+                <input type="text" name="search" class="form-control rounded-start" placeholder="Tìm topping..." value="<?= htmlspecialchars($search) ?>">
+                <button type="submit" class="btn btn-secondary rounded-end"><i class="fas fa-search"></i></button>
+            </form>
+            <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addModal">
+                <i class="fas fa-plus me-2"></i>Thêm Mới
+            </button>
+        </div>
     </div>
 
     <?php if(isset($_SESSION['flash_success'])): ?>
@@ -168,6 +198,19 @@ include '../../public/admin_layout_header.php';
                 </tbody>
             </table>
         </div>
+        <?php if (isset($total_pages) && $total_pages > 1): ?>
+        <div class="card-footer bg-white border-0 py-3">
+            <nav>
+                <ul class="pagination pagination-sm justify-content-center mb-0">
+                    <?php for($i = 1; $i <= $total_pages; $i++): ?>
+                        <li class="page-item <?= $i === $page ? 'active' : '' ?>">
+                            <a class="page-link" href="?page=<?= $i ?>&search=<?= urlencode($search) ?>"><?= $i ?></a>
+                        </li>
+                    <?php endfor; ?>
+                </ul>
+            </nav>
+        </div>
+        <?php endif; ?>
     </div>
 </div>
 
