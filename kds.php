@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/config/inventory_helper.php';
 
 $role = $_SESSION['role'] ?? '';
 if (!in_array($role, ['admin', 'chef', 1, 2])) {
@@ -35,10 +36,98 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'complete_pos_item') {
     $item_id = intval($_POST['item_id']);
     try {
+        $db->beginTransaction();
+
+        $stmt_check = $db->prepare("SELECT item_type, item_id as food_id, quantity, status FROM pos_order_items WHERE id = ? FOR UPDATE");
+        $stmt_check->execute([$item_id]);
+        $item = $stmt_check->fetch(PDO::FETCH_ASSOC);
+
+        if (!$item) throw new Exception("Không tìm thấy món ăn này.");
+        if ($item['status'] === 'ready' || $item['status'] === 'served') {
+            $db->rollBack();
+            echo "success";
+            exit;
+        }
+
+        $food_ids = [];
+        if ($item['item_type'] === 'food') {
+            $food_ids[] = $item['food_id'];
+        } elseif ($item['item_type'] === 'combo') {
+            $c_foods = $db->query("SELECT food_id FROM combo_items WHERE combo_id = " . (int)$item['food_id'])->fetchAll(PDO::FETCH_COLUMN);
+            $food_ids = array_merge($food_ids, $c_foods);
+        }
+
+        if (!empty($food_ids)) {
+            $placeholders = implode(',', array_fill(0, count($food_ids), '?'));
+            $query_recipe = $db->prepare("
+                SELECT r.food_id, r.ingredient_id, r.quantity_required, r.unit as r_unit, i.unit_name as i_unit, i.category
+                FROM food_recipes r
+                JOIN inventory i ON r.ingredient_id = i.id
+                WHERE r.food_id IN ($placeholders)
+            ");
+            $query_recipe->execute($food_ids);
+            
+            $recipes_by_food = [];
+            while ($row = $query_recipe->fetch(PDO::FETCH_ASSOC)) {
+                $recipes_by_food[$row['food_id']][] = $row;
+            }
+
+            $required_by_stock = [];
+            $item_qty = (float)$item['quantity'];
+
+            foreach ($food_ids as $food_id) {
+                $recipes = $recipes_by_food[$food_id] ?? [];
+                foreach ($recipes as $r) {
+                    $ing_id = $r['ingredient_id'];
+                    $qty_req = (float)$r['quantity_required'];
+                    $category = $r['category'];
+
+                    $target_warehouse_id = ($category === 'Đồ uống') ? 3 : 2;
+                    $qty_in_stock_unit = convert_to_base_unit($qty_req, $r['r_unit'], $r['i_unit']);
+                    $total_reduction = $qty_in_stock_unit * $item_qty;
+
+                    $key = $ing_id . ':' . $target_warehouse_id;
+                    if (!isset($required_by_stock[$key])) {
+                        $required_by_stock[$key] = ['ingredient_id' => $ing_id, 'warehouse_id' => $target_warehouse_id, 'quantity' => 0];
+                    }
+                    $required_by_stock[$key]['quantity'] += $total_reduction;
+                }
+            }
+
+            $query_check_stock = $db->prepare("SELECT quantity FROM inventory_stocks WHERE ingredient_id = ? AND warehouse_id = ? FOR UPDATE");
+            $query_update_inventory = $db->prepare("UPDATE inventory_stocks SET quantity = quantity - ? WHERE ingredient_id = ? AND warehouse_id = ? AND quantity >= ?");
+            $query_history = $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, 'export', ?, 'Hệ thống KDS (Báo xong món POS)')");
+
+            foreach ($required_by_stock as $row) {
+                $ing_id = (int)$row['ingredient_id'];
+                $warehouse_id = (int)$row['warehouse_id'];
+                $total_reduction = (float)$row['quantity'];
+
+                if ($total_reduction > 0) {
+                    $query_check_stock->execute([$ing_id, $warehouse_id]);
+                    $current_stock = (float)($query_check_stock->fetchColumn() ?: 0);
+                    if ($current_stock < $total_reduction) {
+                        throw new Exception("Kho không đủ nguyên liệu (ID: $ing_id). Cần $total_reduction, còn $current_stock.");
+                    }
+
+                    $query_update_inventory->execute([$total_reduction, $ing_id, $warehouse_id, $total_reduction]);
+                    if ($query_update_inventory->rowCount() === 0) {
+                        throw new Exception("Lỗi khi trừ kho nguyên liệu ID $ing_id.");
+                    }
+
+                    $query_history->execute([$ing_id, $warehouse_id, $total_reduction]);
+                }
+            }
+        }
+
         $db->prepare("UPDATE pos_order_items SET status = 'ready' WHERE id = ?")->execute([$item_id]);
+        $db->commit();
         echo "success";
     } catch(Exception $e) {
-        echo "error";
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+        echo "error|" . $e->getMessage();
     }
     exit;
 }
@@ -1273,7 +1362,11 @@ function completePosItem(item_id, btn) {
       });
       showToast('Đã báo Xong cho Thu Ngân!', 'success');
     } else {
-      showToast('Có lỗi xảy ra', 'error');
+      let errorMsg = 'Có lỗi xảy ra';
+      if (res.trim().startsWith('error|')) {
+          errorMsg = res.trim().split('|')[1];
+      }
+      showToast(errorMsg, 'error');
       $(btn).html('<i class="fas fa-check"></i> XONG').prop('disabled', false);
     }
   });
