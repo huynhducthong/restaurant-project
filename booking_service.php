@@ -6,6 +6,15 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: public/login.php'); exit;
 }
 $db  = (new Database())->getConnection();
+
+require_once 'app/models/UserVip.php';
+$is_vip = false;
+if (isset($_SESSION['user_id'])) {
+    $userVipModel = new UserVip($db);
+    $current_vip = $userVipModel->getActiveVipStatus($_SESSION['user_id']);
+    $is_vip = $current_vip ? true : false;
+}
+
 $type = $_GET['type'] ?? 'table';
 $svc  = [
     'table'    => ['title'=>'Đặt Chỗ Cao Cấp','sub'=>'Ẩm thực đỉnh cao chuẩn Michelin','icon'=>'table'],
@@ -411,12 +420,23 @@ select.input-lux {
                     <?= htmlspecialchars($cfg['title']) ?>
                 </h2>
                 <div class="service-selector-inline">
-                    <a href="?type=table" class="svc-card-inline <?= $type==='table'?'active':'' ?>"><i class="fas fa-utensils me-1"></i> Đặt Bàn Tiêu Chuẩn</a>
-                    <a href="?type=birthday" class="svc-card-inline <?= $type==='birthday'?'active':'' ?>"><i class="fas fa-glass-cheers me-1"></i> Tiệc Kỷ Niệm</a>
-                    <a href="?type=chef" class="svc-card-inline <?= $type==='chef'?'active':'' ?>"><i class="fas fa-fire-burner me-1"></i> Đầu Bếp Tại Gia</a>
-                    <a href="?type=bespoke" class="svc-card-inline <?= $type==='bespoke'?'active':'' ?>"><i class="fas fa-gem me-1"></i> Thiết Kế Riêng</a>
+                    <a href="?type=table#booking-form-area" class="svc-card-inline <?= $type==='table'?'active':'' ?>"><i class="fas fa-utensils me-1"></i> Đặt Bàn Tiêu Chuẩn</a>
+                    <a href="?type=birthday#booking-form-area" class="svc-card-inline <?= $type==='birthday'?'active':'' ?>"><i class="fas fa-glass-cheers me-1"></i> Tiệc Kỷ Niệm</a>
+                    <a href="?type=chef#booking-form-area" class="svc-card-inline <?= $type==='chef'?'active':'' ?>"><i class="fas <?= $is_vip ? 'fa-fire-burner' : 'fa-lock' ?> me-1"></i> Đầu Bếp Tại Gia</a>
+                    <a href="?type=bespoke#booking-form-area" class="svc-card-inline <?= $type==='bespoke'?'active':'' ?>"><i class="fas <?= $is_vip ? 'fa-gem' : 'fa-lock' ?> me-1"></i> Thiết Kế Riêng</a>
                 </div>
             </div>
+
+            <?php if (!$is_vip && in_array($type, ['chef', 'bespoke'])): ?>
+                <div style="position: relative;">
+                    <div style="position: absolute; inset: 0; background: rgba(255,255,255,0.7); backdrop-filter: blur(5px); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; border-radius: 10px;">
+                        <i class="fas fa-lock" style="font-size: 3rem; color: var(--gold); margin-bottom: 20px;"></i>
+                        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--forest); margin-bottom: 15px;">Chỉ Dành Cho Hội Viên VIP</h3>
+                        <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 30px;">Dịch vụ <strong><?= $cfg['title'] ?></strong> là đặc quyền đẳng cấp thiết kế riêng cho khách hàng VIP.</p>
+                        <a href="profile.php?tab=vip" class="btn-hero-primary" style="pointer-events: auto;"><i class="fas fa-award" style="margin-right:8px;"></i> Trở thành Hội viên VIP ngay</a>
+                    </div>
+                    <div style="pointer-events: none; user-select: none;">
+            <?php endif; ?>
 
             <!-- STEP INDICATORS -->
             <div class="panel-section pt-0 pb-0" style="border-bottom: none;">
@@ -903,6 +923,10 @@ select.input-lux {
                         <div style="font-size:12px; color:var(--text-muted); align-self:center; font-style:italic;">Hoàn tất tại bảng tóm tắt bên phải <i class="fas fa-arrow-right ms-1"></i></div>
                     </div>
                 </div>
+            <?php if (!$is_vip && in_array($type, ['chef', 'bespoke'])): ?>
+                    </div> <!-- End blur wrap -->
+                </div> <!-- End relative wrap -->
+            <?php endif; ?>
             </div> <!-- End Step 3 -->
         </form>
     </div>
@@ -933,6 +957,13 @@ select.input-lux {
             <div class="sum-row"><span>Bespoke Dịch vụ</span> <span class="sum-val highlight" id="s-bespoke">0 đ</span></div>
             <div class="sum-row"><span>Bộ Sưu Tập Hương Vị / Món</span> <span class="sum-val" id="sm">0 đ</span></div>
             
+            <?php if ($is_vip && isset($current_vip['discount_percent']) && $current_vip['discount_percent'] > 0): ?>
+                <div class="sum-row" style="color: #c8933a; border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 10px; margin-top: 10px;">
+                    <span><i class="fas fa-crown"></i> Ưu đãi VIP (-<?= floatval($current_vip['discount_percent']) ?>%)</span> 
+                    <span class="sum-val" id="s-vip-discount" style="color: #c8933a;">0 đ</span>
+                </div>
+            <?php endif; ?>
+            
             <div id="selected-foods-list" style="margin-top: 15px; border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 15px; display: none;">
                 <div style="font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 10px;">Chi tiết món đã chọn:</div>
                 <div id="selected-foods-container" style="display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; padding-right: 5px;">
@@ -945,10 +976,16 @@ select.input-lux {
                 <div class="deposit-amount" id="sdep">0<span style="font-size:1.2rem; color:#fff;"> đ</span></div>
                 <p style="font-size:11px; color:var(--text-muted); margin-top:5px; font-style:italic;">Thanh toán phần còn lại tại nhà hàng.</p>
                 
+                <?php if (!$is_vip && in_array($type, ['chef', 'bespoke'])): ?>
+                <button type="button" class="btn-gold-grad mt-4" disabled style="opacity: 0.5; cursor: not-allowed;">
+                    <span>Chưa đủ điều kiện</span>
+                </button>
+                <?php else: ?>
                 <button type="submit" form="bk-form" class="btn-gold-grad mt-4" id="btn-go">
                     <span id="btn-txt">Gửi Yêu Cầu Đặt Chỗ</span>
                     <span id="btn-spin" style="display:none"><i class="fas fa-spinner fa-spin"></i> Đang xử lý...</span>
                 </button>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -956,6 +993,14 @@ select.input-lux {
 
     <!-- WIZARD JS LOGIC -->
     <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (window.location.hash === '#booking-form-area') {
+            setTimeout(() => {
+                window.scrollTo({ top: document.getElementById('booking-form-area').offsetTop - 80, behavior: 'auto' });
+            }, 10);
+        }
+    });
+
     let currentStep = 1;
     function goToStep(step) {
         if (step > currentStep) {
@@ -1715,7 +1760,10 @@ function cancelFoodOption() {
 /* SỰ KIỆN CHỌN BÀN & AJAX KHẢ DỤNG ĐỘNG */
     document.querySelectorAll('.seat-lux').forEach(function(s){
         s.addEventListener('click',function(){
-            if(!s.classList.contains('available')) return;
+            if(!s.classList.contains('available')) {
+                alert('Bàn này đã được khách hàng khác đặt trong khung giờ bạn chọn. Vui lòng chọn bàn trống (màu trắng).');
+                return;
+            }
             document.querySelectorAll('.seat-lux').forEach(function(x){x.classList.remove('selected');});
             s.classList.add('selected');
             selId=s.dataset.id; selCode=s.dataset.code; selPrice=parseFloat(s.dataset.price||0); selCat=s.dataset.cat||'';
@@ -1734,7 +1782,8 @@ function cancelFoodOption() {
         var d = document.getElementById('bd');
         if (!d || !d.value) return;
         
-        fetch('api/check_table_availability.php?datetime=' + encodeURIComponent(d.value))
+        var ts = new Date().getTime();
+        fetch('api/check_table_availability.php?datetime=' + encodeURIComponent(d.value) + '&_=' + ts)
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
@@ -1744,7 +1793,10 @@ function cancelFoodOption() {
                         if (unav.includes(id)) {
                             s.classList.remove('available');
                             s.classList.add('booked');
-                            if (selId == id) clrSeat();
+                            if (selId == id) {
+                                alert('Rất tiếc! Bàn bạn vừa chọn đã có khách đặt vào thời gian này. Vui lòng chọn một bàn khác.');
+                                clrSeat();
+                            }
                         } else {
                             s.classList.add('available');
                             s.classList.remove('booked');
@@ -2051,6 +2103,17 @@ function us(){
 
     var total = food + (typeof selPrice !== 'undefined' ? selPrice : 0) + decorPrice + bespokePrice + chefServiceFee;
     
+    var discountPercent = <?= ($is_vip && isset($current_vip['discount_percent'])) ? floatval($current_vip['discount_percent']) : 0 ?>;
+    var discountAmount = 0;
+    if (discountPercent > 0) {
+        discountAmount = total * (discountPercent / 100);
+        total = total - discountAmount;
+        var sVipDiscount = document.getElementById('s-vip-discount');
+        if (sVipDiscount) {
+            sVipDiscount.textContent = '-' + discountAmount.toLocaleString('vi-VN') + ' đ';
+        }
+    }
+    
     // Cập nhật số tiền đặt cọc 30%
     var btnGo = document.getElementById('btn-go');
     if (sid === -1 && total === 0) {
@@ -2109,25 +2172,117 @@ function us(){
     }
 }
 
-/* NGĂN CHẶN DOUBLE SUBMIT */
-document.getElementById('bk-form').addEventListener('submit',function(){
-    var b=document.getElementById('btn-go');
-    b.style.pointerEvents = 'none';
-    b.style.opacity = '0.7';
-    document.getElementById('btn-txt').style.display='none';
-    document.getElementById('btn-spin').style.display='inline-block';
-    
-    // Để mock thanh toán, ta đổi text loading thành đang xử lý thanh toán
-    document.getElementById('btn-spin').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý thanh toán...';
-});
+/* KHỞI TẠO CÁC SỰ KIỆN VÀ AJAX CHUYỂN TAB */
+function initBookingEvents() {
+    var bkForm = document.getElementById('bk-form');
+    if (bkForm) {
+        bkForm.addEventListener('submit',function(){
+            var b=document.getElementById('btn-go');
+            if (b) {
+                b.style.pointerEvents = 'none';
+                b.style.opacity = '0.7';
+            }
+            var btnTxt = document.getElementById('btn-txt');
+            if (btnTxt) btnTxt.style.display='none';
+            var btnSpin = document.getElementById('btn-spin');
+            if (btnSpin) {
+                btnSpin.style.display='inline-block';
+                btnSpin.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý thanh toán...';
+            }
+        });
+    }
 
-/* KHỞI TẠO TIME TỐI THIỂU */
-(function(){
     var inp=document.getElementById('bd');
-    var now=new Date(); now.setHours(now.getHours()+2);
-    if(inp) inp.min=now.toISOString().slice(0,16);
-    us();
-})();
+    if(inp) {
+        var now=new Date(); now.setHours(now.getHours()+2);
+        inp.min=now.toISOString().slice(0,16);
+    }
+    
+    // Xử lý chuyển tab mượt mà bằng AJAX (PJAX)
+    document.querySelectorAll('.svc-card-inline').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            var url = this.getAttribute('href').split('#')[0];
+            var formArea = document.getElementById('booking-form-area');
+            
+            // Hiệu ứng mờ đi khi đang tải
+            formArea.style.transition = 'opacity 0.3s ease';
+            formArea.style.opacity = '0.5';
+            formArea.style.pointerEvents = 'none';
+            
+            fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                var parser = new DOMParser();
+                var doc = parser.parseFromString(html, 'text/html');
+                var newFormArea = doc.getElementById('booking-form-area');
+                
+                if (newFormArea) {
+                    formArea.innerHTML = newFormArea.innerHTML;
+                    
+                    // Reset biến toàn cục của Wizard
+                    currentStep = 1;
+                    
+                    // Khởi tạo lại các sự kiện cho HTML mới
+                    initBookingEvents();
+                    if (typeof us === 'function') us();
+                    
+                    // Đổi URL trên thanh địa chỉ mà không reload
+                    window.history.pushState({path: url}, '', url);
+                }
+                
+                // Hiện rõ lại
+                formArea.style.opacity = '1';
+                formArea.style.pointerEvents = 'auto';
+            })
+            .catch(err => {
+                // Nếu lỗi thì fallback về chuyển trang bình thường
+                window.location.href = url;
+            });
+        });
+    });
+}
+
+// Chạy lần đầu khi load trang
+initBookingEvents();
+if (typeof us === 'function') us();
+
+// Xử lý nút Lùi/Tiến của trình duyệt (Browser Back/Forward)
+window.addEventListener('popstate', function(e) {
+    var url = window.location.href;
+    var formArea = document.getElementById('booking-form-area');
+    if (!formArea) {
+        window.location.reload();
+        return;
+    }
+    
+    formArea.style.transition = 'opacity 0.3s ease';
+    formArea.style.opacity = '0.5';
+    formArea.style.pointerEvents = 'none';
+    
+    fetch(url)
+    .then(response => response.text())
+    .then(html => {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, 'text/html');
+        var newFormArea = doc.getElementById('booking-form-area');
+        
+        if (newFormArea) {
+            formArea.innerHTML = newFormArea.innerHTML;
+            currentStep = 1;
+            initBookingEvents();
+            if (typeof us === 'function') us();
+        } else {
+            window.location.reload();
+        }
+        
+        formArea.style.opacity = '1';
+        formArea.style.pointerEvents = 'auto';
+    })
+    .catch(err => {
+        window.location.reload();
+    });
+});
 </script>
 
 <?php include 'views/client/layouts/footer.php'; ?>

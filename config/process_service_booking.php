@@ -263,6 +263,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             else $total_amount += 1200000;
         }
 
+        // --- TÍNH GIẢM GIÁ VIP ---
+        if (isset($_SESSION['user_id'])) {
+            require_once __DIR__ . '/../app/models/UserVip.php';
+            $userVipModel = new UserVip($db);
+            $vipStatus = $userVipModel->getActiveVipStatus($_SESSION['user_id']);
+            if ($vipStatus) {
+                $discount_percent = $vipStatus['discount_percent'];
+                $discount_amount = ($total_amount * $discount_percent) / 100;
+                $total_amount -= $discount_amount;
+                $msg .= "\n[Hệ thống: Đã giảm {$discount_percent}% cho khách hàng VIP {$vipStatus['plan_name']}]";
+            }
+        }
+        // -------------------------
+
         // Tính 30% cọc
         $deposit_amount = $total_amount * 0.3;
 
