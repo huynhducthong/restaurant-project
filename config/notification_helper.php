@@ -88,6 +88,7 @@ function generateMorningReport() {
           AND b.expiry_date IS NOT NULL 
           AND b.expiry_date <= '$warn_date' 
           AND b.expiry_date >= CURDATE()
+          AND b.warehouse_id NOT IN (6, 7)
         GROUP BY i.id
     ");
     $exp_items = $stmt_exp->fetchAll(PDO::FETCH_ASSOC);
@@ -101,6 +102,7 @@ function generateMorningReport() {
           AND b.quantity > 0 
           AND b.expiry_date IS NOT NULL 
           AND b.expiry_date < CURDATE()
+          AND b.warehouse_id NOT IN (6, 7)
         GROUP BY i.id
     ");
     $already_exp_items = $stmt_already_exp->fetchAll(PDO::FETCH_ASSOC);

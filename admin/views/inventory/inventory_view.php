@@ -354,8 +354,8 @@ include '../../public/admin_layout_header.php';
 
                                 // Logic phục vụ cho bộ lọc JS (Chỉ áp dụng cho món đang active)
                                 $isLow = ($min > 0 && $total <= $min && $i['is_active'] == 1) ? 1 : 0;
-                                $isExpired = ($exp && $exp < $today && $i['is_active'] == 1) ? 1 : 0;
-                                $isExpiring = ($exp && $exp >= $today && $exp <= $warn_date && $i['is_active'] == 1) ? 1 : 0;
+                                $isExpired = ($exp && $exp < $today && $i['is_active'] == 1 && $total > 0) ? 1 : 0;
+                                $isExpiring = ($exp && $exp >= $today && $exp <= $warn_date && $i['is_active'] == 1 && $total > 0) ? 1 : 0;
                             ?>
                                 <?php
                                 // Tạo danh sách kho có hàng của dòng này

@@ -61,11 +61,11 @@ try {
         $pending_services_count = (int)$stmt_ps->fetchColumn();
 
         // Cảnh báo tồn kho thấp
-        $stmt_low = $db->query("SELECT COUNT(*) FROM inventory i WHERE i.is_active = 1 AND i.min_stock > 0 AND IFNULL((SELECT SUM(s.quantity) FROM inventory_stocks s WHERE s.ingredient_id = i.id), 0) <= i.min_stock");
+        $stmt_low = $db->query("SELECT COUNT(*) FROM inventory i WHERE i.is_active = 1 AND i.min_stock > 0 AND IFNULL((SELECT SUM(s.quantity) FROM inventory_stocks s WHERE s.ingredient_id = i.id AND s.warehouse_id NOT IN (6, 7)), 0) <= i.min_stock");
         $low_stock_count = (int)$stmt_low->fetchColumn();
 
         // Cảnh báo hết hạn (7 ngày tới)
-        $stmt_exp = $db->query("SELECT COUNT(*) FROM inventory WHERE is_active = 1 AND expiry_date IS NOT NULL AND expiry_date <= DATE_ADD(CURDATE(), INTERVAL 7 DAY) AND expiry_date >= CURDATE()");
+        $stmt_exp = $db->query("SELECT COUNT(*) FROM inventory i WHERE i.is_active = 1 AND i.expiry_date IS NOT NULL AND i.expiry_date <= DATE_ADD(CURDATE(), INTERVAL 7 DAY) AND i.expiry_date >= CURDATE() AND IFNULL((SELECT SUM(s.quantity) FROM inventory_stocks s WHERE s.ingredient_id = i.id AND s.warehouse_id NOT IN (6, 7)), 0) > 0");
         $expiry_count = (int)$stmt_exp->fetchColumn();
 
         $total_alerts = $low_stock_count + $expiry_count + $pending_transfers_count;
