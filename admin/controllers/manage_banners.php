@@ -317,29 +317,28 @@ include '../../public/admin_layout_header.php';
                 </div>
                 <?php endif; ?>
 
-                <!-- Phần 1: Hình ảnh & Bố cục -->
-                <div class="card-minimal">
-                    <div class="card-header-clean py-2 px-3">
-                        <i class="fas fa-image me-2 text-primary"></i>Hình ảnh & Bố cục
+                <!-- Card 1: Hình ảnh & Căn lề -->
+                <div class="card-minimal mb-2">
+                    <div class="card-header-clean py-1 px-3 small text-uppercase fw-bold text-primary">
+                        <i class="fas fa-image me-1"></i> Hình ảnh & Bố cục
                     </div>
-                    <div class="card-body p-3">
-                        <div class="row g-3">
-                            <div class="col-md-8">
-                                <label class="form-label">Tải lên Ảnh Nền</label>
-                                <input type="file" name="banner_image" id="input-img" class="form-control" accept=".jpg,.jpeg,.png,.webp" <?= $edit_data ? '' : 'required' ?>>
-                                <div class="form-text small"><i class="fas fa-info-circle me-1"></i>JPG, PNG, WEBP. Tối đa 5MB.</div>
+                    <div class="card-body p-2">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-6">
+                                <label class="form-label mb-1 small text-muted">Tải lên Ảnh Nền (JPG, PNG, WEBP)</label>
+                                <input type="file" name="banner_image" id="input-img" class="form-control form-control-sm" accept=".jpg,.jpeg,.png,.webp" <?= $edit_data ? '' : 'required' ?>>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label mb-1 small text-muted">Thứ tự</label>
+                                <input type="number" name="display_order" class="form-control form-control-sm" value="<?= (int)($edit_data['display_order'] ?? count($banners) + 1) ?>" min="1">
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label">Thứ tự</label>
-                                <input type="number" name="display_order" class="form-control" value="<?= (int)($edit_data['display_order'] ?? count($banners) + 1) ?>" min="1">
-                            </div>
-                            <div class="col-md-12">
-                                <label class="form-label">Căn lề</label>
-                                <div class="d-flex gap-3">
+                                <label class="form-label mb-1 small text-muted">Căn lề chữ</label>
+                                <div class="d-flex gap-3 align-items-center h-100 pb-1">
                                     <?php foreach (['left'=>'Trái', 'center'=>'Giữa', 'right'=>'Phải'] as $v=>$l): ?>
-                                    <div class="form-check">
+                                    <div class="form-check m-0">
                                         <input class="form-check-input" type="radio" name="text_align" id="align_<?= $v ?>" value="<?= $v ?>" <?= ($edit_data['text_align'] ?? 'center') === $v ? 'checked' : '' ?> onchange="updatePreview()">
-                                        <label class="form-check-label fw-bold small" style="cursor:pointer;" for="align_<?= $v ?>"><?= $l ?></label>
+                                        <label class="form-check-label small" style="cursor:pointer;" for="align_<?= $v ?>"><?= $l ?></label>
                                     </div>
                                     <?php endforeach; ?>
                                 </div>
@@ -348,72 +347,66 @@ include '../../public/admin_layout_header.php';
                     </div>
                 </div>
 
-                <!-- Phần 2: Nội dung văn bản -->
-                <div class="card-minimal">
-                    <div class="card-header-clean py-2 px-3">
-                        <i class="fas fa-font me-2 text-success"></i>Nội dung & Định dạng
+                <!-- Card 2: Nội dung văn bản -->
+                <div class="card-minimal mb-2">
+                    <div class="card-header-clean py-1 px-3 small text-uppercase fw-bold text-success">
+                        <i class="fas fa-font me-1"></i> Nội dung & Định dạng
                     </div>
-                    <div class="card-body p-3">
-                        <div class="mb-3">
-                            <label class="form-label">Tiêu đề chính</label>
-                            <input type="text" name="title" id="input-title" class="form-control fw-bold mb-2" value="<?= htmlspecialchars($edit_data['title'] ?? '') ?>">
-                            <div class="row g-2">
-                                <div class="col-md-4"><select name="font_family" id="input-font" class="form-select form-select-sm"><?php foreach ($fonts as $v => $l): ?><option value="<?= htmlspecialchars($v) ?>" <?= ($edit_data['font_family'] ?? '') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></div>
-                                <div class="col-md-3"><select name="title_font_size" id="input-title-size" class="form-select form-select-sm"><?php foreach ($font_sizes as $sz): ?><option value="<?= $sz ?>" <?= ($edit_data['title_font_size'] ?? 48) == $sz ? 'selected' : '' ?>><?= $sz ?>px</option><?php endforeach; ?></select></div>
-                                <div class="col-md-3"><select name="font_style" id="input-style" class="form-select form-select-sm"><?php foreach (['normal'=>'Thường','bold'=>'Đậm','italic'=>'Nghiêng'] as $v=>$l): ?><option value="<?= $v ?>" <?= ($edit_data['font_style'] ?? 'normal') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></div>
-                                <div class="col-md-2"><input type="color" name="text_color" id="input-color" class="form-control form-control-color form-control-sm w-100" value="<?= htmlspecialchars($edit_data['text_color'] ?? '#ffffff') ?>"></div>
+                    <div class="card-body p-2">
+                        <div class="mb-2">
+                            <label class="form-label mb-1 small text-muted">Tiêu đề chính</label>
+                            <input type="text" name="title" id="input-title" class="form-control form-control-sm fw-bold mb-1" value="<?= htmlspecialchars($edit_data['title'] ?? '') ?>">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text"><i class="fas fa-text-height"></i></span>
+                                <select name="font_family" id="input-font" class="form-select" style="max-width: 160px;"><?php foreach ($fonts as $v => $l): ?><option value="<?= htmlspecialchars($v) ?>" <?= ($edit_data['font_family'] ?? '') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select>
+                                <select name="title_font_size" id="input-title-size" class="form-select" style="max-width: 90px;"><?php foreach ($font_sizes as $sz): ?><option value="<?= $sz ?>" <?= ($edit_data['title_font_size'] ?? 48) == $sz ? 'selected' : '' ?>><?= $sz ?>px</option><?php endforeach; ?></select>
+                                <select name="font_style" id="input-style" class="form-select" style="max-width: 100px;"><?php foreach (['normal'=>'Thường','bold'=>'Đậm','italic'=>'Nghiêng'] as $v=>$l): ?><option value="<?= $v ?>" <?= ($edit_data['font_style'] ?? 'normal') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select>
+                                <input type="color" name="text_color" id="input-color" class="form-control form-control-color p-0 border-0" style="max-width: 40px; height: auto;" value="<?= htmlspecialchars($edit_data['text_color'] ?? '#ffffff') ?>">
                             </div>
                         </div>
                         <div class="mb-0">
-                            <label class="form-label">Mô tả ngắn</label>
-                            <textarea name="description" id="input-desc" class="form-control mb-2" rows="2"><?= htmlspecialchars($edit_data['description'] ?? '') ?></textarea>
-                            <div class="row g-2">
-                                <div class="col-md-4"><select name="desc_font_family" id="input-desc-font" class="form-select form-select-sm"><?php foreach ($fonts as $v => $l): ?><option value="<?= htmlspecialchars($v) ?>" <?= ($edit_data['desc_font_family'] ?? '') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></div>
-                                <div class="col-md-3"><select name="desc_font_size" id="input-desc-size" class="form-select form-select-sm"><?php foreach ($font_sizes as $sz): ?><option value="<?= $sz ?>" <?= ($edit_data['desc_font_size'] ?? 24) == $sz ? 'selected' : '' ?>><?= $sz ?>px</option><?php endforeach; ?></select></div>
-                                <div class="col-md-3"><select name="desc_font_style" id="input-desc-style" class="form-select form-select-sm"><?php foreach (['normal'=>'Thường','bold'=>'Đậm','italic'=>'Nghiêng'] as $v=>$l): ?><option value="<?= $v ?>" <?= ($edit_data['desc_font_style'] ?? 'normal') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></div>
-                                <div class="col-md-2"><input type="color" name="desc_color" id="input-desc-color" class="form-control form-control-color form-control-sm w-100" value="<?= htmlspecialchars($edit_data['desc_color'] ?? '#eeeeee') ?>"></div>
+                            <label class="form-label mb-1 small text-muted">Mô tả ngắn</label>
+                            <textarea name="description" id="input-desc" class="form-control form-control-sm mb-1" rows="2"><?= htmlspecialchars($edit_data['description'] ?? '') ?></textarea>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text"><i class="fas fa-align-left"></i></span>
+                                <select name="desc_font_family" id="input-desc-font" class="form-select" style="max-width: 160px;"><?php foreach ($fonts as $v => $l): ?><option value="<?= htmlspecialchars($v) ?>" <?= ($edit_data['desc_font_family'] ?? '') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select>
+                                <select name="desc_font_size" id="input-desc-size" class="form-select" style="max-width: 90px;"><?php foreach ($font_sizes as $sz): ?><option value="<?= $sz ?>" <?= ($edit_data['desc_font_size'] ?? 24) == $sz ? 'selected' : '' ?>><?= $sz ?>px</option><?php endforeach; ?></select>
+                                <select name="desc_font_style" id="input-desc-style" class="form-select" style="max-width: 100px;"><?php foreach (['normal'=>'Thường','bold'=>'Đậm','italic'=>'Nghiêng'] as $v=>$l): ?><option value="<?= $v ?>" <?= ($edit_data['desc_font_style'] ?? 'normal') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select>
+                                <input type="color" name="desc_color" id="input-desc-color" class="form-control form-control-color p-0 border-0" style="max-width: 40px; height: auto;" value="<?= htmlspecialchars($edit_data['desc_color'] ?? '#eeeeee') ?>">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Phần 3: Nút bấm & Lập lịch -->
-                <div class="row g-3 mb-3">
-                    <div class="col-md-6">
-                        <div class="card-minimal h-100 mb-0">
-                            <div class="card-header-clean py-2 px-3 small text-uppercase">Nút bấm (CTA)</div>
-                            <div class="card-body p-3">
-                                <div class="row g-2">
-                                    <div class="col-8">
-                                        <label class="form-label">Tên nút</label>
-                                        <input type="text" name="button_text" id="input-btn-text" class="form-control form-control-sm" value="<?= htmlspecialchars($edit_data['button_text'] ?? '') ?>">
-                                    </div>
-                                    <div class="col-4">
-                                        <label class="form-label">Màu nút</label>
-                                        <input type="color" name="button_color" id="input-btn-color" class="form-control form-control-color form-control-sm w-100" value="<?= htmlspecialchars($edit_data['button_color'] ?? '#cda45e') ?>">
-                                    </div>
-                                    <div class="col-12 mt-2">
-                                        <label class="form-label">Link</label>
-                                        <input type="text" name="button_link" class="form-control form-control-sm" value="<?= htmlspecialchars($edit_data['button_link'] ?? '') ?>">
-                                    </div>
-                                </div>
+                <!-- Card 3: Tùy chọn hiển thị & CTA -->
+                <div class="card-minimal mb-3">
+                    <div class="card-header-clean py-1 px-3 small text-uppercase fw-bold text-warning">
+                        <i class="fas fa-link me-1"></i> Tùy chọn hiển thị & CTA
+                    </div>
+                    <div class="card-body p-2">
+                        <div class="row g-2 align-items-end mb-2">
+                            <div class="col-md-3">
+                                <label class="form-label mb-1 small text-muted">Tên nút (CTA)</label>
+                                <input type="text" name="button_text" id="input-btn-text" class="form-control form-control-sm" value="<?= htmlspecialchars($edit_data['button_text'] ?? '') ?>">
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label mb-1 small text-muted">Màu</label>
+                                <input type="color" name="button_color" id="input-btn-color" class="form-control form-control-color form-control-sm p-0 border-0 w-100" value="<?= htmlspecialchars($edit_data['button_color'] ?? '#cda45e') ?>">
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label mb-1 small text-muted">Link đích</label>
+                                <input type="text" name="button_link" class="form-control form-control-sm" value="<?= htmlspecialchars($edit_data['button_link'] ?? '') ?>">
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card-minimal h-100 mb-0">
-                            <div class="card-header-clean py-2 px-3 small text-uppercase">Lịch hiển thị</div>
-                            <div class="card-body p-3">
-                                <div class="row g-2">
-                                    <div class="col-12">
-                                        <label class="form-label">Ngày bắt đầu</label>
-                                        <input type="datetime-local" name="start_date" class="form-control form-control-sm" value="<?= !empty($edit_data['start_date']) ? date('Y-m-d\TH:i', strtotime($edit_data['start_date'])) : '' ?>">
-                                    </div>
-                                    <div class="col-12 mt-2">
-                                        <label class="form-label">Ngày kết thúc</label>
-                                        <input type="datetime-local" name="end_date" class="form-control form-control-sm" value="<?= !empty($edit_data['end_date']) ? date('Y-m-d\TH:i', strtotime($edit_data['end_date'])) : '' ?>">
-                                    </div>
-                                </div>
+                        <hr class="my-2" style="opacity:0.1">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-6">
+                                <label class="form-label mb-1 small text-muted">Ngày bắt đầu</label>
+                                <input type="datetime-local" name="start_date" class="form-control form-control-sm" value="<?= !empty($edit_data['start_date']) ? date('Y-m-d\TH:i', strtotime($edit_data['start_date'])) : '' ?>">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mb-1 small text-muted">Ngày kết thúc</label>
+                                <input type="datetime-local" name="end_date" class="form-control form-control-sm" value="<?= !empty($edit_data['end_date']) ? date('Y-m-d\TH:i', strtotime($edit_data['end_date'])) : '' ?>">
                             </div>
                         </div>
                     </div>
