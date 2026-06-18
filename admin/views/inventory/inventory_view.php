@@ -345,7 +345,7 @@ include '../../public/admin_layout_header.php';
                                 <th class="text-end" width="280">Thao Tác</th>
                             </tr>
                         </thead>
-                        <tbody id="invBody" style="opacity: 0; transition: opacity 0.3s ease;">
+                        <tbody id="invBody">
                             <?php foreach ($inv as $i):
                                 $total = $i['total_stock'];
                                 $min = (float)($i['min_stock'] ?? 0);
@@ -1809,10 +1809,13 @@ include '../../public/admin_layout_header.php';
     }
 
     function filterTable() {
-        const q = document.getElementById('searchInput').value.toLowerCase();
-        const catFilter = document.getElementById('categoryFilter').value.toLowerCase();
+        const searchInput = document.getElementById('searchInput');
+        const catFilterEl = document.getElementById('categoryFilter');
+        const q = searchInput ? searchInput.value.toLowerCase() : '';
+        const catFilter = catFilterEl ? catFilterEl.value.toLowerCase() : '';
+        
         document.querySelectorAll('#invBody .inv-row').forEach(r => {
-            const nameMatch   = r.dataset.name.includes(q);
+            const nameMatch   = (r.dataset.name || '').includes(q);
             const rCat = r.dataset.category ? r.dataset.category.toLowerCase() : '';
             const catMatch    = catFilter === '' || rCat === catFilter;
             const filterMatch = (activeFilter === 'all') ? true
@@ -1863,7 +1866,10 @@ include '../../public/admin_layout_header.php';
             if (i >= (currentPage - 1) * PAGE_SIZE && i < currentPage * PAGE_SIZE) r.style.display = '';
         });
 
-        document.getElementById('paginInfo').textContent = t > 0 ? `Hiển thị ${(currentPage-1)*PAGE_SIZE+1} – ${Math.min(currentPage*PAGE_SIZE, t)} / Tổng ${t}` : 'Không tìm thấy kết quả';
+        const paginInfo = document.getElementById('paginInfo');
+        if (paginInfo) {
+            paginInfo.textContent = t > 0 ? `Hiển thị ${(currentPage-1)*PAGE_SIZE+1} – ${Math.min(currentPage*PAGE_SIZE, t)} / Tổng ${t}` : 'Không tìm thấy kết quả';
+        }
 
         let html = `<button class="btn btn-outline-secondary" onclick="goPage(${currentPage-1})" ${currentPage<=1?'disabled':''}>‹</button>`;
         for (let p = 1; p <= pgs; p++) {
@@ -1874,7 +1880,11 @@ include '../../public/admin_layout_header.php';
             }
         }
         html += `<button class="btn btn-outline-secondary" onclick="goPage(${currentPage+1})" ${currentPage>=pgs?'disabled':''}>›</button>`;
-        document.getElementById('paginBtns').innerHTML = html;
+        
+        const paginBtns = document.getElementById('paginBtns');
+        if (paginBtns) {
+            paginBtns.innerHTML = html;
+        }
     }
 
     function goPage(p) {
@@ -2323,11 +2333,10 @@ $(document).ready(function() {
             $('.wh-filter-btn[data-wh="all"]').removeClass('btn-outline-secondary').addClass('btn-dark fw-bold active-all text-white shadow');
         }
 
-        filterTable();
-
-        setTimeout(() => {
-            const body = document.getElementById('invBody');
-            if(body) body.style.opacity = '1';
-        }, 50);
+        try {
+            filterTable();
+        } catch(e) {
+            console.error("Lỗi khi filterTable:", e);
+        }
     });
 </script>
