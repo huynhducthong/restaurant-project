@@ -65,6 +65,7 @@ include '../../public/admin_layout_header.php';
         background: #fff;
         border-left: 3px solid var(--accent-color);
         box-shadow: var(--card-shadow);
+        position: relative;
     }
 
     .stat-card:hover {
@@ -1754,11 +1755,20 @@ include '../../public/admin_layout_header.php';
     $(document).on('click', '.wh-filter-btn', function () {
         activeWarehouse = $(this).data('wh').toString();
         sessionStorage.setItem('activeInventoryWarehouse', activeWarehouse);
-        // Cập nhật active state
+        
+        // Cập nhật active state cho kho
         $('.wh-filter-btn').removeClass('active active-all active-main active-kitchen active-bar active-cold active-supplies active-virtual btn-dark btn-outline-danger btn-warning fw-bold text-white shadow-sm')
                            .addClass('btn-outline-secondary');
         
         $(this).removeClass('btn-outline-secondary').addClass('active');
+
+        // Reset filter cảnh báo về 'all' khi chọn kho mới
+        if (activeFilter !== 'all') {
+            activeFilter = 'all';
+            sessionStorage.setItem('activeInventoryFilter', 'all');
+            $('#filterButtons button').removeClass('active');
+            $('#filterButtons button[onclick*="\'all\'"]').addClass('active');
+        }
         
         if (activeWarehouse === 'all') {
             $(this).addClass('active-all');
