@@ -1030,7 +1030,7 @@ body{
               <h6 style="color:#d64545; font-family:'Montserrat',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-exclamation-triangle-fill me-2"></i>Dị ứng Y Tế (Allergies)</h6>
               <div class="d-flex flex-wrap gap-2 mt-3">
                 <?php 
-                $algopts = ['Sữa', 'Trứng', 'Đậu phộng', 'Hạt cây', 'Đậu nành', 'Lúa mì / Gluten', 'Hải sản', 'Cá', 'Hải sản có vỏ', 'Động vật thân mềm', 'Mè / Vừng', 'Mù tạt', 'Quả hạch (Hạt quả hạch Brazil, Hạt hạnh nhân, Hạt mắc ca, Hạt điều, Hạt dẻ cười, Hạt óc chó, Hạt thông)', 'Sulphites', 'Đậu Lupin']; 
+                $algopts = ['Sữa', 'Trứng', 'Đậu phộng', 'Hạt cây', 'Đậu nành', 'Lúa mì / Gluten', 'Hải sản', 'Cá', 'Hải sản có vỏ', 'Hải sản thân mềm', 'Mè / Vừng', 'Mù tạt', 'Quả hạch', 'Sulphites', 'Đậu Lupin']; 
                 $my_allergies = array_map('trim', explode(',', $current_user['allergies'] ?? ''));
                 $other_allergies = array_filter($my_allergies, function($alg) use ($algopts) {
                     return !in_array($alg, $algopts) && !empty($alg);
