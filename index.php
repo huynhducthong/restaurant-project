@@ -1489,6 +1489,9 @@ document.addEventListener('DOMContentLoaded', function() {
     grid-template-columns: repeat(12, 1fr);
     grid-auto-rows: 250px;
     gap: 0px;
+    width: 100vw;
+    max-width: 100%;
+    margin: 0;
   }
 
   .atmo-item {
@@ -1532,28 +1535,34 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   .item-2 {
-    grid-column: span 3;
+    grid-column: span 2;
     grid-row: span 1;
   }
 
   .item-3 {
-    grid-column: span 3;
+    grid-column: span 2;
     grid-row: span 1;
   }
 
   .item-4 {
-    grid-column: span 3;
+    grid-column: span 2;
     grid-row: span 1;
   }
 
   .item-5 {
-    grid-column: span 3;
+    grid-column: span 2;
     grid-row: span 1;
   }
 
-  .item-6 { display: none; }
+  .item-6 {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
 
-  .item-7 { display: none; }
+  .item-7 {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
 
   .item-8 {
     display: none; 
