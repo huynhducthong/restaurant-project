@@ -455,8 +455,8 @@ include '../../public/admin_layout_header.php';
                                                 <!-- Nút chức năng đầy đủ -->
                                                 <button class="btn btn-sm btn-outline-success" title="Nhập hàng" onclick="openImport(<?= $i['id'] ?>, '<?= addslashes($i['item_name']) ?>', '<?= $i['unit_name'] ?>')"><i class="fas fa-arrow-down"></i></button>
                                                 <button class="btn btn-sm btn-outline-dark" title="Chuyển kho" onclick="openTransfer(<?= $i['id'] ?>, '<?= addslashes($i['item_name']) ?>', '<?= $i['unit_name'] ?>')"><i class="fas fa-exchange-alt"></i></button>
-                                                <button class="btn btn-sm btn-outline-warning" title="Xuất dùng" onclick="openExport(<?= $i['id'] ?>, '<?= addslashes($i['item_name']) ?>', 'export')"><i class="fas fa-arrow-up"></i></button>
-                                                <button class="btn btn-sm btn-outline-danger" title="Hủy (Hư hỏng/Hết hạn)" onclick="openExport(<?= $i['id'] ?>, '<?= addslashes($i['item_name']) ?>', 'loss')"><i class="fas fa-times-circle"></i></button>
+                                                <button class="btn btn-sm btn-outline-warning" title="Xuất dùng" onclick="openExport(this, <?= $i['id'] ?>, '<?= addslashes($i['item_name']) ?>', 'export')"><i class="fas fa-arrow-up"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger" title="Hủy (Hư hỏng/Hết hạn)" onclick="openExport(this, <?= $i['id'] ?>, '<?= addslashes($i['item_name']) ?>', 'loss')"><i class="fas fa-times-circle"></i></button>
                                                 <!-- Nút Ẩn -->
                                                 <a href="InventoryController.php?toggle_id=<?= $i['id'] ?>" class="btn btn-sm btn-outline-secondary" title="Ẩn/Ngưng sử dụng"><i class="fas fa-eye-slash"></i></a>
                                             <?php else: ?>
@@ -1141,7 +1141,7 @@ include '../../public/admin_layout_header.php';
                     <option value="" disabled selected>-- Chọn Kho --</option>
                     <?php foreach ($warehouses as $w): ?><option value="<?= $w['id'] ?>"><?= $w['name'] ?></option><?php endforeach; ?>
                 </select>
-                <label class="fw-bold mb-2 text-start w-100">Số lượng:</label>
+                <label class="fw-bold mb-2 text-start w-100">Số lượng: <span id="exp-stock-hint" class="float-end"></span></label>
                 <input type="number" name="quantity" step="0.01" min="0.01" class="form-control form-control-lg text-center" required>
             </div>
             <div class="modal-footer">
@@ -1628,11 +1628,34 @@ include '../../public/admin_layout_header.php';
     }
 
     // Xử lý động đổi màu Modal Xuất/Hủy
-    function openExport(id, name, type) {
+    function openExport(btn, id, name, type) {
         $('#form-export')[0].reset();
         $('#exp-id').val(id);
         $('#exp-action').val(type);
         $('#exp-name').text(name);
+
+        const stocks = JSON.parse($(btn).closest('tr').attr('data-stocks') || '{}');
+        const $select = $('#form-export select[name="warehouse_id"]');
+        
+        $select.find('option').each(function() {
+            if (!this.value) return; // skip placeholder
+            const qty = parseFloat(stocks[this.value]) || 0;
+            const originalName = $(this).data('name') || $(this).text().split(' (Tồn:')[0];
+            if (!$(this).data('name')) $(this).data('name', originalName); // save original name
+            
+            if (qty > 0) {
+                $(this).removeClass('d-none').prop('disabled', false).text(originalName + ' (Tồn: ' + qty + ')');
+            } else {
+                $(this).addClass('d-none').prop('disabled', true).text(originalName);
+            }
+        });
+        
+        $select.off('change').on('change', function() {
+            const qty = parseFloat(stocks[this.value]) || 0;
+            $('#form-export input[name="quantity"]').attr('max', qty).val(qty); // Auto-fill max
+            $('#exp-stock-hint').html('<span class="text-primary fw-bold">Hiện có: ' + qty + '</span>');
+        });
+        $('#exp-stock-hint').html('');
 
         if (type === 'loss') {
             $('#modalExportHeader').removeClass('bg-primary').addClass('bg-danger');
@@ -1801,23 +1824,16 @@ include '../../public/admin_layout_header.php';
             const totalDiv = r.querySelector('.wh-total');
             const emptyDiv = r.querySelector('.wh-empty');
 
-            if (activeFilter === 'expiry' || activeFilter === 'expired') {
-                // Nếu đang lọc Sắp hết hạn / Đã hết hạn -> Ẩn các badge kho bình thường và dòng Tổng
-                badges.forEach(b => b.style.display = 'none');
-                if (totalDiv) totalDiv.style.display = 'none';
-                if (emptyDiv) emptyDiv.style.display = 'none';
-            } else {
-                // Ngược lại, hiển thị bình thường dựa trên bộ lọc kho
-                if (totalDiv) totalDiv.style.display = '';
-                if (emptyDiv) emptyDiv.style.display = '';
-                badges.forEach(b => {
-                    if (activeWarehouse === 'all' || activeWarehouse === '1') {
-                        b.style.display = '';
-                    } else {
-                        b.style.display = (b.dataset.whId === activeWarehouse) ? '' : 'none';
-                    }
-                });
-            }
+            // Luôn hiển thị kho và tồn kho
+            if (totalDiv) totalDiv.style.display = '';
+            if (emptyDiv) emptyDiv.style.display = '';
+            badges.forEach(b => {
+                if (activeWarehouse === 'all' || activeWarehouse === '1') {
+                    b.style.display = '';
+                } else {
+                    b.style.display = (b.dataset.whId === activeWarehouse) ? '' : 'none';
+                }
+            });
         });
         currentPage = 1;
         renderPagination();
