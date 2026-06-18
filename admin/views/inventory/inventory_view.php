@@ -1140,7 +1140,7 @@ include '../../public/admin_layout_header.php';
                 <label id="exp-lbl" class="fw-bold mb-2 text-start w-100">Kho thực hiện xuất:</label>
                 <select name="warehouse_id" class="form-select mb-3" required>
                     <option value="" disabled selected>-- Chọn Kho --</option>
-                    <?php foreach ($warehouses as $w): ?><option value="<?= $w['id'] ?>"><?= $w['name'] ?></option><?php endforeach; ?>
+                    <?php foreach ($warehouses as $w): ?><option value="<?= $w['id'] ?>" data-type="<?= $w['type'] ?? '' ?>"><?= $w['name'] ?></option><?php endforeach; ?>
                 </select>
                 <label class="fw-bold mb-2 text-start w-100">Số lượng: <span id="exp-stock-hint" class="float-end"></span></label>
                 <input type="number" name="quantity" step="0.01" min="0.01" class="form-control form-control-lg text-center" required>
@@ -1641,11 +1641,12 @@ include '../../public/admin_layout_header.php';
         
         $select.find('option').each(function() {
             if (!this.value) return; // skip placeholder
+            const wType = $(this).data('type');
             const qty = parseFloat(stocks[this.value]) || 0;
             const originalName = $(this).data('name') || $(this).text().split(' (Tồn:')[0];
             if (!$(this).data('name')) $(this).data('name', originalName); // save original name
             
-            if (qty > 0) {
+            if (qty > 0 && wType !== 'virtual') {
                 $(this).removeClass('d-none').prop('disabled', false).text(originalName + ' (Tồn: ' + qty + ')');
             } else {
                 $(this).addClass('d-none').prop('disabled', true).text(originalName);
