@@ -47,7 +47,7 @@ unset($it);
 
 $total = 0;
 ?>
-<div style="font-family:'Inter', sans-serif;">
+<div style="font-family:'Open Sans', sans-serif;">
     <div style="display:flex; justify-content:space-between; margin-bottom:15px; padding-bottom:15px; border-bottom:1px dashed #e8e2d9;">
         <div>
             <div style="font-size:12px; color:#888;">Mã Đặt Bàn</div>
@@ -69,7 +69,7 @@ $total = 0;
     </div>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; font-size:13px;">
-        <div><span style="color:#888;">Dịch vụ:</span> <strong style="color:var(--gold); text-transform:uppercase;"><?= htmlspecialchars($booking['service_type']) ?></strong></div>
+        <div><span style="color:#888;">Dịch vụ:</span> <strong style="color:var(--accent-burgundy); text-transform:uppercase;"><?= htmlspecialchars($booking['service_type']) ?></strong></div>
         <div><span style="color:#888;">Thời gian:</span> <strong><?= date('H:i - d/m/Y', strtotime($booking['booking_date'])) ?></strong></div>
         <div><span style="color:#888;">Khách:</span> <strong><?= $booking['guests'] ?> người</strong></div>
         <div><span style="color:#888;">Cọc:</span> <strong style="color:#d64545;"><?= number_format($booking['deposit_amount']) ?>đ</strong></div>
@@ -95,7 +95,7 @@ $total = 0;
                     <td style="padding:8px; border-bottom:1px solid #f0f0f0;">
                         <strong style="color:#222;"><?= htmlspecialchars($it['name']) ?></strong>
                         <?php if (!empty($it['toppings_list'])): ?>
-                            <div style="font-size:11px; color:var(--gold); margin-top:2px;">
+                            <div style="font-size:11px; color:var(--accent-burgundy); margin-top:2px;">
                                 <i class="fas fa-plus-circle me-1" style="font-size:10px;"></i>Topping: <?= implode(', ', $it['toppings_list']) ?>
                             </div>
                         <?php endif; ?>
@@ -113,14 +113,14 @@ $total = 0;
             <tfoot>
                 <tr>
                     <td colspan="2" style="padding:8px; text-align:right; font-weight:bold; color:#555;">TỔNG CỘNG:</td>
-                    <td style="padding:8px; text-align:right; font-weight:bold; color:var(--gold); font-size:15px;"><?= number_format($booking['total_amount'] ?? $total) ?>đ</td>
+                    <td style="padding:8px; text-align:right; font-weight:bold; color:var(--accent-burgundy); font-size:15px;"><?= number_format($booking['total_amount'] ?? $total) ?>đ</td>
                 </tr>
             </tfoot>
         </table>
     <?php endif; ?>
 
     <?php if(!empty($booking['message'])): ?>
-    <div style="background:#fdfcf9; border-left:3px solid var(--gold); padding:10px; font-size:12px; font-style:italic;">
+    <div style="background:#fdfcf9; border-left:3px solid var(--accent-burgundy); padding:10px; font-size:12px; font-style:italic;">
         <strong>Ghi chú:</strong> <?= nl2br(htmlspecialchars($booking['message'])) ?>
     </div>
     <?php endif; ?>

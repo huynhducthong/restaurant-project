@@ -29,10 +29,10 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
 ?>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
 
 .footer {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     position: relative;
     padding: 80px 0 40px;
     background-color: <?= !empty($ft['footer_bg_color']) && $ft['footer_bg_color'] !== '#0c0b09' ? $ft['footer_bg_color'] : '#113f36' ?>;
@@ -52,7 +52,7 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
 <?php endif; ?>
 .footer .container { position: relative; z-index: 2; }
 .footer h4 { 
-    font-family: 'Inter', sans-serif; 
+    font-family: 'Open Sans', sans-serif; 
     font-size: 11px; 
     letter-spacing: 2px; 
     text-transform: uppercase; 
@@ -61,7 +61,7 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
     font-weight: 500;
 }
 .footer p, .footer a, .footer li { 
-    font-family: 'Playfair Display', serif; 
+    font-family: 'Montserrat', sans-serif; 
     font-size: 15px; 
     color: #ffffff; 
     line-height: 1.8; 
@@ -100,8 +100,8 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
     transition: opacity 0.3s ease;
 }
 .map-overlay-message {
-    background: #fff; color: #113f36; padding: 10px 20px;
-    border-radius: 4px; font-size: 12px; font-family: 'Inter', sans-serif;
+    background: #262629; color: #113f36; padding: 10px 20px;
+    border-radius: 4px; font-size: 12px; font-family: 'Open Sans', sans-serif;
     font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
     pointer-events: none;
 }
@@ -111,13 +111,13 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
 .newsletter-form input {
     width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid rgba(255,255,255,0.3);
     background: transparent; color: #fff; outline: none; margin-bottom: 15px;
-    font-family: 'Playfair Display', serif; font-size: 15px;
+    font-family: 'Montserrat', sans-serif; font-size: 15px;
 }
 .newsletter-form input::placeholder { color: rgba(255,255,255,0.5); }
 .newsletter-form button {
-    background: #ffffff; color: #113f36; width: 100%;
+    background: #262629; color: #113f36; width: 100%;
     border: none; padding: 14px 20px; border-radius: 4px; 
-    font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;
+    font-weight: 600; cursor: pointer; font-family: 'Open Sans', sans-serif;
     text-transform: uppercase; letter-spacing: 1.5px; font-size: 12px;
     transition: background 0.3s;
 }
@@ -130,7 +130,7 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 14px;
     color: rgba(255,255,255,0.8);
 }
@@ -148,7 +148,7 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
                     <img src="<?= htmlspecialchars($logo) ?>" alt="Logo" class="footer-logo">
                 <?php else: ?>
                     <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
-                        <h4 style="margin: 0; font-family: 'Playfair Display', serif; font-size: 24px; text-transform: none; letter-spacing: normal; color: #fff; line-height: 1.2;">
+                        <h4 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 24px; text-transform: none; letter-spacing: normal; color: #fff; line-height: 1.2;">
                             <?= htmlspecialchars($ft['restaurant_name'] ?? 'Restaurantly') ?>
                         </h4>
                     </div>
@@ -224,7 +224,7 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
                     <?php endif; ?>
                 </div>
                 
-                <a href="<?= safe_url('booking_service.php?type=table', $path_prefix) ?>" style="display: block; text-align: center; background: #fff; color: #113f36; padding: 12px; border-radius: 6px; font-family: 'Inter', sans-serif; font-weight: 600; margin-top: 30px; text-decoration: none; transition: background 0.3s;" onmouseover="this.style.background='#e0e0e0'" onmouseout="this.style.background='#fff'">
+                <a href="<?= safe_url('booking_service.php?type=table', $path_prefix) ?>" style="display: block; text-align: center; background: #262629; color: #113f36; padding: 12px; border-radius: 6px; font-family: 'Open Sans', sans-serif; font-weight: 600; margin-top: 30px; text-decoration: none; transition: background 0.3s;" onmouseover="this.style.background='#e0e0e0'" onmouseout="this.style.background='#fff'">
                     Đặt Bàn Ngay (Book a Table)
                 </a>
 
@@ -262,40 +262,40 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
   bottom: 20px;
   right: 20px;
   z-index: 9999;
-  background-color: #0d1a16;
+  background-color: #1A1A1D; /* Obsidian */
   width: 180px; /* Scaled down */
   padding: 15px; /* Scaled down */
-  border: 1px solid rgba(201, 166, 107, 0.4);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  border: 1px solid rgba(168, 135, 70, 0.4);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
 }
 .chat-widget-content {
-  border: 1px solid rgba(201, 166, 107, 0.2);
+  border: 1px solid rgba(168, 135, 70, 0.2);
   padding: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 .chat-eyebrow {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: 8px; /* Scaled down */
   letter-spacing: 1px;
-  color: #C9A66B;
+  color: #A88746; /* Gold */
   text-transform: uppercase;
   margin-bottom: 5px;
 }
 .chat-heading {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 1rem; /* Scaled down */
-  color: #F6F2E9;
+  color: #D1D1D1; /* Soft Ash */
   font-weight: 400;
   line-height: 1.2;
   margin-bottom: 12px;
 }
 .btn-chat-gold {
   display: inline-block;
-  background-color: #C19A5B;
-  color: #0d1a16;
-  font-family: 'Inter', sans-serif;
+  background-color: #A88746;
+  color: #1A1A1D;
+  font-family: 'Open Sans', sans-serif;
   font-size: 10px; /* Scaled down */
   font-weight: 600;
   letter-spacing: 1px;

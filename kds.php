@@ -250,7 +250,7 @@ $upcoming_orders = $stmt_up->fetchAll(PDO::FETCH_ASSOC);
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
 <style>
@@ -258,19 +258,19 @@ $upcoming_orders = $stmt_up->fetchAll(PDO::FETCH_ASSOC);
    TOKENS — Light / Warm Kitchen Theme
 ═══════════════════════════════════════ */
 :root {
-  --bg:        #F6F2E9;
+  --bg:        #1A1A1D;
   --surface:   #ffffff;
-  --surface2:  #F6F2E9;
-  --border:    rgba(34,34,34,.1);
-  --border-md: rgba(34,34,34,.15);
+  --surface2:  #1A1A1D;
+  --border:    rgba(209, 209, 209,.1);
+  --border-md: rgba(209, 209, 209,.15);
 
-  --forest:    #4F5B3A;
+  --forest:    #A88746;
   --forest-lt: #5f6e45;
-  --forest-dim:rgba(79,91,58,.1);
+  --forest-dim:rgba(168, 135, 70,.1);
 
-  --gold:      #C9A66B;
-  --gold-bg:   rgba(201,166,107,.1);
-  --gold-border:rgba(201,166,107,.3);
+  --accent-burgundy:      #A88746;
+  --accent-burgundy-bg:   rgba(168, 135, 70,.1);
+  --accent-burgundy-border:rgba(168, 135, 70,.3);
 
   --red:       #c0392b;
   --red-bg:    #fff5f5;
@@ -288,13 +288,13 @@ $upcoming_orders = $stmt_up->fetchAll(PDO::FETCH_ASSOC);
   --amber-bg:  #fffbeb;
   --amber-border:rgba(146,88,10,.2);
 
-  --txt:       #222222;
+  --txt:       #D1D1D1;
   --txt-muted: #555555;
   --txt-dim:   #777777;
 
-  --shadow-sm: 0 1px 4px rgba(34,34,34,.06), 0 4px 12px rgba(34,34,34,.04);
-  --shadow-md: 0 4px 16px rgba(34,34,34,.08), 0 12px 32px rgba(34,34,34,.05);
-  --shadow-lg: 0 8px 32px rgba(34,34,34,.12), 0 24px 56px rgba(34,34,34,.07);
+  --shadow-sm: 0 1px 4px rgba(209, 209, 209,.06), 0 4px 12px rgba(209, 209, 209,.04);
+  --shadow-md: 0 4px 16px rgba(209, 209, 209,.08), 0 12px 32px rgba(209, 209, 209,.05);
+  --shadow-lg: 0 8px 32px rgba(209, 209, 209,.12), 0 24px 56px rgba(209, 209, 209,.07);
 
   --mono: 'Space Mono', monospace;
   --sans: 'Syne', sans-serif;
@@ -659,9 +659,9 @@ body::before {
   color: var(--blue);
 }
 .meta-chip.svc {
-  background: var(--gold-bg);
-  border-color: var(--gold-border);
-  color: var(--gold);
+  background: var(--accent-burgundy-bg);
+  border-color: var(--accent-burgundy-border);
+  color: var(--accent-burgundy);
 }
 .meta-chip i { font-size: 10px; }
 
@@ -732,7 +732,7 @@ body::before {
   margin-bottom: 6px;
 }
 .block-label.red   { color: var(--red); }
-.block-label.gold  { color: var(--gold); }
+.block-label.gold  { color: var(--accent-burgundy); }
 .block-label.muted { color: var(--txt-muted); }
 .block-body {
   font-size: 13px;
@@ -743,8 +743,8 @@ body::before {
 
 /* DNA block */
 .dna-block {
-  background: var(--gold-bg);
-  border: 1px solid var(--gold-border);
+  background: var(--accent-burgundy-bg);
+  border: 1px solid var(--accent-burgundy-border);
   border-radius: var(--r-sm);
   padding: 12px 14px;
 }
@@ -871,7 +871,7 @@ body::before {
   pointer-events: none;
 }
 .kds-toast {
-  background: #fff;
+  background: #262629;
   border: 1px solid var(--border-md);
   border-radius: var(--r-sm);
   padding: 14px 18px;
@@ -950,11 +950,11 @@ body::before {
   background: var(--surface2);
   padding: 12px 16px;
   border-radius: var(--r-sm);
-  border-left: 3px solid var(--gold);
+  border-left: 3px solid var(--accent-burgundy);
 }
 .up-date {
   font-size: 11px;
-  color: var(--gold);
+  color: var(--accent-burgundy);
   font-family: var(--mono);
   font-weight: 700;
   margin-bottom: 4px;
@@ -1186,7 +1186,7 @@ $normalOrders = $totalOrders - $urgentOrders;
                 <span style="font-weight: 700;"><?= htmlspecialchars($f['food_name']) ?></span>
                 <?php if (!empty($f['toppings'])): ?>
                   <br>
-                  <span class="food-note" style="background: rgba(201, 166, 107, 0.1); color: var(--gold); border: 1px solid rgba(201, 166, 107, 0.2); font-weight: bold; font-style: normal; margin-top: 2px;">
+                  <span class="food-note" style="background: rgba(168, 135, 70, 0.1); color: var(--accent-burgundy); border: 1px solid rgba(168, 135, 70, 0.2); font-weight: bold; font-style: normal; margin-top: 2px;">
                     <i class="fas fa-plus-circle" style="font-size:9px; margin-right:3px;"></i>Topping: <?= htmlspecialchars(implode(', ', $f['toppings'])) ?>
                   </span>
                 <?php endif; ?>

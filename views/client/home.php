@@ -14,8 +14,8 @@
 <section id="book-a-table" class="book-a-table" style="padding: 60px 0; background: #0c0b09; color: #fff;">
   <div class="container" data-aos="fade-up">
     <div class="section-title text-center mb-5">
-      <h2 style="font-size: 14px; color: #cda45e; letter-spacing: 2px; text-transform: uppercase;">Đặt bàn</h2>
-      <p style="font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700;">Giữ chỗ cho bữa tối của bạn</p>
+      <h2 style="font-size: 14px; color: #A88746; letter-spacing: 2px; text-transform: uppercase;">Đặt bàn</h2>
+      <p style="font-family: 'Montserrat', sans-serif; font-size: 36px; font-weight: 700;">Giữ chỗ cho bữa tối của bạn</p>
     </div>
 
     <form action="<?= ($path_prefix ?? '') ?>index.php?action=book" method="post" class="php-email-form">
@@ -40,7 +40,7 @@
         </div>
       </div>
       <div class="text-center mt-4">
-        <button type="submit" style="background: #cda45e; border: 0; padding: 10px 35px; color: #fff; transition: 0.4s; border-radius: 50px;">Gửi yêu cầu đặt bàn</button>
+        <button type="submit" style="background: #A88746; border: 0; padding: 10px 35px; color: #fff; transition: 0.4s; border-radius: 50px;">Gửi yêu cầu đặt bàn</button>
       </div>
     </form>
   </div>

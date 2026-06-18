@@ -121,11 +121,30 @@ if ($user_info) {
 
 function hasAllergenBooking($food, $user_allergies) {
     if (empty($user_allergies)) return false;
-    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '') . ',' . ($food['cat_name'] ?? '');
+    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '') . ',' . ($food['cat_name'] ?? '') . ',' . ($food['name'] ?? '');
     $food_allergens = array_map('trim', explode(',', mb_strtolower($all_food_ingredients, 'UTF-8')));
+    
+    $aliases = [
+        'hải sản' => ['tôm', 'cua', 'ghẹ', 'cá', 'mực', 'bạch tuộc', 'ốc', 'hàu', 'sò', 'nghêu', 'tuna', 'salmon', 'scallop'],
+        'sữa' => ['bơ', 'phô mai', 'cheese', 'cream', 'sữa tươi', 'sữa đặc', 'yoghurt', 'sữa chua'],
+        'đậu phộng' => ['lạc', 'peanut'],
+        'gluten' => ['lúa mì', 'bột mì', 'wheat', 'bread', 'bánh mì', 'pasta', 'pizza'],
+        'trứng' => ['egg', 'trứng gà', 'trứng vịt', 'trứng cút']
+    ];
+
     foreach ($user_allergies as $ua) {
+        if (empty($ua)) continue;
+        
+        $check_terms = [$ua];
+        if (isset($aliases[$ua])) {
+            $check_terms = array_merge($check_terms, $aliases[$ua]);
+        }
+        
         foreach($food_allergens as $fa) {
-            if (!empty($fa) && strpos($fa, $ua) !== false) return true;
+            if (empty($fa)) continue;
+            foreach ($check_terms as $term) {
+                if (strpos($fa, $term) !== false) return true;
+            }
         }
     }
     return false;
@@ -201,19 +220,19 @@ uksort($grouped_foods, function($a, $b) use ($category_order) {
 include 'views/client/layouts/header.php';
 ?>
 
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
 <style>
 /* === MINIMALIST TOKENS === */
 :root {
-  --bg-cream: #F6F2E9;
-  --forest: #4F5B3A; /* Olive */
-  --forest-light: #6A7A4E;
-  --gold: #C9A66B;
-  --gold-glow: rgba(201, 166, 107, 0.2);
-  --glass-bg: #FFFFFF;
-  --glass-border: #E0DDD5;
-  --text-main: #222222;
+  --bg-cream: #1A1A1D;
+  --forest: #A88746; /* Olive */
+  --forest-light: #8B6D36;
+  --accent-burgundy: #A88746;
+  --accent-burgundy-glow: rgba(168, 135, 70, 0.2);
+  --glass-bg: #262629;
+  --glass-border: #333336;
+  --text-main: #D1D1D1;
   --text-muted: #666666;
   --ease: cubic-bezier(0.25, 1, 0.5, 1);
 }
@@ -221,7 +240,7 @@ include 'views/client/layouts/header.php';
 body {
     background-color: var(--bg-cream);
     color: var(--text-main);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Open Sans', sans-serif;
 }
 
 /* === CINEMATIC HERO === */
@@ -231,7 +250,7 @@ body {
 }
 .hero-luxury::before {
     content: ''; position: absolute; inset: 0;
-    background: linear-gradient(90deg, rgba(246,242,233,0.95) 0%, rgba(246,242,233,0.7) 50%, transparent 100%),
+    background: linear-gradient(90deg, rgba(26, 26, 29,0.95) 0%, rgba(26, 26, 29,0.7) 50%, transparent 100%),
                 linear-gradient(0deg, var(--bg-cream) 0%, transparent 35%);
 }
 .hero-content {
@@ -242,7 +261,7 @@ body {
 }
 .hero-tagline::after { content: ''; display: inline-block; width: 40px; height: 1px; background: var(--forest); margin-left: 15px; }
 .hero-luxury h1 {
-    font-family: 'Cormorant Garamond', serif; font-size: clamp(3.5rem, 6vw, 5rem); font-weight: 600; line-height: 1.1; margin-bottom: 20px; color: var(--text-main);
+    font-family: 'Montserrat', sans-serif; font-size: clamp(3.5rem, 6vw, 5rem); font-weight: 600; line-height: 1.1; margin-bottom: 20px; color: var(--text-main);
 }
 .hero-sub { color: var(--text-muted); font-weight: 400; font-size: 1.05rem; line-height: 1.6; max-width: 550px; margin-bottom: 40px; }
 .hero-btns { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
@@ -250,7 +269,7 @@ body {
     background: var(--forest); color: #fff; font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
     padding: 14px 35px; border-radius: 0; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s var(--ease); border: 1px solid var(--forest);
 }
-.btn-hero-primary:hover { background: #fff; color: var(--forest); }
+.btn-hero-primary:hover { background: #262629; color: var(--forest); }
 .btn-hero-secondary {
     background: transparent; border: 1px solid var(--forest); color: var(--forest); font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
     padding: 14px 35px; border-radius: 0; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s var(--ease);
@@ -260,7 +279,7 @@ body {
 /* === TABS DỊCH VỤ === */
 .service-selector-inline { display: flex; gap: 8px; margin-bottom: 30px; flex-wrap: wrap; }
 .svc-card-inline {
-    background: #fff; border: 1px solid var(--glass-border); padding: 10px 12px; border-radius: 0; color: var(--text-muted); font-size: 11px; font-weight: 500; text-transform: uppercase; text-decoration: none; transition: 0.3s; letter-spacing: 1px; flex-grow: 1; text-align: center;
+    background: #262629; border: 1px solid var(--glass-border); padding: 10px 12px; border-radius: 0; color: var(--text-muted); font-size: 11px; font-weight: 500; text-transform: uppercase; text-decoration: none; transition: 0.3s; letter-spacing: 1px; flex-grow: 1; text-align: center;
 }
 .svc-card-inline:hover { border-color: var(--forest); color: var(--forest); }
 .svc-card-inline.active { background: var(--forest); border-color: var(--forest); color: #fff; font-weight: 600; }
@@ -273,18 +292,18 @@ body {
 .wizard-header { display: flex; justify-content: space-between; position: relative; margin-bottom: 30px; padding: 0 10px; }
 .wizard-header::before { content: ''; position: absolute; top: 15px; left: 30px; right: 30px; height: 2px; background: var(--glass-border); z-index: 1; }
 .step-indicator { position: relative; z-index: 2; text-align: center; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
-.step-circle { width: 32px; height: 32px; border-radius: 50%; background: #fff; border: 2px solid var(--glass-border); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; margin-bottom: 8px; transition: 0.3s; }
+.step-circle { width: 32px; height: 32px; border-radius: 50%; background: #262629; border: 2px solid var(--glass-border); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; margin-bottom: 8px; transition: 0.3s; }
 .step-label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; transition: 0.3s; }
 
-.step-indicator.active .step-circle { border-color: var(--gold); background: var(--gold); color: #fff; }
-.step-indicator.active .step-label { color: var(--gold); }
+.step-indicator.active .step-circle { border-color: var(--accent-burgundy); background: var(--accent-burgundy); color: #fff; }
+.step-indicator.active .step-label { color: var(--accent-burgundy); }
 .step-indicator.completed .step-circle { border-color: var(--forest); background: var(--forest); color: #fff; cursor: pointer; }
 .step-indicator.completed .step-label { color: var(--forest); cursor: pointer; }
 
 .wizard-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px dashed var(--glass-border); }
 .btn-wizard-next { background: var(--forest); color: #fff; border: none; padding: 12px 30px; border-radius: 0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; cursor: pointer; transition: 0.3s; }
 .btn-wizard-next:disabled { background: #dcdcdc; color: #999; cursor: not-allowed; }
-.btn-wizard-next:not(:disabled):hover { background: var(--gold); }
+.btn-wizard-next:not(:disabled):hover { background: var(--accent-burgundy); }
 .btn-wizard-prev { background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border); padding: 12px 30px; border-radius: 0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; cursor: pointer; transition: 0.3s; }
 .btn-wizard-prev:hover { border-color: var(--forest); color: var(--forest); }
 
@@ -292,38 +311,38 @@ body {
 .booking-section { position: relative; max-width: 1450px; margin: -80px auto 100px; padding: 0 20px; z-index: 10; display: grid; grid-template-columns: 1fr 450px; gap: 40px; }
 @media (max-width: 992px) { .booking-section { grid-template-columns: 1fr; margin-top: 0; padding-top: 30px; gap: 20px; } }
 
-.luxury-panel { background: #fff; border: 1px solid var(--glass-border); border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; }
+.luxury-panel { background: #262629; border: 1px solid var(--glass-border); border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; }
 .panel-section { padding: 35px 40px; border-bottom: 1px solid var(--glass-border); }
 .panel-section:last-child { border-bottom: none; }
-.section-title-lux { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--forest); margin-bottom: 25px; display: flex; align-items: center; gap: 15px; font-weight: 600;}
+.section-title-lux { font-family: 'Montserrat', sans-serif; font-size: 1.8rem; color: var(--forest); margin-bottom: 25px; display: flex; align-items: center; gap: 15px; font-weight: 600;}
 
 /* === INPUTS === */
 .row-lux { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 @media(max-width:600px) { .row-lux { grid-template-columns: 1fr; } }
 .input-group-lux { position: relative; margin-bottom: 20px; }
 .input-lux {
-    width: 100%; background: #fff; border: 1px solid var(--glass-border); padding: 16px 20px;
-    color: var(--text-main); font-family: 'Inter', sans-serif; font-size: 14px; border-radius: 0; transition: all 0.3s ease; outline: none;
+    width: 100%; background: #262629; border: 1px solid var(--glass-border); padding: 16px 20px;
+    color: var(--text-main); font-family: 'Open Sans', sans-serif; font-size: 14px; border-radius: 0; transition: all 0.3s ease; outline: none;
     height: 54px; box-sizing: border-box;
 }
-.input-lux:focus { border-color: var(--gold); }
+.input-lux:focus { border-color: var(--accent-burgundy); }
 .input-lux::placeholder { color: transparent; }
 .label-lux {
-    position: absolute; top: 18px; left: 20px; color: var(--text-muted); font-size: 14px; pointer-events: none; transition: 0.3s ease; z-index: 2;
+    position: absolute; top: 18px; left: 20px; color: #cccccc; font-size: 14px; pointer-events: none; transition: 0.3s ease; z-index: 2;
 }
 .input-lux:focus ~ .label-lux, .input-lux:not(:placeholder-shown) ~ .label-lux, select.input-lux ~ .label-lux {
-    top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: #fff; padding: 0 5px; letter-spacing: 1px; text-transform: uppercase; z-index: 2; font-weight: 600;
+    top: -8px; left: 15px; font-size: 11px; color: var(--accent-burgundy); background: #262629; padding: 0 5px; letter-spacing: 1px; text-transform: uppercase; z-index: 2; font-weight: 600;
 }
 select.input-lux {
     appearance: none; -webkit-appearance: none; -moz-appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23C9A66B'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
     background-repeat: no-repeat; background-position: right 20px center; background-size: 18px; padding-right: 45px; cursor: pointer;
 }
-.input-lux option { background: #fff; color: var(--text-main); }
+.input-lux option { background: #262629; color: var(--text-main); }
 
 /* Guest Counter */
-.guest-lux { display: flex; align-items: center; background: #fff; border: 1px solid var(--glass-border); border-radius: 0; padding: 0; height: 54px; box-sizing: border-box; }
-.btn-qty { width: 44px; height: 100%; border-radius: 0; border: none; background: #fafafa; color: var(--text-main); cursor: pointer; transition: 0.3s; font-size: 16px; }
+.guest-lux { display: flex; align-items: center; background: #262629; border: 1px solid var(--glass-border); border-radius: 0; padding: 0; height: 54px; box-sizing: border-box; }
+.btn-qty { width: 44px; height: 100%; border-radius: 0; border: none; background: #262629; color: var(--text-main); cursor: pointer; transition: 0.3s; font-size: 16px; }
 .btn-qty:first-child { border-right: 1px solid var(--glass-border); }
 .btn-qty:last-child { border-left: 1px solid var(--glass-border); }
 .btn-qty:hover { background: var(--forest); color: #fff; border-color: var(--forest); }
@@ -331,44 +350,57 @@ select.input-lux {
 
 /* === MAP BTN & CARDS === */
 .map-btn-lux {
-    width: 100%; padding: 25px; border: 1px solid var(--forest); border-radius: 0; color: var(--forest); text-transform: uppercase; letter-spacing: 2px; font-size: 12px; cursor: pointer; transition: 0.3s; text-align: center; background: #fff; font-weight: 600;
+    width: 100%; padding: 25px; border: 1px solid var(--forest); border-radius: 0; color: var(--forest); text-transform: uppercase; letter-spacing: 2px; font-size: 12px; cursor: pointer; transition: 0.3s; text-align: center; background: #262629; font-weight: 600;
 }
 .map-btn-lux:hover { background: var(--forest); color: #fff; }
 
 .card-select {
-    border: 1px solid var(--glass-border); background: #fff; border-radius: 0; padding: 20px; cursor: pointer; transition: all 0.3s ease; position: relative; margin-bottom: 15px; overflow: hidden;
+    border: 1px solid var(--glass-border); background: #262629; border-radius: 0; padding: 20px; cursor: pointer; transition: all 0.3s ease; position: relative; margin-bottom: 15px; overflow: hidden;
 }
 .card-select:hover { border-color: var(--forest); }
-.card-select.active { border-color: var(--forest); background: rgba(79, 91, 58, 0.05); }
+.card-select.active { border-color: var(--forest); background: rgba(168, 135, 70, 0.05); }
 .card-select.active::after { content: '✓'; position: absolute; top: 15px; right: 15px; color: var(--forest); font-weight: bold; }
 
 /* Thực đơn Add-on */
-.menu-item-lux { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid var(--glass-border); transition: 0.3s; border-radius: 0; background: #fff; }
-.menu-item-lux:hover { background: #fafafa; }
+.menu-item-lux { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid var(--glass-border); transition: 0.3s; border-radius: 0; background: #262629; }
+.menu-item-lux:hover { background: #262629; }
 .menu-checkbox { appearance: none; width: 18px; height: 18px; border: 1px solid var(--glass-border); border-radius: 0; cursor: pointer; position: relative; transition: 0.2s; }
 .menu-checkbox:checked { background: var(--forest); border-color: var(--forest); }
 .menu-checkbox:checked::after { content: '✓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #fff; font-size: 10px; font-weight: bold; }
-.menu-qty-input { width: 60px; background: #fff; border: 1px solid var(--glass-border); color: var(--text-main); text-align: center; border-radius: 0; padding: 4px; opacity: 0.3; pointer-events: none; transition: 0.3s; }
-.menu-note-input { width: 200px; background: #fff; border: 1px solid var(--glass-border); color: var(--text-main); border-radius: 0; padding: 4px; opacity: 0.3; pointer-events: none; transition: 0.3s; }
+.menu-qty-input { width: 60px; background: #262629; border: 1px solid var(--glass-border); color: var(--text-main); text-align: center; border-radius: 0; padding: 4px; opacity: 0.3; pointer-events: none; transition: 0.3s; }
+.menu-note-input { width: 200px; background: #262629; border: 1px solid var(--glass-border); color: var(--text-main); border-radius: 0; padding: 4px; opacity: 0.3; pointer-events: none; transition: 0.3s; }
 .menu-item-lux.checked .menu-qty-input, .menu-item-lux.checked .menu-note-input { opacity: 1; pointer-events: auto; border-color: var(--forest); }
 
 /* === FLOATING SUMMARY === */
 .summary-floating {
     position: sticky; top: 100px; background: var(--forest); border: none; border-radius: 0; padding: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); color: #fff;
 }
-.sum-title { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--gold); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 20px; }
+.sum-title { font-family: 'Montserrat', sans-serif; font-size: 1.6rem; color: var(--accent-burgundy); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 20px; }
 .sum-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 13px; color: rgba(255,255,255,0.7); }
 .sum-val { color: #fff; font-weight: 400; text-align: right;}
-.sum-val.highlight { color: var(--gold); font-weight: 600;}
+.sum-val.highlight { color: var(--accent-burgundy); font-weight: 600;}
+
+/* Override for billing summary (yellow background) */
+.billing-summary .sum-row { color: rgba(0, 0, 0, 0.75); font-weight: 500; border-color: rgba(0,0,0,0.1); }
+.billing-summary .sum-val { color: #1a1a1d; font-weight: 700; }
+.billing-summary .sum-val.highlight { color: #000; font-weight: 800; }
+.billing-summary p { color: #1a1a1d !important; }
 
 .total-box { margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; }
 .deposit-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 5px; }
-.deposit-amount { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; color: var(--gold); line-height: 1.2; margin: 5px 0;}
+.deposit-amount { font-family: 'Montserrat', sans-serif; font-size: 2.5rem; color: var(--accent-burgundy); line-height: 1.2; margin: 5px 0;}
+.deposit-note { font-size: 11px; font-style: italic; color: rgba(255,255,255,0.4); }
+
+/* Overrides for billing summary total box */
+.billing-summary .total-box { border-top-color: rgba(0,0,0,0.1); }
+.billing-summary .deposit-label { color: rgba(0,0,0,0.6); font-weight: 600; }
+.billing-summary .deposit-amount { color: #000; }
+.billing-summary .deposit-note { color: rgba(0,0,0,0.5); }
 
 .btn-gold-grad {
-    width: 100%; padding: 16px; background: var(--gold); border: 1px solid var(--gold); border-radius: 0; color: #fff; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-size: 13px; cursor: pointer; transition: all 0.3s ease;
+    width: 100%; padding: 16px; background: var(--accent-burgundy); border: 1px solid var(--accent-burgundy); border-radius: 0; color: #fff; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-size: 13px; cursor: pointer; transition: all 0.3s ease;
 }
-.btn-gold-grad:hover { background: transparent; color: var(--gold); }
+.btn-gold-grad:hover { background: transparent; color: var(--accent-burgundy); }
 
 .btn-outline-lux {
     background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 10px 25px; border-radius: 0; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-size: 13px; cursor: pointer; transition: all 0.3s ease;
@@ -376,21 +408,21 @@ select.input-lux {
 .btn-outline-lux:hover { background: var(--text-muted); color: #fff; }
 
 /* === MAP MODAL VIP === */
-.modal-content.dark-lux { background: #fff; border: 1px solid var(--forest); border-radius: 0; color: var(--text-main); }
+.modal-content.dark-lux { background: #262629; border: 1px solid var(--forest); border-radius: 0; color: var(--text-main); }
 .modal-header.lux { border-bottom: 1px solid var(--glass-border); padding: 20px 30px; }
-.modal-title.lux { font-family: 'Cormorant Garamond', serif; color: var(--forest); font-size: 1.5rem; font-weight: 600; }
+.modal-title.lux { font-family: 'Montserrat', sans-serif; color: var(--forest); font-size: 1.5rem; font-weight: 600; }
 .btn-close-lux { opacity: 0.5; }
 .cinematic-map { padding: 40px; background: var(--bg-cream); }
 .map-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
 .vip-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
 
 .seat-lux {
-    background: #fff; border: 1px solid var(--glass-border); border-radius: 0; padding: 15px 10px; text-align: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;
+    background: #262629; border: 1px solid var(--glass-border); border-radius: 0; padding: 15px 10px; text-align: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;
 }
 .seat-lux.available:hover { border-color: var(--forest); transform: scale(1.05); z-index: 2; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
 .seat-lux.booked { opacity: 0.5; cursor: not-allowed; background: #f0f0f0;}
 .seat-lux.selected { background: var(--forest); border-color: var(--forest); transform: scale(1.05); z-index: 3; }
-.seat-code { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--text-main); display: block; font-weight: 600;}
+.seat-code { font-family: 'Montserrat', sans-serif; font-size: 1.2rem; color: var(--text-main); display: block; font-weight: 600;}
 .seat-lux.selected .seat-code { color: #fff; }
 .seat-info { font-size: 10px; color: var(--text-muted); display: block; margin-top: 5px;}
 .seat-lux.selected .seat-info { color: rgba(255,255,255,0.7); }
@@ -480,7 +512,7 @@ select.input-lux {
                             <input type="number" name="guests" id="gi" value="2" min="1" max="50" readonly onchange="us()">
                             <button type="button" class="btn-qty" onclick="cg(1)">+</button>
                         </div>
-                        <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--gold); background: #fff; padding: 0 5px; letter-spacing: 1px; text-transform: uppercase; z-index: 2; font-weight: 600;">Số lượng khách *</label>
+                        <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--accent-burgundy); background: #262629; padding: 0 5px; letter-spacing: 1px; text-transform: uppercase; z-index: 2; font-weight: 600;">Số lượng khách *</label>
                         <?php if ($type === 'chef'): ?>
                             <div class="mt-2 p-2" style="background: #fdfdfd; border: 1px solid var(--glass-border); font-size: 11px; color: var(--text-main); line-height: 1.5; border-radius: 0;">
                                 <i class="fas fa-info-circle me-1" style="color: var(--forest);"></i> <strong style="color: var(--forest);">Phí phục vụ Bếp trưởng</strong> thay đổi theo số lượng khách:<br>
@@ -496,7 +528,7 @@ select.input-lux {
                 <?php if ($type === 'birthday'): ?>
                 <!-- PHẦN DÀNH RIÊNG CHO TIỆC KỶ NIỆM -->
                 <div class="mt-4 pt-4 border-top border-secondary">
-                    <h3 class="section-title-lux" style="font-size: 1.2rem; color: var(--gold); margin-bottom:15px;"><i class="fas fa-gift me-2"></i> Thông Tin Tiệc Kỷ Niệm</h3>
+                    <h3 class="section-title-lux" style="font-size: 1.2rem; color: var(--accent-burgundy); margin-bottom:15px;"><i class="fas fa-gift me-2"></i> Thông Tin Tiệc Kỷ Niệm</h3>
                     <div class="row-lux">
                         <div class="input-group-lux">
                             <select name="event_type" id="event_type" class="input-lux" onchange="selEvent(); us();">
@@ -535,7 +567,7 @@ select.input-lux {
             </div>
 
             <div class="panel-section" style="padding-top: 20px; padding-bottom: 20px;">
-                <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold); margin-bottom: 15px;"><?= $type === 'chef' ? 'Địa Điểm Phục Vụ' : 'Không Gian & Vị Trí' ?></h3>
+                <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--accent-burgundy); margin-bottom: 15px;"><?= $type === 'chef' ? 'Địa Điểm Phục Vụ' : 'Không Gian & Vị Trí' ?></h3>
                 
                 <?php if ($type !== 'chef'): ?>
                     <div class="map-btn-lux mb-3" data-bs-toggle="modal" data-bs-target="#mapModal">
@@ -543,7 +575,7 @@ select.input-lux {
                     </div>
                     <div id="selected-seat-display" class="card-select active" style="display:none; text-align:center;">
                         <div class="seat-code" id="sp-code"></div>
-                        <div class="seat-info" style="color:var(--gold)" id="sp-price"></div>
+                        <div class="seat-info" style="color:var(--accent-burgundy)" id="sp-price"></div>
                         <button type="button" class="btn-qty mt-2 mx-auto" style="width:25px;height:25px;font-size:10px;" onclick="clrSeat()"><i class="fas fa-times"></i></button>
                     </div>
                     <select id="tsel" class="input-lux" style="display:none;" onchange="fromDrop(this)">
@@ -642,13 +674,13 @@ select.input-lux {
             <!-- BƯỚC 2 -->
             <div id="step-2" class="booking-step">
             <div class="panel-section" style="border-bottom: none;">
-                <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold);">Thực Đơn</h3>
+                <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--accent-burgundy);">Thực Đơn</h3>
                 
                 <?php if ($type !== 'bespoke'): ?>
                 <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">Bộ Sưu Tập Hương Vị</p>
                 <div style="display:grid; grid-template-columns: 1fr; max-width: 350px; gap:15px; margin-bottom: 25px;">
                     <div class="card-select cc active" data-price="0" onclick="selCombo(0,this)">
-                        <div style="color:var(--gold); font-size:15px; margin-bottom:5px;">Gọi Món Tự Do</div>
+                        <div style="color:var(--accent-burgundy); font-size:15px; margin-bottom:5px;">Gọi Món Tự Do</div>
                         <div style="font-size:11px; color:var(--text-muted)">Món tự chọn</div>
                     </div>
                 </div>
@@ -660,20 +692,20 @@ select.input-lux {
                         'img'  => $theme_data['img']
                     ]), ENT_QUOTES, 'UTF-8');
                 ?>
-                <p style="font-size:13px; color:var(--gold); margin-bottom:10px; font-family:'Playfair Display', serif; text-transform:uppercase; letter-spacing:1px; border-bottom: 1px dashed rgba(212,176,106,0.3); padding-bottom:5px; cursor:pointer;" onclick='showThemeInfo(<?= $themeJson ?>)'>
+                <p style="font-size:13px; color:var(--accent-burgundy); margin-bottom:10px; font-family:'Montserrat', sans-serif; text-transform:uppercase; letter-spacing:1px; border-bottom: 1px dashed rgba(212,176,106,0.3); padding-bottom:5px; cursor:pointer;" onclick='showThemeInfo(<?= $themeJson ?>)'>
                     SET MENU TỪ CHỦ ĐỀ: <?= htmlspecialchars($theme_name) ?> <i class="fas fa-info-circle ms-1" style="font-size:11px; opacity:0.7;"></i>
                 </p>
                 <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:15px; margin-bottom: 25px;">
                     <?php foreach($theme_data['combos'] as $cb): ?>
                         <div class="card-select cc" data-price="<?= (float)$cb['price'] ?>" onclick="selCombo(<?= $cb['id'] ?>,this)">
-                            <div style="color:var(--gold); font-size:15px; margin-bottom:5px;"><?= htmlspecialchars($cb['name']) ?></div>
+                            <div style="color:var(--accent-burgundy); font-size:15px; margin-bottom:5px;"><?= htmlspecialchars($cb['name']) ?></div>
                             <div style="font-size:12px; color:var(--text-main)"><?= number_format($cb['price']) ?> đ</div>
                         </div>
                     <?php endforeach; ?>
                     
                     <?php if ($theme_data['id'] != 0): ?>
                     <div class="card-select cc" data-price="0" onclick="selThemeFoods(<?= $theme_data['id'] ?>, this)">
-                        <div style="color:var(--gold); font-size:15px; margin-bottom:5px;">Món tự chọn</div>
+                        <div style="color:var(--accent-burgundy); font-size:15px; margin-bottom:5px;">Món tự chọn</div>
                         <div style="font-size:12px; color:var(--text-muted)">Các món thuộc chủ đề <?= htmlspecialchars($theme_name) ?></div>
                     </div>
                     <?php endif; ?>
@@ -683,8 +715,8 @@ select.input-lux {
 
                 <?php endif; ?>
 
-                <div id="bespoke-menu-fields" style="display:<?= $type === 'bespoke' ? 'block' : 'none' ?>; margin-top:20px; border: 1px solid var(--glass-border); padding:20px; background:#fafafa;">
-                    <h4 style="font-family:'Cormorant Garamond',serif; color:var(--gold); font-size:1.2rem; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px;"><i class="fas fa-scroll me-2"></i> Yêu cầu Thiết kế Thực đơn riêng</h4>
+                <div id="bespoke-menu-fields" style="display:<?= $type === 'bespoke' ? 'block' : 'none' ?>; margin-top:20px; border: 1px solid var(--glass-border); padding:20px; background: #262629;">
+                    <h4 style="font-family:'Montserrat',serif; color:var(--accent-burgundy); font-size:1.2rem; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px;"><i class="fas fa-scroll me-2"></i> Yêu cầu Thiết kế Thực đơn riêng</h4>
                     <div class="row-lux mb-3">
                         <div class="input-group-lux">
                             <select name="chef_budget" id="chef_budget" class="input-lux" onchange="updateChefReq(); us(); calcTotal();">
@@ -717,7 +749,7 @@ select.input-lux {
                         <div style="max-height: 400px; overflow-y: auto; padding-right:10px;">
                             <?php foreach($grouped_foods as $c_name => $t_foods): ?>
                                 <div class="addon-group-block" style="margin-bottom: 20px;">
-                                    <h5 style="color:var(--gold); font-size:13px; text-transform:uppercase; border-bottom:1px dashed rgba(212,176,106,0.3); padding-bottom:5px; margin-bottom:10px; font-weight:600;"><i class="fas fa-utensils me-2"></i> <?= htmlspecialchars($c_name) ?></h5>
+                                    <h5 style="color:var(--accent-burgundy); font-size:13px; text-transform:uppercase; border-bottom:1px dashed rgba(212,176,106,0.3); padding-bottom:5px; margin-bottom:10px; font-weight:600;"><i class="fas fa-utensils me-2"></i> <?= htmlspecialchars($c_name) ?></h5>
                                     <?php foreach($t_foods as $fd): 
                                          $stock = getFoodInventory($db, $fd['id']);
                                          $is_out_of_stock = ($stock <= 0);
@@ -748,7 +780,7 @@ select.input-lux {
                                                              <span class="badge bg-info text-white ms-2" style="font-size: 10px;"><i class="fas fa-history me-1"></i> Đã từng gọi</span>
                                                          <?php endif; ?>
                                                          <?php if($flav_score > 0): ?>
-                                                             <span class="badge bg-warning text-dark ms-2" style="font-size: 10px; border: 1px solid var(--gold);"><i class="fas fa-magic me-1"></i> Gợi ý</span>
+                                                             <span class="badge bg-warning text-dark ms-2" style="font-size: 10px; border: 1px solid var(--accent-burgundy);"><i class="fas fa-magic me-1"></i> Gợi ý</span>
                                                          <?php endif; ?>
                                                          <?php if(hasAllergenBooking($fd, $user_allergies)): ?>
                                                              <span class="badge bg-danger text-white ms-2" style="font-size: 10px;"><i class="fas fa-exclamation-triangle me-1"></i> Dị ứng</span>
@@ -757,7 +789,7 @@ select.input-lux {
                                                              <span class="badge bg-secondary text-white ms-2" style="font-size: 10px;"><i class="fas fa-ban me-1"></i> Hết món</span>
                                                          <?php endif; ?>
                                                      </div>
-                                                     <div style="font-size:12px; color:var(--gold); margin-top: 2px;">
+                                                     <div style="font-size:12px; color:var(--accent-burgundy); margin-top: 2px;">
                                                          <?= number_format($fd['price']) ?> đ
                                                          <span style="font-size:11px; color:var(--text-muted); margin-left:10px;">
                                                              (<?= $is_out_of_stock ? '<span class="text-danger">Hết món</span>' : '<span class="text-success">Còn món</span>' ?>)
@@ -768,7 +800,7 @@ select.input-lux {
                                               <input type="hidden" name="quantity[<?= $fd['id'] ?>]" id="q<?= $fd['id'] ?>" value="1">
                                          </div>
                                          <input type="hidden" name="food_notes[<?= $fd['id'] ?>]" id="fn<?= $fd['id'] ?>" value="">
-                                         <div class="opt-note-display mt-2" style="font-size:11px; color:var(--gold); font-style:italic; display:none; padding-left:33px;"></div>
+                                         <div class="opt-note-display mt-2" style="font-size:11px; color:var(--accent-burgundy); font-style:italic; display:none; padding-left:33px;"></div>
                                      </div>
                                      <?php endforeach; ?>
                                 </div>
@@ -789,23 +821,23 @@ select.input-lux {
             <!-- BƯỚC 3 -->
             <div id="step-3" class="booking-step">
             <div class="panel-section" id="bespoke-section">
-                <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold);"><i class="fas fa-gem me-2"></i> Trải nghiệm Cá nhân hóa</h3>
+                <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--accent-burgundy);"><i class="fas fa-gem me-2"></i> Trải nghiệm Cá nhân hóa</h3>
                 <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">Bespoke Booking Experience</p>
                 
                 <div class="d-flex flex-column gap-3">
                     <label class="d-flex align-items-center gap-3 p-2 rounded" style="cursor:pointer; background:rgba(212,176,106,0.05); border:1px solid rgba(212,176,106,0.2); transition:0.3s;">
                         <input type="checkbox" name="has_candle" id="bespoke-candle" class="menu-checkbox" onchange="us()">
                         <div>
-                            <div style="font-size:14px; font-weight:600; color:var(--gold);"><i class="fas fa-fire me-2"></i>Chuẩn bị Nến thơm thư giãn</div>
+                            <div style="font-size:14px; font-weight:600; color:var(--accent-burgundy);"><i class="fas fa-fire me-2"></i>Chuẩn bị Nến thơm thư giãn</div>
                             <div style="font-size:12px; color:var(--text-muted);">Tạo không gian lung linh, lãng mạn (+50.000 đ)</div>
                         </div>
                     </label>
 
-                    <div class="p-2 rounded" style="background:#fff; border:1px solid var(--glass-border); transition:0.3s; border-radius:0;">
+                    <div class="p-2 rounded" style="background: #262629; border:1px solid var(--glass-border); transition:0.3s; border-radius:0;">
                         <label class="d-flex align-items-center gap-3" style="cursor:pointer; margin-bottom:0;" onclick="document.getElementById('flower-input-wrap').style.display = document.getElementById('bespoke-flower').checked ? 'block' : 'none'; us();">
                             <input type="checkbox" name="has_bespoke_flower" id="bespoke-flower" class="menu-checkbox">
                             <div>
-                                <div style="font-size:14px; font-weight:600; color:var(--gold);"><i class="fas fa-seedling me-2"></i>Hoa tươi thiết kế riêng</div>
+                                <div style="font-size:14px; font-weight:600; color:var(--accent-burgundy);"><i class="fas fa-seedling me-2"></i>Hoa tươi thiết kế riêng</div>
                                 <div style="font-size:12px; color:var(--text-muted);">Chuẩn bị loài hoa hoặc màu sắc bạn yêu thích (+200.000 đ)</div>
                             </div>
                         </label>
@@ -817,11 +849,11 @@ select.input-lux {
                         </div>
                     </div>
 
-                    <div class="p-2 rounded" style="background:#fff; border:1px solid var(--glass-border); transition:0.3s; border-radius:0;">
+                    <div class="p-2 rounded" style="background: #262629; border:1px solid var(--glass-border); transition:0.3s; border-radius:0;">
                         <label class="d-flex align-items-center gap-3" style="cursor:pointer; margin-bottom:0;" onclick="document.getElementById('card-input-wrap').style.display = document.getElementById('bespoke-card').checked ? 'block' : 'none'; us();">
                             <input type="checkbox" name="has_handwritten_card" id="bespoke-card" class="menu-checkbox">
                             <div>
-                                <div style="font-size:14px; font-weight:600; color:var(--gold);"><i class="fas fa-envelope-open-text me-2"></i>Viết Thiệp tay chúc mừng</div>
+                                <div style="font-size:14px; font-weight:600; color:var(--accent-burgundy);"><i class="fas fa-envelope-open-text me-2"></i>Viết Thiệp tay chúc mừng</div>
                                 <div style="font-size:12px; color:var(--text-muted);">Thiệp thiết kế cao cấp kèm lời chúc viết tay (+30.000 đ)</div>
                             </div>
                         </label>
@@ -849,7 +881,7 @@ select.input-lux {
                     </div>
 
                     <div id="vip-config-section" style="display:none; margin-top:15px; padding-top:15px; border-top:1px dashed rgba(212,176,106,0.3);">
-                        <h4 style="font-size:13px; color:var(--gold); margin-bottom:15px; text-transform:uppercase;"><i class="fas fa-sliders-h me-2"></i>Cấu hình Không gian (Dành cho Phòng VIP)</h4>
+                        <h4 style="font-size:13px; color:var(--accent-burgundy); margin-bottom:15px; text-transform:uppercase;"><i class="fas fa-sliders-h me-2"></i>Cấu hình Không gian (Dành cho Phòng VIP)</h4>
                         <div class="row-lux mb-0">
                             <div class="input-group-lux">
                                 <select name="music_playlist" class="input-lux" style="font-size:13px;">
@@ -875,11 +907,11 @@ select.input-lux {
             </div>
 
             <div class="panel-section">
-                <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--gold);">Hồ Sơ Yêu Cầu & Khẩu Vị</h3>
+                <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--accent-burgundy);">Hồ Sơ Yêu Cầu & Khẩu Vị</h3>
                 
                 <div class="row mb-4">
                     <div class="col-md-4 mb-3 mb-md-0">
-                        <label class="fw-bold mb-3" style="color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;"><i class="fas fa-exclamation-triangle me-1"></i> Dị ứng thực phẩm</label>
+                        <label class="fw-bold mb-3" style="color: var(--accent-burgundy); font-family: 'Montserrat', sans-serif; font-size: 1.1rem;"><i class="fas fa-exclamation-triangle me-1"></i> Dị ứng thực phẩm</label>
                         <div class="d-flex flex-column gap-2" style="font-size: 0.95rem;">
                             <label class="form-check-label cursor-pointer"><input type="checkbox" name="allergies[]" value="Hải sản" class="form-check-input me-2" style="cursor:pointer"> Hải sản</label>
                             <label class="form-check-label cursor-pointer"><input type="checkbox" name="allergies[]" value="Sữa" class="form-check-input me-2" style="cursor:pointer"> Sữa</label>
@@ -890,7 +922,7 @@ select.input-lux {
                     </div>
                     
                     <div class="col-md-4 mb-3 mb-md-0">
-                        <label class="fw-bold mb-3" style="color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;"><i class="fas fa-leaf me-1"></i> Chế độ ăn</label>
+                        <label class="fw-bold mb-3" style="color: var(--accent-burgundy); font-family: 'Montserrat', sans-serif; font-size: 1.1rem;"><i class="fas fa-leaf me-1"></i> Chế độ ăn</label>
                         <div class="d-flex flex-column gap-2" style="font-size: 0.95rem;">
                             <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Healthy" class="form-check-input me-2" style="cursor:pointer"> Healthy</label>
                             <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Vegetarian" class="form-check-input me-2" style="cursor:pointer"> Vegetarian</label>
@@ -901,7 +933,7 @@ select.input-lux {
                     </div>
 
                     <div class="col-md-4">
-                        <label class="fw-bold mb-3" style="color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;"><i class="fas fa-glass-cheers me-1"></i> Mục đích</label>
+                        <label class="fw-bold mb-3" style="color: var(--accent-burgundy); font-family: 'Montserrat', sans-serif; font-size: 1.1rem;"><i class="fas fa-glass-cheers me-1"></i> Mục đích</label>
                         <div class="d-flex flex-column gap-2" style="font-size: 0.95rem;">
                             <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Hẹn hò" class="form-check-input me-2" style="cursor:pointer"> Hẹn hò</label>
                             <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Sinh nhật" class="form-check-input me-2" style="cursor:pointer"> Sinh nhật</label>
@@ -1081,20 +1113,20 @@ select.input-lux {
 <!-- MODAL CHI TIẾT & TÙY CHỌN MÓN ĂN -->
 <div class="modal fade" id="foodOptionModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered" style="max-width: 750px;">
-    <div class="modal-content" style="background:#fff; border:1px solid var(--forest); border-radius:0; position:relative; overflow:hidden;">
+    <div class="modal-content" style="background: #262629; border:1px solid var(--forest); border-radius:0; position:relative; overflow:hidden;">
       <div class="modal-body p-0">
         <button type="button" class="btn-close" onclick="cancelFoodOption()" style="position:absolute; top:15px; right:15px; z-index:10; background:none; border:none; font-size:20px; color:var(--text-muted); line-height:1;">✕</button>
         <div class="row g-0">
-          <div class="col-md-5" style="position:relative; min-height:350px; background:#f6f2e9;">
-            <img id="foodOptImg" src="" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;" alt="Food Image" onerror="this.onerror=null; this.src='https://placehold.co/800x600/F6F2E9/4F5B3A?text=No+Image'">
+          <div class="col-md-5" style="position:relative; min-height:350px; background:#1A1A1D;">
+            <img id="foodOptImg" src="" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;" alt="Food Image" onerror="this.onerror=null; this.src='https://placehold.co/800x600/262629/A88746?text=No+Image'">
           </div>
-          <div class="col-md-7" style="padding: 40px; display:flex; flex-direction:column; justify-content:space-between; background:#fff; max-height: 85vh; overflow-y: auto;">
+          <div class="col-md-7" style="padding: 40px; display:flex; flex-direction:column; justify-content:space-between; background: #262629; max-height: 85vh; overflow-y: auto;">
             <div>
-              <div style="font-size:10px; font-family:var(--font-sans); letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:5px;">Chi tiết món ăn</div>
-              <h4 id="foodOptName" style="color:var(--forest); font-family:'Cormorant Garamond', serif; font-size:1.8rem; font-weight:600; margin-bottom:5px;">Tên món</h4>
+              <div style="font-size:10px; font-family:var(--font-sans); letter-spacing:2px; text-transform:uppercase; color:var(--accent-burgundy); margin-bottom:5px;">Chi tiết món ăn</div>
+              <h4 id="foodOptName" style="color:var(--forest); font-family:'Montserrat', sans-serif; font-size:1.8rem; font-weight:600; margin-bottom:5px;">Tên món</h4>
               <div id="foodOptCategory" style="font-size:12px; color:var(--text-muted); margin-bottom:5px;">Danh mục: ...</div>
               <div id="foodOptStatus" style="font-size:12px; margin-bottom:10px; font-weight:bold;">Trạng thái: ...</div>
-              <div id="foodOptPrice" style="font-size:1.1rem; color:var(--gold); font-weight:600; margin-bottom:15px;">Giá gốc: 0 đ</div>
+              <div id="foodOptPrice" style="font-size:1.1rem; color:var(--accent-burgundy); font-weight:600; margin-bottom:15px;">Giá gốc: 0 đ</div>
               <p id="foodOptDesc" style="font-size:13px; color:var(--text-muted); font-style:italic; line-height:1.6; margin-bottom:20px;"></p>
               
               <!-- Ingredients List -->
@@ -1106,7 +1138,7 @@ select.input-lux {
               <!-- Doneness Wrap -->
               <div id="donenessWrap" style="display:none; margin-bottom:20px;">
                 <label style="color:var(--forest); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:8px;">Độ chín thịt (Meat Doneness):</label>
-                <select id="foodOptDoneness" class="form-select form-select-sm" style="border:1px solid var(--glass-border); border-radius:0; font-size:13px; background:#fff;" onchange="updateModalPrice()">
+                <select id="foodOptDoneness" class="form-select form-select-sm" style="border:1px solid var(--glass-border); border-radius:0; font-size:13px; background: #262629;" onchange="updateModalPrice()">
                     <option value="">-- Mặc định --</option>
                     <option value="Rare (Tái)">Rare (Tái)</option>
                     <option value="Medium Rare (Tái vừa)">Medium Rare (Tái vừa)</option>
@@ -1127,14 +1159,14 @@ select.input-lux {
               <!-- Note Wrap -->
               <div style="margin-bottom:20px;">
                 <label style="color:var(--forest); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:8px;">Ghi chú cho nhà bếp:</label>
-                <textarea id="foodOptNote" class="form-control" rows="2" maxlength="255" placeholder="Ví dụ: ít cay, không hành, thêm sốt riêng..." style="border:1px solid var(--glass-border); border-radius:0; font-size:13px; background:#fff;"></textarea>
+                <textarea id="foodOptNote" class="form-control" rows="2" maxlength="255" placeholder="Ví dụ: ít cay, không hành, thêm sốt riêng..." style="border:1px solid var(--glass-border); border-radius:0; font-size:13px; background: #262629;"></textarea>
               </div>
             </div>
             
             <div style="border-top:1px dashed var(--glass-border); padding-top:20px; display:flex; justify-content:space-between; align-items:center;">
               <div>
                 <div style="font-size:11px; color:var(--text-muted);">Số lượng:</div>
-                <div style="display:flex; align-items:center; border:1px solid var(--glass-border); margin-top:5px; width:fit-content; background:#fff;">
+                <div style="display:flex; align-items:center; border:1px solid var(--glass-border); margin-top:5px; width:fit-content; background: #262629;">
                   <button type="button" class="btn btn-sm" onclick="adjustModalQty(-1)" style="padding:4px 12px; border:none; background:none; font-weight:bold;">-</button>
                   <input type="number" id="foodOptQty" value="1" min="1" style="width:40px; text-align:center; border:none; background:none; font-weight:600; font-size:13px;" readonly>
                   <button type="button" class="btn btn-sm" onclick="adjustModalQty(1)" style="padding:4px 12px; border:none; background:none; font-weight:bold;">+</button>
@@ -1142,7 +1174,7 @@ select.input-lux {
               </div>
               <div style="text-align:right;">
                 <div style="font-size:11px; color:var(--text-muted);">Tổng tạm tính:</div>
-                <div id="foodOptTotalDisplay" style="font-size:1.4rem; color:var(--gold); font-weight:600; margin-bottom:8px;">0 đ</div>
+                <div id="foodOptTotalDisplay" style="font-size:1.4rem; color:var(--accent-burgundy); font-weight:600; margin-bottom:8px;">0 đ</div>
                 <button type="button" class="btn-reserve-solid" onclick="saveFoodOption()" style="padding:10px 20px; font-size:11px; display:inline-block; border-radius:0; width:fit-content;">Thêm vào đơn</button>
               </div>
             </div>
@@ -1159,14 +1191,14 @@ select.input-lux {
   <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
     <div class="modal-content" style="background:#111; border:1px solid var(--forest); border-radius:0;">
       <div class="modal-header" style="border-bottom:1px solid rgba(212,176,106,0.2);">
-        <h5 class="modal-title" style="color:var(--gold); font-family:'Playfair Display', serif;"><i class="fas fa-book-open me-2"></i>Chi tiết Chủ đề</h5>
+        <h5 class="modal-title" style="color:var(--accent-burgundy); font-family:'Montserrat', sans-serif;"><i class="fas fa-book-open me-2"></i>Chi tiết Chủ đề</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body" style="padding:0;">
           <img id="themeInfoImg" src="" alt="Theme Image" style="width:100%; height:250px; object-fit:cover; display:none;">
           <div style="padding:20px;">
-              <h4 id="themeInfoName" style="color:var(--gold); font-family:'Playfair Display', serif; margin-bottom:15px; font-size:1.5rem;"></h4>
-              <p id="themeInfoDesc" style="color:var(--text-muted); font-size:15px; line-height:1.6; font-style:italic; font-family:'Cormorant Garamond', serif;"></p>
+              <h4 id="themeInfoName" style="color:var(--accent-burgundy); font-family:'Montserrat', sans-serif; margin-bottom:15px; font-size:1.5rem;"></h4>
+              <p id="themeInfoDesc" style="color:var(--text-muted); font-size:15px; line-height:1.6; font-style:italic; font-family:'Montserrat', sans-serif;"></p>
           </div>
       </div>
     </div>
@@ -1464,7 +1496,7 @@ function openFoodOptionModal(id) {
             if (trimIng !== '') {
                 hasIng = true;
                 var span = document.createElement('span');
-                span.style.cssText = "background:#f6f2e9; color:var(--forest); padding:4px 10px; font-size:12px; font-weight:500; border-radius:0; border: 1px solid var(--glass-border);";
+                span.style.cssText = "background:#1A1A1D; color:var(--forest); padding:4px 10px; font-size:12px; font-weight:500; border-radius:0; border: 1px solid var(--glass-border);";
                 span.textContent = trimIng;
                 ingList.appendChild(span);
             }
@@ -1565,7 +1597,7 @@ function openFoodOptionModal(id) {
                 
                 var imgHtml = tp.img ? '<img src="public/assets/img/toppings/' + tp.img + '" style="width:25px; height:25px; object-fit:cover; border-radius:4px;" onerror="this.style.display=\'none\'">' : '';
                 
-                label.innerHTML = '<div style="display:flex; align-items:center; gap:8px;">' + inputHtml + imgHtml + '<span>' + tp.name + '</span></div><strong style="color:var(--gold);">+' + tp.price.toLocaleString('vi-VN') + 'đ</strong>';
+                label.innerHTML = '<div style="display:flex; align-items:center; gap:8px;">' + inputHtml + imgHtml + '<span>' + tp.name + '</span></div><strong style="color:var(--accent-burgundy);">+' + tp.price.toLocaleString('vi-VN') + 'đ</strong>';
                 topList.appendChild(label);
             });
         }
@@ -1991,7 +2023,7 @@ function us(){
                 var note = document.getElementById('fn' + id).value;
                 
                 var itemDiv = document.createElement('div');
-                itemDiv.style.cssText = "background: rgba(255,255,255,0.05); padding: 10px; border-left: 3px solid var(--gold); font-size: 12px; margin-bottom: 5px;";
+                itemDiv.style.cssText = "background: rgba(255,255,255,0.05); padding: 10px; border-left: 3px solid var(--accent-burgundy); font-size: 12px; margin-bottom: 5px;";
                 
                 var titleDiv = document.createElement('div');
                 titleDiv.style.cssText = "display: flex; justify-content: space-between; font-weight: 600; color: #fff;";
@@ -2010,7 +2042,7 @@ function us(){
                 
                 var editBtn = document.createElement('button');
                 editBtn.type = 'button';
-                editBtn.style.cssText = "background: none; border: none; color: var(--gold); font-size: 11px; cursor: pointer; padding: 0;";
+                editBtn.style.cssText = "background: none; border: none; color: var(--accent-burgundy); font-size: 11px; cursor: pointer; padding: 0;";
                 editBtn.innerHTML = '<i class="fas fa-edit me-1"></i>Sửa';
                 editBtn.onclick = (function(foodId) {
                     return function() { openFoodOptionModal(foodId); };
@@ -2117,7 +2149,7 @@ function us(){
     // Cập nhật số tiền đặt cọc 30%
     var btnGo = document.getElementById('btn-go');
     if (sid === -1 && total === 0) {
-        document.getElementById('sdep').innerHTML = '<span style="font-size:1.2rem; color:var(--gold);">Liên hệ báo giá cọc</span>';
+        document.getElementById('sdep').innerHTML = '<span style="font-size:1.2rem; color:var(--accent-burgundy);">Liên hệ báo giá cọc</span>';
         if (btnGo) {
             var btnTxt = document.getElementById('btn-txt');
             if (btnTxt) {

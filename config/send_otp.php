@@ -27,8 +27,8 @@ function sendOTP($emailNguoiNhan, $maOTP) {
         $mail->isHTML(true);
         $mail->Subject = 'Mã xác nhận OTP - Restaurantly';
         $mail->Body    = "
-            <div style='border: 2px solid #cda45e; padding: 20px; font-family: sans-serif;'>
-                <h2 style='color: #cda45e;'>Xác nhận tài khoản</h2>
+            <div style='border: 2px solid #A88746; padding: 20px; font-family: sans-serif;'>
+                <h2 style='color: #A88746;'>Xác nhận tài khoản</h2>
                 <p>Mã OTP của bạn là: <b style='font-size: 24px; color: #ff0000;'>$maOTP</b></p>
                 <p>Vui lòng không chia sẻ mã này với bất kỳ ai.</p>
             </div>";

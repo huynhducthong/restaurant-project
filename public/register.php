@@ -11,29 +11,29 @@ $login_url = $client->createAuthUrl();
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #F6F2E9;
+      --bg: #1A1A1D;
       --card: #ffffff;
-      --text: #222222;
+      --text: #D1D1D1;
       --muted: #666666;
-      --border: rgba(79, 91, 58, 0.2);
-      --accent: #C9A66B;
+      --border: rgba(168, 135, 70, 0.2);
+      --accent: #A88746;
       --accent-dark: #b89555;
       --danger: #d94f3d;
       --success: #2d7a5b;
       --input-bg: #ffffff;
       --shadow: 0 10px 40px rgba(0,0,0,0.05);
-      --olive: #4F5B3A;
+      --accent-burgundy: #A88746;
     }
 
     body {
-      background: var(--bg);
+      background: linear-gradient(rgba(26,26,29,0.85), rgba(26,26,29,0.85)), url('assets/img/about-bg.jpg') center/cover no-repeat fixed;
       color: var(--text);
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Open Sans', sans-serif;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -81,7 +81,7 @@ $login_url = $client->createAuthUrl();
     }
 
     .card-title {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Montserrat', sans-serif;
       font-size: 28px;
       font-weight: 600;
       color: var(--text);
@@ -153,7 +153,7 @@ $login_url = $client->createAuthUrl();
       border: 1px solid var(--border);
       border-radius: 0;
       padding: 13px 14px 13px 40px;
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Open Sans', sans-serif;
       font-size: 14px;
       color: var(--text);
       outline: none;
@@ -167,7 +167,7 @@ $login_url = $client->createAuthUrl();
 
     .form-input:focus {
       border-color: var(--accent);
-      background: #fff;
+      background: #262629;
       box-shadow: 0 0 0 3px rgba(201,169,110,0.12);
     }
 
@@ -177,12 +177,12 @@ $login_url = $client->createAuthUrl();
     /* Submit */
     .btn-submit {
       width: 100%;
-      background: var(--olive);
+      background: var(--accent-burgundy);
       color: #fff;
       border: none;
       border-radius: 0;
       padding: 14px;
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Open Sans', sans-serif;
       font-size: 14px;
       font-weight: 600;
       letter-spacing: 0.04em;
@@ -230,12 +230,12 @@ $login_url = $client->createAuthUrl();
       justify-content: center;
       gap: 10px;
       width: 100%;
-      background: #fff;
+      background: #262629;
       color: var(--text);
       border: 1px solid var(--border);
       border-radius: 0;
       padding: 12px 14px;
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Open Sans', sans-serif;
       font-size: 14px;
       font-weight: 500;
       cursor: pointer;

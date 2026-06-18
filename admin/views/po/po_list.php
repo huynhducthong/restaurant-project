@@ -4,37 +4,153 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
 ?>
 <style>
     :root {
-        --primary-color: #2c3e50;
-        --accent-color: #3498db;
+        --primary-color: #2C3034;
+        --accent-color: #7A2021;
         --success-color: #27ae60;
         --warning-color: #f39c12;
         --danger-color: #e74c3c;
-        --light-bg: #f8f9fa;
-        --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        --light-bg: #fdfdfd;
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     }
-
-    body { font-family: 'Inter', 'Segoe UI', Roboto, sans-serif; background-color: #f4f7f6; }
     
+    body { background-color: #f8f9fa; }
+
     /* Sidebar & Navigation */
-    .sidebar-card { border: none; border-radius: 12px; box-shadow: var(--card-shadow); }
-    .btn-menu { 
-        text-align: left; border-radius: 8px; transition: all 0.2s; 
-        border: 1px solid transparent; font-size: 0.85rem; padding: 10px 15px;
-        text-decoration: none; color: #555; display: block;
+    .sidebar-card {
+        border: 1px solid #f1f1f1;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+        position: relative;
+        z-index: 100;
+        background: #fff;
     }
-    .btn-menu:hover { transform: translateX(5px); background-color: rgba(52, 152, 219, 0.1); color: var(--accent-color); }
-    .btn-menu.active { background-color: var(--primary-color); color: white; }
 
-    /* Cards & Containers */
-    .main-card { border: none; border-radius: 15px; box-shadow: var(--card-shadow); background: white; }
+    .btn-menu {
+        text-align: left;
+        border-radius: 8px;
+        transition: all 0.2s ease-in-out;
+        border: 1px solid transparent;
+        font-size: 0.85rem;
+        padding: 10px 15px;
+        margin-bottom: 5px;
+        cursor: pointer !important;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        background: transparent;
+        color: #555;
+        text-decoration: none;
+    }
 
-    /* Tables */
-    .table thead th { 
-        background-color: #f8f9fa; color: #7f8c8d; font-weight: 600; 
-        text-transform: uppercase; font-size: 0.75rem; border-top: none;
+    .btn-menu:hover {
+        background-color: #f8f9fa !important;
+        color: var(--primary-color) !important;
+    }
+
+    .btn-menu.active {
+        background-color: var(--primary-color) !important;
+        color: #fff !important;
+        box-shadow: 0 4px 10px rgba(44, 48, 52, 0.15);
+    }
+
+    .btn-menu i {
+        width: 25px;
+        pointer-events: none;
+    }
+
+    .stat-card {
+        border: 1px solid #f1f1f1;
+        border-radius: 12px;
+        transition: transform 0.2s;
+        background: #fff;
+        border-left: 3px solid var(--accent-color);
+        box-shadow: var(--card-shadow);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* Clean Tables */
+    .main-card { border: 1px solid #f1f1f1; border-radius: 12px; box-shadow: var(--card-shadow); background: #fff; }
+    
+    .table thead th {
+        background-color: transparent;
+        color: #95a5a6;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.65rem;
+        letter-spacing: 1px;
+        border-top: none;
+        border-bottom: 1px solid #eaeaea;
         padding: 15px;
     }
-    .table td { padding: 15px; vertical-align: middle; border-bottom: 1px solid #f1f1f1; }
+
+    .table td {
+        padding: 15px;
+        vertical-align: middle;
+        border-bottom: 1px dashed #f1f1f1;
+        color: #495057;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #fcfcfc;
+    }
+
+    /* Action Buttons in Table */
+    .btn-group .btn {
+        padding: 6px 10px;
+        transition: all 0.2s;
+        border-radius: 6px;
+    }
+
+    .btn-group .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    /* Ghost Badges */
+    .badge-ghost-success { background-color: #f8f9fa; color: #495057; border: 1px solid #e9ecef; padding: 5px 8px; font-weight: 500; border-radius: 6px; font-size: 0.75rem; }
+    .badge-ghost-success::before { content: "•"; color: var(--success-color); font-size: 22px; margin-right: 4px; vertical-align: middle; line-height: 0.5; }
+    
+    .badge-ghost-danger { background-color: #f8f9fa; color: #495057; border: 1px solid #e9ecef; padding: 5px 8px; font-weight: 500; border-radius: 6px; font-size: 0.75rem; }
+    .badge-ghost-danger::before { content: "•"; color: var(--danger-color); font-size: 22px; margin-right: 4px; vertical-align: middle; line-height: 0.5; }
+    
+    .badge-ghost-warning { background-color: #f8f9fa; color: #495057; border: 1px solid #e9ecef; padding: 5px 8px; font-weight: 500; border-radius: 6px; font-size: 0.75rem; }
+    .badge-ghost-warning::before { content: "•"; color: var(--warning-color); font-size: 22px; margin-right: 4px; vertical-align: middle; line-height: 0.5; }
+    
+    .badge-ghost-info { background-color: #f8f9fa; color: #495057; border: 1px solid #e9ecef; padding: 5px 8px; font-weight: 500; border-radius: 6px; font-size: 0.75rem; }
+    .badge-ghost-info::before { content: "•"; color: var(--accent-color); font-size: 22px; margin-right: 4px; vertical-align: middle; line-height: 0.5; }
+    
+    .badge-ghost-secondary { background-color: #f8f9fa; color: #495057; border: 1px solid #e9ecef; padding: 5px 8px; font-weight: 500; border-radius: 6px; font-size: 0.75rem; }
+    .badge-ghost-secondary::before { content: "•"; color: #6c757d; font-size: 22px; margin-right: 4px; vertical-align: middle; line-height: 0.5; }
+    /* Form Select styling */
+    .form-select {
+        border: 1px solid #e9ecef;
+        box-shadow: none !important;
+        font-size: 0.85rem;
+        color: #495057;
+        border-radius: 6px;
+    }
+    .form-select:focus {
+        border-color: #ced4da;
+    }
+    
+    /* Pagination styling */
+    .pagination .page-link {
+        color: #495057;
+        border-color: #e9ecef;
+        box-shadow: none !important;
+    }
+    .pagination .page-item.active .page-link {
+        background-color: #2C3034 !important;
+        border-color: #2C3034 !important;
+        color: #ffffff !important;
+        font-weight: 700;
+    }
+    .pagination .page-link:hover {
+        background-color: #f1f1f1;
+    }
 </style>
 
 <div class="container-fluid py-4 min-vh-100">
@@ -63,7 +179,7 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
                 <a href="InventoryController.php?tab=transfers" class="btn btn-menu btn-light w-100 mb-2 py-2 fw-bold">
                     <i class="fas fa-exchange-alt me-2"></i> CHUYỂN KHO
                     <?php if ($pending_transfers_count > 0): ?>
-                        <span class="badge bg-danger ms-auto"><?= $pending_transfers_count ?></span>
+                        <span class="badge badge-ghost-danger ms-auto"><?= $pending_transfers_count ?></span>
                     <?php endif; ?>
                 </a>
                 <a href="InventoryController.php?tab=distribution" class="btn btn-menu btn-light w-100 mb-2 py-2 fw-bold">
@@ -108,10 +224,10 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h3 class="fw-bold text-uppercase m-0"><i class="fas fa-file-invoice-dollar me-2 text-primary"></i>Phiếu Đặt Hàng (PO)</h3>
                     <div>
-                        <a href="POController.php?export_excel=1" class="btn btn-success shadow-sm fw-bold px-3 me-2">
+                        <a href="POController.php?export_excel=1" class="btn btn-outline-success shadow-sm fw-bold px-3 me-2">
                             <i class="fas fa-file-excel me-2"></i>XUẤT EXCEL (KÈM HSD)
                         </a>
-                        <button class="btn btn-primary shadow-sm fw-bold px-4" data-bs-toggle="modal" data-bs-target="#modalCreatePO">
+                        <button class="btn btn-outline-dark shadow-sm fw-bold px-4" data-bs-toggle="modal" data-bs-target="#modalCreatePO">
                             <i class="fas fa-plus me-2"></i>TẠO PHIẾU NHẬP
                         </button>
                     </div>
@@ -145,15 +261,15 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
                                 <td class="text-end text-danger fw-bold fs-6"><?= number_format($p['total_amount']) ?> đ</td>
                                 <td>
                                     <?php if($p['status'] == 'pending'): ?>
-                                        <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>Chờ nhận</span>
+                                        <span class="badge badge-ghost-warning"><i class="fas fa-clock me-1"></i>Chờ nhận</span>
                                     <?php elseif($p['status'] == 'completed'): ?>
-                                        <span class="badge bg-success"><i class="fas fa-check me-1"></i>Đã nhập kho</span>
+                                        <span class="badge badge-ghost-success"><i class="fas fa-check me-1"></i>Đã nhập kho</span>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-end">
                                     <button class="btn btn-sm btn-light border fw-bold me-1" onclick="viewPO(<?= $p['id'] ?>, '<?= htmlspecialchars($p['po_code']) ?>')">Xem</button>
                                     <?php if($p['status'] == 'pending'): ?>
-                                        <button class="btn btn-sm btn-success fw-bold" onclick="openReceivePO(<?= $p['id'] ?>, '<?= htmlspecialchars($p['po_code']) ?>')">
+                                        <button class="btn btn-sm btn-outline-success fw-bold" onclick="openReceivePO(<?= $p['id'] ?>, '<?= htmlspecialchars($p['po_code']) ?>')">
                                             <i class="fas fa-arrow-down me-1"></i>Nhận hàng
                                         </button>
                                     <?php endif; ?>
@@ -177,7 +293,7 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <form class="modal-content border-0 shadow-lg" method="POST" action="POController.php" style="border-radius:20px;overflow:hidden;">
             <input type="hidden" name="create_po" value="1">
-            <div class="modal-header bg-dark text-white py-3 px-4">
+            <div class="modal-header bg-dark  py-3 px-4">
                 <h5 class="modal-title mb-0" style="font-family:'Playfair Display',serif;">
                     <i class="fas fa-file-invoice-dollar me-2 text-warning"></i> TẠO PHIẾU ĐẶT HÀNG MỚI
                 </h5>
@@ -248,13 +364,13 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
                     <button type="button" class="btn btn-sm btn-outline-warning rounded-pill px-3 fw-bold" id="btnAddRow">
                         <i class="fas fa-plus me-1"></i>Thêm dòng hàng
                     </button>
-                    <button type="button" class="btn btn-sm btn-info text-white rounded-pill px-3 fw-bold shadow-sm" onclick="loadSuggestions()">
+                    <button type="button" class="btn btn-sm btn-outline-dark  rounded-pill px-3 fw-bold shadow-sm" onclick="loadSuggestions()">
                         <i class="fas fa-lightbulb me-1"></i>Gợi ý từ tồn kho thấp
                     </button>
                 </div>
             </div>
             <div class="modal-footer border-0 bg-white p-4 pt-0">
-                <button type="submit" class="btn btn-warning w-100 py-3 rounded-pill fw-bold text-white shadow-sm" style="background:#cda45e;border:none;">
+                <button type="submit" class="btn btn-warning w-100 py-3 rounded-pill fw-bold  shadow-sm" style="background:#cda45e;border:none;">
                     <i class="fas fa-check-circle me-2"></i> HOÀN TẤT & LƯU PHIẾU ĐẶT HÀNG
                 </button>
             </div>
@@ -265,7 +381,7 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
 <div class="modal fade" id="modalViewPO" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg" style="border-radius:20px;overflow:hidden;">
-            <div class="modal-header bg-dark text-white py-3 px-4">
+            <div class="modal-header bg-dark  py-3 px-4">
                 <h5 class="modal-title fw-bold" style="font-family:'Playfair Display',serif;"><i class="fas fa-info-circle me-2 text-warning"></i>CHI TIẾT PHIẾU: <span id="view-po-code" class="text-warning"></span></h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -292,9 +408,9 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
         <form class="modal-content border-0 shadow-lg" method="POST" action="POController.php" style="border-radius:20px;overflow:hidden;" enctype="multipart/form-data">
             <input type="hidden" name="receive_po_final" value="1">
             <input type="hidden" name="po_id" id="receive-po-id">
-            <div class="modal-header bg-success text-white py-3 px-4">
+            <div class="modal-header bg-success  py-3 px-4">
                 <h5 class="modal-title fw-bold" style="font-family:'Playfair Display',serif;">
-                    <i class="fas fa-check-double me-2"></i>NHẬN HÀNG VÀ NHẬP KHO: <span id="receive-po-code" class="text-white"></span>
+                    <i class="fas fa-check-double me-2"></i>NHẬN HÀNG VÀ NHẬP KHO: <span id="receive-po-code" class=""></span>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -326,7 +442,7 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
                 </div>
             </div>
             <div class="modal-footer bg-light border-0 p-3">
-                <button type="submit" class="btn btn-success px-5 py-2 fw-bold rounded-pill">
+                <button type="submit" class="btn btn-outline-success px-5 py-2 fw-bold rounded-pill">
                     <i class="fas fa-save me-2"></i>XÁC NHẬN NHẬP KHO
                 </button>
             </div>
@@ -338,7 +454,7 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
 <div class="modal fade" id="modalQuickAddIng" tabindex="-1" style="z-index: 1060;">
     <div class="modal-dialog modal-sm modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-primary text-white py-2 px-3">
+            <div class="modal-header bg-primary  py-2 px-3">
                 <h6 class="modal-title mb-0">Thêm nguyên liệu mới</h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -359,7 +475,7 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
                         <option value="Khác">Khác</option>
                     </select>
                 </div>
-                <button type="button" class="btn btn-primary btn-sm w-100 fw-bold" id="btnSaveQuickIng">LƯU & CHỌN</button>
+                <button type="button" class="btn btn-outline-dark btn-sm w-100 fw-bold" id="btnSaveQuickIng">LƯU & CHỌN</button>
             </div>
         </div>
     </div>
@@ -518,7 +634,7 @@ $(document).ready(function() {
 
                 // Nếu có file giấy kiểm dịch, thêm nút vào header
                 if (res.batch_cert_file) {
-                    const btn = `<a href="../../uploads/po_certs/${res.batch_cert_file}" target="_blank" id="view-po-cert-btn" class="btn btn-sm btn-danger ms-3 fw-bold shadow-sm"><i class="fas fa-file-pdf me-1"></i>Xem Chứng Từ Lô Hàng</a>`;
+                    const btn = `<a href="../../uploads/po_certs/${res.batch_cert_file}" target="_blank" id="view-po-cert-btn" class="btn btn-sm btn-outline-danger ms-3 fw-bold shadow-sm"><i class="fas fa-file-pdf me-1"></i>Xem Chứng Từ Lô Hàng</a>`;
                     $('#view-po-code').after(btn);
                 }
                 

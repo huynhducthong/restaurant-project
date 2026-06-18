@@ -1028,7 +1028,11 @@ include '../../public/admin_layout_header.php';
                     let foodsHtml = '';
                     if (data.foods && data.foods.length > 0) {
                         data.foods.forEach(f => {
-                            foodsHtml += `<div class="small fw-bold text-dark" style="margin-top: 5px;">- ${f.food_name} (x${f.quantity})</div>`;
+                            let warningHtml = '';
+                            if (f.allergy_warning) {
+                                warningHtml = ` <span class="badge bg-danger ms-1" style="font-size: 10px;" title="Nguyên liệu món này chứa chất gây dị ứng cho khách!"><i class="fas fa-exclamation-triangle me-1"></i>Dị ứng: ${f.conflict_allergens}</span>`;
+                            }
+                            foodsHtml += `<div class="small fw-bold text-dark" style="margin-top: 5px;">- ${f.food_name} (x${f.quantity})${warningHtml}</div>`;
                             if (f.toppings_list && f.toppings_list.length > 0) {
                                 foodsHtml += `<div class="small text-muted" style="margin-left: 10px; font-size: 11.5px; color: #cda45e !important;"><i class="fas fa-plus-circle me-1" style="font-size:10px;"></i>${f.toppings_list.join(', ')}</div>`;
                             }

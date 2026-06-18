@@ -159,19 +159,19 @@ include __DIR__ . '/views/client/layouts/header.php';
 
 <style>
 :root {
-    --news-bg: #F6F2E9;         /* Cream */
+    --news-bg: #1A1A1D;         /* Cream */
     --news-card-bg: #ffffff;     /* Pure White cards to pop off the cream */
-    --news-dark-bg: #fafafa;    /* Very light gray for inner inputs */
-    --news-gold: #C9A66B;       /* Gold highlights */
+    --news-dark-bg: #ffffff;    /* Very light gray for inner inputs */
+    --news-gold: #A88746;       /* Gold highlights */
     --news-gold-hover: #b89248; /* Saturated hover state for gold links */
-    --news-gold-muted: rgba(201, 166, 107, 0.1);
-    --news-text: #222222;       /* Bright pure white text for outside cards */
-    --news-text-dark: #222222;  /* High contrast dark text for inside white cards */
+    --news-gold-muted: rgba(168, 135, 70, 0.1);
+    --news-text: #D1D1D1;       /* Bright pure white text for outside cards */
+    --news-text-dark: #D1D1D1;  /* High contrast dark text for inside white cards */
     --news-text-muted: #555555; /* Bright light gray text for outside cards */
     --news-text-muted-dark: #555555; /* High contrast medium dark gray for tóm tắt/meta inside white cards */
-    --news-border: rgba(79, 91, 58, 0.15);
-    --news-border-light: rgba(79, 91, 58, 0.15); /* Olive border */
-    --olive: #4F5B3A;
+    --news-border: rgba(168, 135, 70, 0.15);
+    --news-border-light: rgba(168, 135, 70, 0.15); /* Olive border */
+    --accent-burgundy: #A88746;
 }
 
 /* Base Reset and Layout */
@@ -180,12 +180,12 @@ include __DIR__ . '/views/client/layouts/header.php';
     color: var(--news-text);
     min-height: 85vh;
     padding: 180px 0 60px 0; /* Clear header space */
-    font-family: "Poppins", sans-serif;
+    font-family: 'Open Sans', sans-serif;
 }
 
 /* Typography elements */
 .font-playfair {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
 }
 
 /* Breadcrumbs */
@@ -222,7 +222,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     box-shadow: 0 10px 30px rgba(0,0,0,0.02);
 }
 .widget-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 16px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -253,7 +253,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     padding-bottom: 0;
 }
 .popular-number {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 38px;
     font-weight: 700;
     color: var(--news-gold);
@@ -323,7 +323,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     box-shadow: 0 10px 30px rgba(0,0,0,0.02);
 }
 .newsletter-sidebar-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--news-gold);
@@ -349,7 +349,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     border-color: var(--news-gold);
 }
 .newsletter-sidebar .btn-subscribe {
-    background: var(--olive);
+    background: var(--accent-burgundy);
     color: #ffffff;
     border: none;
     width: 100%;
@@ -364,8 +364,8 @@ include __DIR__ . '/views/client/layouts/header.php';
 }
 .newsletter-sidebar .btn-subscribe:hover {
     background: transparent;
-    color: var(--olive);
-    border: 1px solid var(--olive);
+    color: var(--accent-burgundy);
+    border: 1px solid var(--accent-burgundy);
     box-shadow: none;
     transform: none;
 }
@@ -419,7 +419,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     position: absolute;
     top: 10px;
     left: 10px;
-    background: var(--olive);
+    background: var(--accent-burgundy);
     color: #ffffff;
     font-size: 9px;
     font-weight: 600;
@@ -437,7 +437,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     justify-content: space-between;
 }
 .news-row-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -504,7 +504,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     letter-spacing: 1px;
 }
 .article-headline {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 34px;
     font-weight: 700;
     line-height: 1.35;
@@ -661,7 +661,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     padding-top: 30px;
 }
 .related-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -696,7 +696,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     padding: 12px;
 }
 .related-card-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 14px;
     color: var(--news-text-dark);
     font-weight: 600;
@@ -726,7 +726,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     margin-bottom: 20px;
 }
 .vne-comments-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 20px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -796,7 +796,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     gap: 4px;
 }
 .vne-comment-inp-name {
-    background: #ffffff;
+    background: #262629;
     border: 1px solid var(--news-border-light);
     border-radius: 4px;
     padding: 4px 8px;
@@ -807,8 +807,8 @@ include __DIR__ . '/views/client/layouts/header.php';
 }
 .vne-comment-btn {
     background: transparent;
-    color: var(--olive);
-    border: 1px solid var(--olive);
+    color: var(--accent-burgundy);
+    border: 1px solid var(--accent-burgundy);
     border-radius: 0;
     padding: 6px 18px;
     font-size: 13px;
@@ -818,7 +818,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     box-shadow: none;
 }
 .vne-comment-btn:hover {
-    background: var(--olive);
+    background: var(--accent-burgundy);
     color: #fff;
     box-shadow: none;
     transform: none;
@@ -905,7 +905,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     bottom: 25px;
     left: 50%;
     transform: translateX(-50%);
-    background: #cda45e;
+    background: #A88746;
     color: #0c0b09;
     padding: 10px 20px;
     border-radius: 50px;
@@ -958,7 +958,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     font-size: 16px;
     font-weight: 700;
     color: var(--news-text-dark);
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
 }
 .news-modal-close {
     background: none;
@@ -1087,7 +1087,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 .vne-report-textarea {
     width: 100%;
     height: 110px;
-    background: #ffffff;
+    background: #262629;
     border: 1px solid var(--news-border-light);
     border-radius: 6px;
     color: var(--news-text-dark);
@@ -1407,7 +1407,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                             }
                         }
                     ?>
-                    <span style="color: #cda45e;"><?= htmlspecialchars($selected_cat) ?></span>
+                    <span style="color: #A88746;"><?= htmlspecialchars($selected_cat) ?></span>
                 <?php endif; ?>
             </div>
 
@@ -1474,7 +1474,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                                     <div class="popular-text">
                                         <h5 class="popular-title font-playfair"><?= htmlspecialchars($pop['title']) ?></h5>
                                         <div class="popular-meta">
-                                            <span style="color:#cda45e"><?= htmlspecialchars($pop['cat_name']) ?></span> • <?= $pop_time ?>
+                                            <span style="color:#A88746"><?= htmlspecialchars($pop['cat_name']) ?></span> • <?= $pop_time ?>
                                         </div>
                                     </div>
                                 </a>
@@ -1871,12 +1871,12 @@ function closeLikersOutside(e) {
 }
 
 // Helper utilities
-function showToast(msg, bg = '#cda45e') {
+function showToast(msg, bg = '#A88746') {
     const t = document.getElementById('news-toast');
     if (!t) return;
     t.textContent = msg;
     t.style.background = bg;
-    t.style.color = bg === '#cda45e' ? '#0c0b09' : '#ffffff';
+    t.style.color = bg === '#A88746' ? '#0c0b09' : '#ffffff';
     t.style.display = 'block';
     setTimeout(() => { t.style.display = 'none'; }, 2800);
 }

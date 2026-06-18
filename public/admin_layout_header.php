@@ -61,11 +61,11 @@ try {
         $pending_services_count = (int)$stmt_ps->fetchColumn();
 
         // Cảnh báo tồn kho thấp
-        $stmt_low = $db->query("SELECT COUNT(*) FROM inventory i WHERE i.is_active = 1 AND i.min_stock > 0 AND IFNULL((SELECT SUM(s.quantity) FROM inventory_stocks s WHERE s.ingredient_id = i.id), 0) <= i.min_stock");
+        $stmt_low = $db->query("SELECT COUNT(*) FROM inventory i WHERE i.is_active = 1 AND i.min_stock > 0 AND IFNULL((SELECT SUM(s.quantity) FROM inventory_stocks s WHERE s.ingredient_id = i.id AND s.warehouse_id NOT IN (6, 7)), 0) <= i.min_stock");
         $low_stock_count = (int)$stmt_low->fetchColumn();
 
         // Cảnh báo hết hạn (7 ngày tới)
-        $stmt_exp = $db->query("SELECT COUNT(*) FROM inventory WHERE is_active = 1 AND expiry_date IS NOT NULL AND expiry_date <= DATE_ADD(CURDATE(), INTERVAL 7 DAY) AND expiry_date >= CURDATE()");
+        $stmt_exp = $db->query("SELECT COUNT(*) FROM inventory i WHERE i.is_active = 1 AND i.expiry_date IS NOT NULL AND i.expiry_date <= DATE_ADD(CURDATE(), INTERVAL 7 DAY) AND i.expiry_date >= CURDATE() AND IFNULL((SELECT SUM(s.quantity) FROM inventory_stocks s WHERE s.ingredient_id = i.id AND s.warehouse_id NOT IN (6, 7)), 0) > 0");
         $expiry_count = (int)$stmt_exp->fetchColumn();
 
         $total_alerts = $low_stock_count + $expiry_count + $pending_transfers_count;
@@ -79,11 +79,12 @@ try {
 
 <head>
     <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản trị hệ thống - Restaurantly</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     
     <!-- BOOTSTRAP JS REQUIRED FOR MODALS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

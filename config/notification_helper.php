@@ -88,6 +88,7 @@ function generateMorningReport() {
           AND b.expiry_date IS NOT NULL 
           AND b.expiry_date <= '$warn_date' 
           AND b.expiry_date >= CURDATE()
+          AND b.warehouse_id NOT IN (6, 7)
         GROUP BY i.id
     ");
     $exp_items = $stmt_exp->fetchAll(PDO::FETCH_ASSOC);
@@ -101,6 +102,7 @@ function generateMorningReport() {
           AND b.quantity > 0 
           AND b.expiry_date IS NOT NULL 
           AND b.expiry_date < CURDATE()
+          AND b.warehouse_id NOT IN (6, 7)
         GROUP BY i.id
     ");
     $already_exp_items = $stmt_already_exp->fetchAll(PDO::FETCH_ASSOC);
@@ -268,17 +270,17 @@ function sendBookingEmailConfirmation($emailNguoiNhan, $booking_info) {
         $name = htmlspecialchars($booking_info['customer_name'] ?? 'Quý khách', ENT_QUOTES);
 
         $mail->Body = "
-            <div style='max-width: 600px; margin: auto; border: 2px solid #C9A66B; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
+            <div style='max-width: 600px; margin: auto; border: 2px solid #A88746; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
                 <div style='background-color: #0c0b09; padding: 20px; text-align: center;'>
-                    <h1 style='color: #C9A66B; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
+                    <h1 style='color: #A88746; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
                     <p style='color: #fff; margin: 5px 0 0; font-size: 14px;'>Fine Dining Experience</p>
                 </div>
-                <div style='padding: 30px; background-color: #fff;'>
+                <div style='padding: 30px; background-color: #262629;'>
                     <h2 style='color: #2c2c2c; margin-top: 0;'>Kính chào $name,</h2>
                     <p style='color: #555; line-height: 1.6;'>Cảm ơn quý khách đã tin tưởng và lựa chọn dịch vụ tại Restaurantly. Chúng tôi xin trân trọng xác nhận yêu cầu đặt bàn của quý khách đã được hệ thống ghi nhận thành công.</p>
                     
-                    <div style='background-color: #f9f6f0; padding: 20px; border-left: 4px solid #C9A66B; margin: 25px 0;'>
-                        <h3 style='margin-top: 0; color: #C9A66B;'>Thông Tin Đặt Bàn (#{$booking_info['id']})</h3>
+                    <div style='background-color: #f9f6f0; padding: 20px; border-left: 4px solid #A88746; margin: 25px 0;'>
+                        <h3 style='margin-top: 0; color: #A88746;'>Thông Tin Đặt Bàn (#{$booking_info['id']})</h3>
                         <table style='width: 100%; border-collapse: collapse; font-size: 15px;'>
                             <tr><td style='padding: 8px 0; color: #666; width: 40%;'>Loại dịch vụ:</td><td style='padding: 8px 0; font-weight: bold;'>$svc</td></tr>
                             <tr><td style='padding: 8px 0; color: #666;'>Thời gian:</td><td style='padding: 8px 0; font-weight: bold; color: #d32f2f;'>$timeStr</td></tr>
@@ -340,17 +342,17 @@ function sendBookingReminderEmail($emailNguoiNhan, $booking_info) {
         $name = htmlspecialchars($booking_info['customer_name'] ?? 'Quý khách', ENT_QUOTES);
 
         $mail->Body = "
-            <div style='max-width: 600px; margin: auto; border: 2px solid #C9A66B; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
+            <div style='max-width: 600px; margin: auto; border: 2px solid #A88746; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
                 <div style='background-color: #0c0b09; padding: 20px; text-align: center;'>
-                    <h1 style='color: #C9A66B; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
+                    <h1 style='color: #A88746; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
                     <p style='color: #fff; margin: 5px 0 0; font-size: 14px;'>Fine Dining Experience</p>
                 </div>
-                <div style='padding: 30px; background-color: #fff;'>
+                <div style='padding: 30px; background-color: #262629;'>
                     <h2 style='color: #2c2c2c; margin-top: 0;'>Kính chào $name,</h2>
                     <p style='color: #555; line-height: 1.6;'>Đây là lời nhắc nhở tự động từ nhà hàng Restaurantly. Bạn có một lịch hẹn đặt bàn sẽ diễn ra trong khoảng <strong>30 phút nữa</strong>.</p>
                     
-                    <div style='background-color: #f9f6f0; padding: 20px; border-left: 4px solid #C9A66B; margin: 25px 0;'>
-                        <h3 style='margin-top: 0; color: #C9A66B;'>Thông Tin Đặt Bàn (#{$booking_info['id']})</h3>
+                    <div style='background-color: #f9f6f0; padding: 20px; border-left: 4px solid #A88746; margin: 25px 0;'>
+                        <h3 style='margin-top: 0; color: #A88746;'>Thông Tin Đặt Bàn (#{$booking_info['id']})</h3>
                         <table style='width: 100%; border-collapse: collapse; font-size: 15px;'>
                             <tr><td style='padding: 8px 0; color: #666; width: 40%;'>Thời gian:</td><td style='padding: 8px 0; font-weight: bold; color: #d32f2f;'>$timeStr</td></tr>
                             <tr><td style='padding: 8px 0; color: #666;'>Dịch vụ:</td><td style='padding: 8px 0; font-weight: bold;'>$svc</td></tr>
@@ -412,17 +414,17 @@ function sendBookingCancelEmail($emailNguoiNhan, $booking_info) {
         $name = htmlspecialchars($booking_info['customer_name'] ?? 'Quý khách', ENT_QUOTES);
 
         $mail->Body = "
-            <div style='max-width: 600px; margin: auto; border: 2px solid #C9A66B; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
+            <div style='max-width: 600px; margin: auto; border: 2px solid #A88746; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
                 <div style='background-color: #0c0b09; padding: 20px; text-align: center;'>
-                    <h1 style='color: #C9A66B; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
+                    <h1 style='color: #A88746; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
                     <p style='color: #fff; margin: 5px 0 0; font-size: 14px;'>Fine Dining Experience</p>
                 </div>
-                <div style='padding: 30px; background-color: #fff;'>
+                <div style='padding: 30px; background-color: #262629;'>
                     <h2 style='color: #d32f2f; margin-top: 0;'>Kính chào $name,</h2>
                     <p style='color: #555; line-height: 1.6;'>Chúng tôi vô cùng xin lỗi vì sự bất tiện này, nhưng do sự cố khách quan vượt ngoài mong muốn, chúng tôi buộc phải <strong>hủy lịch đặt bàn</strong> của quý khách.</p>
                     
-                    <div style='background-color: #f9f6f0; padding: 20px; border-left: 4px solid #C9A66B; margin: 25px 0;'>
-                        <h3 style='margin-top: 0; color: #C9A66B;'>Thông Tin Đặt Bàn Đã Hủy (#{$booking_info['id']})</h3>
+                    <div style='background-color: #f9f6f0; padding: 20px; border-left: 4px solid #A88746; margin: 25px 0;'>
+                        <h3 style='margin-top: 0; color: #A88746;'>Thông Tin Đặt Bàn Đã Hủy (#{$booking_info['id']})</h3>
                         <table style='width: 100%; border-collapse: collapse; font-size: 15px;'>
                             <tr><td style='padding: 8px 0; color: #666; width: 40%;'>Thời gian:</td><td style='padding: 8px 0; font-weight: bold;'>$timeStr</td></tr>
                             <tr><td style='padding: 8px 0; color: #666;'>Dịch vụ:</td><td style='padding: 8px 0; font-weight: bold;'>$svc</td></tr>

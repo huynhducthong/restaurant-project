@@ -8,20 +8,20 @@ $stmt->execute();
 $chefs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <<style>
 :root {
-  --bg-color: #F6F2E9; /* Cream */
+  --bg-color: #1A1A1D; /* Cream */
   --card-bg: #ffffff; /* White */
-  --text-main: #222222;
+  --text-main: #D1D1D1;
   --text-muted: #555555;
-  --olive: #4F5B3A;
-  --gold: #C9A66B;
-  --border-light: rgba(79, 91, 58, 0.15);
+  --accent-burgundy: #A88746;
+  --accent-burgundy: #A88746;
+  --border-light: rgba(168, 135, 70, 0.15);
   --ease: cubic-bezier(.4,0,.2,1);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg-color); color: var(--text-main); font-family: 'Poppins', sans-serif; }
+body { background: var(--bg-color); color: var(--text-main); font-family: 'Open Sans', sans-serif; }
 
 /* HERO */
 .ch-hero {
@@ -31,17 +31,17 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Poppi
 }
 .ch-hero-eyebrow {
   display: inline-flex; align-items: center; gap: 12px;
-  font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 600;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent-burgundy); font-weight: 600;
   margin-bottom: 20px;
 }
 .ch-hero-eyebrow::before, .ch-hero-eyebrow::after {
-  content: ''; display: block; width: 30px; height: 1px; background: var(--gold); opacity: .5;
+  content: ''; display: block; width: 30px; height: 1px; background: var(--accent-burgundy); opacity: .5;
 }
 .ch-hero h1 {
-  font-family: 'Playfair Display', serif; font-weight: 700;
-  font-size: clamp(2.6rem, 6vw, 4.5rem); color: var(--olive); line-height: 1.2; margin-bottom: 20px;
+  font-family: 'Montserrat', sans-serif; font-weight: 700;
+  font-size: clamp(2.6rem, 6vw, 4.5rem); color: var(--accent-burgundy); line-height: 1.2; margin-bottom: 20px;
 }
-.ch-hero h1 em { font-style: italic; color: var(--gold); font-weight: 600; }
+.ch-hero h1 em { font-style: italic; color: var(--accent-burgundy); font-weight: 600; }
 .ch-hero-sub {
   font-size: 15px; color: var(--text-muted); font-weight: 400;
   max-width: 550px; margin: 0 auto; line-height: 1.8;
@@ -57,7 +57,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Poppi
   gap: 80px; flex-wrap: wrap;
 }
 .strip-item { text-align: center; }
-.strip-num { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 2.5rem; color: var(--gold); line-height: 1; margin-bottom: 10px; }
+.strip-num { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 2.5rem; color: var(--accent-burgundy); line-height: 1; margin-bottom: 10px; }
 .strip-lbl { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
 
 /* WRAP + GRID */
@@ -73,7 +73,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Poppi
 .ch-card {
   background: var(--card-bg);
   border: 1px solid var(--border-light);
-  border-top: 3px solid var(--gold);
+  border-top: 3px solid var(--accent-burgundy);
   display: flex; flex-direction: column;
   transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
 }
@@ -101,17 +101,17 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Poppi
 }
 .ch-position {
   font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--gold); margin-bottom: 10px; font-weight: 600;
+  color: var(--accent-burgundy); margin-bottom: 10px; font-weight: 600;
 }
 .ch-name {
-  font-family: 'Playfair Display', serif; font-weight: 700;
+  font-family: 'Montserrat', sans-serif; font-weight: 700;
   font-size: 2rem; color: var(--text-main); line-height: 1.1; margin-bottom: 20px;
 }
 .ch-exp-spec {
   display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;
   font-size: 12px; color: var(--text-muted);
 }
-.ch-exp-spec i { color: var(--gold); margin-right: 6px; font-size: 14px; }
+.ch-exp-spec i { color: var(--accent-burgundy); margin-right: 6px; font-size: 14px; }
 
 .ch-desc {
   font-size: 13px; color: var(--text-muted); line-height: 1.8;
@@ -119,9 +119,9 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Poppi
 }
 
 .ch-quote {
-  font-family: 'Playfair Display', serif; font-style: italic;
-  font-size: 1.1rem; color: var(--olive);
-  border-left: 2px solid var(--gold);
+  font-family: 'Montserrat', sans-serif; font-style: italic;
+  font-size: 1.1rem; color: var(--accent-burgundy);
+  border-left: 2px solid var(--accent-burgundy);
   padding-left: 15px; margin-bottom: 25px;
   line-height: 1.6;
 }
@@ -133,7 +133,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Poppi
   color: var(--text-muted); font-size: 14px; text-decoration: none;
   transition: 0.3s;
 }
-.ch-social a:hover { background: var(--olive); color: #fff; border-color: var(--olive); }
+.ch-social a:hover { background: var(--accent-burgundy); color: #fff; border-color: var(--accent-burgundy); }
 
 /* EMPTY */
 .ch-empty { text-align: center; padding: 100px 20px; color: var(--text-muted); }
@@ -179,14 +179,14 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Poppi
     <?php foreach($chefs as $chef):
       $img = !empty($chef['image'])
         ? 'public/assets/img/chefs/'.htmlspecialchars($chef['image'])
-        : 'https://placehold.co/400x530/F6F2E9/4F5B3A?text=Chef';
+        : 'https://placehold.co/400x530/262629/A88746?text=Chef';
       $hasSocial = !empty($chef['facebook']) || !empty($chef['instagram']) || !empty($chef['email']);
     ?>
     <div class="ch-card">
       <div class="ch-img">
         <img src="<?= $img ?>"
              alt="<?= htmlspecialchars($chef['name']) ?>"
-             onerror="this.onerror=null; this.src='https://placehold.co/400x530/F6F2E9/4F5B3A?text=Chef'">
+             onerror="this.onerror=null; this.src='https://placehold.co/400x530/262629/A88746?text=Chef'">
       </div>
 
       <div class="ch-info">
@@ -238,7 +238,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Poppi
   <?php else: ?>
   <div class="ch-empty">
     <i class="bi bi-people"></i>
-    <p style="font-family:'Playfair Display',serif;font-style:italic;font-size:1.2rem;">
+    <p style="font-family:'Montserrat',serif;font-style:italic;font-size:1.2rem;">
       Thông tin đội ngũ đang được cập nhật...
     </p>
   </div>

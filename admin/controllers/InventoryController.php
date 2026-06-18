@@ -576,7 +576,7 @@ foreach ($inv_items as &$item) {
     // CHỈ TÍNH CẢNH BÁO CHO NHỮNG MÓN ĐANG HOẠT ĐỘNG (is_active = 1)
     if ($item['is_active'] == 1) {
         if ($item['total_stock'] <= $min) $low_stock_count++;
-        if (!empty($item['expiry_date'])) {
+        if (!empty($item['expiry_date']) && $item['total_stock'] > 0) {
             if ($item['expiry_date'] < $today) {
                 $expired_count++;
             } elseif ($item['expiry_date'] <= $warn_date) {

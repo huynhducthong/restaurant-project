@@ -38,17 +38,17 @@ foreach ($foods as $food) {
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
 
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --cd-bg: #F6F2E9;
-  --cd-text: #222222;
+  --cd-bg: #1A1A1D;
+  --cd-text: #D1D1D1;
   --cd-muted: #666666;
-  --cd-olive: #4F5B3A;
-  --cd-gold: #C9A66B;
-  --cd-serif: 'Cormorant Garamond', serif;
-  --cd-sans: 'Inter', sans-serif;
+  --cd-olive: #A88746;
+  --cd-gold: #A88746;
+  --cd-serif: 'Montserrat', sans-serif;
+  --cd-sans: 'Open Sans', sans-serif;
 }
 
 body { background-color: var(--cd-bg); }
@@ -75,7 +75,7 @@ body { background-color: var(--cd-bg); }
 .cd-hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(246, 242, 233, 0) 40%, var(--cd-bg) 100%);
+  background: linear-gradient(to bottom, rgba(26, 26, 29, 0) 40%, var(--cd-bg) 100%);
   z-index: 1;
 }
 .cd-hero-content {
@@ -109,12 +109,12 @@ body { background-color: var(--cd-bg); }
 .cd-container {
   max-width: 900px;
   margin: -80px auto 100px;
-  background: #fff;
+  background: #262629;
   position: relative;
   z-index: 3;
   padding: 80px 60px;
   box-shadow: 0 20px 50px rgba(0,0,0,0.05);
-  border: 1px solid rgba(201, 166, 107, 0.2);
+  border: 1px solid rgba(168, 135, 70, 0.2);
   text-align: center;
 }
 .cd-desc {
@@ -159,7 +159,7 @@ body { background-color: var(--cd-bg); }
   top: 50%;
   width: 40px;
   height: 1px;
-  background: rgba(201, 166, 107, 0.4);
+  background: rgba(168, 135, 70, 0.4);
 }
 .cd-course-title::before { right: 100%; margin-right: 20px; }
 .cd-course-title::after { left: 100%; margin-left: 20px; }
@@ -171,7 +171,7 @@ body { background-color: var(--cd-bg); }
   text-align: left;
   margin-bottom: 30px;
   padding-bottom: 30px;
-  border-bottom: 1px dashed rgba(79, 91, 58, 0.1);
+  border-bottom: 1px dashed rgba(168, 135, 70, 0.1);
 }
 .cd-food-item:last-child {
   border-bottom: none;

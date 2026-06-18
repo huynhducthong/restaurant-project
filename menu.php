@@ -54,11 +54,30 @@ if (isset($_SESSION['user_id'])) {
 
 function hasAllergen($food, $user_allergies) {
     if (empty($user_allergies)) return false;
-    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '') . ',' . ($food['cat_name'] ?? '');
+    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '') . ',' . ($food['cat_name'] ?? '') . ',' . ($food['name'] ?? '');
     $food_allergens = array_map('trim', explode(',', mb_strtolower($all_food_ingredients, 'UTF-8')));
-    foreach($user_allergies as $ua) {
+    
+    $aliases = [
+        'hải sản' => ['tôm', 'cua', 'ghẹ', 'cá', 'mực', 'bạch tuộc', 'ốc', 'hàu', 'sò', 'nghêu', 'tuna', 'salmon', 'scallop'],
+        'sữa' => ['bơ', 'phô mai', 'cheese', 'cream', 'sữa tươi', 'sữa đặc', 'yoghurt', 'sữa chua'],
+        'đậu phộng' => ['lạc', 'peanut'],
+        'gluten' => ['lúa mì', 'bột mì', 'wheat', 'bread', 'bánh mì', 'pasta', 'pizza'],
+        'trứng' => ['egg', 'trứng gà', 'trứng vịt', 'trứng cút']
+    ];
+
+    foreach ($user_allergies as $ua) {
+        if (empty($ua)) continue;
+        
+        $check_terms = [$ua];
+        if (isset($aliases[$ua])) {
+            $check_terms = array_merge($check_terms, $aliases[$ua]);
+        }
+        
         foreach($food_allergens as $fa) {
-            if (!empty($fa) && strpos($fa, $ua) !== false) return true;
+            if (empty($fa)) continue;
+            foreach ($check_terms as $term) {
+                if (strpos($fa, $term) !== false) return true;
+            }
         }
     }
     return false;
@@ -124,22 +143,22 @@ usort($all_foods, function($a, $b) {
 
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 /* === EDITORIAL FINE DINING VARIABLES === */
 :root {
-  --bg-color: #F6F2E9;       /* Cream */
-  --text-main: #222222;      /* Dark Gray */
+  --bg-color: #1A1A1D;       /* Cream */
+  --text-main: #D1D1D1;      /* Dark Gray */
   --text-muted: #666666;     /* Light Gray for descriptions */
-  --olive: #4F5B3A;          /* Olive Green */
-  --gold: #C9A66B;           /* Gold Accent */
-  --font-serif: 'Cormorant Garamond', serif;
-  --font-sans: 'Inter', sans-serif;
+  --accent-burgundy: #A88746;          /* Olive Green */
+  --accent-burgundy: #A88746;           /* Gold Accent */
+  --font-serif: 'Montserrat', sans-serif;
+  --font-sans: 'Open Sans', sans-serif;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background-color: var(--bg-color); color: var(--text-main); font-family: var(--font-sans); line-height: 1.6; overflow-x: hidden; }
-::selection { background: var(--olive); color: #fff; }
+::selection { background: var(--accent-burgundy); color: #fff; }
 
 /* === HERO SECTION === */
 .editorial-hero {
@@ -150,7 +169,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
   align-items: center;
   justify-content: center;
   text-align: center;
-  border-bottom: 1px solid rgba(79,91,58,0.1);
+  border-bottom: 1px solid rgba(168, 135, 70,0.1);
 }
 .editorial-hero-bg {
   position: absolute;
@@ -164,7 +183,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 .editorial-hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(246, 242, 233, 0.7) 0%, rgba(246, 242, 233, 1) 100%);
+  background: linear-gradient(to bottom, rgba(26, 26, 29, 0.7) 0%, rgba(26, 26, 29, 1) 100%);
   z-index: 1;
 }
 .editorial-hero-content {
@@ -179,7 +198,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
   font-size: 11px;
   letter-spacing: 4px;
   text-transform: uppercase;
-  color: var(--olive);
+  color: var(--accent-burgundy);
   margin-bottom: 20px;
 }
 .editorial-hero h1 {
@@ -192,7 +211,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 }
 .editorial-hero h1 em {
   font-style: italic;
-  color: var(--gold);
+  color: var(--accent-burgundy);
 }
 .editorial-hero p {
   font-family: var(--font-serif);
@@ -217,7 +236,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
   font-family: var(--font-serif);
   font-size: 2.8rem;
   font-weight: 400;
-  color: var(--olive);
+  color: var(--accent-burgundy);
   margin-bottom: 10px;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -228,7 +247,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
   font-size: 11px;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--accent-burgundy);
   margin-bottom: 60px;
 }
 
@@ -263,7 +282,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
   font-family: var(--font-sans);
   font-size: 14px;
   font-weight: 500;
-  color: var(--gold);
+  color: var(--accent-burgundy);
   letter-spacing: 2px;
 }
 
@@ -279,12 +298,12 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
   content: '';
   height: 1px;
   width: 100px;
-  background-color: var(--gold);
+  background-color: var(--accent-burgundy);
 }
 .menu-divider .diamond {
   width: 8px;
   height: 8px;
-  background-color: var(--gold);
+  background-color: var(--accent-burgundy);
   transform: rotate(45deg);
   margin: 0 15px;
 }
@@ -320,9 +339,9 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
   font-size: 2.2rem;
   font-weight: 600;
   font-style: italic;
-  color: var(--olive);
+  color: var(--accent-burgundy);
   margin-bottom: 30px;
-  border-bottom: 1px solid rgba(79,91,58,0.1);
+  border-bottom: 1px solid rgba(168, 135, 70,0.1);
   padding-bottom: 15px;
 }
 .menu-list {
@@ -359,7 +378,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 }
 .menu-item-dots {
   flex-grow: 1;
-  border-bottom: 1px dotted rgba(79,91,58,0.4);
+  border-bottom: 1px dotted rgba(168, 135, 70,0.4);
   margin: 0 10px;
   position: relative;
   top: -6px;
@@ -368,7 +387,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 .menu-item-price {
   font-family: var(--font-sans);
   font-size: 14px;
-  color: var(--gold);
+  color: var(--accent-burgundy);
   background: var(--bg-color);
   padding-left: 15px;
   z-index: 2;
@@ -393,7 +412,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 .btn-reserve-solid {
   display: inline-block;
   padding: 16px 40px;
-  background: var(--olive);
+  background: var(--accent-burgundy);
   color: #fff;
   font-family: var(--font-sans);
   font-size: 12px;
@@ -401,26 +420,26 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
   letter-spacing: 3px;
   text-transform: uppercase;
   text-decoration: none;
-  border: 1px solid var(--olive);
+  border: 1px solid var(--accent-burgundy);
   transition: all 0.4s ease;
   border-radius: 0;
 }
 .btn-reserve-solid:hover {
   background: transparent;
-  color: var(--olive);
+  color: var(--accent-burgundy);
 }
 
 /* === MODAL MINIMALIST === */
 .ed-modal {
   position: fixed; inset: 0; z-index: 1000;
-  background: rgba(246, 242, 233, 0.95);
+  background: rgba(0, 0, 0, 0.4);
   display: flex; align-items: center; justify-content: center;
   opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(15px);
 }
 .ed-modal.open { opacity: 1; pointer-events: all; }
 .ed-modal-box {
-  background: #fff;
+  background: #262629;
   width: 100%; max-width: 800px;
   display: flex;
   box-shadow: 0 30px 60px rgba(0,0,0,0.08);
@@ -441,11 +460,11 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
   background: none; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer;
   transition: color 0.3s;
 }
-.ed-modal-close:hover { color: var(--olive); }
-.ed-m-cat { font-family: var(--font-sans); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 15px; }
-.ed-m-name { font-family: var(--font-serif); font-size: 2.2rem; color: var(--olive); line-height: 1.2; margin-bottom: 20px; }
+.ed-modal-close:hover { color: var(--accent-burgundy); }
+.ed-m-cat { font-family: var(--font-sans); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent-burgundy); margin-bottom: 15px; }
+.ed-m-name { font-family: var(--font-serif); font-size: 2.2rem; color: #ffffff; line-height: 1.2; margin-bottom: 20px; }
 .ed-m-desc { font-family: var(--font-serif); font-size: 1.1rem; color: var(--text-muted); font-style: italic; line-height: 1.8; margin-bottom: 30px; }
-.ed-m-price { font-family: var(--font-sans); font-size: 18px; font-weight: 500; color: var(--gold); margin-bottom: 30px; letter-spacing: 1px; }
+.ed-m-price { font-family: var(--font-sans); font-size: 18px; font-weight: 500; color: var(--accent-burgundy); margin-bottom: 30px; letter-spacing: 1px; }
 
 @media (max-width: 768px) {
   .ed-modal-box { flex-direction: column; max-height: 90vh; overflow-y: auto; }
@@ -506,7 +525,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                                         </div>
                                         <p class="menu-item-desc">
                                             <?= htmlspecialchars($row['description']) ?>
-                                            <br><i class="bi bi-star-fill me-1" style="color:#C9A66B; font-size:9px; margin-top:5px;"></i><span style="font-size:11px; color:#999;"><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></span>
+                                            <br><i class="bi bi-star-fill me-1" style="color:#A88746; font-size:9px; margin-top:5px;"></i><span style="font-size:11px; color:#999;"><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></span>
                                         </p>
                                     </div>
                                     <?php endforeach; ?>
@@ -541,12 +560,14 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                                         </div>
                                         <p class="menu-item-desc">
                                             <?= htmlspecialchars($f['description']) ?>
-                                            <?php if($has_al): ?>
-                                            <br><span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; margin-top:5px; display:inline-block;">* Chứa thành phần dị ứng với bạn</span>
-                                            <?php elseif($has_dl): ?>
-                                            <br><span style="color:#e67e22; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; margin-top:5px; display:inline-block;">* Có chứa nguyên liệu bạn không thích</span>
-                                            <?php endif; ?>
                                         </p>
+                                        <div style="margin-top:5px;">
+                                            <?php if($has_al): ?>
+                                            <span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block;">* Chứa thành phần dị ứng với bạn</span>
+                                            <?php elseif($has_dl): ?>
+                                            <span style="color:#e67e22; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block;">* Có chứa nguyên liệu bạn không thích</span>
+                                            <?php endif; ?>
+                                        </div>
                                     </div>
                                     <?php endforeach; ?>
                                 </div>
@@ -592,7 +613,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                         </div>
                         <p class="menu-item-desc">
                             <?= htmlspecialchars($row['description']) ?>
-                            <br><i class="bi bi-star-fill me-1" style="color:#C9A66B; font-size:9px; margin-top:5px;"></i><span style="font-size:11px; color:#999;"><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></span>
+                            <br><i class="bi bi-star-fill me-1" style="color:#A88746; font-size:9px; margin-top:5px;"></i><span style="font-size:11px; color:#999;"><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></span>
                         </p>
                     </div>
                     <?php endforeach; ?>
@@ -611,7 +632,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
         
         <div class="menu-category">
             <div class="category-image-wrap">
-                <img id="cat-img-chef" src="public/assets/img/menu/<?= htmlspecialchars($chef_foods[0]['image']) ?>" class="category-image" onerror="this.onerror=null; this.src='https://placehold.co/800x600/F6F2E9/4F5B3A?text=No+Image'" style="transition: opacity 0.15s ease;">
+                <img id="cat-img-chef" src="public/assets/img/menu/<?= htmlspecialchars($chef_foods[0]['image']) ?>" class="category-image" onerror="this.onerror=null; this.src='https://placehold.co/800x600/262629/A88746?text=No+Image'" style="transition: opacity 0.15s ease;">
             </div>
             
             <div class="category-content-wrap">
@@ -639,12 +660,14 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                         </div>
                         <p class="menu-item-desc">
                             <?= htmlspecialchars($f['description']) ?>
-                            <?php if($has_al): ?>
-                            <br><span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; margin-top:5px; display:inline-block;">* Chứa thành phần dị ứng với bạn</span>
-                            <?php elseif($has_dl): ?>
-                            <br><span style="color:#e67e22; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; margin-top:5px; display:inline-block;">* Có chứa nguyên liệu bạn không thích</span>
-                            <?php endif; ?>
                         </p>
+                        <div style="margin-top:5px;">
+                            <?php if($has_al): ?>
+                            <span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block;">* Chứa thành phần dị ứng với bạn</span>
+                            <?php elseif($has_dl): ?>
+                            <span style="color:#e67e22; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block;">* Có chứa nguyên liệu bạn không thích</span>
+                            <?php endif; ?>
+                        </div>
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -675,7 +698,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
         ?>
         <div class="menu-category <?= $cat_index % 2 != 0 ? 'image-right' : '' ?>">
             <div class="category-image-wrap">
-                <img id="cat-img-<?= $cat['id'] ?>" src="public/assets/img/menu/<?= htmlspecialchars($cat_image) ?>" class="category-image" onerror="this.onerror=null; this.src='https://placehold.co/800x600/F6F2E9/4F5B3A?text=No+Image'" style="transition: opacity 0.15s ease;">
+                <img id="cat-img-<?= $cat['id'] ?>" src="public/assets/img/menu/<?= htmlspecialchars($cat_image) ?>" class="category-image" onerror="this.onerror=null; this.src='https://placehold.co/800x600/262629/A88746?text=No+Image'" style="transition: opacity 0.15s ease;">
             </div>
             
             <div class="category-content-wrap">
@@ -704,10 +727,12 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                         </div>
                         <p class="menu-item-desc">
                             <?= htmlspecialchars($f['description']) ?>
+                        </p>
+                        <div style="margin-top:5px;">
                             <?php if($has_al): ?>
-                            <br><span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; margin-top:5px; display:inline-block;">* Chứa thành phần dị ứng với bạn</span>
+                            <span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block;">* Chứa thành phần dị ứng với bạn</span>
                             <?php elseif($has_dl): ?>
-                            <br><span style="color:#e67e22; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; margin-top:5px; display:inline-block;">* Có chứa nguyên liệu bạn không thích</span>
+                            <span style="color:#e67e22; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block;">* Có chứa nguyên liệu bạn không thích</span>
                             <?php endif; ?>
                             <?php 
                                 $is_hist = isset($user_history_counts[$f['id']]);
@@ -717,9 +742,9 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                             <span style="color:#17a2b8; font-size:13px; font-weight:500; font-family:var(--font-sans); font-style:normal; margin-left:10px;"><i class="fas fa-history"></i> Món quen</span>
                             <?php endif; ?>
                             <?php if($flav_score > 0): ?>
-                            <span style="color:var(--gold); font-size:13px; font-weight:500; font-family:var(--font-sans); font-style:normal; margin-left:10px;"><i class="fas fa-star"></i> Gợi ý</span>
+                            <span style="color:var(--accent-burgundy); font-size:13px; font-weight:500; font-family:var(--font-sans); font-style:normal; margin-left:10px;"><i class="fas fa-star"></i> Gợi ý</span>
                             <?php endif; ?>
-                        </p>
+                        </div>
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -743,7 +768,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 <div class="ed-modal" id="edModal" onclick="closeEdModal(event)">
   <div class="ed-modal-box">
     <div class="ed-modal-img">
-      <img id="ed-m-img" src="" alt="" onerror="this.onerror=null; this.src='https://placehold.co/800x600/F6F2E9/4F5B3A?text=No+Image'">
+      <img id="ed-m-img" src="" alt="" onerror="this.onerror=null; this.src='https://placehold.co/800x600/262629/A88746?text=No+Image'">
     </div>
     <div class="ed-modal-content">
       <button class="ed-modal-close" onclick="closeEdModal(null)">✕</button>
@@ -773,10 +798,10 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
     transform: translate(15px, -50%) scale(0.95);
 }
 .menu-item:hover {
-    background: rgba(201, 166, 107, 0.03);
+    background: rgba(168, 135, 70, 0.03);
 }
 .menu-hover-trigger:hover .menu-item-name {
-    color: var(--gold);
+    color: var(--accent-burgundy);
     transition: color 0.3s ease;
 }
 </style>
@@ -785,7 +810,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const tooltip = document.getElementById('hoverImageTooltip');
     if (tooltip) {
         tooltip.onerror = function() {
-            this.src = 'https://placehold.co/800x600/F6F2E9/4F5B3A?text=No+Image';
+            this.src = 'https://placehold.co/800x600/262629/A88746?text=No+Image';
         };
     }
     const triggers = document.querySelectorAll('.menu-hover-trigger');
@@ -821,7 +846,7 @@ function changeFeaturedImage(imgId, newSrc) {
     imageTimeoutIds[imgId] = setTimeout(function() {
         imgEl.onerror = function() {
             this.onerror = null;
-            this.src = 'https://placehold.co/800x600/F6F2E9/4F5B3A?text=No+Image';
+            this.src = 'https://placehold.co/800x600/262629/A88746?text=No+Image';
         };
         imgEl.src = newSrc;
         imgEl.style.opacity = 1;
@@ -836,13 +861,8 @@ function openEdModal(data) {
     document.getElementById('ed-m-price').textContent = data.price + ' VND';
     
     var topEl = document.getElementById('ed-m-toppings');
-    if (data.toppings && data.toppings.trim() !== '') {
-        topEl.innerHTML = '<strong style="color:var(--gold); font-style:normal;">Topping tùy chọn:</strong><br>' + data.toppings.replace(/\|/g, '<br>');
-        topEl.style.display = 'block';
-    } else {
-        topEl.style.display = 'none';
-        topEl.innerHTML = '';
-    }
+    topEl.style.display = 'none';
+    topEl.innerHTML = '';
     
     document.getElementById('edModal').classList.add('open');
     document.body.style.overflow = 'hidden';
