@@ -1096,7 +1096,8 @@ document.addEventListener('DOMContentLoaded', function() {
         <h2 style="color: #A88746; font-family: 'Montserrat', sans-serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Kiệt Tác Kiến Trúc Tĩnh Lặng</h2>
       </div>
 
-      <!-- Asymmetric Grid Gallery -->
+    </div>
+    <!-- Asymmetric Grid Gallery -->
       <div class="atmosphere-grid">
         <?php if (!empty($home_galleries)): ?>
           <?php 
@@ -1129,7 +1130,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <?php endif; ?>
       </div>
 
-      <div class="text-center mt-5 pt-4">
+    <div class="container text-center mt-5 pt-4">
         <a href="#" class="btn-combo-order" style="display:inline-block; width: auto; padding: 12px 36px;">KHÁM PHÁ KHÔNG GIAN TẠI ĐÂY</a>
       </div>
     </div>
@@ -1487,7 +1488,7 @@ document.addEventListener('DOMContentLoaded', function() {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     grid-auto-rows: 250px;
-    gap: 20px;
+    gap: 0px;
   }
 
   .atmo-item {
@@ -1531,7 +1532,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   .item-2 {
-    grid-column: span 6;
+    grid-column: span 3;
     grid-row: span 1;
   }
 
@@ -1546,19 +1547,13 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   .item-5 {
-    grid-column: span 4;
+    grid-column: span 3;
     grid-row: span 1;
   }
 
-  .item-6 {
-    grid-column: span 4;
-    grid-row: span 1;
-  }
+  .item-6 { display: none; }
 
-  .item-7 {
-    grid-column: span 4;
-    grid-row: span 1;
-  }
+  .item-7 { display: none; }
 
   .item-8 {
     display: none; 
