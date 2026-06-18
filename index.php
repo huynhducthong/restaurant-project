@@ -471,20 +471,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     .menu-explore-btn {
-      display: inline-block;
-      padding: 14px 44px;
-      background: #A88746;
-      border: 1.5px solid #A88746;
-      z-index: 10;
-      display: flex;
+      display: inline-flex;
       justify-content: center;
       align-items: center;
-      height: 0;
-      margin: 0;
-    }
-
-    .menu-explore-btn {
-      display: inline-block;
       padding: 14px 44px;
       background: #A88746;
       border: 1.5px solid #A88746;
