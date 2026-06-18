@@ -1089,7 +1089,7 @@ include '../../public/admin_layout_header.php';
                     <label class="small fw-bold">Chất gây dị ứng (FDA Standard)</label>
                     <div class="d-flex flex-wrap gap-2 p-2 bg-light rounded" style="border: 1px solid #f0f0f0;">
                         <?php 
-                        $algopts = ['Sữa', 'Trứng', 'Đậu phộng', 'Hạt cây', 'Đậu nành', 'Lúa mì / Gluten', 'Cá', 'Hải sản có vỏ', 'Hải sản thân mềm', 'Mè / Vừng', 'Mù tạt', 'Quả hạch', 'Sulphites', 'Đậu Lupin'];
+                        $algopts = ['Sữa', 'Trứng', 'Đậu phộng', 'Đậu nành', 'Lúa mì / Gluten', 'Cá', 'Hải sản có vỏ', 'Hải sản thân mềm', 'Mè / Vừng', 'Mù tạt', 'Quả hạch', 'Sulphites', 'Đậu Lupin'];
                         foreach($algopts as $alg): ?>
                         <label class="d-flex align-items-center gap-1 m-0" style="cursor:pointer; font-size:12px; width:30%;">
                             <input type="checkbox" name="allergens[]" class="inv-alg-chk" value="<?= $alg ?>" style="accent-color:#d64545;"> <?= $alg ?>
