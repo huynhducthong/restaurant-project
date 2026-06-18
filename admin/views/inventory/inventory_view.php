@@ -1641,12 +1641,12 @@ include '../../public/admin_layout_header.php';
         
         $select.find('option').each(function() {
             if (!this.value) return; // skip placeholder
-            const wType = $(this).data('type');
+            const whId = this.value;
             const qty = parseFloat(stocks[this.value]) || 0;
             const originalName = $(this).data('name') || $(this).text().split(' (Tồn:')[0];
             if (!$(this).data('name')) $(this).data('name', originalName); // save original name
             
-            if (qty > 0 && wType !== 'virtual') {
+            if (qty > 0 && whId !== '6' && whId !== '7') {
                 $(this).removeClass('d-none').prop('disabled', false).text(originalName + ' (Tồn: ' + qty + ')');
             } else {
                 $(this).addClass('d-none').prop('disabled', true).text(originalName);
