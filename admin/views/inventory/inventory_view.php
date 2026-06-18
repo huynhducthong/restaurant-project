@@ -1346,13 +1346,14 @@ include '../../public/admin_layout_header.php';
     const chartRaw = <?= json_encode($chart_raw) ?>;
     const PAGE_SIZE = 15;
     let currentPage = 1;
-    let activeFilter = 'all';
+    let activeFilter = sessionStorage.getItem('activeInventoryFilter') || 'all';
 
     window.clearScrapWarehouse = function() {
         if(confirm('Bạn có chắc chắn muốn tiêu hủy TOÀN BỘ rác trong Kho Hủy không? Hành động này sẽ làm số lượng về 0 và lưu vào lịch sử.')) {
             $.post('InventoryController.php', { action: 'clear_scrap_warehouse' }, function(res) {
                 if(res.status === 'success') {
                     alert(res.message);
+                    sessionStorage.setItem('activeInventoryWarehouse', 'all');
                     location.reload();
                 } else {
                     alert(res.message || 'Có lỗi xảy ra');
@@ -1785,15 +1786,25 @@ include '../../public/admin_layout_header.php';
 
     function filterWarning(type, btn) {
         activeFilter = type;
+        sessionStorage.setItem('activeInventoryFilter', type);
         
-        // Nếu chọn một cảnh báo cụ thể (low hoặc expiry), tự động chuyển về "Tất cả kho" 
-        // để đảm bảo người dùng thấy được mặt hàng bị cảnh báo đó
-        if (type !== 'all') {
-            $('.wh-filter-btn[data-wh="all"]').trigger('click');
+        // Cập nhật UI nút cảnh báo
+        $('#filterButtons button').removeClass('active');
+        if (btn) {
+            $(btn).addClass('active');
+        } else {
+            $('#filterButtons button[onclick*="\'" + type + "\'"]').addClass('active');
         }
 
-        $('#filterButtons button').removeClass('active');
-        $(btn).addClass('active');
+        // Nếu chọn một cảnh báo cụ thể (low hoặc expiry), tự động chuyển về "Tất cả kho" 
+        // để đảm bảo người dùng thấy được mặt hàng bị cảnh báo đó
+        if (type !== 'all' && activeWarehouse !== 'all') {
+            activeWarehouse = 'all';
+            sessionStorage.setItem('activeInventoryWarehouse', 'all');
+            $('.wh-filter-btn').removeClass('btn-dark fw-bold active-main active-all text-white shadow').addClass('btn-outline-secondary');
+            $('.wh-filter-btn[data-wh="all"]').removeClass('btn-outline-secondary').addClass('btn-dark fw-bold active-all text-white shadow');
+        }
+        
         filterTable();
     }
 
@@ -2293,18 +2304,26 @@ $(document).ready(function() {
         const tab = new URLSearchParams(window.location.search).get('tab');
         if (tab) switchTab(tab);
 
-        if (activeWarehouse !== 'all') {
-            const btn = $('.wh-filter-btn[data-wh="' + activeWarehouse + '"]');
-            if(btn.length) {
-                btn.trigger('click');
+        // Khôi phục UI của filter cảnh báo
+        $('#filterButtons button').removeClass('active');
+        $('#filterButtons button[onclick*="\'" + activeFilter + "\'"]').addClass('active');
+
+        // Khôi phục UI của filter kho
+        $('.wh-filter-btn').removeClass('btn-dark fw-bold active-main active-all text-white shadow').addClass('btn-outline-secondary');
+        const activeBtn = $('.wh-filter-btn[data-wh="' + activeWarehouse + '"]');
+        if (activeBtn.length) {
+            if (activeWarehouse === 'all') {
+                activeBtn.removeClass('btn-outline-secondary').addClass('btn-dark fw-bold active-all text-white shadow');
             } else {
-                $('.wh-filter-btn[data-wh="all"]').trigger('click');
+                activeBtn.removeClass('btn-outline-secondary').addClass('btn-dark fw-bold active-main text-white shadow');
             }
         } else {
-            // Kích hoạt phân trang lần đầu
-            document.querySelectorAll('#invBody .inv-row').forEach(r => r.setAttribute('data-visible', '1'));
-            renderPagination();
+            activeWarehouse = 'all';
+            sessionStorage.setItem('activeInventoryWarehouse', 'all');
+            $('.wh-filter-btn[data-wh="all"]').removeClass('btn-outline-secondary').addClass('btn-dark fw-bold active-all text-white shadow');
         }
+
+        filterTable();
 
         setTimeout(() => {
             const body = document.getElementById('invBody');
