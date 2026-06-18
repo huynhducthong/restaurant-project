@@ -1490,8 +1490,11 @@ document.addEventListener('DOMContentLoaded', function() {
     grid-auto-rows: 250px;
     gap: 0px;
     width: 100vw;
-    max-width: 100%;
-    margin: 0;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
   }
 
   .atmo-item {
