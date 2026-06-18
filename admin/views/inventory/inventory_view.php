@@ -4,47 +4,53 @@ include '../../public/admin_layout_header.php';
 ?>
 <style>
     :root {
-        --primary-color: #2c3e50;
-        --accent-color: #3498db;
+        --primary-color: #2C3034;
+        --accent-color: #7A2021;
         --success-color: #27ae60;
         --warning-color: #f39c12;
         --danger-color: #e74c3c;
-        --light-bg: #f8f9fa;
-        --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        --light-bg: #fdfdfd;
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     }
+    
+    body { background-color: #f8f9fa; }
+
     /* Sidebar & Navigation */
     .sidebar-card {
-        border: none;
+        border: 1px solid #f1f1f1;
         border-radius: 12px;
         box-shadow: var(--card-shadow);
         position: relative;
         z-index: 100;
+        background: #fff;
     }
 
     .btn-menu {
         text-align: left;
-        border-radius: 10px;
-        transition: all 0.15s ease-in-out;
+        border-radius: 8px;
+        transition: all 0.2s ease-in-out;
         border: 1px solid transparent;
-        font-size: 0.9rem;
-        padding: 12px 18px;
+        font-size: 0.85rem;
+        padding: 10px 15px;
         margin-bottom: 5px;
         cursor: pointer !important;
         display: flex;
         align-items: center;
         width: 100%;
-        background: #fff;
+        background: transparent;
+        color: #555;
+        text-decoration: none;
     }
 
     .btn-menu:hover {
-        background-color: #f0f7ff !important;
-        color: var(--accent-color) !important;
+        background-color: #f8f9fa !important;
+        color: var(--primary-color) !important;
     }
 
     .btn-menu.active {
         background-color: var(--primary-color) !important;
         color: #fff !important;
-        box-shadow: 0 4px 10px rgba(44, 62, 80, 0.3);
+        box-shadow: 0 4px 10px rgba(44, 48, 52, 0.15);
     }
 
     .btn-menu i {
@@ -53,120 +59,138 @@ include '../../public/admin_layout_header.php';
     }
 
     .stat-card {
-        border: none;
+        border: 1px solid #f1f1f1;
         border-radius: 12px;
         transition: transform 0.2s;
         background: #fff;
-        border-left: 4px solid var(--accent-color);
-        position: relative;
+        border-left: 3px solid var(--accent-color);
+        box-shadow: var(--card-shadow);
     }
 
     .stat-card:hover {
-        transform: translateY(-3px);
+        transform: translateY(-2px);
     }
-    /* Tables */
+    
+    /* Clean Tables */
+    .main-card { border: 1px solid #f1f1f1; border-radius: 12px; box-shadow: var(--card-shadow); background: #fff; }
+    
     .table thead th {
-        background-color: #f8f9fa;
-        color: #7f8c8d;
+        background-color: transparent;
+        color: #95a5a6;
         font-weight: 600;
         text-transform: uppercase;
-        font-size: 0.75rem;
+        font-size: 0.65rem;
+        letter-spacing: 1px;
         border-top: none;
+        border-bottom: 1px solid #eaeaea;
         padding: 15px;
     }
 
     .table td {
         padding: 15px;
         vertical-align: middle;
-        border-bottom: 1px solid #f1f1f1;
+        border-bottom: 1px dashed #f1f1f1;
+        color: #495057;
     }
 
     .table-hover tbody tr:hover {
-        background-color: #fdfdfd;
+        background-color: #fcfcfc;
     }
 
     /* Action Buttons in Table */
     .btn-group .btn {
-        padding: 8px 12px;
+        padding: 6px 10px;
         transition: all 0.2s;
+        border-radius: 6px;
     }
 
     .btn-group .btn:hover {
-        transform: scale(1.15);
-        z-index: 5;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
-    .btn-group .btn i {
-        pointer-events: none;
-    }
-
-    /* Filters */
-    #filterButtons .btn.active {
-        box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    }
-
-    #filterButtons .btn-outline-danger.active {
-        background-color: var(--danger-color) !important;
-        color: #fff !important;
-    }
-
-    #filterButtons .btn-outline-warning.active {
-        background-color: var(--warning-color) !important;
-        color: #fff !important;
-    }
-
-    #filterButtons .btn-outline-secondary.active {
-        background-color: #6c757d !important;
-        color: #fff !important;
-    }
-
-    /* Inputs */
-    .form-control,
+    /* Ghost Badges */
+    .badge-ghost-success { background-color: #f8f9fa; color: #495057; border: 1px solid #e9ecef; padding: 5px 8px; font-weight: 500; border-radius: 6px; font-size: 0.75rem; }
+    .badge-ghost-success::before { content: "•"; color: var(--success-color); font-size: 22px; margin-right: 4px; vertical-align: middle; line-height: 0.5; }
+    
+    .badge-ghost-danger { background-color: #f8f9fa; color: #495057; border: 1px solid #e9ecef; padding: 5px 8px; font-weight: 500; border-radius: 6px; font-size: 0.75rem; }
+    .badge-ghost-danger::before { content: "•"; color: var(--danger-color); font-size: 22px; margin-right: 4px; vertical-align: middle; line-height: 0.5; }
+    
+    .badge-ghost-warning { background-color: #f8f9fa; color: #495057; border: 1px solid #e9ecef; padding: 5px 8px; font-weight: 500; border-radius: 6px; font-size: 0.75rem; }
+    .badge-ghost-warning::before { content: "•"; color: var(--warning-color); font-size: 22px; margin-right: 4px; vertical-align: middle; line-height: 0.5; }
+    
+    .badge-ghost-info { background-color: #f8f9fa; color: #495057; border: 1px solid #e9ecef; padding: 5px 8px; font-weight: 500; border-radius: 6px; font-size: 0.75rem; }
+    .badge-ghost-info::before { content: "•"; color: var(--accent-color); font-size: 22px; margin-right: 4px; vertical-align: middle; line-height: 0.5; }
+    
+    .badge-ghost-secondary { background-color: #f8f9fa; color: #495057; border: 1px solid #e9ecef; padding: 5px 8px; font-weight: 500; border-radius: 6px; font-size: 0.75rem; }
+    .badge-ghost-secondary::before { content: "•"; color: #6c757d; font-size: 22px; margin-right: 4px; vertical-align: middle; line-height: 0.5; }
+    /* Form Select styling */
     .form-select {
-        border-radius: 8px;
-        border: 1px solid #e0e0e0;
-        padding: 10px 15px;
-        font-size: 0.9rem;
+        border: 1px solid #e9ecef;
+        box-shadow: none !important;
+        font-size: 0.85rem;
+        color: #495057;
+        border-radius: 6px;
     }
-
-    .form-control:focus {
-        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.15);
-        border-color: var(--accent-color);
+    .form-select:focus {
+        border-color: #ced4da;
     }
-
-    /* Animation - ĐÃ LOẠI BỎ ĐỂ TĂNG TỐC ĐỘ */
-    .tab-pane {
-        display: none;
+    
+    /* Pagination styling */
+    .pagination .page-link {
+        color: #495057;
+        border-color: #e9ecef;
+        box-shadow: none !important;
     }
-
-    .tab-pane.active {
-        display: block;
+    .pagination .page-item.active .page-link {
+        background-color: #2C3034 !important;
+        border-color: #2C3034 !important;
+        color: #ffffff !important;
+        font-weight: 700;
     }
-
-    .btn-menu i {
-        pointer-events: none;
+    .pagination .page-link:hover {
+        background-color: #f1f1f1;
     }
-
-    /* Đảm bảo click vào icon vẫn là click vào nút */
-    ::-webkit-scrollbar {
-        width: 6px;
+    /* Pagination Button Fixes */
+    #paginBtns .btn-dark {
+        background-color: #2C3034 !important;
+        border-color: #2C3034 !important;
+        color: #ffffff !important;
     }
-
-    ::-webkit-scrollbar-track {
-        background: #f1f1f1;
+    
+    /* Select styling override */
+    .form-select:focus {
+        border-color: #A88746 !important; /* Gold focus */
+        box-shadow: 0 0 0 0.25rem rgba(168, 135, 70, 0.25) !important;
+        outline: 0;
     }
-
-    ::-webkit-scrollbar-thumb {
-        background: #ccc;
-        border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: #999;
-    }
-    /* Custom badge color for audit */
-    .bg-purple { background-color: #6f42c1 !important; }
+    
+    /* Warehouse Distinct Colors */
+    .badge-ghost-wh-1 { background-color: #f8f9fa; color: #495057; border: 1px solid #e9ecef; padding: 5px 8px; font-weight: 500; border-radius: 6px; font-size: 0.75rem; }
+    .badge-ghost-wh-1::before { content: "•"; color: #3498db; font-size: 22px; margin-right: 4px; vertical-align: middle; line-height: 0.5; } /* Kho Tổng: Blue */
+    
+    .badge-ghost-wh-2 { background-color: #f8f9fa; color: #495057; border: 1px solid #e9ecef; padding: 5px 8px; font-weight: 500; border-radius: 6px; font-size: 0.75rem; }
+    .badge-ghost-wh-2::before { content: "•"; color: #e74c3c; font-size: 22px; margin-right: 4px; vertical-align: middle; line-height: 0.5; } /* Kho Bếp: Red */
+    
+    .badge-ghost-wh-3 { background-color: #f8f9fa; color: #495057; border: 1px solid #e9ecef; padding: 5px 8px; font-weight: 500; border-radius: 6px; font-size: 0.75rem; }
+    .badge-ghost-wh-3::before { content: "•"; color: #9b59b6; font-size: 22px; margin-right: 4px; vertical-align: middle; line-height: 0.5; } /* Kho Bar: Purple */
+    
+    .badge-ghost-wh-4 { background-color: #f8f9fa; color: #495057; border: 1px solid #e9ecef; padding: 5px 8px; font-weight: 500; border-radius: 6px; font-size: 0.75rem; }
+    .badge-ghost-wh-4::before { content: "•"; color: #f39c12; font-size: 22px; margin-right: 4px; vertical-align: middle; line-height: 0.5; } /* Kho Xuất: Orange */
+    
+    .badge-ghost-wh-5 { background-color: #f8f9fa; color: #495057; border: 1px solid #e9ecef; padding: 5px 8px; font-weight: 500; border-radius: 6px; font-size: 0.75rem; }
+    .badge-ghost-wh-5::before { content: "•"; color: #2ecc71; font-size: 22px; margin-right: 4px; vertical-align: middle; line-height: 0.5; } /* Nguyên Liệu Khô: Green */
+    
+    .badge-ghost-wh-default { background-color: #f8f9fa; color: #495057; border: 1px solid #e9ecef; padding: 5px 8px; font-weight: 500; border-radius: 6px; font-size: 0.75rem; }
+    .badge-ghost-wh-default::before { content: "•"; color: #95a5a6; font-size: 22px; margin-right: 4px; vertical-align: middle; line-height: 0.5; } /* Others: Gray */
+        /* Filter Button Colored Active States (Only Text Color) */
+    .wh-filter-btn.active-all { border-color: #ced4da !important; color: #34495e !important; background: transparent !important; box-shadow: none !important; font-weight: bold !important; }
+    .wh-filter-btn.active-main { border-color: #ced4da !important; color: #3498db !important; background: transparent !important; box-shadow: none !important; font-weight: bold !important; }
+    .wh-filter-btn.active-kitchen { border-color: #ced4da !important; color: #e74c3c !important; background: transparent !important; box-shadow: none !important; font-weight: bold !important; }
+    .wh-filter-btn.active-bar { border-color: #ced4da !important; color: #9b59b6 !important; background: transparent !important; box-shadow: none !important; font-weight: bold !important; }
+    .wh-filter-btn.active-cold { border-color: #ced4da !important; color: #34495e !important; background: transparent !important; box-shadow: none !important; font-weight: bold !important; }
+    .wh-filter-btn.active-supplies { border-color: #ced4da !important; color: #f39c12 !important; background: transparent !important; box-shadow: none !important; font-weight: bold !important; }
+    .wh-filter-btn.active-virtual { border-color: #ced4da !important; color: #6c757d !important; background: transparent !important; box-shadow: none !important; font-weight: bold !important; }
 </style>
 
 <div class="container-fluid py-4 min-vh-100">
@@ -255,8 +279,8 @@ include '../../public/admin_layout_header.php';
                             <?php endforeach; ?>
                         </select>
                         <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="🔍 Tìm kiếm..." style="width:200px" oninput="filterTable()">
-                        <button class="btn btn-danger fw-bold shadow-sm d-none" id="btnClearScrap" onclick="clearScrapWarehouse()"><i class="fas fa-trash-alt me-1"></i> Tiêu hủy toàn bộ</button>
-                        <button class="btn btn-success fw-bold shadow-sm" onclick="exportFilteredExcel()"><i class="fas fa-file-excel me-1"></i> Xuất Excel</button>
+                        <button class="btn btn-outline-danger fw-bold shadow-sm d-none" id="btnClearScrap" onclick="clearScrapWarehouse()"><i class="fas fa-trash-alt me-1"></i> Tiêu hủy toàn bộ</button>
+                        <button class="btn btn-outline-success fw-bold shadow-sm" onclick="exportFilteredExcel()"><i class="fas fa-file-excel me-1"></i> Xuất Excel</button>
                         <button class="btn btn-warning fw-bold shadow-sm" onclick="openInventoryModal()">+ Thêm Mới</button>
                     </div>
                 </div>
@@ -265,15 +289,15 @@ include '../../public/admin_layout_header.php';
                     <button class="btn btn-sm btn-outline-secondary px-3 fw-bold active" onclick="filterWarning('all', this)">Tất cả</button>
                     <button class="btn btn-sm btn-outline-danger px-3 fw-bold" onclick="filterWarning('low', this)">
                         <i class="fas fa-arrow-down me-1" style="pointer-events:none"></i>Tồn kho thấp
-                        <?php if ($low_stock_count > 0) echo "<span class='badge bg-danger ms-1' style='pointer-events:none'>$low_stock_count</span>"; ?>
+                        <?php if ($low_stock_count > 0) echo "<span class='badge badge-ghost-danger ms-1' style='pointer-events:none'>$low_stock_count</span>"; ?>
                     </button>
                     <button class="btn btn-sm btn-outline-warning px-3 fw-bold" onclick="filterWarning('expiry', this)">
                         <i class="fas fa-clock me-1" style="pointer-events:none"></i>Sắp hết HSD
-                        <?php if ($expiry_warn_count > 0) echo "<span class='badge bg-warning text-dark ms-1' style='pointer-events:none'>$expiry_warn_count</span>"; ?>
+                        <?php if ($expiry_warn_count > 0) echo "<span class='badge badge-ghost-warning ms-1' style='pointer-events:none'>$expiry_warn_count</span>"; ?>
                     </button>
                     <button class="btn btn-sm btn-outline-danger px-3 fw-bold" style="background-color: #ffebee;" onclick="filterWarning('expired', this)">
                         <i class="fas fa-times-circle me-1" style="pointer-events:none"></i>Đã hết HSD
-                        <?php if ($expired_count > 0) echo "<span class='badge bg-danger ms-1' style='pointer-events:none'>$expired_count</span>"; ?>
+                        <?php if ($expired_count > 0) echo "<span class='badge badge-ghost-danger ms-1' style='pointer-events:none'>$expired_count</span>"; ?>
                     </button>
                 </div>
 
@@ -284,14 +308,7 @@ include '../../public/admin_layout_header.php';
                         <i class="fas fa-globe me-1" style="pointer-events:none"></i>Tất cả kho
                     </button>
                     <?php foreach ($warehouses as $w):
-                        $wh_colors = [
-                            'main' => 'btn-primary', 
-                            'kitchen' => 'btn-danger', 
-                            'bar' => 'btn-info text-dark',
-                            'cold' => 'btn-primary', 
-                            'supplies' => 'btn-warning text-dark',
-                            'virtual' => 'btn-secondary'
-                        ];
+                        $wh_colors = [];
                         $wh_icons  = [
                             'main' => 'fa-warehouse', 'kitchen' => 'fa-fire-burner', 'bar' => 'fa-glass-martini-alt',
                             'cold' => 'fa-snowflake', 'supplies' => 'fa-tools', 'virtual' => 'fa-file-invoice'
@@ -317,7 +334,7 @@ include '../../public/admin_layout_header.php';
                     <?php endforeach; ?>
                 </div>
 
-                <div class="card shadow-sm border-0 overflow-hidden">
+                <div class="card shadow-sm border-0 overflow-hidden" style="min-height: 600px;">
                     <table class="table align-middle mb-0 table-hover" id="invTable">
                         <thead class="table-dark">
                             <tr>
@@ -328,7 +345,7 @@ include '../../public/admin_layout_header.php';
                                 <th class="text-end" width="280">Thao Tác</th>
                             </tr>
                         </thead>
-                        <tbody id="invBody">
+                        <tbody id="invBody" style="opacity: 0; transition: opacity 0.3s ease;">
                             <?php foreach ($inv as $i):
                                 $total = $i['total_stock'];
                                 $min = (float)($i['min_stock'] ?? 0);
@@ -360,7 +377,7 @@ include '../../public/admin_layout_header.php';
                                     <td>
                                         <strong><?= htmlspecialchars($i['item_name']) ?></strong>
                                         <?php if ($i['is_active'] == 0): ?>
-                                            <span class="badge bg-secondary ms-1">Đã ẩn</span>
+                                            <span class="badge badge-ghost-secondary ms-1">Đã ẩn</span>
                                         <?php endif; ?>
                                         <div class="small text-muted">
                                             <?= htmlspecialchars($i['category']) ?> | Min: <?= $min ?>
@@ -376,7 +393,7 @@ include '../../public/admin_layout_header.php';
                                             if ($w['type'] == 'virtual') continue; // Ẩn kho ảo
                                             $qty = $i['stocks'][$w['id']] ?? 0;
                                             if ($qty > 0): $has_stock = true;
-                                                $badge_color = ($w['type'] == 'main') ? 'bg-primary' : (($w['type'] == 'kitchen') ? 'bg-danger' : 'bg-info text-dark');
+                                                $badge_color = in_array($w['id'], [1,2,3,4,5]) ? "badge-ghost-wh-".$w['id'] : "badge-ghost-wh-default";
                                         ?>
                                                 <div class="mb-1 wh-badge" data-wh-id="<?= $w['id'] ?>"><span class="badge <?= $badge_color ?> me-1"><?= $w['name'] ?></span> <span class="fw-bold"><?= $qty ?></span> <?= $i['unit_name'] ?></div>
                                         <?php endif;
@@ -395,8 +412,8 @@ include '../../public/admin_layout_header.php';
                                                 $wh_name = 'Không rõ kho';
                                                 foreach ($warehouses as $w) { if ($w['id'] == $ed['warehouse_id']) { $wh_name = $w['name']; break; } }
                                         ?>
-                                            <div class="mt-1 px-2 py-1 bg-warning text-dark rounded small" style="font-size:0.8rem; border-left: 3px solid #ff9800;">
-                                                <i class="fas fa-exclamation-triangle"></i> Sắp hết hạn: <b><?= (float)$ed['qty'] ?></b> <?= $i['unit_name'] ?> tại <i><?= $wh_name ?></i>
+                                            <div class="mt-1 px-2 py-1 rounded small" style="background:#f8f9fa; color:#495057; font-size:0.8rem; border:1px solid #e9ecef; border-left: 3px solid #ff9800;">
+                                                <i class="fas fa-exclamation-triangle text-warning"></i> Sắp hết hạn: <b><?= (float)$ed['qty'] ?></b> <?= $i['unit_name'] ?> tại <i><?= $wh_name ?></i>
                                             </div>
                                         <?php 
                                             endforeach;
@@ -408,8 +425,8 @@ include '../../public/admin_layout_header.php';
                                                 $wh_name = 'Không rõ kho';
                                                 foreach ($warehouses as $w) { if ($w['id'] == $ed['warehouse_id']) { $wh_name = $w['name']; break; } }
                                         ?>
-                                            <div class="mt-1 px-2 py-1 bg-danger text-white rounded small" style="font-size:0.8rem; border-left: 3px solid #dc3545;">
-                                                <i class="fas fa-times-circle"></i> Đã hết hạn: <b><?= (float)$ed['qty'] ?></b> <?= $i['unit_name'] ?> tại <i><?= $wh_name ?></i>
+                                            <div class="mt-1 px-2 py-1 rounded small" style="background:#f8f9fa; color:#495057; font-size:0.8rem; border:1px solid #e9ecef; border-left: 3px solid #dc3545;">
+                                                <i class="fas fa-times-circle text-danger"></i> Đã hết hạn: <b><?= (float)$ed['qty'] ?></b> <?= $i['unit_name'] ?> tại <i><?= $wh_name ?></i>
                                             </div>
                                         <?php 
                                             endforeach;
@@ -420,7 +437,7 @@ include '../../public/admin_layout_header.php';
                                         <?php if ($exp): ?>
                                             <?php if ($isExpired): ?>
                                                 <span class="text-danger fw-bold text-decoration-underline"><?= $exp ?></span>
-                                                <div class="badge bg-danger mt-1">Đã hết hạn</div>
+                                                <div class="badge badge-ghost-danger mt-1">Đã hết hạn</div>
                                             <?php elseif ($isExpiring): ?>
                                                 <span class="text-warning fw-bold"><?= $exp ?></span>
                                             <?php else: ?>
@@ -436,15 +453,15 @@ include '../../public/admin_layout_header.php';
                                             </button>
                                             <?php if ($i['is_active'] == 1): ?>
                                                 <!-- Nút chức năng đầy đủ -->
-                                                <button class="btn btn-sm btn-success" title="Nhập hàng" onclick="openImport(<?= $i['id'] ?>, '<?= addslashes($i['item_name']) ?>', '<?= $i['unit_name'] ?>')"><i class="fas fa-arrow-down"></i></button>
-                                                <button class="btn btn-sm btn-dark" title="Chuyển kho" onclick="openTransfer(<?= $i['id'] ?>, '<?= addslashes($i['item_name']) ?>', '<?= $i['unit_name'] ?>')"><i class="fas fa-exchange-alt"></i></button>
-                                                <button class="btn btn-sm btn-primary" title="Xuất dùng" onclick="openExport(<?= $i['id'] ?>, '<?= addslashes($i['item_name']) ?>', 'export')"><i class="fas fa-arrow-up"></i></button>
-                                                <button class="btn btn-sm btn-danger" title="Hủy (Hư hỏng/Hết hạn)" onclick="openExport(<?= $i['id'] ?>, '<?= addslashes($i['item_name']) ?>', 'loss')"><i class="fas fa-times-circle"></i></button>
+                                                <button class="btn btn-sm btn-outline-success" title="Nhập hàng" onclick="openImport(<?= $i['id'] ?>, '<?= addslashes($i['item_name']) ?>', '<?= $i['unit_name'] ?>')"><i class="fas fa-arrow-down"></i></button>
+                                                <button class="btn btn-sm btn-outline-dark" title="Chuyển kho" onclick="openTransfer(<?= $i['id'] ?>, '<?= addslashes($i['item_name']) ?>', '<?= $i['unit_name'] ?>')"><i class="fas fa-exchange-alt"></i></button>
+                                                <button class="btn btn-sm btn-outline-warning" title="Xuất dùng" onclick="openExport(<?= $i['id'] ?>, '<?= addslashes($i['item_name']) ?>', 'export')"><i class="fas fa-arrow-up"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger" title="Hủy (Hư hỏng/Hết hạn)" onclick="openExport(<?= $i['id'] ?>, '<?= addslashes($i['item_name']) ?>', 'loss')"><i class="fas fa-times-circle"></i></button>
                                                 <!-- Nút Ẩn -->
-                                                <a href="InventoryController.php?toggle_id=<?= $i['id'] ?>" class="btn btn-sm btn-secondary" title="Ẩn/Ngưng sử dụng"><i class="fas fa-eye-slash"></i></a>
+                                                <a href="InventoryController.php?toggle_id=<?= $i['id'] ?>" class="btn btn-sm btn-outline-secondary" title="Ẩn/Ngưng sử dụng"><i class="fas fa-eye-slash"></i></a>
                                             <?php else: ?>
                                                 <!-- Đã Ẩn -> Chỉ hiện nút khôi phục -->
-                                                <a href="InventoryController.php?toggle_id=<?= $i['id'] ?>" class="btn btn-sm btn-info text-white" title="Mở lại sử dụng"><i class="fas fa-eye"></i></a>
+                                                <a href="InventoryController.php?toggle_id=<?= $i['id'] ?>" class="btn btn-sm btn-dark fw-bold text-white shadow-sm " title="Mở lại sử dụng"><i class="fas fa-eye"></i></a>
                                             <?php endif; ?>
 
                                             <!-- Nút Sửa và Xóa -->
@@ -471,7 +488,7 @@ include '../../public/admin_layout_header.php';
                     <h4 class="fw-bold m-0 text-danger"><i class="fas fa-cart-plus me-2"></i>Cần Đặt Hàng</h4>
                     <div class="d-flex gap-2">
                         <button class="btn btn-warning btn-sm fw-bold shadow-sm" onclick="switchTab('po'); setTimeout(() => { const m = new bootstrap.Modal(document.getElementById('modalCreatePO')); m.show(); document.getElementById('modalCreatePO').addEventListener('shown.bs.modal', function () { loadSuggestions({target: document.getElementById('modalCreatePO')}); }, { once: true }); }, 300);"><i class="fas fa-magic me-1"></i>Tạo PO tự động (Tất cả)</button>
-                        <button class="btn btn-danger btn-sm fw-bold shadow-sm" onclick="switchTab('po')"><i class="fas fa-arrow-right me-1"></i>Đến trang PO</button>
+                        <button class="btn btn-outline-danger btn-sm fw-bold shadow-sm" onclick="switchTab('po')"><i class="fas fa-arrow-right me-1"></i>Đến trang PO</button>
                     </div>
                 </div>
                 <div class="card shadow-sm border-0 overflow-hidden">
@@ -490,7 +507,7 @@ include '../../public/admin_layout_header.php';
                                     <td class="text-danger fw-bold"><?= (float)$r['total_stock'] ?> / <?= (float)$r['min_stock'] ?> <?= $r['unit_name'] ?></td>
                                     <td>
                                         <?php $suggest_qty = number_format(($r['min_stock'] - $r['total_stock']) + ($r['min_stock'] * 0.5), 1, '.', ''); ?>
-                                        <span class="badge bg-success fs-6 me-2">+ <?= $suggest_qty ?> <?= $r['unit_name'] ?></span>
+                                        <span class="badge badge-ghost-success fs-6 me-2">+ <?= $suggest_qty ?> <?= $r['unit_name'] ?></span>
                                         <button class="btn btn-sm btn-outline-primary fw-bold shadow-sm" onclick="switchTab('po'); setTimeout(() => { const m = new bootstrap.Modal(document.getElementById('modalCreatePO')); m.show(); document.getElementById('modalCreatePO').addEventListener('shown.bs.modal', function () { const firstRow = $('#poBody tr').first(); firstRow.find('.item-select').val('<?= $r['id'] ?>').trigger('change'); firstRow.find('.qty-input').val('<?= $suggest_qty ?>').trigger('input'); }, { once: true }); }, 300);">
                                             <i class="fas fa-file-invoice-dollar me-1"></i> Đặt hàng
                                         </button>
@@ -588,7 +605,7 @@ include '../../public/admin_layout_header.php';
                                     <td>
                                         <span class="badge bg-primary"><?= $t['from_warehouse_name'] ?></span>
                                         <i class="fas fa-long-arrow-alt-right mx-1"></i>
-                                        <span class="badge bg-danger"><?= $t['to_warehouse_name'] ?></span>
+                                        <span class="badge badge-ghost-danger"><?= $t['to_warehouse_name'] ?></span>
                                     </td>
                                     <td class="small text-truncate" style="max-width: 250px;">
                                         <?= htmlspecialchars($t['items_summary']) ?>
@@ -596,7 +613,7 @@ include '../../public/admin_layout_header.php';
                                     <td><span class="badge <?= $status_badge ?>"><?= $status_text ?></span></td>
                                     <td class="text-end">
                                         <?php if ($t['status'] === 'pending'): ?>
-                                            <button class="btn btn-sm btn-success fw-bold" onclick="approveTransfer(<?= $t['id'] ?>)">Duyệt & Xuất</button>
+                                            <button class="btn btn-sm btn-outline-success fw-bold" onclick="approveTransfer(<?= $t['id'] ?>)">Duyệt & Xuất</button>
                                             <button class="btn btn-sm btn-outline-danger" onclick="cancelTransfer(<?= $t['id'] ?>)">Hủy</button>
                                         <?php else: ?>
                                             <small class="text-muted">Bởi: <?= $t['approved_by'] ?: $t['performed_by'] ?></small>
@@ -661,7 +678,7 @@ include '../../public/admin_layout_header.php';
                                         'import'            => ['bg-success',          'fas fa-arrow-down',    'Nhập kho'],
                                         'export'            => ['bg-primary',          'fas fa-arrow-up',      'Xuất dùng'],
                                         'loss'              => ['bg-danger',           'fas fa-times-circle',  'Hủy/Hao hụt'],
-                                        'audit_adjust_up'   => ['bg-purple text-white','fas fa-plus-circle',   'Kiểm kê (+)'],
+                                        'audit_adjust_up'   => ['bg-purple ','fas fa-plus-circle',   'Kiểm kê (+)'],
                                         'audit_adjust_down' => ['bg-warning text-dark','fas fa-minus-circle',  'Kiểm kê (-)'],
                                     ];
                                     $type_key = $h['type'];
@@ -699,7 +716,7 @@ include '../../public/admin_layout_header.php';
                         </div>
                     <?php endforeach; ?>
                     <div class="col-md-3">
-                        <div class="card border-0 shadow-sm bg-primary text-white p-3 h-100">
+                        <div class="card border-0 shadow-sm bg-primary  p-3 h-100">
                             <div class="small text-uppercase fw-bold mb-1">Tổng Tài Sản Kho</div>
                             <div class="h4 fw-bold mb-0"><?= number_format($grand_total_value, 0) ?>đ</div>
                             <div class="small opacity-75">Toàn bộ hệ thống</div>
@@ -715,7 +732,7 @@ include '../../public/admin_layout_header.php';
                                     <th rowspan="2" class="align-middle">Nguyên Liệu</th>
                                     <th rowspan="2" class="align-middle">Đơn Vị</th>
                                     <th colspan="<?= count($warehouses) ?>">Số lượng tại từng kho</th>
-                                    <th rowspan="2" class="align-middle bg-dark text-white">Tổng Tồn</th>
+                                    <th rowspan="2" class="align-middle bg-dark ">Tổng Tồn</th>
                                 </tr>
                                 <tr>
                                     <?php foreach ($warehouses as $w): ?>
@@ -784,10 +801,10 @@ include '../../public/admin_layout_header.php';
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h3 class="fw-bold text-uppercase m-0"><i class="fas fa-file-invoice-dollar me-2 text-primary"></i>Phiếu Đặt Hàng (PO)</h3>
                     <div>
-                        <a href="POController.php?export_excel=1" class="btn btn-success shadow-sm fw-bold px-3 me-2">
+                        <a href="POController.php?export_excel=1" class="btn btn-outline-success shadow-sm fw-bold px-3 me-2">
                             <i class="fas fa-file-excel me-2"></i>XUẤT EXCEL (KÈM HSD)
                         </a>
-                        <button class="btn btn-primary shadow-sm fw-bold px-4" data-bs-toggle="modal" data-bs-target="#modalCreatePO">
+                        <button class="btn btn-dark fw-bold text-white shadow-sm shadow-sm fw-bold px-4" data-bs-toggle="modal" data-bs-target="#modalCreatePO">
                             <i class="fas fa-plus me-2"></i>TẠO PHIẾU NHẬP
                         </button>
                     </div>
@@ -821,17 +838,17 @@ include '../../public/admin_layout_header.php';
                                 <td class="text-end text-danger fw-bold fs-6"><?= number_format($p['total_amount']) ?> đ</td>
                                 <td>
                                     <?php if($p['status'] == 'pending'): ?>
-                                        <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>Chờ nhận</span>
+                                        <span class="badge badge-ghost-warning"><i class="fas fa-clock me-1"></i>Chờ nhận</span>
                                     <?php elseif($p['status'] == 'completed'): ?>
-                                        <span class="badge bg-success"><i class="fas fa-check me-1"></i>Đã nhập kho</span>
+                                        <span class="badge badge-ghost-success"><i class="fas fa-check me-1"></i>Đã nhập kho</span>
                                     <?php elseif($p['status'] == 'cancelled'): ?>
-                                        <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Đã hủy</span>
+                                        <span class="badge badge-ghost-danger"><i class="fas fa-times me-1"></i>Đã hủy</span>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-end">
                                     <button class="btn btn-sm btn-light border fw-bold me-1" onclick="viewPO(<?= $p['id'] ?>, '<?= htmlspecialchars($p['po_code']) ?>')">Xem</button>
                                     <?php if($p['status'] == 'pending'): ?>
-                                        <button class="btn btn-sm btn-success fw-bold me-1" onclick="openReceivePO(<?= $p['id'] ?>, '<?= htmlspecialchars($p['po_code']) ?>')">
+                                        <button class="btn btn-sm btn-outline-success fw-bold me-1" onclick="openReceivePO(<?= $p['id'] ?>, '<?= htmlspecialchars($p['po_code']) ?>')">
                                             <i class="fas fa-arrow-down me-1"></i>Nhận hàng
                                         </button>
                                         <button class="btn btn-sm btn-outline-danger fw-bold" onclick="cancelPO(<?= $p['id'] ?>, '<?= htmlspecialchars($p['po_code']) ?>')">
@@ -861,7 +878,7 @@ include '../../public/admin_layout_header.php';
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <form class="modal-content border-0 shadow-lg" method="POST" action="POController.php" style="border-radius:20px;overflow:hidden;">
             <input type="hidden" name="create_po" value="1">
-            <div class="modal-header bg-dark text-white py-3 px-4">
+            <div class="modal-header bg-dark  py-3 px-4">
                 <h5 class="modal-title mb-0" style="font-family:'Playfair Display',serif;">
                     <i class="fas fa-file-invoice-dollar me-2 text-warning"></i> TẠO PHIẾU ĐẶT HÀNG MỚI
                 </h5>
@@ -932,13 +949,13 @@ include '../../public/admin_layout_header.php';
                     <button type="button" class="btn btn-sm btn-outline-warning rounded-pill px-3 fw-bold" id="btnAddRow">
                         <i class="fas fa-plus me-1"></i>Thêm dòng hàng
                     </button>
-                    <button type="button" class="btn btn-sm btn-info text-white rounded-pill px-3 fw-bold shadow-sm" onclick="loadSuggestions()">
+                    <button type="button" class="btn btn-sm btn-dark fw-bold text-white shadow-sm  rounded-pill px-3 fw-bold shadow-sm" onclick="loadSuggestions()">
                         <i class="fas fa-lightbulb me-1"></i>Gợi ý từ tồn kho thấp
                     </button>
                 </div>
             </div>
             <div class="modal-footer border-0 bg-white p-4 pt-0">
-                <button type="submit" class="btn btn-warning w-100 py-3 rounded-pill fw-bold text-white shadow-sm" style="background:#cda45e;border:none;">
+                <button type="submit" class="btn btn-warning w-100 py-3 rounded-pill fw-bold  shadow-sm" style="background:#cda45e;border:none;">
                     <i class="fas fa-check-circle me-2"></i> HOÀN TẤT & LƯU PHIẾU ĐẶT HÀNG
                 </button>
             </div>
@@ -949,7 +966,7 @@ include '../../public/admin_layout_header.php';
 <div class="modal fade" id="modalViewPO" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg" style="border-radius:20px;overflow:hidden;">
-            <div class="modal-header bg-dark text-white py-3 px-4">
+            <div class="modal-header bg-dark  py-3 px-4">
                 <h5 class="modal-title fw-bold" style="font-family:'Playfair Display',serif;"><i class="fas fa-info-circle me-2 text-warning"></i>CHI TIẾT PHIẾU: <span id="view-po-code" class="text-warning"></span></h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -976,9 +993,9 @@ include '../../public/admin_layout_header.php';
         <form class="modal-content border-0 shadow-lg" method="POST" action="POController.php" style="border-radius:20px;overflow:hidden;" enctype="multipart/form-data">
             <input type="hidden" name="receive_po_final" value="1">
             <input type="hidden" name="po_id" id="receive-po-id">
-            <div class="modal-header bg-success text-white py-3 px-4">
+            <div class="modal-header bg-success  py-3 px-4">
                 <h5 class="modal-title fw-bold" style="font-family:'Playfair Display',serif;">
-                    <i class="fas fa-check-double me-2"></i>NHẬN HÀNG VÀ NHẬP KHO: <span id="receive-po-code" class="text-white"></span>
+                    <i class="fas fa-check-double me-2"></i>NHẬN HÀNG VÀ NHẬP KHO: <span id="receive-po-code" class=""></span>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -1010,7 +1027,7 @@ include '../../public/admin_layout_header.php';
                 </div>
             </div>
             <div class="modal-footer bg-light border-0 p-3">
-                <button type="submit" class="btn btn-success px-5 py-2 fw-bold rounded-pill">
+                <button type="submit" class="btn btn-outline-success px-5 py-2 fw-bold rounded-pill">
                     <i class="fas fa-save me-2"></i>XÁC NHẬN NHẬP KHO
                 </button>
             </div>
@@ -1022,7 +1039,7 @@ include '../../public/admin_layout_header.php';
 <div class="modal fade" id="modalQuickAddIng" tabindex="-1" style="z-index: 1060;">
     <div class="modal-dialog modal-sm modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-primary text-white py-2 px-3">
+            <div class="modal-header bg-primary  py-2 px-3">
                 <h6 class="modal-title mb-0">Thêm nguyên liệu mới</h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -1043,7 +1060,7 @@ include '../../public/admin_layout_header.php';
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <button type="button" class="btn btn-primary btn-sm w-100 fw-bold" id="btnSaveQuickIng">LƯU & CHỌN</button>
+                <button type="button" class="btn btn-dark fw-bold text-white shadow-sm btn-sm w-100 fw-bold" id="btnSaveQuickIng">LƯU & CHỌN</button>
             </div>
         </div>
     </div>
@@ -1072,7 +1089,7 @@ include '../../public/admin_layout_header.php';
                     <label class="small fw-bold">Chất gây dị ứng (FDA Standard)</label>
                     <div class="d-flex flex-wrap gap-2 p-2 bg-light rounded" style="border: 1px solid #f0f0f0;">
                         <?php 
-                        $algopts = ['Sữa', 'Trứng', 'Đậu phộng', 'Hạt cây', 'Đậu nành', 'Lúa mì / Gluten', 'Cá', 'Động vật có vỏ', 'Động vật thân mềm', 'Mè / Vừng', 'Mù tạt', 'Cần tây', 'Sulphites', 'Đậu Lupin'];
+                        $algopts = ['Sữa', 'Trứng', 'Đậu phộng', 'Hạt cây', 'Đậu nành', 'Lúa mì / Gluten', 'Cá', 'Hải sản có vỏ', 'Động vật thân mềm', 'Mè / Vừng', 'Mù tạt', 'Quả hạch (Hạt quả hạch Brazil, Hạt hạnh nhân, Hạt mắc ca, Hạt điều, Hạt dẻ cười, Hạt óc chó, Hạt thông)', 'Sulphites', 'Đậu Lupin'];
                         foreach($algopts as $alg): ?>
                         <label class="d-flex align-items-center gap-1 m-0" style="cursor:pointer; font-size:12px; width:30%;">
                             <input type="checkbox" name="allergens[]" class="inv-alg-chk" value="<?= $alg ?>" style="accent-color:#d64545;"> <?= $alg ?>
@@ -1092,7 +1109,7 @@ include '../../public/admin_layout_header.php';
         <form class="modal-content shadow border-0" id="form-import" action="InventoryController.php">
             <input type="hidden" name="action" value="import">
             <input type="hidden" name="item_id" id="imp-id">
-            <div class="modal-header bg-success text-white">
+            <div class="modal-header bg-success ">
                 <h5>Nhập: <span id="imp-name"></span></h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
@@ -1103,7 +1120,7 @@ include '../../public/admin_layout_header.php';
                 </div>
                 <div class="mb-0"><label class="fw-bold small">Hạn sử dụng</label><input type="date" name="expiry_date" class="form-control"></div>
             </div>
-            <div class="modal-footer"><button type="submit" class="btn btn-success w-100 fw-bold">XÁC NHẬN</button></div>
+            <div class="modal-footer"><button type="submit" class="btn btn-outline-success w-100 fw-bold">XÁC NHẬN</button></div>
         </form>
     </div>
 </div>
@@ -1114,12 +1131,12 @@ include '../../public/admin_layout_header.php';
         <form class="modal-content shadow border-0" id="form-export" action="InventoryController.php">
             <input type="hidden" name="action" id="exp-action">
             <input type="hidden" name="item_id" id="exp-id">
-            <div class="modal-header text-white" id="modalExportHeader">
+            <div class="modal-header " id="modalExportHeader">
                 <h5>Xử lý: <span id="exp-name"></span></h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4 text-center">
-                <label class="fw-bold mb-2 text-start w-100">Kho thực hiện xuất/hủy:</label>
+                <label id="exp-lbl" class="fw-bold mb-2 text-start w-100">Kho thực hiện xuất:</label>
                 <select name="warehouse_id" class="form-select mb-3" required>
                     <option value="" disabled selected>-- Chọn Kho --</option>
                     <?php foreach ($warehouses as $w): ?><option value="<?= $w['id'] ?>"><?= $w['name'] ?></option><?php endforeach; ?>
@@ -1128,7 +1145,7 @@ include '../../public/admin_layout_header.php';
                 <input type="number" name="quantity" step="0.01" min="0.01" class="form-control form-control-lg text-center" required>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn w-100 fw-bold text-white" id="modalExportSubmitBtn">XÁC NHẬN</button>
+                <button type="submit" class="btn w-100 fw-bold " id="modalExportSubmitBtn">XÁC NHẬN</button>
             </div>
         </form>
     </div>
@@ -1140,7 +1157,7 @@ include '../../public/admin_layout_header.php';
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <form class="modal-content shadow border-0" id="form-transfer" action="InventoryController.php">
             <input type="hidden" name="action" value="transfer_multi">
-            <div class="modal-header bg-dark text-white">
+            <div class="modal-header bg-dark ">
                 <h5><i class="fas fa-exchange-alt me-2" style="pointer-events:none"></i>Tạo Lệnh Chuyển Kho</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -1222,7 +1239,7 @@ include '../../public/admin_layout_header.php';
         <form class="modal-content border-0 shadow" method="POST" action="InventoryController.php" enctype="multipart/form-data">
             <input type="hidden" name="save_supplier" value="1">
             <input type="hidden" name="supplier_id" id="s-id">
-            <div class="modal-header bg-dark text-white">
+            <div class="modal-header bg-dark ">
                 <h5>Nhà Cung Cấp</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
@@ -1244,7 +1261,7 @@ include '../../public/admin_layout_header.php';
                     <input type="date" name="s_atvstp_expiry" id="s-atvstp-expiry" class="form-control form-control-sm">
                 </div>
             </div>
-            <div class="modal-footer"><button type="submit" class="btn btn-primary w-100 fw-bold">LƯU NCC</button></div>
+            <div class="modal-footer"><button type="submit" class="btn btn-dark fw-bold text-white shadow-sm w-100 fw-bold">LƯU NCC</button></div>
         </form>
     </div>
 </div>
@@ -1253,7 +1270,7 @@ include '../../public/admin_layout_header.php';
 <div class="modal fade" id="modalTags" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content shadow border-0">
-            <div class="modal-header bg-secondary text-white">
+            <div class="modal-header bg-secondary ">
                 <h5 id="tagTitle">Quản Lý</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
@@ -1262,7 +1279,7 @@ include '../../public/admin_layout_header.php';
                     <input type="hidden" name="tag_type" id="tagTypeInput">
                     <input type="hidden" name="tag_action" value="add">
                     <input type="text" name="tag_name" class="form-control form-control-sm" placeholder="Tên mới..." required>
-                    <button type="submit" class="btn btn-primary btn-sm px-3">Thêm</button>
+                    <button type="submit" class="btn btn-dark fw-bold text-white shadow-sm btn-sm px-3">Thêm</button>
                 </form>
                 <div id="tagList" class="list-group list-group-flush border-top"></div>
             </div>
@@ -1282,7 +1299,7 @@ include '../../public/admin_layout_header.php';
                 <h6 class="m-0">Sửa tên</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-3"><input type="text" name="tag_name" id="editTagName" class="form-control" required></div>
-            <div class="modal-footer p-2"><button type="submit" class="btn btn-primary btn-sm w-100">Lưu</button></div>
+            <div class="modal-footer p-2"><button type="submit" class="btn btn-dark fw-bold text-white shadow-sm btn-sm w-100">Lưu</button></div>
         </form>
     </div>
 </div>
@@ -1291,7 +1308,7 @@ include '../../public/admin_layout_header.php';
 <div class="modal fade" id="modalBatchDetails" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg" style="border-radius:15px; overflow:hidden;">
-            <div class="modal-header bg-info text-white py-3">
+            <div class="modal-header bg-info  py-3">
                 <h5 class="modal-title fw-bold"><i class="fas fa-layer-group me-2"></i>Chi tiết các lô hàng: <span id="batch-item-name"></span></h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -1393,12 +1410,12 @@ include '../../public/admin_layout_header.php';
                 } else {
                     const today = new Date();
                     res.data.forEach(b => {
-                        let hsdClass = '', statusText = '<span class="badge bg-success">Ổn định</span>';
+                        let hsdClass = '', statusText = '<span class="badge badge-ghost-success">Ổn định</span>';
                         if(b.expiry_date) {
                             const exp = new Date(b.expiry_date);
                             const diff = (exp - today) / (1000 * 60 * 60 * 24);
-                            if(diff < 0) { hsdClass = 'text-danger fw-bold'; statusText = '<span class="badge bg-danger">Hết hạn</span>'; }
-                            else if(diff <= 7) { hsdClass = 'text-warning fw-bold'; statusText = '<span class="badge bg-warning text-dark">Sắp hết</span>'; }
+                            if(diff < 0) { hsdClass = 'text-danger fw-bold'; statusText = '<span class="badge badge-ghost-danger">Hết hạn</span>'; }
+                            else if(diff <= 7) { hsdClass = 'text-warning fw-bold'; statusText = '<span class="badge badge-ghost-warning">Sắp hết</span>'; }
                         }
                         let tempText = b.receiving_temperature ? b.receiving_temperature + '°C' : '-';
                         html += `<tr><td class="ps-4">#${b.batch_code || 'N/A'}</td><td>${b.warehouse_name}</td><td class="text-center fw-bold">${parseFloat(b.quantity)}</td><td class="text-center text-info">${tempText}</td><td class="text-center ${hsdClass}">${b.expiry_date || '-'}</td><td class="text-center">${statusText}</td></tr>`;
@@ -1619,10 +1636,12 @@ include '../../public/admin_layout_header.php';
 
         if (type === 'loss') {
             $('#modalExportHeader').removeClass('bg-primary').addClass('bg-danger');
-            $('#modalExportSubmitBtn').removeClass('btn-primary').addClass('btn-danger').text('XÁC NHẬN HỦY');
+            $('#modalExportSubmitBtn').removeClass('btn-dark fw-bold text-white shadow-sm').addClass('btn-outline-danger').text('XÁC NHẬN HỦY');
+            $('#exp-lbl').text('Kho thực hiện hủy:');
         } else {
             $('#modalExportHeader').removeClass('bg-danger').addClass('bg-primary');
-            $('#modalExportSubmitBtn').removeClass('btn-danger').addClass('btn-primary').text('XÁC NHẬN XUẤT');
+            $('#modalExportSubmitBtn').removeClass('btn-outline-danger').addClass('btn-dark fw-bold text-white shadow-sm').text('XÁC NHẬN XUẤT');
+            $('#exp-lbl').text('Kho thực hiện xuất:');
         }
         new bootstrap.Modal(document.getElementById('modalExport')).show();
     }
@@ -1705,30 +1724,31 @@ include '../../public/admin_layout_header.php';
         });
     });
     // ================= LỌC & PHÂN TRANG =================
-    let activeWarehouse = 'all'; // 'all' hoặc ID kho cụ thể
+    let activeWarehouse = sessionStorage.getItem('activeInventoryWarehouse') || 'all'; // 'all' hoặc ID kho cụ thể
 
     // Xử lý click nút filter theo kho
     $(document).on('click', '.wh-filter-btn', function () {
         activeWarehouse = $(this).data('wh').toString();
+        sessionStorage.setItem('activeInventoryWarehouse', activeWarehouse);
         // Cập nhật active state
-        $('.wh-filter-btn').removeClass('active btn-dark btn-primary btn-danger btn-info btn-warning btn-secondary')
-                           .addClass('btn-outline-secondary').css('color', '');
+        $('.wh-filter-btn').removeClass('active active-all active-main active-kitchen active-bar active-cold active-supplies active-virtual btn-dark btn-outline-danger btn-warning fw-bold text-white shadow-sm')
+                           .addClass('btn-outline-secondary');
         
         $(this).removeClass('btn-outline-secondary').addClass('active');
         
         if (activeWarehouse === 'all') {
-            $(this).addClass('btn-dark');
+            $(this).addClass('active-all');
         } else {
             const type = $(this).data('wh-type');
             const colorMap = { 
-                main: 'btn-primary', 
-                kitchen: 'btn-danger', 
-                bar: 'btn-info', 
-                cold: 'btn-primary',
-                supplies: 'btn-warning',
-                virtual: 'btn-secondary'
+                main: 'active-main', 
+                kitchen: 'active-kitchen', 
+                bar: 'active-bar', 
+                cold: 'active-cold',
+                supplies: 'active-supplies',
+                virtual: 'active-virtual'
             };
-            $(this).addClass(colorMap[type] || 'btn-secondary');
+            $(this).addClass(colorMap[type] || 'active-virtual');
         }
 
         if (activeWarehouse === '7') {
@@ -1821,7 +1841,7 @@ include '../../public/admin_layout_header.php';
         let html = `<button class="btn btn-outline-secondary" onclick="goPage(${currentPage-1})" ${currentPage<=1?'disabled':''}>‹</button>`;
         for (let p = 1; p <= pgs; p++) {
             if (pgs <= 7 || Math.abs(p - currentPage) <= 1 || p === 1 || p === pgs) {
-                html += `<button class="btn ${p===currentPage?'btn-primary':'btn-outline-secondary'}" onclick="goPage(${p})">${p}</button>`;
+                html += `<button class="btn ${p===currentPage?'btn-dark fw-bold text-white shadow-sm':'btn-outline-secondary'}" onclick="goPage(${p})">${p}</button>`;
             } else if (Math.abs(p - currentPage) === 2) {
                 html += `<button class="btn btn-outline-secondary" disabled>…</button>`;
             }
@@ -2137,7 +2157,7 @@ $(document).ready(function() {
 
                 // Nếu có file giấy kiểm dịch, thêm nút vào header
                 if (res.batch_cert_file) {
-                    const btn = `<a href="../../uploads/po_certs/${res.batch_cert_file}" target="_blank" id="view-po-cert-btn" class="btn btn-sm btn-danger ms-3 fw-bold shadow-sm"><i class="fas fa-file-pdf me-1"></i>Xem Chứng Từ Lô Hàng</a>`;
+                    const btn = `<a href="../../uploads/po_certs/${res.batch_cert_file}" target="_blank" id="view-po-cert-btn" class="btn btn-sm btn-outline-danger ms-3 fw-bold shadow-sm"><i class="fas fa-file-pdf me-1"></i>Xem Chứng Từ Lô Hàng</a>`;
                     $('#view-po-code').after(btn);
                 }
                 
@@ -2257,8 +2277,22 @@ $(document).ready(function() {
         const tab = new URLSearchParams(window.location.search).get('tab');
         if (tab) switchTab(tab);
 
-        // Kích hoạt phân trang lần đầu
-        document.querySelectorAll('#invBody .inv-row').forEach(r => r.setAttribute('data-visible', '1'));
-        renderPagination();
+        if (activeWarehouse !== 'all') {
+            const btn = $('.wh-filter-btn[data-wh="' + activeWarehouse + '"]');
+            if(btn.length) {
+                btn.trigger('click');
+            } else {
+                $('.wh-filter-btn[data-wh="all"]').trigger('click');
+            }
+        } else {
+            // Kích hoạt phân trang lần đầu
+            document.querySelectorAll('#invBody .inv-row').forEach(r => r.setAttribute('data-visible', '1'));
+            renderPagination();
+        }
+
+        setTimeout(() => {
+            const body = document.getElementById('invBody');
+            if(body) body.style.opacity = '1';
+        }, 50);
     });
 </script>

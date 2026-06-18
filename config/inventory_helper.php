@@ -29,7 +29,12 @@ function inventory_normalize_unit_string($unit) {
 function inventory_unit_meta($unit) {
     $u = inventory_normalize_unit_string($unit);
     // Cấp số nhân mặc định: 1g = 1ml = 1, 1kg = 1l = 1000
-    $mass_volume = ['g' => 1.0, 'kg' => 1000.0, 'ml' => 1.0, 'l' => 1000.0];
+    // Quy ước ngầm để có thể trừ kho từ chai/lon: 1 chai = 750ml, 1 lon = 330ml
+    $mass_volume = [
+        'g' => 1.0, 'kg' => 1000.0, 
+        'ml' => 1.0, 'l' => 1000.0, 
+        'chai' => 750.0, 'lon' => 330.0
+    ];
     
     if (isset($mass_volume[$u])) {
         return ['kind' => 'mass_volume', 'mul' => $mass_volume[$u]];

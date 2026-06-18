@@ -27,15 +27,15 @@ include __DIR__ . '/layouts/header.php';
 
 <style>
 /* ===== CHEF PAGE — DARK LUXURY STYLE ===== */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
 
 :root {
-    --gold:       #cda45e;
-    --gold-light: #e2b97a;
+    --accent-burgundy:       #A88746;
+    --accent-burgundy-light: #e2b97a;
     --dark:       #1a1a1a;
     --dark2:      #242424;
     --dark3:      #2e2e2e;
-    --cream:      #f8f3ec;
+    --bg-smoke:      #f8f3ec;
     --text-light: #c8b89a;
     --text-muted: #888;
 }
@@ -43,7 +43,7 @@ include __DIR__ . '/layouts/header.php';
 .chefs-page {
     background: var(--dark);
     min-height: 100vh;
-    font-family: 'Jost', sans-serif;
+    font-family: 'Open Sans', sans-serif;
 }
 
 /* ---- HERO BANNER ---- */
@@ -75,30 +75,30 @@ include __DIR__ . '/layouts/header.php';
     display: block;
     height: 1px;
     width: 60px;
-    background: linear-gradient(to right, transparent, var(--gold));
+    background: linear-gradient(to right, transparent, var(--accent-burgundy));
 }
 
 .chefs-hero .ornament span:last-child {
-    background: linear-gradient(to left, transparent, var(--gold));
+    background: linear-gradient(to left, transparent, var(--accent-burgundy));
 }
 
 .chefs-hero .ornament i {
-    color: var(--gold);
+    color: var(--accent-burgundy);
     font-size: 1.1rem;
 }
 
 .chefs-hero .subtitle {
-    font-family: 'Jost', sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-size: .8rem;
     font-weight: 600;
     letter-spacing: .35em;
     text-transform: uppercase;
-    color: var(--gold);
+    color: var(--accent-burgundy);
     margin-bottom: 16px;
 }
 
 .chefs-hero h1 {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: clamp(2.8rem, 6vw, 5rem);
     font-weight: 600;
     color: #fff;
@@ -108,7 +108,7 @@ include __DIR__ . '/layouts/header.php';
 
 .chefs-hero h1 em {
     font-style: italic;
-    color: var(--gold-light);
+    color: var(--accent-burgundy-light);
 }
 
 .chefs-hero .lead-text {
@@ -175,7 +175,7 @@ include __DIR__ . '/layouts/header.php';
     position: absolute;
     top: 16px;
     right: -30px;
-    background: var(--gold);
+    background: var(--accent-burgundy);
     color: #fff;
     font-size: .65rem;
     font-weight: 700;
@@ -251,8 +251,8 @@ include __DIR__ . '/layouts/header.php';
 }
 
 .chef-socials a:hover {
-    background: var(--gold);
-    border-color: var(--gold);
+    background: var(--accent-burgundy);
+    border-color: var(--accent-burgundy);
     transform: translateY(-2px);
 }
 
@@ -268,7 +268,7 @@ include __DIR__ . '/layouts/header.php';
 
 .chef-img-placeholder i {
     font-size: 4rem;
-    color: var(--gold);
+    color: var(--accent-burgundy);
     opacity: .5;
 }
 
@@ -283,7 +283,7 @@ include __DIR__ . '/layouts/header.php';
     font-weight: 600;
     letter-spacing: .18em;
     text-transform: uppercase;
-    color: var(--gold);
+    color: var(--accent-burgundy);
     margin-bottom: 8px;
     border: 1px solid rgba(205,164,94,.4);
     padding: 3px 10px;
@@ -291,7 +291,7 @@ include __DIR__ . '/layouts/header.php';
 }
 
 .chef-name {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 1.65rem;
     font-weight: 600;
     color: #fff;
@@ -318,7 +318,7 @@ include __DIR__ . '/layouts/header.php';
 }
 
 .chef-meta .meta-item i {
-    color: var(--gold);
+    color: var(--accent-burgundy);
     font-size: .75rem;
 }
 
@@ -343,14 +343,14 @@ include __DIR__ . '/layouts/header.php';
 
 /* Quote */
 .chef-quote {
-    border-left: 2px solid var(--gold);
+    border-left: 2px solid var(--accent-burgundy);
     padding: 8px 14px;
     background: rgba(205,164,94,.06);
     border-radius: 0 3px 3px 0;
 }
 
 .chef-quote p {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Montserrat', sans-serif;
     font-style: italic;
     font-size: 1rem;
     color: var(--text-light);
@@ -376,7 +376,7 @@ include __DIR__ . '/layouts/header.php';
 }
 
 .chefs-empty p {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 1.4rem;
     font-style: italic;
 }

@@ -107,7 +107,7 @@ if (!empty($logo_path)) {
 <head>
 
     <meta charset="utf-8">
-
+    <meta name="google" content="notranslate">
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0">
@@ -118,7 +118,7 @@ if (!empty($logo_path)) {
 
     <!-- GOOGLE FONT -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
         rel="stylesheet">
 
     <!-- BOOTSTRAP -->
@@ -134,13 +134,13 @@ if (!empty($logo_path)) {
     <style>
 
         :root {
-            --primary-color: #cda45e;
+            --primary-color: #A88746;
         }
 
         body {
             margin: 0;
             padding: 0 !important;
-            font-family: "Poppins", sans-serif;
+            font-family: 'Open Sans', sans-serif;
         }
 
         /* =======================
@@ -422,8 +422,8 @@ if (!empty($logo_path)) {
         }
 
         .btn-book-outside {
-            background-color: #F6F2E9; /* Cream */
-            color: #4F5B3A; /* Olive */
+            background-color: #1A1A1D; /* Cream */
+            color: #A88746; /* Olive */
             padding: 8px 16px;
             font-family: "Montserrat", sans-serif;
             font-size: 14px;
@@ -432,13 +432,13 @@ if (!empty($logo_path)) {
             text-transform: uppercase;
             text-decoration: none;
             border-radius: 0; /* Sharp corners */
-            border: 1px solid #4F5B3A;
+            border: 1px solid #A88746;
             transition: all 0.3s ease;
         }
         
         .btn-book-outside:hover {
-            background-color: #4F5B3A;
-            color: #F6F2E9;
+            background-color: #A88746;
+            color: #1A1A1D;
         }
 
         .oriental-panel {
@@ -447,8 +447,8 @@ if (!empty($logo_path)) {
             right: 0;
             width: 320px;
             min-height: auto;
-            background-color: #F6F2E9; /* Cream */
-            border: 1px solid #4F5B3A; /* Olive border */
+            background-color: #1A1A1D; /* Cream */
+            border: 1px solid #A88746; /* Olive border */
             padding: 30px 20px;
             z-index: 10001;
             opacity: 0;
@@ -471,12 +471,12 @@ if (!empty($logo_path)) {
 
         .oriental-item {
             text-decoration: none;
-            color: #4F5B3A; /* Olive */
+            color: #A88746; /* Olive */
             font-family: "Montserrat", sans-serif;
             font-size: 14px;
             font-weight: 600;
             padding: 15px 20px;
-            border-bottom: 1px solid rgba(79, 91, 58, 0.15); /* Faint olive line */
+            border-bottom: 1px solid rgba(168, 135, 70, 0.15); /* Faint olive line */
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
@@ -490,13 +490,13 @@ if (!empty($logo_path)) {
         }
 
         .oriental-item:hover {
-            color: #C9A66B; /* Gold */
+            color: #A88746; /* Gold */
             padding-left: 25px;
-            background-color: rgba(201, 166, 107, 0.05); /* Slight gold hover bg */
+            background-color: rgba(168, 135, 70, 0.05); /* Slight gold hover bg */
         }
 
         .oriental-item i {
-            color: #4F5B3A; /* Olive */
+            color: #A88746; /* Olive */
             font-size: 18px;
             width: 20px;
             text-align: center;
@@ -504,7 +504,7 @@ if (!empty($logo_path)) {
         }
         
         .oriental-item:hover i {
-            color: #C9A66B; /* Gold icon on hover */
+            color: #A88746; /* Gold icon on hover */
         }
 
         .oriental-item.text-danger-custom {
@@ -652,7 +652,7 @@ if (!empty($logo_path)) {
 
                     <!-- ORIENTAL MEGA MENU & OUTSIDE BOOKING BUTTON -->
                     <div class="oriental-nav-wrapper" style="display:flex; align-items:center; gap:15px;">
-                        <a href="booking_service.php?type=bespoke" class="btn-book-outside" style="background-color: #1a1814; color: #C9A66B; border-color: #C9A66B; margin-right: 10px;">BESPOKE DINING</a>
+                        <a href="booking_service.php?type=bespoke" class="btn-book-outside" style="background-color: #1a1814; color: #A88746; border-color: #A88746; margin-right: 10px;">BESPOKE DINING</a>
                         <a href="booking_service.php?type=table" class="btn-book-outside">ĐẶT BÀN</a>
 
                         <div class="oriental-trigger">
@@ -758,23 +758,23 @@ if (!empty($logo_path)) {
                         angle: 60,
                         spread: 55,
                         origin: { x: 0 },
-                        colors: ['#cda45e', '#ffffff']
+                        colors: ['#A88746', '#ffffff']
                     });
                     confetti({
                         particleCount: 5,
                         angle: 120,
                         spread: 55,
                         origin: { x: 1 },
-                        colors: ['#cda45e', '#ffffff']
+                        colors: ['#A88746', '#ffffff']
                     });
                     if (Date.now() < end) {
                         requestAnimationFrame(frame);
                     }
                 }());
                 // Create a custom Toast notification
-                var toastHTML = '<div id="bdToast" style="position:fixed;top:120px;right:20px;z-index:99999;background:rgba(9,30,27,0.98);border:1px solid #cda45e;padding:25px;border-radius:12px;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,0.6);transform:translateX(150%);transition:0.6s cubic-bezier(0.34, 1.56, 0.64, 1);max-width:320px;text-align:center;">'+
-                '<i class="fas fa-gift fa-3x mb-3" style="color:#cda45e"></i>'+
-                '<h4 style="font-family:\'Cormorant Garamond\',serif;color:#cda45e;margin-bottom:12px;font-size:1.5rem">Chúc Mừng Sinh Nhật!</h4>'+
+                var toastHTML = '<div id="bdToast" style="position:fixed;top:120px;right:20px;z-index:99999;background:rgba(9,30,27,0.98);border:1px solid #A88746;padding:25px;border-radius:12px;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,0.6);transform:translateX(150%);transition:0.6s cubic-bezier(0.34, 1.56, 0.64, 1);max-width:320px;text-align:center;">'+
+                '<i class="fas fa-gift fa-3x mb-3" style="color:#A88746"></i>'+
+                '<h4 style="font-family:\'Montserrat\',serif;color:#A88746;margin-bottom:12px;font-size:1.5rem">Chúc Mừng Sinh Nhật!</h4>'+
                 '<p style="font-size:13px;margin:0;line-height:1.6;color:rgba(255,255,255,0.85)">Hệ thống ghi nhận hôm nay là sinh nhật của Quý khách. Nền tảng đã chuẩn bị sẵn đặc quyền ưu đãi dành riêng cho Đơn đặt bàn ngày hôm nay!</p>'+
                 '</div>';
                 document.body.insertAdjacentHTML('beforeend', toastHTML);
@@ -816,9 +816,9 @@ if (!empty($logo_path)) {
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             if(!sessionStorage.getItem('holiday_greeted_' + '<?= $h_month.$h_day ?>')) {
-                var toastHTML = '<div id="holToast" style="position:fixed;top:120px;right:20px;z-index:99999;background:rgba(9,30,27,0.98);border:1px solid #cda45e;padding:25px;border-radius:12px;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,0.6);transform:translateX(150%);transition:0.6s cubic-bezier(0.34, 1.56, 0.64, 1);max-width:320px;text-align:center;">'+
+                var toastHTML = '<div id="holToast" style="position:fixed;top:120px;right:20px;z-index:99999;background:rgba(9,30,27,0.98);border:1px solid #A88746;padding:25px;border-radius:12px;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,0.6);transform:translateX(150%);transition:0.6s cubic-bezier(0.34, 1.56, 0.64, 1);max-width:320px;text-align:center;">'+
                 '<i class="fas <?= $holiday_icon ?> fa-3x mb-3"></i>'+
-                '<h4 style="font-family:\'Cormorant Garamond\',serif;color:#cda45e;margin-bottom:12px;font-size:1.5rem"><?= $holiday_name ?></h4>'+
+                '<h4 style="font-family:\'Montserrat\',serif;color:#A88746;margin-bottom:12px;font-size:1.5rem"><?= $holiday_name ?></h4>'+
                 '<p style="font-size:13px;margin:0;line-height:1.6;color:rgba(255,255,255,0.85)"><?= $holiday_msg ?></p>'+
                 '</div>';
                 document.body.insertAdjacentHTML('beforeend', toastHTML);

@@ -72,24 +72,24 @@ $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 include 'views/client/layouts/header.php';
 ?>
 
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
 <style>
     :root {
-        --bg-color: #F6F2E9;       /* Cream */
+        --bg-color: #1A1A1D;       /* Cream */
         --card-bg: #ffffff;        /* White */
-        --text-main: #222222;
+        --text-main: #D1D1D1;
         --text-muted: #555555;
-        --olive: #4F5B3A;
-        --gold: #C9A66B;
-        --border-light: rgba(79, 91, 58, 0.15);
+        --accent-burgundy: #A88746;
+        --accent-burgundy: #A88746;
+        --border-light: rgba(168, 135, 70, 0.15);
         --ease: cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     .contact-page {
         background: var(--bg-color);
         color: var(--text-main);
-        font-family: 'Inter', sans-serif;
+        font-family: 'Open Sans', sans-serif;
     }
 
     .contact-hero {
@@ -103,7 +103,7 @@ include 'views/client/layouts/header.php';
     .contact-hero::before {
         content: '';
         position: absolute; inset: 0;
-        background: linear-gradient(0deg, rgba(246, 242, 233, 0.8) 0%, rgba(246, 242, 233, 0.95) 100%);
+        background: linear-gradient(0deg, rgba(26, 26, 29, 0.8) 0%, rgba(26, 26, 29, 0.95) 100%);
     }
 
     .contact-hero .container {
@@ -112,9 +112,9 @@ include 'views/client/layouts/header.php';
     }
 
     .contact-hero h2 {
-        font-family: 'Playfair Display', serif;
+        font-family: 'Montserrat', sans-serif;
         font-size: clamp(3rem, 5vw, 4.5rem);
-        color: var(--olive);
+        color: var(--accent-burgundy);
         margin-bottom: 20px;
         font-weight: 700;
         line-height: 1.1;
@@ -126,7 +126,7 @@ include 'views/client/layouts/header.php';
         font-size: 1.2rem;
         max-width: 600px;
         margin: 0 auto;
-        font-family: 'Playfair Display', serif;
+        font-family: 'Montserrat', sans-serif;
     }
 
     .contact-section {
@@ -146,14 +146,14 @@ include 'views/client/layouts/header.php';
     }
     
     .info-item:hover {
-        border-color: var(--gold);
+        border-color: var(--accent-burgundy);
         transform: translateY(-2px);
         box-shadow: 0 10px 25px rgba(0,0,0,0.03);
     }
 
     .info-item i {
         font-size: 1.8rem;
-        color: var(--gold);
+        color: var(--accent-burgundy);
         margin-right: 20px;
         float: left;
     }
@@ -161,7 +161,7 @@ include 'views/client/layouts/header.php';
     .info-item h5 {
         color: var(--text-main);
         margin-bottom: 8px;
-        font-family: 'Playfair Display', serif;
+        font-family: 'Montserrat', sans-serif;
         font-size: 1.4rem;
         font-weight: 700;
         letter-spacing: 1px;
@@ -196,7 +196,7 @@ include 'views/client/layouts/header.php';
     }
 
     .form-wrapper .form-label {
-        color: var(--olive);
+        color: var(--accent-burgundy);
         font-weight: 600;
         font-size: 11px;
         letter-spacing: 2px;
@@ -217,7 +217,7 @@ include 'views/client/layouts/header.php';
     }
 
     .form-control:focus {
-        border-bottom-color: var(--gold);
+        border-bottom-color: var(--accent-burgundy);
         background: transparent;
         color: var(--text-main);
     }
@@ -227,12 +227,12 @@ include 'views/client/layouts/header.php';
     }
 
     .btn-gold {
-        background: var(--olive);
+        background: var(--accent-burgundy);
         color: #ffffff;
         font-weight: 600;
         padding: 16px 30px;
         border-radius: 0;
-        border: 1px solid var(--olive);
+        border: 1px solid var(--accent-burgundy);
         transition: all 0.3s var(--ease);
         text-transform: uppercase;
         letter-spacing: 2px;
@@ -243,7 +243,7 @@ include 'views/client/layouts/header.php';
 
     .btn-gold:hover {
         background: transparent;
-        color: var(--olive);
+        color: var(--accent-burgundy);
     }
 
     .btn-gold:disabled {

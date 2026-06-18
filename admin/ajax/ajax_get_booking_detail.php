@@ -33,13 +33,26 @@ try {
 
     // 2. Lấy danh sách món ăn đã đặt
     $stmt_items = $db->prepare("
-        SELECT bd.*, f.name as food_name, f.price
+        SELECT bd.*, f.name as food_name, f.price, f.allergens
         FROM booking_details bd
         JOIN foods f ON bd.menu_id = f.id
         WHERE bd.booking_id = ?
     ");
     $stmt_items->execute([$id]);
     $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
+
+    // Lấy thông tin dị ứng của khách hàng
+    $user_allergies = [];
+    if (!empty($booking['notes']) && preg_match('/DỊ ỨNG:\s*([^|]+)/i', $booking['notes'], $m)) {
+        $user_allergies = array_merge($user_allergies, array_map('trim', explode(',', mb_strtolower($m[1], 'UTF-8'))));
+    }
+    if (!empty($booking['user_id'])) {
+        $u_alg = $db->query("SELECT allergies FROM users WHERE id = " . (int)$booking['user_id'])->fetchColumn();
+        if ($u_alg) {
+            $user_allergies = array_merge($user_allergies, array_map('trim', explode(',', mb_strtolower($u_alg, 'UTF-8'))));
+        }
+    }
+    $user_allergies = array_unique(array_filter($user_allergies));
 
     // 3. Lấy định mức nguyên liệu và kiểm tra tồn kho
     $required_ingredients = [];
@@ -67,6 +80,50 @@ try {
         foreach ($items as &$item) {
             $item_recipes = $recipes_by_food[$item['menu_id']] ?? [];
             $item['recipes'] = $item_recipes;
+            
+            // XỬ LÝ CẢNH BÁO DỊ ỨNG
+            $item['allergy_warning'] = false;
+            $item['conflict_allergens'] = '';
+            
+            if (!empty($user_allergies)) {
+                $all_food_ing = ($item['food_name'] ?? '') . ',' . ($item['allergens'] ?? '');
+                foreach ($item_recipes as $rcp) {
+                    $all_food_ing .= ',' . $rcp['item_name'];
+                }
+                $food_algs = array_map('trim', explode(',', mb_strtolower($all_food_ing, 'UTF-8')));
+                $conflicts = [];
+                
+                $aliases = [
+                    'hải sản' => ['tôm', 'cua', 'ghẹ', 'cá', 'mực', 'bạch tuộc', 'ốc', 'hàu', 'sò', 'nghêu', 'tuna', 'salmon', 'scallop'],
+                    'sữa' => ['bơ', 'phô mai', 'cheese', 'cream', 'sữa tươi', 'sữa đặc', 'yoghurt', 'sữa chua'],
+                    'đậu phộng' => ['lạc', 'peanut'],
+                    'gluten' => ['lúa mì', 'bột mì', 'wheat', 'bread', 'bánh mì', 'pasta', 'pizza'],
+                    'trứng' => ['egg', 'trứng gà', 'trứng vịt', 'trứng cút']
+                ];
+                
+                foreach ($user_allergies as $ua) {
+                    if (empty($ua)) continue;
+                    
+                    $check_terms = [$ua];
+                    if (isset($aliases[$ua])) {
+                        $check_terms = array_merge($check_terms, $aliases[$ua]);
+                    }
+                    
+                    foreach ($food_algs as $fa) {
+                        if (empty($fa)) continue;
+                        foreach ($check_terms as $term) {
+                            if (strpos($fa, $term) !== false) {
+                                $conflicts[] = $ua;
+                                break 2;
+                            }
+                        }
+                    }
+                }
+                if (!empty($conflicts)) {
+                    $item['allergy_warning'] = true;
+                    $item['conflict_allergens'] = implode(', ', array_unique($conflicts));
+                }
+            }
             
             $item['toppings_list'] = [];
             if (!empty($item['toppings_info'])) {

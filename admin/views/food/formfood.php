@@ -164,7 +164,7 @@ $form_action = $is_edit
                             <label class="form-label fw-bold small text-muted">Chất gây dị ứng (FDA Standard) <span class="badge bg-light text-muted border ms-1" style="font-size:10px;font-weight:400">Tùy chọn</span></label>
                             <div class="d-flex flex-wrap gap-2 p-3 bg-light rounded" style="border: 1px solid #f0f0f0;">
                                 <?php 
-                                $algopts = ['Sữa', 'Trứng', 'Đậu phộng', 'Hạt cây', 'Đậu nành', 'Lúa mì / Gluten', 'Cá', 'Động vật có vỏ', 'Động vật thân mềm', 'Mè / Vừng', 'Mù tạt', 'Cần tây', 'Sulphites', 'Đậu Lupin'];
+                                $algopts = ['Sữa', 'Trứng', 'Đậu phộng', 'Hạt cây', 'Đậu nành', 'Lúa mì / Gluten', 'Cá', 'Hải sản có vỏ', 'Động vật thân mềm', 'Mè / Vừng', 'Mù tạt', 'Quả hạch (Hạt quả hạch Brazil, Hạt hạnh nhân, Hạt mắc ca, Hạt điều, Hạt dẻ cười, Hạt óc chó, Hạt thông)', 'Sulphites', 'Đậu Lupin'];
                                 $current_algs = array_map('trim', explode(',', $old['allergens'] ?? ''));
                                 foreach($algopts as $alg): ?>
                                 <label class="d-flex align-items-center gap-2 m-0" style="cursor:pointer; font-size:13px; width:30%; font-weight:500;">

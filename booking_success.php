@@ -65,7 +65,7 @@ if ($is_success) {
     }
 }
 ?>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
     /* === TOKENS === */
     :root {
@@ -73,10 +73,10 @@ if ($is_success) {
         --g1: #143B36;
         --g2: #1c4f49;
         --g3: #245e57;
-        --gold: #cda45e;
-        --gold2: #e8c98a;
-        --gold3: #f5e4bc;
-        --cream: #f8f4ec;
+        --accent-burgundy: #A88746;
+        --accent-burgundy2: #e8c98a;
+        --accent-burgundy3: #f5e4bc;
+        --bg-smoke: #f8f4ec;
         --warm: #f0e9d8;
         --ink: #0d1f1c;
         --txt-muted: rgba(13, 31, 28, .5);
@@ -88,9 +88,9 @@ if ($is_success) {
 
     /* === PAGE === */
     .bk-page {
-        background: var(--cream);
+        background: var(--bg-smoke);
         min-height: 100vh;
-        font-family: 'Be Vietnam Pro', sans-serif;
+        font-family: 'Open Sans', sans-serif;
         padding-bottom: 80px
     }
 
@@ -123,11 +123,11 @@ if ($is_success) {
         font-size: 11px;
         letter-spacing: .18em;
         text-transform: uppercase;
-        color: var(--gold2);
+        color: var(--accent-burgundy2);
     }
 
     .bk-hero h1 {
-        font-family: 'Playfair Display', serif;
+        font-family: 'Montserrat', sans-serif;
         font-size: clamp(2.2rem, 5vw, 3.5rem);
         font-weight: 400;
         color: #fff;
@@ -137,7 +137,7 @@ if ($is_success) {
 
     .bk-hero h1 em {
         font-style: italic;
-        color: var(--gold);
+        color: var(--accent-burgundy);
     }
 
     .bk-hero-sub {
@@ -169,13 +169,13 @@ if ($is_success) {
     }
 
     .svc-tab:hover {
-        border-color: var(--gold);
-        color: var(--gold2);
+        border-color: var(--accent-burgundy);
+        color: var(--accent-burgundy2);
     }
 
     .svc-tab.active {
-        background: var(--gold);
-        border-color: var(--gold);
+        background: var(--accent-burgundy);
+        border-color: var(--accent-burgundy);
         color: var(--g0);
         font-weight: 600;
     }
@@ -202,7 +202,7 @@ if ($is_success) {
 
     /* === SEAMLESS FORM BOX (THAY THẾ CARD2) === */
     .seamless-box {
-        background: #fff;
+        background: #262629;
         border-radius: var(--r);
         box-shadow: var(--shadow);
         padding: 45px;
@@ -216,7 +216,7 @@ if ($is_success) {
     }
 
     .section-heading {
-        font-family: 'Playfair Display', serif;
+        font-family: 'Montserrat', sans-serif;
         font-size: 1.45rem;
         color: var(--g1);
         margin-bottom: 24px;
@@ -230,7 +230,7 @@ if ($is_success) {
         content: '';
         width: 4px;
         height: 22px;
-        background: var(--gold);
+        background: var(--accent-burgundy);
         border-radius: 4px;
     }
 
@@ -242,12 +242,12 @@ if ($is_success) {
     }
 
     .opt-badge {
-        font-family: 'Be Vietnam Pro', sans-serif;
+        font-family: 'Open Sans', sans-serif;
         font-size: 10px;
         padding: 3px 10px;
         border-radius: 50px;
         background: rgba(205, 164, 94, .1);
-        color: var(--gold);
+        color: var(--accent-burgundy);
         font-weight: 500;
         margin-left: auto;
     }
@@ -280,7 +280,7 @@ if ($is_success) {
         padding: 13px 16px;
         border: 1.5px solid #e5dfd5;
         border-radius: 10px;
-        font-family: 'Be Vietnam Pro', sans-serif;
+        font-family: 'Open Sans', sans-serif;
         font-size: 14px;
         color: var(--ink);
         background: #faf9f6;
@@ -289,7 +289,7 @@ if ($is_success) {
     }
 
     .fi:focus {
-        background: #fff;
+        background: #262629;
         border-color: var(--g2);
         box-shadow: 0 0 0 3px rgba(20, 59, 54, .08);
     }
@@ -299,7 +299,7 @@ if ($is_success) {
     }
 
     .fi option {
-        background: #fff;
+        background: #262629;
         color: var(--ink);
     }
 
@@ -352,7 +352,7 @@ if ($is_success) {
         background: transparent;
         font-size: 18px;
         font-weight: 600;
-        font-family: 'Playfair Display', serif;
+        font-family: 'Montserrat', sans-serif;
         color: var(--ink);
         outline: none;
         min-width: 0;
@@ -375,7 +375,7 @@ if ($is_success) {
         gap: 8px;
         transition: all .2s;
         margin-bottom: 16px;
-        font-family: 'Be Vietnam Pro', sans-serif;
+        font-family: 'Open Sans', sans-serif;
     }
 
     .map-open-btn:hover {
@@ -418,7 +418,7 @@ if ($is_success) {
 
     .seat-pill-price {
         font-size: 13px;
-        color: var(--gold);
+        color: var(--accent-burgundy);
         font-weight: 600;
     }
 
@@ -465,7 +465,7 @@ if ($is_success) {
 
     .cc:hover {
         border-color: rgba(20, 59, 54, .2);
-        background: #fff;
+        background: #262629;
     }
 
     .cc:hover::before {
@@ -588,12 +588,12 @@ if ($is_success) {
         padding: 0;
         outline: none;
         display: none;
-        background: #fff;
-        font-family: 'Be Vietnam Pro', sans-serif;
+        background: #262629;
+        font-family: 'Open Sans', sans-serif;
     }
 
     .mrow-qty:focus {
-        border-color: var(--gold);
+        border-color: var(--accent-burgundy);
     }
 
     .mrow.checked .mrow-qty {
@@ -621,7 +621,7 @@ if ($is_success) {
     }
 
     .sb-head h5 {
-        font-family: 'Playfair Display', serif;
+        font-family: 'Montserrat', sans-serif;
         font-size: 1.15rem;
         font-weight: 400;
         color: #fff;
@@ -662,7 +662,7 @@ if ($is_success) {
     }
 
     .sb-row-r.hi {
-        color: var(--gold);
+        color: var(--accent-burgundy);
     }
 
     .sb-sep {
@@ -687,10 +687,10 @@ if ($is_success) {
     }
 
     .deposit-num {
-        font-family: 'Playfair Display', serif;
+        font-family: 'Montserrat', sans-serif;
         font-size: 2.4rem;
         font-weight: 400;
-        color: var(--gold);
+        color: var(--accent-burgundy);
         line-height: 1;
         margin: 8px 0 4px;
     }
@@ -705,10 +705,10 @@ if ($is_success) {
         margin-top: 20px;
         padding: 16px;
         border-radius: 12px;
-        background: linear-gradient(135deg, var(--gold), #b8923e);
+        background: linear-gradient(135deg, var(--accent-burgundy), #b8923e);
         border: none;
         color: var(--g0);
-        font-family: 'Be Vietnam Pro', sans-serif;
+        font-family: 'Open Sans', sans-serif;
         font-size: 14px;
         font-weight: 700;
         letter-spacing: .08em;
@@ -752,7 +752,7 @@ if ($is_success) {
     }
 
     .modal-title {
-        font-family: 'Playfair Display', serif;
+        font-family: 'Montserrat', sans-serif;
         font-size: 1.1rem;
         font-weight: 400;
     }
@@ -832,8 +832,8 @@ if ($is_success) {
 
     .mseat.selected {
         background: rgba(205, 164, 94, .2);
-        border-color: var(--gold);
-        color: var(--gold);
+        border-color: var(--accent-burgundy);
+        color: var(--accent-burgundy);
         box-shadow: 0 0 0 3px rgba(205, 164, 94, .12);
     }
 
@@ -853,7 +853,7 @@ if ($is_success) {
     }
 
     .map-confirm-btn {
-        background: var(--gold) !important;
+        background: var(--accent-burgundy) !important;
         color: var(--g0) !important;
         font-weight: 700 !important;
         border: none !important;
@@ -879,11 +879,11 @@ if ($is_success) {
     <section class="bk-hero" style="padding: 140px 0 100px; background: #fdfbf7;">
         <div class="container" style="position:relative;z-index:1">
             <div class="success-icon-wrap" style="margin-bottom: 30px; animation: fadeInUp 0.8s var(--ease);">
-                <div style="width: 80px; height: 80px; background: rgba(205, 164, 94, 0.1); border: 2px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: var(--gold); font-size: 32px; box-shadow: 0 0 30px rgba(205, 164, 94, 0.2);">
+                <div style="width: 80px; height: 80px; background: rgba(205, 164, 94, 0.1); border: 2px solid var(--accent-burgundy); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: var(--accent-burgundy); font-size: 32px; box-shadow: 0 0 30px rgba(205, 164, 94, 0.2);">
                     <i class="fas fa-check"></i>
                 </div>
             </div>
-            <div class="bk-hero-eyebrow" style="animation: fadeInUp 0.8s var(--ease) 0.1s both; color: var(--gold); border-color: rgba(205,164,94,0.3); background: transparent;">
+            <div class="bk-hero-eyebrow" style="animation: fadeInUp 0.8s var(--ease) 0.1s both; color: var(--accent-burgundy); border-color: rgba(205,164,94,0.3); background: transparent;">
                 Đặt chỗ thành công
             </div>
             <h1 style="animation: fadeInUp 0.8s var(--ease) 0.2s both; color: #111; font-weight: 600;">
@@ -891,14 +891,14 @@ if ($is_success) {
                 Yêu cầu của bạn đã được ghi nhận
             </h1>
             <p class="bk-hero-sub" style="max-width: 600px; margin: 0 auto 40px; animation: fadeInUp 0.8s var(--ease) 0.3s both; color: #555;">
-                Mã số đặt chỗ: <span style="color: var(--gold); font-weight: 700;">#SVR-<?= htmlspecialchars($booking['id']) ?></span>. 
+                Mã số đặt chỗ: <span style="color: var(--accent-burgundy); font-weight: 700;">#SVR-<?= htmlspecialchars($booking['id']) ?></span>. 
                 Đội ngũ chúng tôi sẽ gọi điện xác nhận cho bạn qua số <span style="color: #111; font-weight: 600;"><?= htmlspecialchars($booking['customer_phone']) ?></span> sớm nhất.
             </p>
             <div class="svc-tabs" style="gap: 15px; justify-content: center; animation: fadeInUp 0.8s var(--ease) 0.4s both;">
-                <a href="admin/export_pdf.php?id=<?= $booking['id'] ?>" class="btn-go" style="width: auto; padding: 14px 40px; margin-top: 0; background: #111; color: var(--gold); border: 1px solid var(--gold); border-radius: 0; font-family:'Cormorant Garamond',serif; font-size:16px;">
+                <a href="admin/export_pdf.php?id=<?= $booking['id'] ?>" class="btn-go" style="width: auto; padding: 14px 40px; margin-top: 0; background: #111; color: var(--accent-burgundy); border: 1px solid var(--accent-burgundy); border-radius: 0; font-family:'Montserrat',serif; font-size:16px;">
                     <i class="fas fa-file-pdf me-2"></i> Tải Phiếu Xác Nhận
                 </a>
-                <a href="index.php" class="svc-tab" style="padding: 14px 40px; border-radius: 0; border: 1px solid #ddd; color: #111; background: transparent; font-family:'Cormorant Garamond',serif; font-size:16px;">
+                <a href="index.php" class="svc-tab" style="padding: 14px 40px; border-radius: 0; border: 1px solid #ddd; color: #111; background: transparent; font-family:'Montserrat',serif; font-size:16px;">
                     Về trang chủ
                 </a>
             </div>
@@ -913,29 +913,29 @@ if ($is_success) {
     </style>
 
     <div class="bk-wrap" style="margin-top: -60px; grid-template-columns: 1fr; max-width: 850px; animation: fadeInUp 1s var(--ease) 0.5s both;">
-        <div class="seamless-box" style="padding: 50px; border: 1px solid rgba(212, 176, 106, 0.2); background: #fff url('https://www.transparenttextures.com/patterns/cubes.png');">
+        <div class="seamless-box" style="padding: 50px; border: 1px solid rgba(212, 176, 106, 0.2); background: #262629 url('https://www.transparenttextures.com/patterns/cubes.png');">
             <div style="text-align: center; margin-bottom: 40px;">
                 <h3 class="section-heading" style="justify-content: center; font-size: 1.8rem; margin-bottom: 10px;">Chi tiết đặt dịch vụ</h3>
-                <div style="width: 50px; height: 2px; background: var(--gold); margin: 0 auto;"></div>
+                <div style="width: 50px; height: 2px; background: var(--accent-burgundy); margin: 0 auto;"></div>
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 40px; margin-bottom: 40px;">
-                <div style="padding: 20px; background: #faf9f6; border-radius: 12px; border-left: 3px solid var(--gold);">
+                <div style="padding: 20px; background: #faf9f6; border-radius: 12px; border-left: 3px solid var(--accent-burgundy);">
                     <label class="fl" style="color: var(--txt-muted); font-size: 10px; letter-spacing: 2px;">DỊCH VỤ</label>
                     <div style="font-size: 1.1rem; font-weight: 600; color: var(--g1);"><?= htmlspecialchars(strtoupper($booking['service_type'])) ?></div>
                 </div>
-                <div style="padding: 20px; background: #faf9f6; border-radius: 12px; border-left: 3px solid var(--gold);">
+                <div style="padding: 20px; background: #faf9f6; border-radius: 12px; border-left: 3px solid var(--accent-burgundy);">
                     <label class="fl" style="color: var(--txt-muted); font-size: 10px; letter-spacing: 2px;">THỜI GIAN</label>
                     <div style="font-size: 1.1rem; font-weight: 600; color: var(--g1);"><?= date('H:i · d/m/Y', strtotime($booking['booking_date'])) ?></div>
                 </div>
-                <div style="padding: 20px; background: #faf9f6; border-radius: 12px; border-left: 3px solid var(--gold);">
+                <div style="padding: 20px; background: #faf9f6; border-radius: 12px; border-left: 3px solid var(--accent-burgundy);">
                     <label class="fl" style="color: var(--txt-muted); font-size: 10px; letter-spacing: 2px;">SỐ KHÁCH</label>
                     <div style="font-size: 1.1rem; font-weight: 600; color: var(--g1);"><?= htmlspecialchars($booking['guests']) ?> NGƯỜI</div>
                 </div>
                 <?php if ($booking['table_code']): ?>
-                <div style="padding: 20px; background: #faf9f6; border-radius: 12px; border-left: 3px solid var(--gold);">
+                <div style="padding: 20px; background: #faf9f6; border-radius: 12px; border-left: 3px solid var(--accent-burgundy);">
                     <label class="fl" style="color: var(--txt-muted); font-size: 10px; letter-spacing: 2px;">VỊ TRÍ</label>
-                    <div style="font-size: 1.1rem; font-weight: 600; color: var(--gold);"><?= htmlspecialchars($booking['table_code']) ?></div>
+                    <div style="font-size: 1.1rem; font-weight: 600; color: var(--accent-burgundy);"><?= htmlspecialchars($booking['table_code']) ?></div>
                 </div>
                 <?php endif; ?>
             </div>
@@ -945,7 +945,7 @@ if ($is_success) {
                 if ($has_bespoke): 
             ?>
             <div style="margin-bottom: 40px;">
-                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--g1); margin-bottom: 15px;"><i class="fas fa-magic me-2" style="color:var(--gold);"></i> Trải Nghiệm Cá Nhân Hóa (Bespoke)</h4>
+                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.3rem; color: var(--g1); margin-bottom: 15px;"><i class="fas fa-magic me-2" style="color:var(--accent-burgundy);"></i> Trải Nghiệm Cá Nhân Hóa (Bespoke)</h4>
                 <div style="background: rgba(205, 164, 94, 0.05); border: 1px solid rgba(205, 164, 94, 0.2); border-radius: 12px; padding: 25px;">
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                         <?php if (!empty($booking['event_type'])): ?>
@@ -992,8 +992,8 @@ if ($is_success) {
 
             <?php if (!empty($booking_items)): ?>
             <div style="margin-bottom: 40px;">
-                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--g1); margin-bottom: 15px;"><i class="fas fa-utensils me-2" style="color:var(--gold);"></i> Thực Đơn Đã Chọn</h4>
-                <div style="border: 1px solid rgba(20, 59, 54, 0.1); border-radius: 12px; padding: 20px; background: #fff;">
+                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.3rem; color: var(--g1); margin-bottom: 15px;"><i class="fas fa-utensils me-2" style="color:var(--accent-burgundy);"></i> Thực Đơn Đã Chọn</h4>
+                <div style="border: 1px solid rgba(20, 59, 54, 0.1); border-radius: 12px; padding: 20px; background: #262629;">
                     <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                         <thead>
                             <tr style="border-bottom: 2px solid rgba(20, 59, 54, 0.1); color: var(--g1); font-weight: bold; text-align: left;">
@@ -1009,7 +1009,7 @@ if ($is_success) {
                                 <td style="padding: 12px 5px;">
                                     <strong style="color: var(--g1); font-size: 14px;"><?= htmlspecialchars($it['food_name']) ?></strong>
                                     <?php if (!empty($it['toppings_list'])): ?>
-                                        <div style="font-size: 11px; color: var(--gold); margin-top: 4px;">
+                                        <div style="font-size: 11px; color: var(--accent-burgundy); margin-top: 4px;">
                                             <i class="fas fa-plus-circle me-1"></i>Topping: <?= implode(', ', $it['toppings_list']) ?>
                                         </div>
                                     <?php endif; ?>
@@ -1033,7 +1033,7 @@ if ($is_success) {
             <div style="background: var(--g0); color: #fff; padding: 25px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5);">Tiền tạm tính</div>
-                    <div style="font-size: 1.4rem; font-weight: 600; color: var(--gold);"><?= number_format($booking['total_amount']) ?>đ</div>
+                    <div style="font-size: 1.4rem; font-weight: 600; color: var(--accent-burgundy);"><?= number_format($booking['total_amount']) ?>đ</div>
                 </div>
                 <div style="text-align: right;">
                     <?php if ($booking['status'] === 'Confirmed'): ?>
@@ -1049,7 +1049,7 @@ if ($is_success) {
             <div style="margin-top: 40px; padding-top: 30px; border-top: 1px dashed #e5dfd5; text-align: center;">
                 <?php if ($booking['status'] === 'Confirmed'): ?>
                     <p style="font-size: 14px; color: var(--g1); font-weight: 600; line-height: 1.6;">
-                        <i class="fas fa-glass-cheers me-2" style="color:var(--gold);"></i> Đơn đặt bàn đã được xác nhận thanh toán thành công.<br>
+                        <i class="fas fa-glass-cheers me-2" style="color:var(--accent-burgundy);"></i> Đơn đặt bàn đã được xác nhận thanh toán thành công.<br>
                         Hẹn gặp lại quý khách tại <strong>Restaurantly</strong>.
                     </p>
                 <?php else: ?>

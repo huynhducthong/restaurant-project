@@ -122,7 +122,7 @@ include __DIR__ . '/views/client/layouts/header.php';
         <div class="carousel-item <?= $first ? 'active' : '' ?>"
           style="background-image: url('public/assets/img/hero/<?= $row['image_url'] ?>'); background-size: cover; height: 100vh; background-position: center; position: relative;">
 
-          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 25%, rgba(0,0,0,0.2) 75%, #F6F2E9 100%);"></div>
+          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 25%, rgba(0,0,0,0.2) 75%, #1A1A1D 100%);"></div>
 
           <div class="container position-relative d-flex flex-column justify-content-center h-100"
             style="text-align: <?= $row['text_align'] ?>; z-index: 2;">
@@ -142,7 +142,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 
                 <p style="
                     color: <?= $row['desc_color'] ?? '#eeeeee' ?>; 
-                    font-family: <?= $row['desc_font_family'] ?? "'Poppins', sans-serif" ?>; 
+                    font-family: <?= $row['desc_font_family'] ?? "'Open Sans', sans-serif" ?>; 
                     font-size: <?= $row['desc_font_size'] ?? 24 ?>px; 
                     font-weight: <?= $desc_weight ?>; 
                     font-style: <?= $desc_style ?>;
@@ -158,9 +158,9 @@ include __DIR__ . '/views/client/layouts/header.php';
                     text-decoration:none;
                     font-weight:600;
                     font-size:14px;
-                    font-family:'Poppins', sans-serif;
+                    font-family:'Open Sans', sans-serif;
                     letter-spacing:1px;
-                    background-color: <?= htmlspecialchars($row['button_color'] ?? '#cda45e') ?>;
+                    background-color: <?= htmlspecialchars($row['button_color'] ?? '#A88746') ?>;
                     color: #fff;
                     border: none;
                     transition:0.3s;
@@ -209,11 +209,11 @@ document.addEventListener('DOMContentLoaded', function() {
 </html></section>
 
 <main id="main">
-  <section id="about" class="about-section" style="background: #F6F2E9; color: #222222; padding: 140px 0; overflow: hidden;">
+  <section id="about" class="about-section" style="background: #1A1A1D; color: #D1D1D1; padding: 140px 0; overflow: hidden;">
     <div class="container-fluid px-0">
       <div class="row g-0 align-items-center">
         <div class="col-lg-7" style="padding-left: 5%; padding-right: 30px;">
-          <div class="video-wrapper" style="position: relative; width: 100%; border-radius: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #C9A66B; background: #fff;">
+          <div class="video-wrapper" style="position: relative; width: 100%; border-radius: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #A88746; background: #262629;">
 
             <?php if ($video_type == 'youtube' && !empty($video_url)): ?>
               <iframe width="100%" height="500"
@@ -260,10 +260,10 @@ document.addEventListener('DOMContentLoaded', function() {
                   $v_desc = "Nằm giữa lòng " . htmlspecialchars($settings['address'] ?? 'Biên Hòa') . ", chúng tôi mang đến một không gian ẩm thực tinh tế.";
               }
             ?>
-            <h2 style="font-family: 'Playfair Display', serif; color: #4F5B3A; font-size: 3rem; margin-bottom: 25px; font-weight: 700; line-height: 1.2;">
+            <h2 style="font-family: 'Montserrat', sans-serif; color: #A88746; font-size: 3rem; margin-bottom: 25px; font-weight: 700; line-height: 1.2;">
               <?= $v_title ?>
             </h2>
-            <p style="font-family: 'Poppins', sans-serif; font-weight: 300; line-height: 2; color: #222222; font-size: 1.15rem; margin-bottom: 25px;">
+            <p style="font-family: 'Open Sans', sans-serif; font-weight: 300; line-height: 2; color: #D1D1D1; font-size: 1.15rem; margin-bottom: 25px;">
               <?= nl2br(htmlspecialchars($v_desc)) ?>
             </p>
           </div>
@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </section>
 
-  <section id="menu" class="menu section-bg" style="background: #ffffff; padding: 100px 0; overflow: hidden;">
+  <section id="menu" class="menu section-bg" style="background: #262629; padding: 100px 0; overflow: hidden;">
 
     <?php
     // Lấy tất cả món ăn active để hiển thị gallery
@@ -303,12 +303,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <!-- Tiêu đề -->
     <div class="text-center mb-5" style="position:relative; z-index:2;">
-      <p style="color:#C9A66B; font-family:'Poppins',sans-serif; font-size:13px; letter-spacing:4px; text-transform:uppercase; margin-bottom:12px;">Hương Vị Tinh Tế</p>
-      <h2 style="color:#4F5B3A; font-family:'Playfair Display',serif; font-size:clamp(2rem,5vw,3.2rem); font-weight:700; margin-bottom:16px;">Một Trải Nghiệm Độc Đáo</h2>
-      <div style="width:50px; height:2px; background:#C9A66B; margin:0 auto 20px;"></div>
-      <p style="color:#666666; font-family:'Poppins',sans-serif; font-size:15px; max-width:560px; margin:0 auto; line-height:1.8;">
-        Khám phá bản giao hưởng hương vị nơi truyền thống cổ xưa hòa quyện với nghệ thuật hiện đại.<br>
-        Mỗi món ăn là một kiệt tác được tuyển chọn kỹ lưỡng, không chỉ để thưởng thức mà còn để cảm nhận.
+      <p style="color:#A88746; font-family:'Open Sans',sans-serif; font-size:13px; letter-spacing:4px; text-transform:uppercase; margin-bottom:12px;">Hương Vị Tinh Tế</p>
+      <h2 style="color:#A88746; font-family:'Montserrat',serif; font-size:clamp(2rem,5vw,3.2rem); font-weight:700; margin-bottom:16px;">Một Trải Nghiệm Độc Đáo</h2>
+      <p style="color:#666666; font-family:'Open Sans',sans-serif; font-size:15px; max-width:900px; margin:0 auto; line-height:1.8;">
+        Khám phá bản giao hưởng hương vị nơi truyền thống cổ xưa hòa quyện với nghệ thuật hiện đại. Mỗi món ăn là một kiệt tác được tuyển chọn kỹ lưỡng, không chỉ để thưởng thức mà còn để cảm nhận.
       </p>
     </div>
 
@@ -432,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .menu-gallery-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(79,91,58,0.9) 0%, transparent 80%);
+      background: linear-gradient(to top, rgba(168, 135, 70,0.9) 0%, transparent 80%);
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
@@ -440,24 +438,25 @@ document.addEventListener('DOMContentLoaded', function() {
       opacity: 0;
       transition: opacity 0.4s;
     }
-
     .menu-gallery-item:hover .menu-gallery-overlay {
       opacity: 1;
     }
 
     .menu-gallery-name {
       color: #fff;
-      font-family: 'Poppins', sans-serif;
-      font-size: 13px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 15px;
       font-weight: 600;
       display: block;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
 
     .menu-gallery-price {
-      color: #C9A66B;
-      font-family: 'Poppins', sans-serif;
-      font-size: 12px;
+      color: #ffffff;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 14px;
       font-weight: 700;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
     }
 
     /* ===== NÚT EXPLORE MENU Ở GIỮA ===== */
@@ -474,26 +473,39 @@ document.addEventListener('DOMContentLoaded', function() {
     .menu-explore-btn {
       display: inline-block;
       padding: 14px 44px;
-      background: #4F5B3A;
-      border: 1.5px solid #4F5B3A;
-      color: #C9A66B;
-      font-family: 'Poppins', sans-serif;
+      background: #A88746;
+      border: 1.5px solid #A88746;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 0;
+      margin: 0;
+    }
+
+    .menu-explore-btn {
+      display: inline-block;
+      padding: 14px 44px;
+      background: #A88746;
+      border: 1.5px solid #A88746;
+      color: #1A1A1D;
+      font-family: 'Open Sans', sans-serif;
       font-size: 12px;
       font-weight: 700;
       letter-spacing: 4px;
       text-transform: uppercase;
       text-decoration: none;
       backdrop-filter: blur(6px);
-      transform: translateY(-50%);   /* Căn giữa đúng theo chiều dọc */
+      transform: translateY(-50%);
       transition: background 0.3s, color 0.3s, box-shadow 0.3s;
       border-radius: 0;
       white-space: nowrap;
     }
 
     .menu-explore-btn:hover {
-      background: #cda45e;
+      background: #A88746;
       color: #000;
-      box-shadow: none; border-color: #C9A66B;
+      box-shadow: none; border-color: #A88746;
     }
     
     .menu-hover-tooltip {
@@ -511,153 +523,577 @@ document.addEventListener('DOMContentLoaded', function() {
       transform: translate(15px, -50%) scale(0.95);
     }
     .menu-hover-trigger:hover {
-      color: #C9A66B !important;
+      color: #A88746 !important;
       transition: color 0.3s ease;
     }
     .menu-list-item:hover {
-      background: rgba(201, 166, 107, 0.03);
+      background: rgba(168, 135, 70, 0.03);
     }
   </style>
 
-  <section id="combos" style="background: #F6F2E9; padding: 160px 0; border-top: 1px solid rgba(79,91,58,0.1); border-bottom: 1px solid rgba(79,91,58,0.1); position: relative;">
+  <section id="combos" style="background: #1A1A1D; padding: 40px 0 60px 0; border-top: 1px solid rgba(168, 135, 70,0.1); border-bottom: 1px solid rgba(168, 135, 70,0.1); position: relative;">
     <!-- Radial subtle glow behind the whole section -->
-    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(79,91,58,0.05) 0%, transparent 70%); pointer-events: none; z-index: 0;"></div>
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(168, 135, 70,0.05) 0%, transparent 70%); pointer-events: none; z-index: 0;"></div>
     
     <div class="container" style="position: relative; z-index: 1;">
-      <div class="section-title text-center mb-5" style="margin-bottom: 80px !important;">
-        <p style="color: #C9A66B; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Tuyển Chọn Thượng Hạng</p>
-        <h2 style="color: #4F5B3A; font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Bộ Sưu Tập Hương Vị</h2>
-        <div style="width: 1px; height: 40px; background: #C9A66B; margin: 20px auto;"></div>
+      <div class="section-title text-center mb-5" style="margin-bottom: 30px !important;">
+        <p style="color: #A88746; font-family: 'Open Sans', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Tuyển Chọn Thượng Hạng</p>
+        <h2 style="color: #A88746; font-family: 'Montserrat', sans-serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Bộ Sưu Tập Hương Vị</h2>
       </div>
 
-      <div class="row g-5 justify-content-center">
+      
+        
+        <div style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; overflow: hidden;">
+        
+        <style>
+          .cine-reveal { opacity: 0; transform: translateY(40px); transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1); }
+          .cine-reveal.visible { opacity: 1; transform: translateY(0); }
+          .cine-glass-card {
+             background: linear-gradient(135deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 100%); 
+             backdrop-filter: blur(2px); 
+             -webkit-backdrop-filter: blur(2px); 
+             border: 1px solid rgba(255,255,255,0.05); 
+             border-top: 1px solid rgba(255,255,255,0.15);
+             border-left: 1px solid rgba(255,255,255,0.1);
+             border-radius: 12px; 
+             padding: 50px 40px; 
+             box-shadow: 0 20px 40px rgba(0,0,0,0.3); 
+             height: 100%;
+             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), background 0.5s, box-shadow 0.5s, border-color 0.5s;
+             transform: translateZ(0); /* Hardware acceleration fix */
+          }
+          .cine-glass-card:hover {
+             transform: translateY(-10px) translateZ(0) !important;
+             background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 100%);
+             box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+             border-top: 1px solid rgba(255,255,255,0.25);
+             border-left: 1px solid rgba(255,255,255,0.2);
+          }
+          .cine-card-left { transform: translateY(-40px); }
+          .cine-card-right { transform: translateY(40px); }
+          @media (max-width: 991px) {
+            .cine-card-left, .cine-card-right { transform: translateY(0); }
+          }
+          .cine-title {
+             color: #C9A66B; 
+             font-family: 'Cormorant Garamond', serif; 
+             font-size: clamp(3.5rem, 8vw, 6.5rem); 
+             margin-bottom: 10px; 
+             font-weight: 300; 
+             letter-spacing: 8px; 
+             text-transform: uppercase; 
+             text-shadow: 0 10px 40px rgba(0,0,0,0.9);
+          }
+          .cine-subtitle {
+             color: #E2E0D9; 
+             font-style: italic; 
+             font-size: 1.35rem; 
+             max-width: 800px; 
+             margin: 0 auto; 
+             line-height: 1.8; 
+             text-shadow: 0 4px 15px rgba(0,0,0,0.9); 
+             letter-spacing: 2px;
+             font-family: 'Cormorant Garamond', serif;
+          }
+        </style>
+
         <?php if (!empty($active_themes)): ?>
           <?php foreach ($active_themes as $t): ?>
             <?php if(empty($t['combos']) && empty($t['foods'])) continue; ?>
-            <div class="col-12 text-center mt-5 mb-3">
-              <?php if($t['image']): ?>
-                <div style="max-width: 800px; height: 300px; margin: 0 auto 30px; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                  <img src="<?= htmlspecialchars($t['image']) ?>" alt="<?= htmlspecialchars($t['name']) ?>" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                </div>
-              <?php endif; ?>
-              <h3 style="color: #4F5B3A; font-family: 'Playfair Display', serif; font-size: 32px; border-bottom: 1px solid #C9A66B; display: inline-block; padding-bottom: 10px;"><?= htmlspecialchars($t['name']) ?></h3>
-              <p style="color: #666; font-style: italic; max-width: 600px; margin: 15px auto 0;"><?= htmlspecialchars($t['description']) ?></p>
-            </div>
             
-            <?php if(!empty($t['combos'])): ?>
-              <div class="col-12 mt-5">
-                <h4 style="text-align: center; color: #4F5B3A; font-family: 'Playfair Display', serif; margin-bottom: 30px; font-size: 24px; letter-spacing: 2px;">SET MENU (TASTING MENU)</h4>
-                <div class="row g-5 justify-content-center">
-                  <?php foreach($t['combos'] as $row): ?>
-                    <div class="col-lg-6 col-md-12">
-                      <div class="menu-list-item" style="display: flex; align-items: center; border-bottom: 1px dashed rgba(79,91,58,0.2); padding: 15px 10px; cursor: pointer; transition: background 0.3s ease;" onclick="window.location.href='combo_detail.php?id=<?= $row['id'] ?>'">
-                        <div style="flex-grow: 1;">
-                          <h5 class="menu-hover-trigger" data-img="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>" style="color: #222; font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 5px; display: inline-block;">
-                            <?= htmlspecialchars($row['name']) ?>
-                          </h5>
-                          <p style="color: #666; font-size: 13px; margin: 0; line-height: 1.6; max-width: 90%;"><?= htmlspecialchars($row['description']) ?></p>
-                          <div style="font-size: 11px; color: #999; margin-top: 8px;"><i class="bi bi-star-fill me-1" style="color:#C9A66B; font-size:9px;"></i><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></div>
-                        </div>
-                        <div style="color: #C9A66B; font-weight: 500; font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-left: 20px; white-space: nowrap;">
-                          <?= number_format($row['price'], 0, ',', '.') ?>đ
-                        </div>
-                      </div>
-                    </div>
-                  <?php endforeach; ?>
+            <div class="cine-section" style="position: relative; min-height: 100vh; padding: 180px 0; margin-bottom: 0px; background: url('<?= htmlspecialchars($t['image']) ?>') center/cover fixed no-repeat; display: flex; align-items: center;">
+              
+              <!-- Layer 1: Dark Gradient Overlay (Top & Bottom dark, center transparent) -->
+              <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,15,15,0.9) 0%, rgba(15,15,15,0.1) 25%, rgba(15,15,15,0.1) 75%, rgba(15,15,15,0.9) 100%); z-index: 1;"></div>
+              
+              <!-- Layer 2: Radial Glow behind title -->
+              <div style="position: absolute; top: 20%; left: 50%; transform: translateX(-50%); width: 70vw; height: 50vh; background: radial-gradient(ellipse, rgba(201, 166, 107, 0.15) 0%, transparent 60%); pointer-events: none; z-index: 1;"></div>
+              
+              <div class="container" style="position: relative; z-index: 2;">
+                <!-- Theme Header -->
+                <div class="text-center mb-5 pb-5 cine-reveal" style="transition-delay: 0.1s;">
+                  <h3 class="cine-title"><?= htmlspecialchars($t['name']) ?></h3>
+                  <p class="cine-subtitle">Curated Collection — <?= htmlspecialchars($t['description']) ?></p>
                 </div>
-              </div>
-            <?php endif; ?>
 
-            <?php if(!empty($t['foods'])): ?>
-              <div class="col-12 mt-5 mb-4">
-                <h4 style="text-align: center; color: #4F5B3A; font-family: 'Playfair Display', serif; margin-bottom: 30px; font-size: 24px; letter-spacing: 2px;">MÓN TỰ CHỌN</h4>
-                <div class="row g-5 justify-content-center">
-                  <?php foreach($t['foods'] as $f): ?>
-                    <div class="col-lg-6 col-md-12">
-                      <div class="menu-list-item" style="display: flex; align-items: center; border-bottom: 1px dashed rgba(79,91,58,0.2); padding: 15px 10px; transition: background 0.3s ease;">
-                        <div style="flex-grow: 1;">
-                          <h5 class="menu-hover-trigger" data-img="public/assets/img/menu/<?= htmlspecialchars($f['image'] ?: 'default-food.jpg') ?>" style="color: #222; font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 5px; display: inline-block; cursor: default;">
-                            <?= htmlspecialchars($f['name']) ?>
-                          </h5>
-                          <p style="color: #666; font-size: 13px; margin: 0; line-height: 1.6; max-width: 90%;"><?= htmlspecialchars($f['description']) ?></p>
-                        </div>
-                        <div style="color: #C9A66B; font-weight: 500; font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-left: 20px; white-space: nowrap;">
-                          <?= number_format($f['price'], 0, ',', '.') ?>đ
-                        </div>
-                      </div>
-                    </div>
-                  <?php endforeach; ?>
-                </div>
-              </div>
-            <?php endif; ?>
-
-          <?php endforeach; ?>
-        <?php endif; ?>
-      </div>
-    </div>
-  <section id="chefs" class="chefs" style="background: #ffffff; padding: 140px 0; position: relative;">
-    <div class="container" style="position: relative; z-index: 1;">
-      <div class="section-title text-center mb-5" style="margin-bottom: 70px !important;">
-        <p style="color: #C9A66B; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Đội Ngũ Đầu Bếp</p>
-        <h2 style="color: #4F5B3A; font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Những Nghệ Nhân Ẩm Thực Hàng Đầu</h2>
-        <div style="width: 1px; height: 40px; background: #C9A66B; margin: 20px auto;"></div>
-      </div>
-      
-      <div class="row justify-content-center g-4">
-        <?php if (!empty($home_chefs)): ?>
-          <?php 
-          $quotes = [
-            "Ẩm thực không chỉ là hương vị, nó là sự tinh tế của ký ức.",
-            "Từng nguyên liệu đều có tiếng nói riêng của nó.",
-            "Nấu ăn là nghệ thuật kể chuyện không dùng lời."
-          ];
-          $idx = 0;
-          foreach ($home_chefs as $hchef): 
-            $quote = $quotes[$idx % count($quotes)];
-            $idx++;
-          ?>
-            <div class="col-lg-4 col-md-6 mb-4">
-              <div class="luxury-chef-card">
-                <div class="chef-img-wrapper">
-                  <?php if (!empty($hchef['image'])): ?>
-                    <img src="public/assets/img/chefs/<?= htmlspecialchars($hchef['image']) ?>"
-                      alt="<?= htmlspecialchars($hchef['name']) ?>"
-                      onerror="this.src='public/assets/img/chefs/default-chef.jpg'">
-                  <?php else: ?>
-                    <div class="chef-placeholder-img">
-                      <i class="bi bi-person"></i>
-                    </div>
-                  <?php endif; ?>
+                <!-- Glassmorphism Menus -->
+                <div class="row g-5 justify-content-center mt-4">
                   
-                  <div class="chef-overlay">
-                    <p class="chef-quote">"<?= $quote ?>"</p>
-                    <div class="chef-info">
-                      <h4 class="chef-name"><?= htmlspecialchars($hchef['name']) ?></h4>
-                      <span class="chef-title"><?= htmlspecialchars($hchef['position']) ?></span>
+                  <?php if(!empty($t['combos'])): ?>
+                  <div class="col-lg-6 col-md-12 cine-reveal" style="transition-delay: 0.3s;">
+                    <div class="cine-glass-card cine-card-left">
+                      <h4 style="text-align: center; color: #C9A66B; font-family: 'Cormorant Garamond', serif; margin-bottom: 40px; font-size: 24px; font-weight: 500; letter-spacing: 6px; border-bottom: 1px solid rgba(201, 166, 107, 0.2); padding-bottom: 20px; text-transform: uppercase;">SET MENU THƯỢNG HẠNG</h4>
+                      <div class="d-flex flex-column gap-4">
+                        <?php foreach($t['combos'] as $row): ?>
+                          <div class="menu-list-item" style="cursor: pointer; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateX(10px)'" onmouseout="this.style.transform='translateX(0)'" onclick="window.location.href='combo_detail.php?id=<?= $row['id'] ?>'">
+                            <div class="d-flex justify-content-between align-items-baseline mb-2">
+                              <h5 class="menu-hover-trigger" data-img="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>" style="color: #ffffff; font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 300; margin: 0;">
+                                <?= htmlspecialchars($row['name']) ?>
+                              </h5>
+                              <div style="color: #C9A66B; font-weight: 400; font-family: 'Montserrat', sans-serif; font-size: 1.2rem; margin-left: 20px; white-space: nowrap;">
+                                <?= number_format($row['price'], 0, ',', '.') ?>đ
+                              </div>
+                            </div>
+                            <p style="color: #ffffff; font-size: 13px; margin: 0 0 8px 0; line-height: 1.6; max-width: 90%; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><?= htmlspecialchars($row['description']) ?></p>
+                            <div style="font-size: 11px; color: #e6e6e6; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><i class="bi bi-star-fill me-1" style="color:#C9A66B; font-size:9px;"></i><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></div>
+                          </div>
+                        <?php endforeach; ?>
+                      </div>
                     </div>
                   </div>
+                  <?php endif; ?>
+
+                  <?php if(!empty($t['foods'])): ?>
+                  <div class="col-lg-6 col-md-12 cine-reveal" style="transition-delay: 0.5s;">
+                    <div class="cine-glass-card cine-card-right">
+                      <h4 style="text-align: center; color: #C9A66B; font-family: 'Cormorant Garamond', serif; margin-bottom: 40px; font-size: 24px; font-weight: 500; letter-spacing: 6px; border-bottom: 1px solid rgba(201, 166, 107, 0.2); padding-bottom: 20px; text-transform: uppercase;">THỰC ĐƠN GỌI MÓN</h4>
+                      <div class="d-flex flex-column gap-4">
+                        <?php foreach($t['foods'] as $f): ?>
+                          <div class="menu-list-item" style="transition: transform 0.3s ease;" onmouseover="this.style.transform='translateX(10px)'" onmouseout="this.style.transform='translateX(0)'">
+                            <div class="d-flex justify-content-between align-items-baseline mb-2">
+                              <h5 class="menu-hover-trigger" data-img="public/assets/img/menu/<?= htmlspecialchars($f['image'] ?: 'default-food.jpg') ?>" style="color: #ffffff; font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 300; margin: 0; cursor: default;">
+                                <?= htmlspecialchars($f['name']) ?>
+                              </h5>
+                              <div style="color: #C9A66B; font-weight: 400; font-family: 'Montserrat', sans-serif; font-size: 1.2rem; margin-left: 20px; white-space: nowrap;">
+                                <?= number_format($f['price'], 0, ',', '.') ?>đ
+                              </div>
+                            </div>
+                            <p style="color: #ffffff; font-size: 13px; margin: 0; line-height: 1.6; max-width: 90%; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><?= htmlspecialchars($f['description']) ?></p>
+                          </div>
+                        <?php endforeach; ?>
+                      </div>
+                    </div>
+                  </div>
+                  <?php endif; ?>
+
                 </div>
               </div>
             </div>
           <?php endforeach; ?>
+        <?php endif; ?>
+        </div>
+
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const observerOptions = {
+                root: null,
+                rootMargin: "0px",
+                threshold: 0.15
+            };
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("visible");
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll(".cine-reveal").forEach(el => {
+                observer.observe(el);
+            });
+        });
+        </script>
+        
+<style>
+/* Chef's Table Styles */
+.netflix-chef-section {
+    background: #181818;
+    color: #F6F2E9;
+    padding: 120px 0 100px 0;
+    overflow: hidden;
+}
+.netflix-hero-chef {
+    position: relative;
+    width: 100%;
+    margin-bottom: 80px;
+    display: flex;
+    justify-content: center;
+}
+.netflix-hero-image-wrapper {
+    position: relative;
+    width: 65%;
+    max-width: 1000px;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    border-radius: 4px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+}
+.netflix-hero-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    transition: transform 5s ease-out;
+}
+.netflix-hero-image-wrapper:hover img {
+    transform: scale(1.05);
+}
+.netflix-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(24,24,24,1) 0%, rgba(24,24,24,0.4) 40%, transparent 100%);
+    pointer-events: none;
+}
+.netflix-hero-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(201,166,107,0.1) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+}
+.netflix-hero-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 50px 40px;
+    text-align: center;
+    z-index: 2;
+}
+.netflix-hero-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 6vw, 5rem);
+    color: #F6F2E9;
+    margin: 0 0 10px 0;
+    font-weight: 300;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-shadow: 0 10px 30px rgba(0,0,0,0.9);
+}
+.netflix-hero-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #C9A66B;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+.netflix-hero-exp {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    color: #aaa;
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+}
+.netflix-hero-quote {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-style: italic;
+    color: #E2E0D9;
+    margin-bottom: 35px;
+    font-weight: 300;
+}
+.netflix-btn {
+    display: inline-block;
+    padding: 12px 35px;
+    border: 1px solid rgba(201,166,107,0.5);
+    background: transparent;
+    color: #C9A66B;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+.netflix-btn:hover {
+    background: #C9A66B;
+    color: #181818;
+    border-color: #C9A66B;
+}
+
+/* Sub Chefs */
+.netflix-sub-chefs {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.netflix-sub-card {
+    position: relative;
+    width: calc(33.333% - 20px);
+    min-width: 280px;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #111;
+}
+.netflix-sub-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+    opacity: 0.8;
+}
+.netflix-sub-card:hover .netflix-sub-img {
+    transform: scale(1.08);
+    opacity: 1;
+}
+.netflix-sub-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(24,24,24,0.95) 0%, rgba(24,24,24,0.4) 50%, transparent 100%);
+    transition: all 0.4s ease;
+}
+.netflix-sub-card:hover .netflix-sub-overlay {
+    background: rgba(24,24,24,0.8);
+}
+.netflix-sub-info {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    right: 30px;
+    transition: all 0.4s ease;
+}
+.netflix-sub-card:hover .netflix-sub-info {
+    bottom: 50px;
+}
+.netflix-sub-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    color: #F6F2E9;
+    margin-bottom: 5px;
+    font-weight: 300;
+    letter-spacing: 2px;
+}
+.netflix-sub-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    color: #C9A66B;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+.netflix-sub-quote {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-style: italic;
+    color: #ccc;
+    opacity: 0;
+    margin-top: 15px;
+    transform: translateY(10px);
+    transition: all 0.4s ease;
+    transition-delay: 0.1s;
+}
+.netflix-sub-card:hover .netflix-sub-quote {
+    opacity: 1;
+    transform: translateY(0);
+}
+.netflix-sub-btn {
+    display: inline-block;
+    margin-top: 25px;
+    color: #F6F2E9;
+    font-size: 11px;
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    padding-bottom: 3px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.4s ease;
+    transition-delay: 0.2s;
+}
+.netflix-sub-card:hover .netflix-sub-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+.netflix-sub-btn:hover {
+    color: #C9A66B;
+    border-bottom-color: #C9A66B;
+}
+
+@media (max-width: 991px) {
+    .netflix-hero-image-wrapper { width: 90%; aspect-ratio: 4/5; }
+    .netflix-sub-card { width: calc(50% - 15px); }
+}
+@media (max-width: 767px) {
+    .netflix-sub-card { width: 100%; }
+}
+</style>
+
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
+.editorial-chef-section {
+    background: #181818;
+    padding: 140px 0 120px 0;
+    position: relative;
+}
+.editorial-grid {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-top: 60px;
+}
+.editorial-card {
+    position: relative;
+    width: calc(33.333% - 20px);
+    min-width: 300px;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    cursor: pointer;
+    background: #000;
+}
+.editorial-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    filter: grayscale(100%) contrast(1.1);
+    transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    opacity: 0.7;
+}
+.editorial-card:hover .editorial-img {
+    filter: grayscale(0%) contrast(1.05);
+    transform: scale(1.05);
+    opacity: 0.95;
+}
+.editorial-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.1) 50%, transparent 100%);
+    pointer-events: none;
+    transition: all 0.5s ease;
+}
+.editorial-card:hover .editorial-overlay {
+    background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.2) 100%);
+}
+.editorial-signature {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -40%) rotate(-10deg) scale(0.9);
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(3rem, 5vw, 4.5rem);
+    color: #C9A66B;
+    opacity: 0;
+    transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    white-space: nowrap;
+    text-shadow: 0 5px 15px rgba(0,0,0,0.8);
+    pointer-events: none;
+    z-index: 2;
+}
+.editorial-card:hover .editorial-signature {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-10deg) scale(1);
+}
+.editorial-info {
+    position: absolute;
+    bottom: 30px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 3;
+    padding: 0 20px;
+    transition: all 0.5s ease;
+}
+.editorial-card:hover .editorial-info {
+    bottom: 40px;
+}
+.editorial-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px;
+    color: #C9A66B;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.8;
+}
+.editorial-card:hover .editorial-title {
+    opacity: 1;
+}
+.editorial-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    color: #F6F2E9;
+    margin: 0;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+.editorial-btn {
+    display: inline-block;
+    margin-top: 60px;
+    padding: 14px 40px;
+    border: 1px solid rgba(201,166,107,0.5);
+    background: transparent;
+    color: #C9A66B;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+.editorial-btn:hover {
+    background: #C9A66B;
+    color: #181818;
+    border-color: #C9A66B;
+}
+
+@media (max-width: 991px) {
+    .editorial-card { width: calc(50% - 15px); }
+}
+@media (max-width: 767px) {
+    .editorial-card { width: 100%; max-width: 400px; margin: 0 auto; }
+}
+</style>
+
+<section id="chefs" class="editorial-chef-section">
+    <div class="container position-relative z-1">
+      <div class="section-title text-center" style="margin-bottom: 30px !important;">
+        <p style="color: #A88746; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 6px; text-transform: uppercase; margin-bottom: 15px;">Đội Ngũ Đầu Bếp</p>
+        <h2 style="color: #F6F2E9; font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; letter-spacing: 4px; text-transform: uppercase;">Những Nghệ Nhân Ẩm Thực Hàng Đầu</h2>
+      </div>
+      
+      <div class="editorial-grid">
+        <?php if (!empty($home_chefs)): ?>
+          <?php 
+          $delay = 0.1;
+          foreach ($home_chefs as $chef): 
+          ?>
+            <div class="editorial-card cine-reveal" style="transition-delay: <?= $delay ?>s;" onclick="window.location.href='chefs.php'">
+              <img class="editorial-img" src="public/assets/img/chefs/<?= htmlspecialchars($chef['image']) ?>" alt="<?= htmlspecialchars($chef['name']) ?>" onerror="this.src='public/assets/img/chefs/default-chef.jpg'">
+              <div class="editorial-overlay"></div>
+              <div class="editorial-signature"><?= htmlspecialchars($chef['name']) ?></div>
+              <div class="editorial-info">
+                  <div class="editorial-title"><?= htmlspecialchars($chef['position']) ?></div>
+                  <h4 class="editorial-name"><?= htmlspecialchars($chef['name']) ?></h4>
+              </div>
+            </div>
+          <?php 
+          $delay += 0.2;
+          endforeach; 
+          ?>
         <?php else: ?>
           <p class="text-center" style="color:#666666; font-style: italic;">Chưa có thông tin đầu bếp.</p>
         <?php endif; ?>
       </div>
       
-      <div class="text-center mt-5">
-        <a href="chefs.php" class="btn-combo-order" style="display:inline-block; width: auto; padding: 12px 36px;">TẤT CẢ ĐẦU BẾP</a>
+      <div class="text-center">
+        <a href="chefs.php" class="editorial-btn">TẤT CẢ ĐẦU BẾP</a>
       </div>
     </div>
-  </section>
-
+</section>
   <!-- ATMOSPHERE & GALLERY SECTION -->
-  <section id="atmosphere" style="background: #F6F2E9; padding: 140px 0; position: relative;">
+  <section id="atmosphere" style="background: #1A1A1D; padding: 140px 0; position: relative;">
     <div class="container" style="position: relative; z-index: 1;">
-      <div class="section-title text-center mb-5" style="margin-bottom: 70px !important;">
-        <p style="color: #C9A66B; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Không Gian & Trải Nghiệm</p>
-        <h2 style="color: #4F5B3A; font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Kiệt Tác Kiến Trúc Tĩnh Lặng</h2>
-        <div style="width: 1px; height: 40px; background: #C9A66B; margin: 20px auto;"></div>
+      <div class="section-title text-center mb-5" style="margin-bottom: 30px !important;">
+        <p style="color: #A88746; font-family: 'Open Sans', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Không Gian & Trải Nghiệm</p>
+        <h2 style="color: #A88746; font-family: 'Montserrat', sans-serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Kiệt Tác Kiến Trúc Tĩnh Lặng</h2>
       </div>
 
       <!-- Asymmetric Grid Gallery -->
@@ -740,26 +1176,26 @@ document.addEventListener('DOMContentLoaded', function() {
     border-radius: 50px;
     transition: 0.3s;
     color: white;
-    border: 2px solid #cda45e;
+    border: 2px solid #A88746;
     text-decoration: none;
   }
 
   .btn-book-custom {
-    background: #cda45e;
+    background: #A88746;
   }
 
   .btn-book-custom:hover,
   .btn-menu-custom:hover,
   .btn-view-all-custom:hover {
-    background: #cda45e;
+    background: #A88746;
     color: #fff;
   }
 
   .explore-menu-link {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-size: 0.9rem;
     letter-spacing: 3px;
-    color: #4F5B3A;
+    color: #A88746;
     text-decoration: none;
     text-transform: uppercase;
     border-bottom: 2px solid #d9ba85;
@@ -770,8 +1206,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /* --- MICHELIN COMBO CARDS --- */
   .combo-card-custom {
-    background: #fff;
-    border: 1px solid rgba(79,91,58,0.2);
+    background: #262629;
+    border: 1px solid rgba(168, 135, 70,0.2);
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -783,7 +1219,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   .combo-card-custom:hover {
     transform: translateY(-8px);
-    border-color: #4F5B3A;
+    border-color: #A88746;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   }
 
@@ -817,10 +1253,10 @@ document.addEventListener('DOMContentLoaded', function() {
     position: absolute;
     top: 20px;
     left: 20px;
-    background: #C9A66B;
+    background: #A88746;
     backdrop-filter: blur(8px);
-    border: 1px solid #C9A66B;
-    color: #222222;
+    border: 1px solid #A88746;
+    color: #D1D1D1;
     font-size: 9px;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -841,11 +1277,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   .combo-name-custom {
-    color: #222222;
+    color: #D1D1D1;
     margin: 0 0 8px 0;
     font-size: 26px;
     font-weight: 400;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     letter-spacing: 1px;
     line-height: 1.3;
   }
@@ -875,7 +1311,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   .combo-items-list span {
-    color: #222222;
+    color: #D1D1D1;
     font-size: 13.5px;
     font-weight: 300;
     letter-spacing: 0.5px;
@@ -885,7 +1321,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   .combo-items-list span::before {
     content: '•';
-    color: #C9A66B;
+    color: #A88746;
     margin-right: 12px;
     font-size: 14px;
   }
@@ -899,7 +1335,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   .combo-price-custom {
-    color: #C9A66B;
+    color: #A88746;
     font-weight: 500;
     font-size: 15px;
     letter-spacing: 1px;
@@ -907,8 +1343,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   .btn-combo-order {
     background: transparent;
-    color: #C9A66B;
-    border: 1px solid #C9A66B;
+    color: #A88746;
+    border: 1px solid #A88746;
     padding: 10px 24px;
     font-weight: 500;
     font-size: 11px;
@@ -919,8 +1355,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   .btn-combo-order:hover {
     background: rgba(198, 167, 106, 0.1);
-    color: #222222;
-    border-color: #C9A66B;
+    color: #D1D1D1;
+    border-color: #A88746;
   }
 
   /* --- MICHELIN CHEFS SECTION --- */
@@ -929,16 +1365,16 @@ document.addEventListener('DOMContentLoaded', function() {
     font-weight: 500;
     letter-spacing: 4px;
     text-transform: uppercase;
-    color: #C9A66B;
-    font-family: 'Poppins', sans-serif;
+    color: #A88746;
+    font-family: 'Open Sans', sans-serif;
   }
 
   .chefs-title {
     margin: 15px 0 0 0;
     font-size: 42px;
     font-weight: 400;
-    font-family: 'Playfair Display', serif;
-    color: #222222;
+    font-family: 'Montserrat', sans-serif;
+    color: #D1D1D1;
     letter-spacing: 1px;
   }
 
@@ -946,7 +1382,7 @@ document.addEventListener('DOMContentLoaded', function() {
     border-radius: 0;
     overflow: hidden;
     position: relative;
-    background: #fff;
+    background: #262629;
     box-shadow: 0 5px 25px rgba(0,0,0,0.05);
   }
 
@@ -966,7 +1402,7 @@ document.addEventListener('DOMContentLoaded', function() {
   .chef-placeholder-img {
     width: 100%;
     height: 100%;
-    background: #E0DDD5;
+    background: #333336;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -987,7 +1423,7 @@ document.addEventListener('DOMContentLoaded', function() {
     left: 0;
     right: 0;
     padding: 60px 30px 30px 30px;
-    background: linear-gradient(to top, rgba(79,91,58, 0.95) 0%, rgba(79,91,58, 0.7) 40%, transparent 100%);
+    background: linear-gradient(to top, rgba(168, 135, 70, 0.95) 0%, rgba(168, 135, 70, 0.7) 40%, transparent 100%);
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -997,7 +1433,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   .chef-quote {
     color: rgba(246, 241, 231, 0.8);
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 16px;
     font-style: italic;
     line-height: 1.6;
@@ -1029,21 +1465,21 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   .chef-name {
-    color: #222222;
+    color: #D1D1D1;
     font-size: 24px;
     font-weight: 400;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     margin-bottom: 5px;
     letter-spacing: 1px;
   }
 
   .chef-title {
-    color: #C9A66B;
+    color: #A88746;
     font-size: 11px;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 3px;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Open Sans', sans-serif;
   }
 
   /* --- ATMOSPHERE & GALLERY --- */
@@ -1073,7 +1509,7 @@ document.addEventListener('DOMContentLoaded', function() {
     content: '';
     position: absolute;
     inset: 0;
-    border: 1px solid rgba(79, 91, 58, 0);
+    border: 1px solid rgba(168, 135, 70, 0);
     transition: all 0.6s ease;
     pointer-events: none;
   }
@@ -1084,7 +1520,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   .atmo-item:hover::after {
-    border-color: rgba(79, 91, 58, 0.4);
+    border-color: rgba(168, 135, 70, 0.4);
     inset: 15px; /* Creates an inner border effect */
   }
 

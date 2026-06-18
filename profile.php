@@ -217,7 +217,7 @@ $plans = $vipPlanModel->getAllPlans();
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
 <style>
 /* ══ TOKENS ══ */
@@ -225,8 +225,8 @@ include __DIR__ . '/views/client/layouts/header.php';
   --F:      #143B36;        /* forest — dùng ít */
   --F-lt:   #1a4d46;
   --F-pale: #e8f0ef;        /* forest rất nhạt — bg highlight */
-  --gold:   #c8933a;
-  --gold-lt:#f0e0c0;
+  --accent-burgundy:   #c8933a;
+  --accent-burgundy-lt:#f0e0c0;
   --bg:     #f7f5f1;         /* kem ấm — nền chính */
   --bg2:    #ffffff;
   --ink:    #1a1814;
@@ -299,7 +299,7 @@ body{
 }
 .av-ring img{width:100%;height:100%;object-fit:cover;}
 .prof-name{
-  font-family:'Playfair Display',serif;font-weight:600;
+  font-family:'Montserrat',serif;font-weight:600;
   font-size:1.1rem;color:#fff;margin:0 0 4px;
 }
 .prof-email{font-size:12px;color:rgba(255,255,255,.6);margin:0;}
@@ -334,7 +334,7 @@ body{
 .stat-cell{
   background:var(--bg2);padding:14px 10px;text-align:center;
 }
-.stat-val{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--F);font-weight:600;}
+.stat-val{font-family:'Montserrat',serif;font-size:1.4rem;color:var(--F);font-weight:600;}
 .stat-lbl{font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:.04em;}
 
 /* ══ CONTENT CARD ══ */
@@ -358,7 +358,7 @@ body{
   font-size:16px;color:var(--F);flex-shrink:0;
 }
 .pc-title{
-  font-family:'Playfair Display',serif;font-size:1.1rem;
+  font-family:'Montserrat',serif;font-size:1.1rem;
   font-weight:600;color:var(--ink);margin:0;padding-bottom:18px;
   border-bottom:2px solid var(--F);display:inline-block;
   line-height:1.2;
@@ -378,7 +378,7 @@ body{
   color:var(--ink);background:var(--bg);
   outline:none;transition:.2s;
 }
-.fi:focus{border-color:var(--F);box-shadow:0 0 0 3px rgba(20,59,54,.08);background:#fff;}
+.fi:focus{border-color:var(--F);box-shadow:0 0 0 3px rgba(20,59,54,.08);background: #262629;}
 .fi::placeholder{color:rgba(26,24,20,.3);}
 
 /* Avatar upload in form */
@@ -462,7 +462,7 @@ body{
 }
 .bk-card:hover{box-shadow:var(--sh);}
 .bk-id{font-size:10px;letter-spacing:.12em;color:var(--F);font-weight:600;text-transform:uppercase;margin-bottom:3px;}
-.bk-date{font-family:'Playfair Display',serif;font-size:1rem;color:var(--ink);font-weight:600;}
+.bk-date{font-family:'Montserrat',serif;font-size:1rem;color:var(--ink);font-weight:600;}
 .bk-meta{font-size:12px;color:var(--muted);margin-top:4px;}
 .bk-badge{
   display:inline-block;font-size:10px;font-weight:600;padding:4px 10px;border-radius:6px;
@@ -514,7 +514,7 @@ body{
   border-radius:var(--r);box-shadow:var(--sh-lg);
 }
 .modal-header{border-bottom:1px solid var(--border);padding:20px 24px;}
-.modal-title{font-family:'Playfair Display',serif;font-size:1rem;color:var(--ink);font-weight:600;}
+.modal-title{font-family:'Montserrat',serif;font-size:1rem;color:var(--ink);font-weight:600;}
 .modal-footer{border-top:1px solid var(--border);padding:16px 24px;gap:8px;}
 .btn-close{opacity:.4;}
 
@@ -972,7 +972,7 @@ body{
         <form method="POST">
           <div class="row g-4">
             <div class="col-md-12 mb-2">
-              <h6 style="color:var(--gold); font-family:'Playfair Display',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-fire me-2"></i>Mức độ chín của Bò (Meat Doneness)</h6>
+              <h6 style="color:var(--accent-burgundy); font-family:'Montserrat',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-fire me-2"></i>Mức độ chín của Bò (Meat Doneness)</h6>
               <div class="d-flex flex-wrap gap-3 mt-3">
                 <?php $dopts = ['Rare', 'Medium Rare', 'Medium', 'Medium Well', 'Well Done']; 
                 foreach($dopts as $d): ?>
@@ -984,7 +984,7 @@ body{
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--gold); font-family:'Playfair Display',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-palette me-2"></i>Phong cách Hương vị (Flavor Profile)</h6>
+              <h6 style="color:var(--accent-burgundy); font-family:'Montserrat',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-palette me-2"></i>Phong cách Hương vị (Flavor Profile)</h6>
               <div class="d-flex flex-column gap-2 mt-3">
                 <?php $fopts = ['Đậm vị (Bold/Rich)', 'Thanh nhẹ (Light/Fresh)', 'Umami (Ngọt tự nhiên)', 'Ít béo (Low Fat)', 'Ăn Cay (Spicy)']; 
                 foreach($fopts as $f): ?>
@@ -996,7 +996,7 @@ body{
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--gold); font-family:'Playfair Display',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-star me-2"></i>Nguyên liệu yêu thích (Favorites)</h6>
+              <h6 style="color:var(--accent-burgundy); font-family:'Montserrat',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-star me-2"></i>Nguyên liệu yêu thích (Favorites)</h6>
               <div class="d-flex flex-column gap-2 mt-3">
                 <?php 
                 $favopts = [
@@ -1015,7 +1015,7 @@ body{
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--gold); font-family:'Playfair Display',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-x-circle me-2"></i>Không thích ăn (Dislikes)</h6>
+              <h6 style="color:var(--accent-burgundy); font-family:'Montserrat',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-x-circle me-2"></i>Không thích ăn (Dislikes)</h6>
               <div class="d-flex flex-wrap gap-2 mt-3">
                 <?php $disopts = ['Hành lá', 'Rau mùi', 'Hành tây', 'Tỏi', 'Ớt chuông', 'Tiêu xanh', 'Thịt mỡ']; 
                 foreach($disopts as $dis): ?>
@@ -1027,10 +1027,10 @@ body{
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:#d64545; font-family:'Playfair Display',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-exclamation-triangle-fill me-2"></i>Dị ứng Y Tế (Allergies)</h6>
+              <h6 style="color:#d64545; font-family:'Montserrat',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-exclamation-triangle-fill me-2"></i>Dị ứng Y Tế (Allergies)</h6>
               <div class="d-flex flex-wrap gap-2 mt-3">
                 <?php 
-                $algopts = ['Sữa', 'Trứng', 'Đậu phộng', 'Hạt cây', 'Đậu nành', 'Lúa mì / Gluten', 'Hải sản', 'Cá', 'Động vật có vỏ', 'Động vật thân mềm', 'Mè / Vừng', 'Mù tạt', 'Cần tây', 'Sulphites', 'Đậu Lupin']; 
+                $algopts = ['Sữa', 'Trứng', 'Đậu phộng', 'Hạt cây', 'Đậu nành', 'Lúa mì / Gluten', 'Hải sản', 'Cá', 'Hải sản có vỏ', 'Động vật thân mềm', 'Mè / Vừng', 'Mù tạt', 'Quả hạch (Hạt quả hạch Brazil, Hạt hạnh nhân, Hạt mắc ca, Hạt điều, Hạt dẻ cười, Hạt óc chó, Hạt thông)', 'Sulphites', 'Đậu Lupin']; 
                 $my_allergies = array_map('trim', explode(',', $current_user['allergies'] ?? ''));
                 $other_allergies = array_filter($my_allergies, function($alg) use ($algopts) {
                     return !in_array($alg, $algopts) && !empty($alg);
@@ -1293,10 +1293,10 @@ body{
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content" style="border:none; border-radius:12px; overflow:hidden;">
       <div class="modal-header" style="background:var(--F); color:#fff; border-bottom:none;">
-        <h5 class="modal-title" style="font-family:'Playfair Display',serif;"><i class="bi bi-receipt me-2"></i>Chi Tiết Đơn Đặt Bàn</h5>
+        <h5 class="modal-title" style="font-family:'Montserrat',serif;"><i class="bi bi-receipt me-2"></i>Chi Tiết Đơn Đặt Bàn</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body" id="bookingDetailsContent" style="padding:25px; background:#fff;">
+      <div class="modal-body" id="bookingDetailsContent" style="padding:25px; background: #262629;">
         <div class="text-center p-4 text-muted"><i class="bi bi-arrow-repeat spin me-2"></i>Đang tải dữ liệu...</div>
       </div>
     </div>
