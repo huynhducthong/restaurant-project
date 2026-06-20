@@ -159,14 +159,14 @@ include __DIR__ . '/views/client/layouts/header.php';
 
 <style>
 :root {
-    --news-bg: #1A1A1D;         /* Cream */
+    --news-bg: #F9F9F9;         /* Cream */
     --news-card-bg: #ffffff;     /* Pure White cards to pop off the cream */
     --news-dark-bg: #ffffff;    /* Very light gray for inner inputs */
     --news-gold: #A88746;       /* Gold highlights */
     --news-gold-hover: #b89248; /* Saturated hover state for gold links */
     --news-gold-muted: rgba(168, 135, 70, 0.1);
-    --news-text: #D1D1D1;       /* Bright pure white text for outside cards */
-    --news-text-dark: #D1D1D1;  /* High contrast dark text for inside white cards */
+    --news-text: #222222;       /* Bright pure white text for outside cards */
+    --news-text-dark: #222222;  /* High contrast dark text for inside white cards */
     --news-text-muted: #555555; /* Bright light gray text for outside cards */
     --news-text-muted-dark: #555555; /* High contrast medium dark gray for tóm tắt/meta inside white cards */
     --news-border: rgba(168, 135, 70, 0.15);
@@ -185,7 +185,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 
 /* Typography elements */
 .font-playfair {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
 }
 
 /* Breadcrumbs */
@@ -222,7 +222,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     box-shadow: 0 10px 30px rgba(0,0,0,0.02);
 }
 .widget-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 16px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -253,7 +253,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     padding-bottom: 0;
 }
 .popular-number {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 38px;
     font-weight: 700;
     color: var(--news-gold);
@@ -323,7 +323,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     box-shadow: 0 10px 30px rgba(0,0,0,0.02);
 }
 .newsletter-sidebar-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--news-gold);
@@ -437,7 +437,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     justify-content: space-between;
 }
 .news-row-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -504,7 +504,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     letter-spacing: 1px;
 }
 .article-headline {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 34px;
     font-weight: 700;
     line-height: 1.35;
@@ -661,7 +661,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     padding-top: 30px;
 }
 .related-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -696,7 +696,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     padding: 12px;
 }
 .related-card-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 14px;
     color: var(--news-text-dark);
     font-weight: 600;
@@ -726,7 +726,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     margin-bottom: 20px;
 }
 .vne-comments-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 20px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -796,7 +796,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     gap: 4px;
 }
 .vne-comment-inp-name {
-    background: #262629;
+    background: #FFFFFF;
     border: 1px solid var(--news-border-light);
     border-radius: 4px;
     padding: 4px 8px;
@@ -906,7 +906,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     left: 50%;
     transform: translateX(-50%);
     background: #A88746;
-    color: #0c0b09;
+    color: #F9F9F9;
     padding: 10px 20px;
     border-radius: 50px;
     font-weight: 700;
@@ -958,7 +958,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     font-size: 16px;
     font-weight: 700;
     color: var(--news-text-dark);
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
 }
 .news-modal-close {
     background: none;
@@ -1087,7 +1087,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 .vne-report-textarea {
     width: 100%;
     height: 110px;
-    background: #262629;
+    background: #FFFFFF;
     border: 1px solid var(--news-border-light);
     border-radius: 6px;
     color: var(--news-text-dark);
@@ -1876,7 +1876,7 @@ function showToast(msg, bg = '#A88746') {
     if (!t) return;
     t.textContent = msg;
     t.style.background = bg;
-    t.style.color = bg === '#A88746' ? '#0c0b09' : '#ffffff';
+    t.style.color = bg === '#A88746' ? '#F9F9F9' : '#ffffff';
     t.style.display = 'block';
     setTimeout(() => { t.style.display = 'none'; }, 2800);
 }

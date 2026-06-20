@@ -65,7 +65,7 @@ if ($is_success) {
     }
 }
 ?>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
     /* === TOKENS === */
     :root {
@@ -127,7 +127,7 @@ if ($is_success) {
     }
 
     .bk-hero h1 {
-        font-family: 'Montserrat', sans-serif;
+        font-family: 'Cormorant Garamond', serif;
         font-size: clamp(2.2rem, 5vw, 3.5rem);
         font-weight: 400;
         color: #fff;
@@ -202,7 +202,7 @@ if ($is_success) {
 
     /* === SEAMLESS FORM BOX (THAY THẾ CARD2) === */
     .seamless-box {
-        background: #262629;
+        background: #FFFFFF;
         border-radius: var(--r);
         box-shadow: var(--shadow);
         padding: 45px;
@@ -216,7 +216,7 @@ if ($is_success) {
     }
 
     .section-heading {
-        font-family: 'Montserrat', sans-serif;
+        font-family: 'Cormorant Garamond', serif;
         font-size: 1.45rem;
         color: var(--g1);
         margin-bottom: 24px;
@@ -289,7 +289,7 @@ if ($is_success) {
     }
 
     .fi:focus {
-        background: #262629;
+        background: #FFFFFF;
         border-color: var(--g2);
         box-shadow: 0 0 0 3px rgba(20, 59, 54, .08);
     }
@@ -299,7 +299,7 @@ if ($is_success) {
     }
 
     .fi option {
-        background: #262629;
+        background: #FFFFFF;
         color: var(--ink);
     }
 
@@ -352,7 +352,7 @@ if ($is_success) {
         background: transparent;
         font-size: 18px;
         font-weight: 600;
-        font-family: 'Montserrat', sans-serif;
+        font-family: 'Cormorant Garamond', serif;
         color: var(--ink);
         outline: none;
         min-width: 0;
@@ -465,7 +465,7 @@ if ($is_success) {
 
     .cc:hover {
         border-color: rgba(20, 59, 54, .2);
-        background: #262629;
+        background: #FFFFFF;
     }
 
     .cc:hover::before {
@@ -588,7 +588,7 @@ if ($is_success) {
         padding: 0;
         outline: none;
         display: none;
-        background: #262629;
+        background: #FFFFFF;
         font-family: 'Open Sans', sans-serif;
     }
 
@@ -621,7 +621,7 @@ if ($is_success) {
     }
 
     .sb-head h5 {
-        font-family: 'Montserrat', sans-serif;
+        font-family: 'Cormorant Garamond', serif;
         font-size: 1.15rem;
         font-weight: 400;
         color: #fff;
@@ -687,7 +687,7 @@ if ($is_success) {
     }
 
     .deposit-num {
-        font-family: 'Montserrat', sans-serif;
+        font-family: 'Cormorant Garamond', serif;
         font-size: 2.4rem;
         font-weight: 400;
         color: var(--accent-burgundy);
@@ -752,7 +752,7 @@ if ($is_success) {
     }
 
     .modal-title {
-        font-family: 'Montserrat', sans-serif;
+        font-family: 'Cormorant Garamond', serif;
         font-size: 1.1rem;
         font-weight: 400;
     }
@@ -895,10 +895,10 @@ if ($is_success) {
                 Đội ngũ chúng tôi sẽ gọi điện xác nhận cho bạn qua số <span style="color: #111; font-weight: 600;"><?= htmlspecialchars($booking['customer_phone']) ?></span> sớm nhất.
             </p>
             <div class="svc-tabs" style="gap: 15px; justify-content: center; animation: fadeInUp 0.8s var(--ease) 0.4s both;">
-                <a href="admin/export_pdf.php?id=<?= $booking['id'] ?>" class="btn-go" style="width: auto; padding: 14px 40px; margin-top: 0; background: #111; color: var(--accent-burgundy); border: 1px solid var(--accent-burgundy); border-radius: 0; font-family:'Montserrat',serif; font-size:16px;">
+                <a href="admin/export_pdf.php?id=<?= $booking['id'] ?>" class="btn-go" style="width: auto; padding: 14px 40px; margin-top: 0; background: #111; color: var(--accent-burgundy); border: 1px solid var(--accent-burgundy); border-radius: 0; font-family:'Cormorant Garamond', serif; font-size:16px;">
                     <i class="fas fa-file-pdf me-2"></i> Tải Phiếu Xác Nhận
                 </a>
-                <a href="index.php" class="svc-tab" style="padding: 14px 40px; border-radius: 0; border: 1px solid #ddd; color: #111; background: transparent; font-family:'Montserrat',serif; font-size:16px;">
+                <a href="index.php" class="svc-tab" style="padding: 14px 40px; border-radius: 0; border: 1px solid #ddd; color: #111; background: transparent; font-family:'Cormorant Garamond', serif; font-size:16px;">
                     Về trang chủ
                 </a>
             </div>
@@ -913,7 +913,7 @@ if ($is_success) {
     </style>
 
     <div class="bk-wrap" style="margin-top: -60px; grid-template-columns: 1fr; max-width: 850px; animation: fadeInUp 1s var(--ease) 0.5s both;">
-        <div class="seamless-box" style="padding: 50px; border: 1px solid rgba(212, 176, 106, 0.2); background: #262629 url('https://www.transparenttextures.com/patterns/cubes.png');">
+        <div class="seamless-box" style="padding: 50px; border: 1px solid rgba(212, 176, 106, 0.2); background: #FFFFFF url('https://www.transparenttextures.com/patterns/cubes.png');">
             <div style="text-align: center; margin-bottom: 40px;">
                 <h3 class="section-heading" style="justify-content: center; font-size: 1.8rem; margin-bottom: 10px;">Chi tiết đặt dịch vụ</h3>
                 <div style="width: 50px; height: 2px; background: var(--accent-burgundy); margin: 0 auto;"></div>
@@ -945,7 +945,7 @@ if ($is_success) {
                 if ($has_bespoke): 
             ?>
             <div style="margin-bottom: 40px;">
-                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.3rem; color: var(--g1); margin-bottom: 15px;"><i class="fas fa-magic me-2" style="color:var(--accent-burgundy);"></i> Trải Nghiệm Cá Nhân Hóa (Bespoke)</h4>
+                <h4 style="font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: var(--g1); margin-bottom: 15px;"><i class="fas fa-magic me-2" style="color:var(--accent-burgundy);"></i> Trải Nghiệm Cá Nhân Hóa (Bespoke)</h4>
                 <div style="background: rgba(205, 164, 94, 0.05); border: 1px solid rgba(205, 164, 94, 0.2); border-radius: 12px; padding: 25px;">
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                         <?php if (!empty($booking['event_type'])): ?>
@@ -992,8 +992,8 @@ if ($is_success) {
 
             <?php if (!empty($booking_items)): ?>
             <div style="margin-bottom: 40px;">
-                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.3rem; color: var(--g1); margin-bottom: 15px;"><i class="fas fa-utensils me-2" style="color:var(--accent-burgundy);"></i> Thực Đơn Đã Chọn</h4>
-                <div style="border: 1px solid rgba(20, 59, 54, 0.1); border-radius: 12px; padding: 20px; background: #262629;">
+                <h4 style="font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: var(--g1); margin-bottom: 15px;"><i class="fas fa-utensils me-2" style="color:var(--accent-burgundy);"></i> Thực Đơn Đã Chọn</h4>
+                <div style="border: 1px solid rgba(20, 59, 54, 0.1); border-radius: 12px; padding: 20px; background: #FFFFFF;">
                     <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                         <thead>
                             <tr style="border-bottom: 2px solid rgba(20, 59, 54, 0.1); color: var(--g1); font-weight: bold; text-align: left;">
@@ -1032,7 +1032,7 @@ if ($is_success) {
 
             <div style="background: var(--g0); color: #fff; padding: 25px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5);">Tiền tạm tính</div>
+                    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(0,0,0,0.5);">Tiền tạm tính</div>
                     <div style="font-size: 1.4rem; font-weight: 600; color: var(--accent-burgundy);"><?= number_format($booking['total_amount']) ?>đ</div>
                 </div>
                 <div style="text-align: right;">
@@ -1040,7 +1040,7 @@ if ($is_success) {
                         <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #34d399;"><i class="fas fa-check-circle me-1"></i>Đã thanh toán cọc</div>
                         <div style="font-size: 1.4rem; font-weight: 600; color: #34d399;"><?= number_format($booking['deposit_amount']) ?>đ</div>
                     <?php else: ?>
-                        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5);">Tiền cọc cần thanh toán</div>
+                        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(0,0,0,0.5);">Tiền cọc cần thanh toán</div>
                         <div style="font-size: 1.4rem; font-weight: 600; color: #e53e3e;"><?= number_format($booking['deposit_amount']) ?>đ</div>
                     <?php endif; ?>
                 </div>

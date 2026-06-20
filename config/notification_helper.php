@@ -271,11 +271,11 @@ function sendBookingEmailConfirmation($emailNguoiNhan, $booking_info) {
 
         $mail->Body = "
             <div style='max-width: 600px; margin: auto; border: 2px solid #A88746; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
-                <div style='background-color: #0c0b09; padding: 20px; text-align: center;'>
+                <div style='background-color: #F9F9F9; padding: 20px; text-align: center;'>
                     <h1 style='color: #A88746; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
                     <p style='color: #fff; margin: 5px 0 0; font-size: 14px;'>Fine Dining Experience</p>
                 </div>
-                <div style='padding: 30px; background-color: #262629;'>
+                <div style='padding: 30px; background-color: #FFFFFF;'>
                     <h2 style='color: #2c2c2c; margin-top: 0;'>Kính chào $name,</h2>
                     <p style='color: #555; line-height: 1.6;'>Cảm ơn quý khách đã tin tưởng và lựa chọn dịch vụ tại Restaurantly. Chúng tôi xin trân trọng xác nhận yêu cầu đặt bàn của quý khách đã được hệ thống ghi nhận thành công.</p>
                     
@@ -343,11 +343,11 @@ function sendBookingReminderEmail($emailNguoiNhan, $booking_info) {
 
         $mail->Body = "
             <div style='max-width: 600px; margin: auto; border: 2px solid #A88746; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
-                <div style='background-color: #0c0b09; padding: 20px; text-align: center;'>
+                <div style='background-color: #F9F9F9; padding: 20px; text-align: center;'>
                     <h1 style='color: #A88746; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
                     <p style='color: #fff; margin: 5px 0 0; font-size: 14px;'>Fine Dining Experience</p>
                 </div>
-                <div style='padding: 30px; background-color: #262629;'>
+                <div style='padding: 30px; background-color: #FFFFFF;'>
                     <h2 style='color: #2c2c2c; margin-top: 0;'>Kính chào $name,</h2>
                     <p style='color: #555; line-height: 1.6;'>Đây là lời nhắc nhở tự động từ nhà hàng Restaurantly. Bạn có một lịch hẹn đặt bàn sẽ diễn ra trong khoảng <strong>30 phút nữa</strong>.</p>
                     
@@ -415,11 +415,11 @@ function sendBookingCancelEmail($emailNguoiNhan, $booking_info) {
 
         $mail->Body = "
             <div style='max-width: 600px; margin: auto; border: 2px solid #A88746; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
-                <div style='background-color: #0c0b09; padding: 20px; text-align: center;'>
+                <div style='background-color: #F9F9F9; padding: 20px; text-align: center;'>
                     <h1 style='color: #A88746; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
                     <p style='color: #fff; margin: 5px 0 0; font-size: 14px;'>Fine Dining Experience</p>
                 </div>
-                <div style='padding: 30px; background-color: #262629;'>
+                <div style='padding: 30px; background-color: #FFFFFF;'>
                     <h2 style='color: #d32f2f; margin-top: 0;'>Kính chào $name,</h2>
                     <p style='color: #555; line-height: 1.6;'>Chúng tôi vô cùng xin lỗi vì sự bất tiện này, nhưng do sự cố khách quan vượt ngoài mong muốn, chúng tôi buộc phải <strong>hủy lịch đặt bàn</strong> của quý khách.</p>
                     
@@ -437,6 +437,117 @@ function sendBookingCancelEmail($emailNguoiNhan, $booking_info) {
                     <p style='color: #555; line-height: 1.6;'>Quý khách vui lòng liên hệ ngay với quản lý nhà hàng qua Hotline: <strong>0123 456 789</strong> để được hỗ trợ giải quyết nhanh chóng nhất hoặc đặt lại lịch mới với ưu đãi đền bù.</p>
                     
                     <p style='color: #555; line-height: 1.6; margin-bottom: 0;'>Một lần nữa xin chân thành cáo lỗi cùng quý khách!</p>
+                </div>
+            </div>";
+
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+function sendVipRegistrationEmail($emailNguoiNhan, $name, $plan_name, $price, $end_date) {
+    if (empty($emailNguoiNhan)) return false;
+    
+    if (!class_exists('PHPMailer\\PHPMailer\\PHPMailer')) {
+        require_once __DIR__ . '/../vendor/autoload.php';
+    }
+
+    $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host       = $_ENV['MAIL_HOST'] ?? 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $_ENV['MAIL_USERNAME'] ?? ''; 
+        $mail->Password   = $_ENV['MAIL_PASSWORD'] ?? ''; 
+        $mail->SMTPSecure = $_ENV['MAIL_ENCRYPTION'] ?? 'tls';
+        $mail->Port       = $_ENV['MAIL_PORT'] ?? 587;
+        $mail->CharSet    = 'UTF-8';
+
+        $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'] ?? 'noreply@restaurantly.com', 'Restaurantly Admin');
+        $mail->addAddress($emailNguoiNhan);
+
+        $mail->isHTML(true);
+        $mail->Subject = 'Kích Hoạt Đặc Quyền VIP Thành Công - Restaurantly';
+        
+        $priceStr = number_format((float)$price, 0, ',', '.');
+
+        $mail->Body = "
+            <div style='max-width: 600px; margin: auto; border: 2px solid #A88746; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
+                <div style='background-color: #F9F9F9; padding: 20px; text-align: center;'>
+                    <h1 style='color: #A88746; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
+                    <p style='color: #222; margin: 5px 0 0; font-size: 14px;'>Fine Dining Experience</p>
+                </div>
+                <div style='padding: 30px; background-color: #FFFFFF;'>
+                    <h2 style='color: #2c2c2c; margin-top: 0;'>Kính chào $name,</h2>
+                    <p style='color: #555; line-height: 1.6;'>Cảm ơn quý khách đã tin tưởng và nâng tầm trải nghiệm ẩm thực cùng Restaurantly. Chúng tôi xin trân trọng thông báo <strong>Đặc quyền VIP</strong> của quý khách đã được kích hoạt thành công.</p>
+                    
+                    <div style='background-color: #f9f6f0; padding: 20px; border-left: 4px solid #A88746; margin: 25px 0;'>
+                        <h3 style='margin-top: 0; color: #A88746;'>Thông Tin Gói VIP</h3>
+                        <table style='width: 100%; border-collapse: collapse; font-size: 15px;'>
+                            <tr><td style='padding: 8px 0; color: #666; width: 40%;'>Gói Hội Viên:</td><td style='padding: 8px 0; font-weight: bold;'>$plan_name</td></tr>
+                            <tr><td style='padding: 8px 0; color: #666;'>Giá:</td><td style='padding: 8px 0; font-weight: bold;'>$priceStr VNĐ</td></tr>
+                            <tr><td style='padding: 8px 0; color: #666;'>Hiệu lực đến:</td><td style='padding: 8px 0; font-weight: bold;'>$end_date</td></tr>
+                        </table>
+                    </div>
+                    
+                    <p style='color: #555; line-height: 1.6;'>Giờ đây, quý khách có thể tận hưởng toàn bộ các đặc quyền của hạng thẻ $plan_name, bao gồm chiết khấu hóa đơn, ưu tiên đặt bàn và các dịch vụ Fine Dining thượng lưu khác.</p>
+                    
+                    <p style='color: #555; line-height: 1.6; margin-bottom: 0;'>Rất hân hạnh được phục vụ quý khách tại nhà hàng!</p>
+                </div>
+            </div>";
+
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+function sendVipCancellationEmail($emailNguoiNhan, $name) {
+    if (empty($emailNguoiNhan)) return false;
+    
+    if (!class_exists('PHPMailer\\PHPMailer\\PHPMailer')) {
+        require_once __DIR__ . '/../vendor/autoload.php';
+    }
+
+    $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host       = $_ENV['MAIL_HOST'] ?? 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $_ENV['MAIL_USERNAME'] ?? ''; 
+        $mail->Password   = $_ENV['MAIL_PASSWORD'] ?? ''; 
+        $mail->SMTPSecure = $_ENV['MAIL_ENCRYPTION'] ?? 'tls';
+        $mail->Port       = $_ENV['MAIL_PORT'] ?? 587;
+        $mail->CharSet    = 'UTF-8';
+
+        $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'] ?? 'noreply@restaurantly.com', 'Restaurantly Admin');
+        $mail->addAddress($emailNguoiNhan);
+
+        $mail->isHTML(true);
+        $mail->Subject = 'Xác Nhận Hủy Gói VIP - Restaurantly';
+        
+        $mail->Body = "
+            <div style='max-width: 600px; margin: auto; border: 2px solid #A88746; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
+                <div style='background-color: #F9F9F9; padding: 20px; text-align: center;'>
+                    <h1 style='color: #A88746; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
+                    <p style='color: #222; margin: 5px 0 0; font-size: 14px;'>Fine Dining Experience</p>
+                </div>
+                <div style='padding: 30px; background-color: #FFFFFF;'>
+                    <h2 style='color: #2c2c2c; margin-top: 0;'>Kính chào $name,</h2>
+                    <p style='color: #555; line-height: 1.6;'>Hệ thống đã ghi nhận và xử lý thành công yêu cầu <strong>hủy gia hạn gói VIP</strong> của quý khách.</p>
+                    
+                    <p style='color: #555; line-height: 1.6;'>Các đặc quyền VIP của thẻ hiện tại sẽ kết thúc. Hệ thống sẽ ngừng tự động gia hạn vào chu kỳ tiếp theo.</p>
+                    
+                    <p style='color: #555; line-height: 1.6;'>Nếu quý khách thay đổi quyết định, quý khách hoàn toàn có thể đăng ký lại gói VIP bất kỳ lúc nào tại mục Thông tin cá nhân trên website của chúng tôi.</p>
+                    
+                    <p style='color: #555; line-height: 1.6;'>Nếu quý khách cần hỗ trợ thêm hoặc có góp ý để chúng tôi cải thiện dịch vụ, vui lòng liên hệ Hotline: <strong>0123 456 789</strong>.</p>
+                    
+                    <p style='color: #555; line-height: 1.6; margin-bottom: 0;'>Trân trọng cảm ơn quý khách!</p>
                 </div>
             </div>";
 

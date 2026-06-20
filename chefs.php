@@ -8,13 +8,13 @@ $stmt->execute();
 $chefs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <<style>
 :root {
-  --bg-color: #1A1A1D; /* Cream */
+  --bg-color: #F9F9F9; /* Cream */
   --card-bg: #ffffff; /* White */
-  --text-main: #D1D1D1;
-  --text-muted: #555555;
+  --text-main: #222222;
+  --text-muted: #777777;
   --accent-burgundy: #A88746;
   --accent-burgundy: #A88746;
   --border-light: rgba(168, 135, 70, 0.15);
@@ -38,7 +38,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
   content: ''; display: block; width: 30px; height: 1px; background: var(--accent-burgundy); opacity: .5;
 }
 .ch-hero h1 {
-  font-family: 'Montserrat', sans-serif; font-weight: 700;
+  font-family: 'Cormorant Garamond', serif; font-weight: 700;
   font-size: clamp(2.6rem, 6vw, 4.5rem); color: var(--accent-burgundy); line-height: 1.2; margin-bottom: 20px;
 }
 .ch-hero h1 em { font-style: italic; color: var(--accent-burgundy); font-weight: 600; }
@@ -57,7 +57,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
   gap: 80px; flex-wrap: wrap;
 }
 .strip-item { text-align: center; }
-.strip-num { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 2.5rem; color: var(--accent-burgundy); line-height: 1; margin-bottom: 10px; }
+.strip-num { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 2.5rem; color: var(--accent-burgundy); line-height: 1; margin-bottom: 10px; }
 .strip-lbl { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
 
 /* WRAP + GRID */
@@ -104,7 +104,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
   color: var(--accent-burgundy); margin-bottom: 10px; font-weight: 600;
 }
 .ch-name {
-  font-family: 'Montserrat', sans-serif; font-weight: 700;
+  font-family: 'Cormorant Garamond', serif; font-weight: 700;
   font-size: 2rem; color: var(--text-main); line-height: 1.1; margin-bottom: 20px;
 }
 .ch-exp-spec {
@@ -119,7 +119,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
 }
 
 .ch-quote {
-  font-family: 'Montserrat', sans-serif; font-style: italic;
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
   font-size: 1.1rem; color: var(--accent-burgundy);
   border-left: 2px solid var(--accent-burgundy);
   padding-left: 15px; margin-bottom: 25px;
@@ -238,7 +238,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
   <?php else: ?>
   <div class="ch-empty">
     <i class="bi bi-people"></i>
-    <p style="font-family:'Montserrat',serif;font-style:italic;font-size:1.2rem;">
+    <p style="font-family:'Cormorant Garamond', serif;font-style:italic;font-size:1.2rem;">
       Thông tin đội ngũ đang được cập nhật...
     </p>
   </div>

@@ -61,6 +61,15 @@ class UserVip {
             return $stmt->execute();
         }
     }
+    // Hủy gói VIP
+    public function cancelVip($user_id) {
+        $now = date('Y-m-d H:i:s');
+        $query = "UPDATE " . $this->table_name . " SET status = 'cancelled', end_date = :now WHERE user_id = :user_id AND status = 'active'";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindParam(':now', $now);
+        return $stmt->execute();
+    }
 
     // Cập nhật những gói đã hết hạn
     public function checkAndExpireVipStatus($user_id) {

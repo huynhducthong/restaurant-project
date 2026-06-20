@@ -29,13 +29,13 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
 ?>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
 
 .footer {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     position: relative;
     padding: 80px 0 40px;
-    background-color: <?= !empty($ft['footer_bg_color']) && $ft['footer_bg_color'] !== '#0c0b09' ? $ft['footer_bg_color'] : '#113f36' ?>;
+    background-color: <?= !empty($ft['footer_bg_color']) && $ft['footer_bg_color'] !== '#F9F9F9' ? $ft['footer_bg_color'] : '#113f36' ?>;
     color: <?= $ft['footer_text_color'] ?? '#ffffff' ?>;
     <?php if ($bgImg): ?>
     background: url('<?= $bgImg ?>') center/cover no-repeat fixed;
@@ -56,12 +56,12 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
     font-size: 11px; 
     letter-spacing: 2px; 
     text-transform: uppercase; 
-    color: rgba(255,255,255,0.6); 
+    color: rgba(0,0,0,0.6); 
     margin-bottom: 25px; 
     font-weight: 500;
 }
 .footer p, .footer a, .footer li { 
-    font-family: 'Montserrat', sans-serif; 
+    font-family: 'Cormorant Garamond', serif; 
     font-size: 15px; 
     color: #ffffff; 
     line-height: 1.8; 
@@ -100,7 +100,7 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
     transition: opacity 0.3s ease;
 }
 .map-overlay-message {
-    background: #262629; color: #113f36; padding: 10px 20px;
+    background: #FFFFFF; color: #113f36; padding: 10px 20px;
     border-radius: 4px; font-size: 12px; font-family: 'Open Sans', sans-serif;
     font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
     pointer-events: none;
@@ -111,11 +111,11 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
 .newsletter-form input {
     width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid rgba(255,255,255,0.3);
     background: transparent; color: #fff; outline: none; margin-bottom: 15px;
-    font-family: 'Montserrat', sans-serif; font-size: 15px;
+    font-family: 'Cormorant Garamond', serif; font-size: 15px;
 }
-.newsletter-form input::placeholder { color: rgba(255,255,255,0.5); }
+.newsletter-form input::placeholder { color: rgba(0,0,0,0.5); }
 .newsletter-form button {
-    background: #262629; color: #113f36; width: 100%;
+    background: #FFFFFF; color: #113f36; width: 100%;
     border: none; padding: 14px 20px; border-radius: 4px; 
     font-weight: 600; cursor: pointer; font-family: 'Open Sans', sans-serif;
     text-transform: uppercase; letter-spacing: 1.5px; font-size: 12px;
@@ -130,7 +130,7 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 14px;
     color: rgba(255,255,255,0.8);
 }
@@ -148,7 +148,7 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
                     <img src="<?= htmlspecialchars($logo) ?>" alt="Logo" class="footer-logo">
                 <?php else: ?>
                     <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
-                        <h4 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 24px; text-transform: none; letter-spacing: normal; color: #fff; line-height: 1.2;">
+                        <h4 style="margin: 0; font-family: 'Cormorant Garamond', serif; font-size: 24px; text-transform: none; letter-spacing: normal; color: #fff; line-height: 1.2;">
                             <?= htmlspecialchars($ft['restaurant_name'] ?? 'Restaurantly') ?>
                         </h4>
                     </div>
@@ -224,7 +224,7 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
                     <?php endif; ?>
                 </div>
                 
-                <a href="<?= safe_url('booking_service.php?type=table', $path_prefix) ?>" style="display: block; text-align: center; background: #262629; color: #113f36; padding: 12px; border-radius: 6px; font-family: 'Open Sans', sans-serif; font-weight: 600; margin-top: 30px; text-decoration: none; transition: background 0.3s;" onmouseover="this.style.background='#e0e0e0'" onmouseout="this.style.background='#fff'">
+                <a href="<?= safe_url('booking_service.php?type=table', $path_prefix) ?>" style="display: block; text-align: center; background: #FFFFFF; color: #113f36; padding: 12px; border-radius: 6px; font-family: 'Open Sans', sans-serif; font-weight: 600; margin-top: 30px; text-decoration: none; transition: background 0.3s;" onmouseover="this.style.background='#e0e0e0'" onmouseout="this.style.background='#fff'">
                     Đặt Bàn Ngay (Book a Table)
                 </a>
 
@@ -262,7 +262,7 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
   bottom: 20px;
   right: 20px;
   z-index: 9999;
-  background-color: #1A1A1D; /* Obsidian */
+  background-color: #F9F9F9; /* Obsidian */
   width: 180px; /* Scaled down */
   padding: 15px; /* Scaled down */
   border: 1px solid rgba(168, 135, 70, 0.4);
@@ -284,9 +284,9 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
   margin-bottom: 5px;
 }
 .chat-heading {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Cormorant Garamond', serif;
   font-size: 1rem; /* Scaled down */
-  color: #D1D1D1; /* Soft Ash */
+  color: #222222; /* Soft Ash */
   font-weight: 400;
   line-height: 1.2;
   margin-bottom: 12px;
@@ -294,7 +294,7 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
 .btn-chat-gold {
   display: inline-block;
   background-color: #A88746;
-  color: #1A1A1D;
+  color: #F9F9F9;
   font-family: 'Open Sans', sans-serif;
   font-size: 10px; /* Scaled down */
   font-weight: 600;

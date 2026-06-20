@@ -25,7 +25,7 @@ $all_tables = array_merge($t_open, $t_room);
     align-items: center;
     justify-content: center;
     text-align: center;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 15px;
     font-weight: 600;
     text-transform: uppercase;
@@ -107,7 +107,7 @@ $all_tables = array_merge($t_open, $t_room);
 }
 
 .fp-t-code { 
-    font-family: 'Montserrat', sans-serif; 
+    font-family: 'Cormorant Garamond', serif; 
     font-size: 1.6rem; /* Chữ to, rõ ràng, quyền lực */
     color: var(--forest, #A88746); 
     display: block; 

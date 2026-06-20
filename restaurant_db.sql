@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 18, 2026 at 03:02 PM
+-- Generation Time: Jun 20, 2026 at 10:17 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -148,7 +148,7 @@ CREATE TABLE `about_content` (
 --
 
 INSERT INTO `about_content` (`id`, `category_id`, `title`, `slug`, `content`, `thumbnail`, `display_order`, `is_pinned`, `status`, `created_at`, `publish_date`) VALUES
-(1, 2, 'ĐỘI NGŨ TÀI NĂNG', 'doi-ngu-tai-nang', '<p><span style=\"font-family: \'times new roman\', times, serif;\">Trong một tập thể, sức mạnh kh&ocirc;ng chỉ đến từ kỹ năng c&aacute; nh&acirc;n m&agrave; c&ograve;n từ sự gắn kết v&agrave; c&aacute; t&iacute;nh độc đ&aacute;o của từng th&agrave;nh vi&ecirc;n. Nh&oacute;m 5 người gồm <strong>Th&ocirc;ng, Long, Ph&aacute;t, Ch&iacute;nh, Dương</strong> ch&iacute;nh l&agrave; minh chứng sống động cho điều đ&oacute;.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">🌟 Th&ocirc;ng &ndash; Người dẫn đường</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Th&ocirc;ng nổi bật với khả năng ph&acirc;n t&iacute;ch v&agrave; định hướng. Anh giống như &ldquo;bộ n&atilde;o&rdquo; của đội, lu&ocirc;n đưa ra chiến lược r&otilde; r&agrave;ng v&agrave; gi&uacute;p cả nh&oacute;m đi đ&uacute;ng hướng.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">🎭 Long &ndash; Qu&yacute; bửu (wibu)</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Long l&agrave; nh&acirc;n tố đặc biệt, một &ldquo;qu&yacute; bửu&rdquo; với niềm đam m&ecirc; văn h&oacute;a Nhật Bản. Sự s&aacute;ng tạo v&agrave; kh&aacute;c biệt của Long mang lại m&agrave;u sắc mới mẻ cho cả đội, đ&ocirc;i khi ch&iacute;nh sự &ldquo;dị biệt&rdquo; ấy lại l&agrave; nguồn cảm hứng để nh&oacute;m t&igrave;m ra &yacute; tưởng độc đ&aacute;o.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">⚡ Ph&aacute;t &ndash; Người truyền năng lượng</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Ph&aacute;t lu&ocirc;n tr&agrave;n đầy nhiệt huyết, l&agrave; &ldquo;động cơ&rdquo; th&uacute;c đẩy tinh thần cả nh&oacute;m. Khi mọi người mệt mỏi, ch&iacute;nh Ph&aacute;t l&agrave; người kh&iacute;ch lệ v&agrave; k&eacute;o mọi người trở lại với mục ti&ecirc;u.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">🛠 Ch&iacute;nh &ndash; Người thực thi</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Ch&iacute;nh c&oacute; khả năng biến &yacute; tưởng th&agrave;nh h&agrave;nh động. Anh l&agrave; người tỉ mỉ, ki&ecirc;n nhẫn, đảm bảo mọi kế hoạch được triển khai một c&aacute;ch chắc chắn v&agrave; hiệu quả.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">🌍 Dương &ndash; Phụ tr&aacute;ch trang Tin Tức</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Dương đảm nhận trang <strong>Tin Tức</strong> &ndash; nơi cập nhật những th&ocirc;ng tin mới nhất về nh&agrave; h&agrave;ng như chương tr&igrave;nh khuyến m&atilde;i, sự kiện đặc biệt, m&oacute;n ăn mới ra mắt v&agrave; c&aacute;c hoạt động nổi bật. Với khả năng kết nối v&agrave; truyền đạt th&ocirc;ng tin kh&eacute;o l&eacute;o, Dương đảm bảo trang tin tức lu&ocirc;n được cập nhật thường xuy&ecirc;n, hấp dẫn v&agrave; dễ đọc, gi&uacute;p kh&aacute;ch h&agrave;ng kh&ocirc;ng bỏ lỡ bất kỳ điều th&uacute; vị n&agrave;o từ nh&agrave; h&agrave;ng.</span></p>\r\n<h3><span style=\"font-family: \'times new roman\', times, serif;\">✨ Kết luận</span></h3>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Năm c&aacute; t&iacute;nh, năm thế mạnh kh&aacute;c nhau, nhưng khi kết hợp lại, họ tạo th&agrave;nh một đội ngũ t&agrave;i năng đầy s&aacute;ng tạo v&agrave; nhiệt huyết. V&agrave; tất nhi&ecirc;n, sự g&oacute;p mặt của Long &ndash; &ldquo;qu&yacute; bửu wibu&rdquo; &ndash; khiến tập thể n&agrave;y c&agrave;ng th&ecirc;m th&uacute; vị, độc đ&aacute;o v&agrave; kh&oacute; qu&ecirc;n.</span></p>', '1781320532_u-0Kua4Q50LYO4w87oRwe7ZFosfx5L4dumjmMcK4rTko32X0D5ZdRnb66YAzLT6pSMVOuXVWuoRTAw9R7hsxbYiwk3MiYp4zE7Ip8dck289qMq9OqzP2k-F_AZMUZD_DC69KLhXdISCsut7qIsbjgdf68YEbLeP4mc5frrWKvjrAzuCLI-edcZma26n9MJgL.jpg', 1, 1, 1, '2026-04-27 14:46:46', '2026-04-30');
+(1, 2, 'ĐỘI NGŨ TÀI NĂNG', 'doi-ngu-tai-nang', '<p><span style=\"font-family: \'times new roman\', times, serif;\">Trong một tập thể, sức mạnh kh&ocirc;ng chỉ đến từ kỹ năng c&aacute; nh&acirc;n m&agrave; c&ograve;n từ sự gắn kết v&agrave; c&aacute; t&iacute;nh độc đ&aacute;o của từng th&agrave;nh vi&ecirc;n. Nh&oacute;m 5 người gồm <strong>Th&ocirc;ng, Long, Ph&aacute;t, Ch&iacute;nh, Dương</strong> ch&iacute;nh l&agrave; minh chứng sống động cho điều đ&oacute;.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">🌟 Th&ocirc;ng &ndash; Người dẫn đường</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Th&ocirc;ng nổi bật với khả năng ph&acirc;n t&iacute;ch v&agrave; định hướng. Anh giống như &ldquo;bộ n&atilde;o&rdquo; của đội, lu&ocirc;n đưa ra chiến lược r&otilde; r&agrave;ng v&agrave; gi&uacute;p cả nh&oacute;m đi đ&uacute;ng hướng.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">🎭 Long &ndash; Qu&yacute; bửu (wibu)</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Long l&agrave; nh&acirc;n tố đặc biệt, một &ldquo;qu&yacute; bửu&rdquo; với niềm đam m&ecirc; văn h&oacute;a Nhật Bản. Sự s&aacute;ng tạo v&agrave; kh&aacute;c biệt của Long mang lại m&agrave;u sắc mới mẻ cho cả đội, đ&ocirc;i khi ch&iacute;nh sự &ldquo;dị biệt&rdquo; ấy lại l&agrave; nguồn cảm hứng để nh&oacute;m t&igrave;m ra &yacute; tưởng độc đ&aacute;o.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">⚡ Ph&aacute;t &ndash; Người truyền năng lượng</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Ph&aacute;t lu&ocirc;n tr&agrave;n đầy nhiệt huyết, l&agrave; &ldquo;động cơ&rdquo; th&uacute;c đẩy tinh thần cả nh&oacute;m. Khi mọi người mệt mỏi, ch&iacute;nh Ph&aacute;t l&agrave; người kh&iacute;ch lệ v&agrave; k&eacute;o mọi người trở lại với mục ti&ecirc;u.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">🛠 Ch&iacute;nh &ndash; Người thực thi</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Ch&iacute;nh c&oacute; khả năng biến &yacute; tưởng th&agrave;nh h&agrave;nh động. Anh l&agrave; người tỉ mỉ, ki&ecirc;n nhẫn, đảm bảo mọi kế hoạch được triển khai một c&aacute;ch chắc chắn v&agrave; hiệu quả.</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">🌍 Dương &ndash; Phụ tr&aacute;ch trang Tin Tức</span></p>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Dương đảm nhận trang <strong>Tin Tức</strong> &ndash; nơi cập nhật những th&ocirc;ng tin mới nhất về nh&agrave; h&agrave;ng như chương tr&igrave;nh khuyến m&atilde;i, sự kiện đặc biệt, m&oacute;n ăn mới ra mắt v&agrave; c&aacute;c hoạt động nổi bật. Với khả năng kết nối v&agrave; truyền đạt th&ocirc;ng tin kh&eacute;o l&eacute;o, Dương đảm bảo trang tin tức lu&ocirc;n được cập nhật thường xuy&ecirc;n, hấp dẫn v&agrave; dễ đọc, gi&uacute;p kh&aacute;ch h&agrave;ng kh&ocirc;ng bỏ lỡ bất kỳ điều th&uacute; vị n&agrave;o từ nh&agrave; h&agrave;ng.</span></p>\r\n<h3><span style=\"font-family: \'times new roman\', times, serif;\">✨ Kết luận</span></h3>\r\n<p><span style=\"font-family: \'times new roman\', times, serif;\">Năm c&aacute; t&iacute;nh, năm thế mạnh kh&aacute;c nhau, nhưng khi kết hợp lại, họ tạo th&agrave;nh một đội ngũ t&agrave;i năng đầy s&aacute;ng tạo v&agrave; nhiệt huyết. V&agrave; tất nhi&ecirc;n, sự g&oacute;p mặt của Long &ndash; &ldquo;qu&yacute; bửu wibu&rdquo; &ndash; khiến tập thể n&agrave;y c&agrave;ng th&ecirc;m th&uacute; vị, độc đ&aacute;o v&agrave; kh&oacute; qu&ecirc;n.</span></p>', '1781921598_1781325274_bachamhehe.jpg', 1, 1, 1, '2026-04-27 14:46:46', '2026-04-30');
 
 -- --------------------------------------------------------
 
@@ -426,7 +426,7 @@ CREATE TABLE `banners` (
 --
 
 INSERT INTO `banners` (`id`, `image_url`, `title`, `description`, `font_family`, `text_color`, `text_align`, `font_style`, `display_order`, `created_at`, `desc_color`, `desc_font_family`, `desc_font_style`, `title_font_size`, `desc_font_size`, `is_active`, `button_text`, `button_link`, `button_color`, `start_date`, `end_date`) VALUES
-(2, 'e1ed0ad828fff1d6a15d.jpg', 'retauranlly', 'ăn ngon', '\'Playfair Display\', serif', '#2b6d22', 'center', 'bold', 1, '2026-04-20 12:14:02', '#c18b8b', '\'Poppins\', sans-serif', 'normal', 48, 24, 1, 'đặt bàn', 'http://localhost/restaurant-project/booking_service.php?type=table', '#cda45e', NULL, NULL),
+(2, 'e1ed0ad828fff1d6a15d.jpg', 'Chào mừng bạn đến với Restaurantly', 'Cung cấp những món ăn tuyệt vời trong hơn 18 năm!', '\'Playfair Display\', serif', '#cda45e', 'left', 'bold', 1, '2026-04-20 12:14:02', '#efebeb', '\'Poppins\', sans-serif', 'normal', 72, 24, 1, 'đặt bàn', 'http://localhost/restaurant-project/booking_service.php?type=table', '#cda45e', NULL, NULL),
 (7, 'e9d525284d704a42c194.jpg', 'huhf', 'nbzbn', '\'Playfair Display\', serif', '#d71d1d', 'center', 'bold', 2, '2026-04-20 12:20:10', '#eeeeee', '\'Poppins\', sans-serif', 'normal', 48, 24, 1, '', '', '#cda45e', NULL, NULL);
 
 -- --------------------------------------------------------
@@ -784,8 +784,9 @@ CREATE TABLE `chefs` (
 --
 
 INSERT INTO `chefs` (`id`, `name`, `position`, `image`, `experience`, `specialty`, `description`, `quote`, `facebook`, `instagram`, `email`, `is_active`, `is_featured`, `sort_order`) VALUES
-(1, 'Chef Minh', 'Bếp trưởng', '1780661835_6a22be4bb618a.jpg', 0, '', '', '', '', '', '', 1, 0, 0),
-(2, 'Chef long', 'Bếp phó', '1780661805_6a22be2d284cd.jpg', 5, '', 'njzbjkhjfnbinfvi', 'Mỗi món ăn là một câu chuyện.', 'https://www.facebook.com/friends/suggestions/?profile_id=61576317195911', '', '', 1, 0, 0);
+(1, 'Chef Minh', 'Bếp trưởng', '1780661835_6a22be4bb618a.jpg', 0, '', '', '', '', '', '', 1, 1, 0),
+(2, 'Chef long', 'Bếp phó', '1780661805_6a22be2d284cd.jpg', 5, '', 'njzbjkhjfnbinfvi', 'Mỗi món ăn là một câu chuyện.', 'https://www.facebook.com/friends/suggestions/?profile_id=61576317195911', '', '', 1, 0, 0),
+(3, 'Phát', 'Bếp chính', '1781923864_6a360018bd081.png', 4, 'bánh', 'freytnjgdsbghnzfgtf', 'Mỗi món ăn là một câu chuyện.', 'https://www.facebook.com/friends/suggestions/?profile_id=61576317195911', '', '', 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -3311,7 +3312,7 @@ CREATE TABLE `settings` (
 --
 
 INSERT INTO `settings` (`key_name`, `key_value`) VALUES
-('address', 'biên hòa'),
+('address', 'Biên hòa'),
 ('email', ''),
 ('enable_telegram', '1'),
 ('facebook_url', ''),
@@ -3322,7 +3323,7 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 ('inv_expiry_warning_days', '30'),
 ('inv_low_stock', '5'),
 ('inv_low_stock_threshold', '5'),
-('last_telegram_alert_date', '2026-06-18'),
+('last_telegram_alert_date', '2026-06-20'),
 ('last_telegram_eod_date', '2026-06-05'),
 ('logo_url', 'assets/img/logo.png'),
 ('logo_ver', '1779627100'),
@@ -3739,7 +3740,8 @@ CREATE TABLE `user_vip` (
 
 INSERT INTO `user_vip` (`id`, `user_id`, `plan_id`, `start_date`, `end_date`, `status`) VALUES
 (2, 6, 1, '2026-06-16 10:36:03', '2027-06-16 10:36:03', 'active'),
-(3, 21, 1, '2026-06-16 11:04:15', '2027-06-16 11:04:15', 'active');
+(3, 21, 1, '2026-06-16 11:04:15', '2027-06-16 11:04:15', 'active'),
+(4, 2, 1, '2026-06-20 10:44:04', '2027-06-20 10:44:04', 'active');
 
 -- --------------------------------------------------------
 
@@ -3786,7 +3788,7 @@ CREATE TABLE `vip_plans` (
 --
 
 INSERT INTO `vip_plans` (`id`, `name`, `discount_percent`, `duration_days`, `price`, `description`) VALUES
-(1, 'Hội viên VIP', 10, 365, 500000.00, 'Quyền lợi Đặc Quyền:\n- Giảm 10% tổng hóa đơn.\n- Ưu tiên xếp bàn.\n- Huy hiệu Hội viên VIP độc quyền.');
+(1, 'Hội viên VIP', 10, 30, 299000.00, 'Quyền lợi Đặc Quyền:\n- Giảm 10% tổng hóa đơn.\n- Ưu tiên xếp bàn.\n- Huy hiệu Hội viên VIP độc quyền.');
 
 -- --------------------------------------------------------
 
@@ -4343,7 +4345,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `chefs`
 --
 ALTER TABLE `chefs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `combos`
@@ -4595,7 +4597,7 @@ ALTER TABLE `user_addresses`
 -- AUTO_INCREMENT for table `user_vip`
 --
 ALTER TABLE `user_vip`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `videos`

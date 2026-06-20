@@ -122,7 +122,7 @@ include __DIR__ . '/views/client/layouts/header.php';
         <div class="carousel-item <?= $first ? 'active' : '' ?>"
           style="background-image: url('public/assets/img/hero/<?= $row['image_url'] ?>'); background-size: cover; height: 100vh; background-position: center; position: relative;">
 
-          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 25%, rgba(0,0,0,0.2) 75%, #1A1A1D 100%);"></div>
+          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 25%, rgba(0,0,0,0.2) 75%, #F9F9F9 100%);"></div>
 
           <div class="container position-relative d-flex flex-column justify-content-center h-100"
             style="text-align: <?= $row['text_align'] ?>; z-index: 2;">
@@ -137,7 +137,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                     font-style: <?= $title_style ?>;
                     text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
                     margin-bottom: 15px;">
-                  <?= htmlspecialchars($row['title']) ?>
+                  <?= __(htmlspecialchars($row['title'])) ?>
                 </h1>
 
                 <p style="
@@ -147,7 +147,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                     font-weight: <?= $desc_weight ?>; 
                     font-style: <?= $desc_style ?>;
                     text-shadow: 1px 1px 4px rgba(0,0,0,0.7);">
-                  <?= htmlspecialchars($row['description']) ?>
+                  <?= __(htmlspecialchars($row['description'])) ?>
                 </p>
                 <?php if (!empty($row['button_text'])): ?>
                   <a href="<?= htmlspecialchars($row['button_link'] ?? '#') ?>" class="animate__animated animate__fadeInUp" style="
@@ -166,7 +166,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                     transition:0.3s;
                     margin-top:20px;
                 " onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
-                    <?= htmlspecialchars($row['button_text']) ?>
+                    <?= __(htmlspecialchars($row['button_text'])) ?>
                   </a>
                 <?php endif; ?>
               </div>
@@ -183,6 +183,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
       <span class="carousel-control-next-icon"></span>
     </button>
+  </div>
   <img id="hoverImageTooltip" class="menu-hover-tooltip" src="" alt="">
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -205,15 +206,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-</body>
-</html></section>
+</section>
 
 <main id="main">
-  <section id="about" class="about-section" style="background: #1A1A1D; color: #D1D1D1; padding: 140px 0; overflow: hidden;">
+  <section id="about" class="about-section" style="background: #F9F9F9; color: #222222; padding: 140px 0; overflow: hidden;">
     <div class="container-fluid px-0">
       <div class="row g-0 align-items-center">
         <div class="col-lg-7" style="padding-left: 5%; padding-right: 30px;">
-          <div class="video-wrapper" style="position: relative; width: 100%; border-radius: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #A88746; background: #262629;">
+          <div class="video-wrapper" style="position: relative; width: 100%; border-radius: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #A88746; background: #FFFFFF;">
 
             <?php if ($video_type == 'youtube' && !empty($video_url)): ?>
               <iframe width="100%" height="500"
@@ -260,10 +260,10 @@ document.addEventListener('DOMContentLoaded', function() {
                   $v_desc = "Nằm giữa lòng " . htmlspecialchars($settings['address'] ?? 'Biên Hòa') . ", chúng tôi mang đến một không gian ẩm thực tinh tế.";
               }
             ?>
-            <h2 style="font-family: 'Montserrat', sans-serif; color: #A88746; font-size: 3rem; margin-bottom: 25px; font-weight: 700; line-height: 1.2;">
+            <h2 style="font-family: 'Cormorant Garamond', serif; color: #A88746; font-size: 3rem; margin-bottom: 25px; font-weight: 700; line-height: 1.2;">
               <?= $v_title ?>
             </h2>
-            <p style="font-family: 'Open Sans', sans-serif; font-weight: 300; line-height: 2; color: #D1D1D1; font-size: 1.15rem; margin-bottom: 25px;">
+            <p style="font-family: 'Open Sans', sans-serif; font-weight: 300; line-height: 2; color: #222222; font-size: 1.15rem; margin-bottom: 25px;">
               <?= nl2br(htmlspecialchars($v_desc)) ?>
             </p>
           </div>
@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </section>
 
-  <section id="menu" class="menu section-bg" style="background: #262629; padding: 100px 0; overflow: hidden;">
+  <section id="menu" class="menu section-bg" style="background: #FFFFFF; padding: 100px 0; overflow: hidden;">
 
     <?php
     // Lấy tất cả món ăn active để hiển thị gallery
@@ -304,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- Tiêu đề -->
     <div class="text-center mb-5" style="position:relative; z-index:2;">
       <p style="color:#A88746; font-family:'Open Sans',sans-serif; font-size:13px; letter-spacing:4px; text-transform:uppercase; margin-bottom:12px;">Hương Vị Tinh Tế</p>
-      <h2 style="color:#A88746; font-family:'Montserrat',serif; font-size:clamp(2rem,5vw,3.2rem); font-weight:700; margin-bottom:16px;">Một Trải Nghiệm Độc Đáo</h2>
+      <h2 style="color:#A88746; font-family:'Cormorant Garamond', serif; font-size:clamp(2rem,5vw,3.2rem); font-weight:700; margin-bottom:16px;">Một Trải Nghiệm Độc Đáo</h2>
       <p style="color:#666666; font-family:'Open Sans',sans-serif; font-size:15px; max-width:900px; margin:0 auto; line-height:1.8;">
         Khám phá bản giao hưởng hương vị nơi truyền thống cổ xưa hòa quyện với nghệ thuật hiện đại. Mỗi món ăn là một kiệt tác được tuyển chọn kỹ lưỡng, không chỉ để thưởng thức mà còn để cảm nhận.
       </p>
@@ -475,9 +475,9 @@ document.addEventListener('DOMContentLoaded', function() {
       justify-content: center;
       align-items: center;
       padding: 14px 44px;
-      background: #A88746;
-      border: 1.5px solid #A88746;
-      color: #1A1A1D;
+      background: #E65C00;
+      border: 1.5px solid #E65C00;
+      color: #ffffff;
       font-family: 'Open Sans', sans-serif;
       font-size: 12px;
       font-weight: 700;
@@ -486,15 +486,16 @@ document.addEventListener('DOMContentLoaded', function() {
       text-decoration: none;
       backdrop-filter: blur(6px);
       transform: translateY(-50%);
-      transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+      transition: background 0.3s, color 0.3s, box-shadow 0.3s, border-color 0.3s;
       border-radius: 0;
       white-space: nowrap;
     }
 
     .menu-explore-btn:hover {
-      background: #A88746;
-      color: #000;
-      box-shadow: none; border-color: #A88746;
+      background: #FF7A00;
+      color: #ffffff;
+      box-shadow: 0 0 20px rgba(255, 122, 0, 0.6);
+      border-color: #FF7A00;
     }
     
     .menu-hover-tooltip {
@@ -512,22 +513,23 @@ document.addEventListener('DOMContentLoaded', function() {
       transform: translate(15px, -50%) scale(0.95);
     }
     .menu-hover-trigger:hover {
-      color: #A88746 !important;
-      transition: color 0.3s ease;
+      color: #E65C00 !important;
+      text-shadow: 0 0 8px rgba(230, 92, 0, 0.3);
+      transition: all 0.3s ease;
     }
     .menu-list-item:hover {
-      background: rgba(168, 135, 70, 0.03);
+      background: rgba(230, 92, 0, 0.04);
     }
   </style>
 
-  <section id="combos" style="background: #1A1A1D; padding: 40px 0 60px 0; border-top: 1px solid rgba(168, 135, 70,0.1); border-bottom: 1px solid rgba(168, 135, 70,0.1); position: relative;">
+  <section id="combos" style="background: #F9F9F9; padding: 40px 0 0 0; border-top: 1px solid rgba(168, 135, 70,0.1); position: relative;">
     <!-- Radial subtle glow behind the whole section -->
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(168, 135, 70,0.05) 0%, transparent 70%); pointer-events: none; z-index: 0;"></div>
     
     <div class="container" style="position: relative; z-index: 1;">
       <div class="section-title text-center mb-5" style="margin-bottom: 30px !important;">
         <p style="color: #A88746; font-family: 'Open Sans', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Tuyển Chọn Thượng Hạng</p>
-        <h2 style="color: #A88746; font-family: 'Montserrat', sans-serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Bộ Sưu Tập Hương Vị</h2>
+        <h2 style="color: #A88746; font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Bộ Sưu Tập Hương Vị</h2>
       </div>
 
       
@@ -542,8 +544,8 @@ document.addEventListener('DOMContentLoaded', function() {
              backdrop-filter: blur(2px); 
              -webkit-backdrop-filter: blur(2px); 
              border: 1px solid rgba(255,255,255,0.05); 
-             border-top: 1px solid rgba(255,255,255,0.15);
-             border-left: 1px solid rgba(255,255,255,0.1);
+             border-top: 1px solid rgba(0,0,0,0.15);
+             border-left: 1px solid rgba(0,0,0,0.1);
              border-radius: 12px; 
              padding: 50px 40px; 
              box-shadow: 0 20px 40px rgba(0,0,0,0.3); 
@@ -616,14 +618,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         <?php foreach($t['combos'] as $row): ?>
                           <div class="menu-list-item" style="cursor: pointer; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateX(10px)'" onmouseout="this.style.transform='translateX(0)'" onclick="window.location.href='combo_detail.php?id=<?= $row['id'] ?>'">
                             <div class="d-flex justify-content-between align-items-baseline mb-2">
-                              <h5 class="menu-hover-trigger" data-img="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>" style="color: #ffffff; font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 300; margin: 0;">
+                              <h5 class="menu-hover-trigger" data-img="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>" style="color: #ffffff; font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; margin: 0;">
                                 <?= htmlspecialchars($row['name']) ?>
                               </h5>
-                              <div style="color: #C9A66B; font-weight: 400; font-family: 'Montserrat', sans-serif; font-size: 1.2rem; margin-left: 20px; white-space: nowrap;">
+                              <div style="color: #C9A66B; font-weight: 400; font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; margin-left: 20px; white-space: nowrap;">
                                 <?= number_format($row['price'], 0, ',', '.') ?>đ
                               </div>
                             </div>
-                            <p style="color: #ffffff; font-size: 13px; margin: 0 0 8px 0; line-height: 1.6; max-width: 90%; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><?= htmlspecialchars($row['description']) ?></p>
+                            <p style="color: #ffffff; font-size: 13px; margin: 0 0 8px 0; line-height: 1.6; max-width: 90%; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><?= __(htmlspecialchars($row['description'])) ?></p>
                             <div style="font-size: 11px; color: #e6e6e6; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><i class="bi bi-star-fill me-1" style="color:#C9A66B; font-size:9px;"></i><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></div>
                           </div>
                         <?php endforeach; ?>
@@ -635,15 +637,15 @@ document.addEventListener('DOMContentLoaded', function() {
                   <?php if(!empty($t['foods'])): ?>
                   <div class="col-lg-6 col-md-12 cine-reveal" style="transition-delay: 0.5s;">
                     <div class="cine-glass-card cine-card-right">
-                      <h4 style="text-align: center; color: #C9A66B; font-family: 'Cormorant Garamond', serif; margin-bottom: 40px; font-size: 24px; font-weight: 500; letter-spacing: 6px; border-bottom: 1px solid rgba(201, 166, 107, 0.2); padding-bottom: 20px; text-transform: uppercase;">THỰC ĐƠN GỌI MÓN</h4>
+                      <h4 style="text-align: center; color: #C9A66B; font-family: 'Cormorant Garamond', serif; margin-bottom: 40px; font-size: 24px; font-weight: 500; letter-spacing: 6px; border-bottom: 1px solid rgba(201, 166, 107, 0.2); padding-bottom: 20px; text-transform: uppercase;"><?= __('our_menu') ?></h4>
                       <div class="d-flex flex-column gap-4">
                         <?php foreach($t['foods'] as $f): ?>
                           <div class="menu-list-item" style="transition: transform 0.3s ease;" onmouseover="this.style.transform='translateX(10px)'" onmouseout="this.style.transform='translateX(0)'">
                             <div class="d-flex justify-content-between align-items-baseline mb-2">
-                              <h5 class="menu-hover-trigger" data-img="public/assets/img/menu/<?= htmlspecialchars($f['image'] ?: 'default-food.jpg') ?>" style="color: #ffffff; font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 300; margin: 0; cursor: default;">
+                              <h5 class="menu-hover-trigger" data-img="public/assets/img/menu/<?= htmlspecialchars($f['image'] ?: 'default-food.jpg') ?>" style="color: #ffffff; font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; margin: 0; cursor: default;">
                                 <?= htmlspecialchars($f['name']) ?>
                               </h5>
-                              <div style="color: #C9A66B; font-weight: 400; font-family: 'Montserrat', sans-serif; font-size: 1.2rem; margin-left: 20px; white-space: nowrap;">
+                              <div style="color: #C9A66B; font-weight: 400; font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; margin-left: 20px; white-space: nowrap;">
                                 <?= number_format($f['price'], 0, ',', '.') ?>đ
                               </div>
                             </div>
@@ -683,6 +685,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         </script>
+      </div> <!-- Closes container from line 529 -->
+    </section> <!-- Closes section combos from line 525 -->
         
 <style>
 /* Chef's Table Styles */
@@ -755,7 +759,7 @@ document.addEventListener('DOMContentLoaded', function() {
     text-shadow: 0 10px 30px rgba(0,0,0,0.9);
 }
 .netflix-hero-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 14px;
     color: #C9A66B;
     letter-spacing: 3px;
@@ -764,7 +768,7 @@ document.addEventListener('DOMContentLoaded', function() {
     font-weight: 500;
 }
 .netflix-hero-exp {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 11px;
     color: #aaa;
     letter-spacing: 2px;
@@ -772,7 +776,7 @@ document.addEventListener('DOMContentLoaded', function() {
     text-transform: uppercase;
 }
 .netflix-hero-quote {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 26px;
     font-style: italic;
     color: #E2E0D9;
@@ -785,7 +789,7 @@ document.addEventListener('DOMContentLoaded', function() {
     border: 1px solid rgba(201,166,107,0.5);
     background: transparent;
     color: #C9A66B;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 12px;
     letter-spacing: 3px;
     text-transform: uppercase;
@@ -856,14 +860,14 @@ document.addEventListener('DOMContentLoaded', function() {
     letter-spacing: 2px;
 }
 .netflix-sub-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 11px;
     color: #C9A66B;
     letter-spacing: 2px;
     text-transform: uppercase;
 }
 .netflix-sub-quote {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 16px;
     font-style: italic;
     color: #ccc;
@@ -882,7 +886,7 @@ document.addEventListener('DOMContentLoaded', function() {
     margin-top: 25px;
     color: #F6F2E9;
     font-size: 11px;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     letter-spacing: 2px;
     text-transform: uppercase;
     text-decoration: none;
@@ -916,22 +920,22 @@ document.addEventListener('DOMContentLoaded', function() {
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 
 .editorial-chef-section {
-    background: #181818;
-    padding: 140px 0 120px 0;
+    background: #FBF7F0; /* Ivory/Beige background as requested */
+    padding: 60px 0 120px 0;
     position: relative;
 }
 .editorial-grid {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 30px;
+    gap: 15px;
     margin-top: 60px;
 }
 .editorial-card {
     position: relative;
-    width: calc(33.333% - 20px);
+    width: calc(33.333% - 10px);
     min-width: 300px;
-    aspect-ratio: 3/4;
+    aspect-ratio: 4/5;
     overflow: hidden;
     cursor: pointer;
     background: #000;
@@ -941,24 +945,20 @@ document.addEventListener('DOMContentLoaded', function() {
     height: 100%;
     object-fit: cover;
     object-position: center top;
-    filter: grayscale(100%) contrast(1.1);
     transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-    opacity: 0.7;
 }
 .editorial-card:hover .editorial-img {
-    filter: grayscale(0%) contrast(1.05);
     transform: scale(1.05);
-    opacity: 0.95;
 }
 .editorial-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.1) 50%, transparent 100%);
+    background: transparent;
     pointer-events: none;
     transition: all 0.5s ease;
 }
 .editorial-card:hover .editorial-overlay {
-    background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.2) 100%);
+    background: transparent;
 }
 .editorial-signature {
     position: absolute;
@@ -993,7 +993,7 @@ document.addEventListener('DOMContentLoaded', function() {
     bottom: 40px;
 }
 .editorial-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 10px;
     color: #C9A66B;
     letter-spacing: 4px;
@@ -1017,10 +1017,10 @@ document.addEventListener('DOMContentLoaded', function() {
     display: inline-block;
     margin-top: 60px;
     padding: 14px 40px;
-    border: 1px solid rgba(201,166,107,0.5);
-    background: transparent;
-    color: #C9A66B;
-    font-family: 'Montserrat', sans-serif;
+    border: 1px solid #E65C00;
+    background: #E65C00;
+    color: #ffffff;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 12px;
     letter-spacing: 3px;
     text-transform: uppercase;
@@ -1028,9 +1028,10 @@ document.addEventListener('DOMContentLoaded', function() {
     transition: all 0.3s ease;
 }
 .editorial-btn:hover {
-    background: #C9A66B;
-    color: #181818;
-    border-color: #C9A66B;
+    background: #FF7A00;
+    color: #ffffff;
+    border-color: #FF7A00;
+    box-shadow: 0 0 20px rgba(255, 122, 0, 0.6);
 }
 
 @media (max-width: 991px) {
@@ -1042,10 +1043,13 @@ document.addEventListener('DOMContentLoaded', function() {
 </style>
 
 <section id="chefs" class="editorial-chef-section">
-    <div class="container position-relative z-1">
-      <div class="section-title text-center" style="margin-bottom: 30px !important;">
-        <p style="color: #A88746; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 6px; text-transform: uppercase; margin-bottom: 15px;">Đội Ngũ Đầu Bếp</p>
-        <h2 style="color: #F6F2E9; font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; letter-spacing: 4px; text-transform: uppercase;">Những Nghệ Nhân Ẩm Thực Hàng Đầu</h2>
+    <div class="px-2 position-relative z-1" style="width: 100%; max-width: 100%; margin: 0 auto;">
+      <div class="section-title text-start px-md-2" style="margin-bottom: 50px !important;">
+        <div class="d-flex align-items-center" style="margin-bottom: 15px;">
+            <p style="color: #A88746; font-family: 'Cormorant Garamond', serif; font-size: 12px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; margin: 0; padding-right: 15px;">ĐỘI NGŨ ĐẦU BẾP</p>
+            <div style="flex: 0 0 60px; height: 1px; background-color: #A88746;"></div>
+        </div>
+        <h2 style="color: #A88746; font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Những Nghệ Nhân Ẩm Thực Hàng Đầu</h2>
       </div>
       
       <div class="editorial-grid">
@@ -1078,11 +1082,11 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </section>
   <!-- ATMOSPHERE & GALLERY SECTION -->
-  <section id="atmosphere" style="background: #1A1A1D; padding: 140px 0; position: relative;">
+  <section id="atmosphere" style="background: #F9F9F9; padding: 140px 0; position: relative;">
     <div class="container" style="position: relative; z-index: 1;">
       <div class="section-title text-center mb-5" style="margin-bottom: 30px !important;">
         <p style="color: #A88746; font-family: 'Open Sans', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Không Gian & Trải Nghiệm</p>
-        <h2 style="color: #A88746; font-family: 'Montserrat', sans-serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Kiệt Tác Kiến Trúc Tĩnh Lặng</h2>
+        <h2 style="color: #A88746; font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Kiệt Tác Kiến Trúc Tĩnh Lặng</h2>
       </div>
 
     </div>
@@ -1196,7 +1200,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /* --- MICHELIN COMBO CARDS --- */
   .combo-card-custom {
-    background: #262629;
+    background: #FFFFFF;
     border: 1px solid rgba(168, 135, 70,0.2);
     height: 100%;
     display: flex;
@@ -1246,7 +1250,7 @@ document.addEventListener('DOMContentLoaded', function() {
     background: #A88746;
     backdrop-filter: blur(8px);
     border: 1px solid #A88746;
-    color: #D1D1D1;
+    color: #222222;
     font-size: 9px;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -1267,11 +1271,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   .combo-name-custom {
-    color: #D1D1D1;
+    color: #222222;
     margin: 0 0 8px 0;
     font-size: 26px;
     font-weight: 400;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     letter-spacing: 1px;
     line-height: 1.3;
   }
@@ -1301,7 +1305,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   .combo-items-list span {
-    color: #D1D1D1;
+    color: #222222;
     font-size: 13.5px;
     font-weight: 300;
     letter-spacing: 0.5px;
@@ -1332,9 +1336,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   .btn-combo-order {
-    background: transparent;
-    color: #A88746;
-    border: 1px solid #A88746;
+    background: #E65C00;
+    color: #ffffff;
+    text-decoration: none !important;
+    border: 1px solid #E65C00;
     padding: 10px 24px;
     font-weight: 500;
     font-size: 11px;
@@ -1344,9 +1349,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   .btn-combo-order:hover {
-    background: rgba(198, 167, 106, 0.1);
-    color: #D1D1D1;
-    border-color: #A88746;
+    background: #FF7A00;
+    color: #ffffff;
+    border-color: #FF7A00;
+    box-shadow: 0 0 20px rgba(255, 122, 0, 0.6);
   }
 
   /* --- MICHELIN CHEFS SECTION --- */
@@ -1363,8 +1369,8 @@ document.addEventListener('DOMContentLoaded', function() {
     margin: 15px 0 0 0;
     font-size: 42px;
     font-weight: 400;
-    font-family: 'Montserrat', sans-serif;
-    color: #D1D1D1;
+    font-family: 'Cormorant Garamond', serif;
+    color: #222222;
     letter-spacing: 1px;
   }
 
@@ -1372,7 +1378,7 @@ document.addEventListener('DOMContentLoaded', function() {
     border-radius: 0;
     overflow: hidden;
     position: relative;
-    background: #262629;
+    background: #FFFFFF;
     box-shadow: 0 5px 25px rgba(0,0,0,0.05);
   }
 
@@ -1423,7 +1429,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   .chef-quote {
     color: rgba(246, 241, 231, 0.8);
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 16px;
     font-style: italic;
     line-height: 1.6;
@@ -1455,10 +1461,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   .chef-name {
-    color: #D1D1D1;
+    color: #222222;
     font-size: 24px;
     font-weight: 400;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     margin-bottom: 5px;
     letter-spacing: 1px;
   }
