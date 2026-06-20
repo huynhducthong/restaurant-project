@@ -633,12 +633,32 @@ try {
                     </a>
                 </li>
                 
-                <li class="<?= isActive('chat_console.php') ?>">
-                    <a href="/restaurant-project/admin/chat_console.php" style="color: #4F5B3A; font-weight: bold;">
-                        <i class="fas fa-comments text-success"></i> 
-                        <span>Hỗ trợ Khách hàng (Chat)</span>
-                        <span class="badge-notify chat-waiting-badge" style="display:none;">0</span>
+                <?php 
+                    $isChatMenu = isActive('chat_console.php') || isActive('bot_training.php');
+                ?>
+                <li class="<?= $isChatMenu ? 'active' : '' ?>">
+                    <a href="#chatSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isChatMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <i class="fas fa-comments"></i>
+                            <span>Hỗ trợ Khách hàng</span>
+                        </div>
+                        <div>
+                            <span class="badge-notify chat-waiting-badge d-inline-block position-static ms-0 me-2" style="display:none;">0</span>
+                            <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: auto;"></i>
+                        </div>
                     </a>
+                    <ul class="collapse list-unstyled <?= $isChatMenu ? 'show' : '' ?>" id="chatSubmenu" style="background: rgba(0,0,0,0.03);">
+                        <li class="<?= isActive('chat_console.php') ?>">
+                            <a href="/restaurant-project/admin/chat_console.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-headset" style="font-size: 12px; margin-right: 6px;"></i> Trò chuyện trực tuyến
+                            </a>
+                        </li>
+                        <li class="<?= isActive('bot_training.php') ?>">
+                            <a href="/restaurant-project/admin/bot_training.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-robot" style="font-size: 12px; margin-right: 6px;"></i> Quản lý kịch bản Bot
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <?php endif; ?>
 

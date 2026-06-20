@@ -20,7 +20,7 @@ switch ($action) {
         $name = $_POST['name'] ?? '';
         $phone = $_POST['phone'] ?? '';
         
-        $stmt = $db->prepare("SELECT id FROM chat_sessions WHERE session_id = ?");
+        $stmt = $db->prepare("SELECT session_id FROM chat_sessions WHERE session_id = ?");
         $stmt->execute([$session_id]);
         if (!$stmt->fetch()) {
             $stmt = $db->prepare("INSERT INTO chat_sessions (session_id, customer_name, customer_phone, status) VALUES (?, ?, ?, 'bot_handling')");
@@ -33,6 +33,14 @@ switch ($action) {
     case 'get_messages':
         $last_id = (int)($_GET['last_id'] ?? 0);
         
+        // Kiểm tra session có tồn tại không
+        $stmt_check = $db->prepare("SELECT session_id FROM chat_sessions WHERE session_id = ?");
+        $stmt_check->execute([$session_id]);
+        if (!$stmt_check->fetchColumn()) {
+            echo json_encode(['status' => 'invalid_session']);
+            exit;
+        }
+
         // Caching optimization: Check if there are new messages
         $stmt = $db->prepare("SELECT MAX(id) FROM chat_messages WHERE session_id = ?");
         $stmt->execute([$session_id]);
@@ -67,6 +75,14 @@ switch ($action) {
             exit;
         }
 
+        // Kiểm tra session có tồn tại không
+        $stmt_check = $db->prepare("SELECT session_id FROM chat_sessions WHERE session_id = ?");
+        $stmt_check->execute([$session_id]);
+        if (!$stmt_check->fetchColumn()) {
+            echo json_encode(['status' => 'invalid_session']);
+            exit;
+        }
+
         // Insert customer message
         $stmt = $db->prepare("INSERT INTO chat_messages (session_id, sender_type, message_type, content) VALUES (?, 'customer', 'text', ?)");
         $stmt->execute([$session_id, $content]);
@@ -75,6 +91,11 @@ switch ($action) {
         $stmt = $db->prepare("SELECT status FROM chat_sessions WHERE session_id = ?");
         $stmt->execute([$session_id]);
         $status = $stmt->fetchColumn();
+
+        if ($status === 'closed') {
+            $db->prepare("UPDATE chat_sessions SET status = 'bot_handling' WHERE session_id = ?")->execute([$session_id]);
+            $status = 'bot_handling';
+        }
 
         if ($status === 'bot_handling') {
             $text = mb_strtolower($content, 'UTF-8');
