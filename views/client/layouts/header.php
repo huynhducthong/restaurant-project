@@ -558,9 +558,9 @@ if (!empty($logo_path)) {
             </div>
 
             <div class="lang-switcher d-flex align-items-center">
-                <a href="?lang=en" style="color: rgba(255,255,255,0.7); text-decoration: none; font-weight: 600; font-size: 14px; letter-spacing: 1px;">EN</a>
+                <a href="?lang=en" style="color: <?= $current_lang == 'en' ? '#C9A66B' : 'rgba(255,255,255,0.7)' ?>; text-decoration: none; font-weight: 600; font-size: 14px; letter-spacing: 1px;">EN</a>
                 <span class="mx-2" style="color: rgba(255,255,255,0.5); font-size: 14px;">/</span>
-                <a href="?lang=vn" style="color: var(--primary-color, #A88746); text-decoration: none; font-weight: 600; font-size: 14px; letter-spacing: 1px;">VN</a>
+                <a href="?lang=vn" style="color: <?= $current_lang == 'vn' ? '#C9A66B' : 'rgba(255,255,255,0.7)' ?>; text-decoration: none; font-weight: 600; font-size: 14px; letter-spacing: 1px;">VN</a>
             </div>
 
         </div>
@@ -611,7 +611,7 @@ if (!empty($logo_path)) {
                     <li>
                         <a class="<?= ($current_page == 'Aboutus.php') ? 'active' : '' ?>"
                             href="Aboutus.php">
-                            Tin Tức
+                            <?= __('news') ?>
                         </a>
                     </li>
 
@@ -624,7 +624,7 @@ if (!empty($logo_path)) {
                     <li>
                         <a class="<?= ($current_page == 'chefs.php' || ($current_page == 'Aboutus.php' && strpos($_SERVER['REQUEST_URI'], 'chef') !== false)) ? 'active' : '' ?>"
                             href="<?= safe_url('chefs.php', $path_prefix ?? '') ?>">
-                            Đội Bếp
+                            <?= __('team_chefs') ?>
                         </a>
                     </li>
 

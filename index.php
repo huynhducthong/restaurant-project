@@ -137,7 +137,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                     font-style: <?= $title_style ?>;
                     text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
                     margin-bottom: 15px;">
-                  <?= htmlspecialchars($row['title']) ?>
+                  <?= __(htmlspecialchars($row['title'])) ?>
                 </h1>
 
                 <p style="
@@ -147,7 +147,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                     font-weight: <?= $desc_weight ?>; 
                     font-style: <?= $desc_style ?>;
                     text-shadow: 1px 1px 4px rgba(0,0,0,0.7);">
-                  <?= htmlspecialchars($row['description']) ?>
+                  <?= __(htmlspecialchars($row['description'])) ?>
                 </p>
                 <?php if (!empty($row['button_text'])): ?>
                   <a href="<?= htmlspecialchars($row['button_link'] ?? '#') ?>" class="animate__animated animate__fadeInUp" style="
@@ -166,7 +166,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                     transition:0.3s;
                     margin-top:20px;
                 " onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
-                    <?= htmlspecialchars($row['button_text']) ?>
+                    <?= __(htmlspecialchars($row['button_text'])) ?>
                   </a>
                 <?php endif; ?>
               </div>
@@ -625,7 +625,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <?= number_format($row['price'], 0, ',', '.') ?>đ
                               </div>
                             </div>
-                            <p style="color: #ffffff; font-size: 13px; margin: 0 0 8px 0; line-height: 1.6; max-width: 90%; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><?= htmlspecialchars($row['description']) ?></p>
+                            <p style="color: #ffffff; font-size: 13px; margin: 0 0 8px 0; line-height: 1.6; max-width: 90%; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><?= __(htmlspecialchars($row['description'])) ?></p>
                             <div style="font-size: 11px; color: #e6e6e6; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><i class="bi bi-star-fill me-1" style="color:#C9A66B; font-size:9px;"></i><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></div>
                           </div>
                         <?php endforeach; ?>

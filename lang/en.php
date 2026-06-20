@@ -36,4 +36,13 @@ return [
     'newsletter' => 'Newsletter',
     'subscribe' => 'Subscribe',
     'newsletter_desc' => 'Subscribe to get the latest offers and updates from us.',
+
+    'news' => 'News',
+    'team_chefs' => 'Our Chefs',
+    'hero_title' => 'Welcome to Restaurantly',
+    'hero_subtitle' => 'Providing wonderful food for more than 18 years!',
+
+    'đặt bàn' => 'BOOK A TABLE',
+    'Chào mừng bạn đến với Restaurantly' => 'Welcome to Restaurantly',
+    'Cung cấp những món ăn tuyệt vời trong hơn 18 năm!' => 'Providing wonderful food for more than 18 years!',
 ];
