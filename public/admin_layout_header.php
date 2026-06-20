@@ -632,11 +632,24 @@ try {
                         <i class="fas fa-envelope"></i> Quản lý Liên hệ
                     </a>
                 </li>
+                
+                <li class="<?= isActive('chat_console.php') ?>">
+                    <a href="/restaurant-project/admin/chat_console.php" style="color: #4F5B3A; font-weight: bold;">
+                        <i class="fas fa-comments text-success"></i> 
+                        <span>Hỗ trợ Khách hàng (Chat)</span>
+                        <span class="badge-notify chat-waiting-badge" style="display:none;">0</span>
+                    </a>
+                </li>
                 <?php endif; ?>
 
-                <!-- Chỉ Admin mới thấy phần Cấu hình -->
                 <?php if ($is_admin): ?>
                 <div class="menu-header">Cấu hình</div>
+
+                <li class="<?= isActive('chat_analytics.php') ?>">
+                    <a href="/restaurant-project/admin/chat_analytics.php">
+                        <i class="fas fa-chart-bar"></i> Thống kê Chat
+                    </a>
+                </li>
 
                 <li class="<?= isActive('manage_users.php') ?>">
                     <a href="/restaurant-project/admin/manage_users.php">
@@ -718,6 +731,8 @@ try {
                     'manage_contacts.php'     => 'Quản Lý Liên Hệ',
 
                     'UserController.php'      => 'Quản Lý Người Dùng',
+                    'chat_console.php'        => 'Trò Chuyện Trực Tuyến',
+                    'chat_analytics.php'      => 'Thống Kê Trò Chuyện',
                 ];
                 echo $page_titles[$current_page] ?? 'Khu Vực Quản Trị';
                 ?>
@@ -811,4 +826,30 @@ try {
                         }
                     }
                 });
+
+                // Global Chat Alert Polling
+                setInterval(() => {
+                    fetch('/restaurant-project/admin/api/chat_admin_api.php?action=check_alerts')
+                    .then(res => res.json())
+                    .then(data => {
+                        const badges = document.querySelectorAll('.chat-waiting-badge');
+                        badges.forEach(b => {
+                            b.innerText = data.waiting_count;
+                            b.style.display = data.waiting_count > 0 ? 'inline-block' : 'none';
+                        });
+                        
+                        const countLbl = document.getElementById('waitingCount');
+                        if (countLbl) {
+                            countLbl.innerText = data.waiting_count + ' chờ';
+                        }
+
+                        if(data.waiting_count > 0 && !window.lastTingPlayed) {
+                            let audio = new Audio('/restaurant-project/public/assets/audio/ting.mp3');
+                            audio.play().catch(e => {});
+                            window.lastTingPlayed = true; 
+                        } else if (data.waiting_count === 0) {
+                            window.lastTingPlayed = false;
+                        }
+                    }).catch(e => {});
+                }, 3000);
             </script>
