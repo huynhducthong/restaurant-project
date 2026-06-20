@@ -222,20 +222,20 @@ include __DIR__ . '/views/client/layouts/header.php';
 <style>
 /* ══ TOKENS ══ */
 :root{
-  --F:      #E65C00;        /* Orange */
-  --F-lt:   #FF7A00;        /* Bright orange hover */
-  --F-pale: rgba(230, 92, 0, 0.1);  /* Orange pale bg highlight */
-  --accent-burgundy:   #E65C00;
-  --accent-burgundy-lt: rgba(230, 92, 0, 0.3);
-  --bg:     #F9F9F9;         /* Dark background */
-  --bg2:    rgba(38, 38, 41, 0.45); /* Glassmorphism dark bg */
-  --ink:    #ffffff;         /* White text */
-  --ink2:   #222222;         /* Light grey text */
-  --muted:  #A88746;         /* Olive/Gold muted text */
-  --border: rgba(168, 135, 70, 0.2); /* Faint olive border */
+  --F:      #A88746;        /* Gold */
+  --F-lt:   #d4b06a;        /* Bright gold hover */
+  --F-pale: rgba(168, 135, 70, 0.1);  /* Gold pale bg highlight */
+  --accent-burgundy:   #A88746;
+  --accent-burgundy-lt: rgba(168, 135, 70, 0.3);
+  --bg:     #F5F2ED;         /* Light beige background */
+  --bg2:    #ffffff;         /* White bg for cards/frames */
+  --ink:    #222222;         /* Black text */
+  --ink2:   #555555;         /* Dark grey text */
+  --muted:  #888888;         /* Muted text */
+  --border: rgba(0, 0, 0, 0.1); /* Faint gray border */
   --r:      12px;            /* Slightly softer radius for glass */
-  --sh:     0 8px 32px rgba(0,0,0,0.4);
-  --sh-lg:  0 15px 40px rgba(0,0,0,0.6);
+  --sh:     0 8px 32px rgba(0,0,0,0.06);
+  --sh-lg:  0 15px 40px rgba(0,0,0,0.1);
 }
 
 *{box-sizing:border-box;}
@@ -273,34 +273,33 @@ body{
 /* ══ SIDEBAR ══ */
 .prof-sidebar{
   background:var(--bg2);
-  backdrop-filter: blur(15px);
   border-radius:var(--r);
   box-shadow:var(--sh);
   overflow:hidden;
-  border:1px solid rgba(255,255,255,0.05);
+  border:1px solid var(--border);
 }
 
 /* Avatar section */
 .prof-top{
-  background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(26,26,29,0.3) 100%);
+  background: #ffffff;
   padding:32px 24px 28px;
   text-align:center;
   position:relative;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid var(--border);
 }
 .av-ring{
   width:110px;height:110px;border-radius:50%;
   border:2px solid var(--F);
   overflow:hidden;margin:0 auto 16px;
-  background:rgba(255,255,255,.05);
-  box-shadow:0 0 20px rgba(230, 92, 0, 0.4);
+  background:#ffffff;
+  box-shadow:0 0 20px rgba(168, 135, 70, 0.2);
 }
 .av-ring img{width:100%;height:100%;object-fit:cover;}
 .prof-name{
   font-family:'Cormorant Garamond', serif;font-weight:600;
-  font-size:1.1rem;color:#fff;margin:0 0 4px;
+  font-size:1.1rem;color:var(--ink);margin:0 0 4px;
 }
-.prof-email{font-size:12px;color:rgba(255,255,255,.6);margin:0;}
+.prof-email{font-size:12px;color:var(--ink2);margin:0;}
 
 /* Sidebar nav */
 .prof-nav{padding:16px 0 12px;}
@@ -338,10 +337,9 @@ body{
 /* ══ CONTENT CARD ══ */
 .prof-card{
   background:var(--bg2);
-  backdrop-filter: blur(15px);
   border-radius:var(--r);
   box-shadow:var(--sh);
-  border:1px solid rgba(255,255,255,0.05);
+  border:1px solid var(--border);
   overflow:hidden;
   min-height:520px;
 }
@@ -374,11 +372,11 @@ body{
   width:100%;padding:12px 16px;
   border:1px solid rgba(0,0,0,0.1);border-radius:9px;
   font-family:'Be Vietnam Pro',sans-serif;font-size:14px;
-  color:var(--ink);background:rgba(255,255,255,0.03);
+  color:var(--ink);background:#fcfcfc;
   outline:none;transition:all .3s ease;
 }
-.fi:focus{border-color:var(--F);box-shadow:0 0 0 3px rgba(230, 92, 0, 0.15);background: rgba(255,255,255,0.08);}
-.fi::placeholder{color:rgba(255,255,255,.2);}
+.fi:focus{border-color:var(--F);box-shadow:0 0 0 3px rgba(168, 135, 70, 0.15);background: #ffffff;}
+.fi::placeholder{color:rgba(0,0,0,.3);}
 
 /* Avatar upload in form */
 .av-upload{
@@ -699,8 +697,8 @@ body{
                 border: 1px solid rgba(168, 135, 70, 0.2);
             }
             .plan-summary {
-                background: #F9F9F9;
-                color: #fff;
+                background: #F5F2ED;
+                color: #222222;
                 padding: 40px;
                 width: 45%;
                 position: relative;
@@ -709,20 +707,21 @@ body{
                 content: '';
                 position: absolute;
                 top: 0; left: 0; right: 0; bottom: 0;
-                background: linear-gradient(135deg, rgba(230, 92, 0, 0.15) 0%, rgba(0,0,0,0) 100%);
+                background: linear-gradient(135deg, rgba(168, 135, 70, 0.15) 0%, rgba(0,0,0,0) 100%);
                 pointer-events: none;
             }
             .plan-summary h2 {
                 font-family: 'Cormorant Garamond', serif;
-                color: #E65C00;
+                color: #A88746;
                 font-size: 1.8rem;
                 margin-bottom: 20px;
+                font-weight: 600;
             }
             .price-tag {
                 font-size: 2.8rem;
                 font-weight: 700;
                 font-family: 'Cormorant Garamond', serif;
-                color: #fff;
+                color: #222222;
                 margin-bottom: 5px;
                 line-height: 1;
             }
@@ -731,7 +730,7 @@ body{
                 color: rgba(0,0,0,0.7);
                 margin-bottom: 25px;
                 padding-bottom: 20px;
-                border-bottom: 1px dashed rgba(255,255,255,0.2);
+                border-bottom: 1px dashed rgba(0,0,0,0.15);
             }
             .benefits-list {
                 list-style: none;
@@ -743,11 +742,11 @@ body{
                 margin-bottom: 15px;
                 font-size: 0.95rem;
                 line-height: 1.5;
-                color: rgba(255,255,255,0.9);
+                color: rgba(0,0,0,0.8);
             }
             .benefits-list li i {
                 position: absolute; left: 0; top: 3px;
-                color: #E65C00; font-size: 1.1rem;
+                color: #A88746; font-size: 1.1rem;
             }
             .payment-form {
                 width: 55%;
@@ -766,7 +765,7 @@ body{
             .payment-form h3 {
                 font-family: 'Cormorant Garamond', serif;
                 font-size: 1.4rem;
-                color: #ffffff;
+                color: #222222;
                 margin-bottom: 20px;
             }
             .payment-methods {
@@ -776,46 +775,46 @@ body{
                 border: 1px solid rgba(168, 135, 70, 0.2); border-radius: 8px; padding: 15px;
                 cursor: pointer; transition: all 0.2s; position: relative;
             }
-            .payment-method-card:hover { border-color: #E65C00; background: rgba(230, 92, 0, 0.05); }
+            .payment-method-card:hover { border-color: #A88746; background: rgba(168, 135, 70, 0.05); }
             .payment-method-card input[type="radio"] { display: none; }
             .payment-method-card input[type="radio"]:checked + .method-content::before {
                 content: '\f058'; font-family: 'FontAwesome'; position: absolute;
-                top: -10px; right: -10px; color: #E65C00; background: #FFFFFF;
+                top: -10px; right: -10px; color: #A88746; background: #FFFFFF;
                 border-radius: 50%; font-size: 1.4rem; line-height: 1;
             }
-            .payment-method-card input[type="radio"]:checked + .method-content { color: #E65C00; }
+            .payment-method-card input[type="radio"]:checked + .method-content { color: #A88746; }
             .payment-method-card:has(input[type="radio"]:checked) {
-                border-color: #E65C00; background: rgba(230, 92, 0, 0.05); box-shadow: 0 4px 10px rgba(230, 92, 0, 0.2);
+                border-color: #A88746; background: rgba(168, 135, 70, 0.05); box-shadow: 0 4px 10px rgba(168, 135, 70, 0.2);
             }
             .method-content {
                 display: flex; flex-direction: column; align-items: center; gap: 8px;
                 color: #222222; font-weight: 500; font-size: 0.9rem; text-align: center;
             }
-            .method-content i { font-size: 1.8rem; color: #E65C00; }
+            .method-content i { font-size: 1.8rem; color: #A88746; }
             .card-details {
-                background: #F9F9F9; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(168, 135, 70, 0.2);
+                background: #F5F2ED; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(168, 135, 70, 0.2);
             }
             .form-control-lux {
                 width: 100%; padding: 10px 15px; border: 1px solid rgba(168, 135, 70, 0.3); border-radius: 6px; font-size: 0.95rem; transition: 0.3s;
             }
-            .form-control-lux:focus { outline: none; border-color: #E65C00; box-shadow: 0 0 0 3px rgba(230, 92, 0, 0.2); background: #F9F9F9; color: #fff; }
+            .form-control-lux:focus { outline: none; border-color: #A88746; box-shadow: 0 0 0 3px rgba(168, 135, 70, 0.2); background: #ffffff; color: #222222; }
             .btn-pay {
-                background: linear-gradient(135deg, #E65C00, #FF7A00); color: #fff; border: none; width: 100%; padding: 14px;
+                background: linear-gradient(135deg, #A88746, #d4b06a); color: #fff; border: none; width: 100%; padding: 14px;
                 font-size: 1.05rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.3s;
             }
-            .btn-pay:hover { background: linear-gradient(135deg, #FF7A00, #E65C00); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(230, 92, 0, 0.4); }
+            .btn-pay:hover { background: linear-gradient(135deg, #d4b06a, #A88746); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(168, 135, 70, 0.4); }
             
             .btn-open-pay {
-                background: linear-gradient(135deg, #E65C00, #FF7A00); color: #fff; border: none; width: 100%; padding: 15px;
+                background: linear-gradient(135deg, #A88746, #d4b06a); color: #fff; border: none; width: 100%; padding: 15px;
                 font-size: 1.1rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.3s;
             }
-            .btn-open-pay:hover { background: linear-gradient(135deg, #FF7A00, #E65C00); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(230, 92, 0, 0.4); }
+            .btn-open-pay:hover { background: linear-gradient(135deg, #d4b06a, #A88746); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(168, 135, 70, 0.4); }
             
             .current-vip-alert {
-                background: rgba(230, 92, 0, 0.1); border: 1px solid #E65C00; color: #E65C00;
+                background: rgba(168, 135, 70, 0.1); border: 1px solid #A88746; color: #A88746;
                 padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px;
             }
-            .current-vip-alert i { font-size: 24px; color: #E65C00; }
+            .current-vip-alert i { font-size: 24px; color: #A88746; }
             
             @media (max-width: 768px) {
                 .plan-summary { width: 100%; }
@@ -824,14 +823,21 @@ body{
         </style>
 
         <?php if($current_vip): ?>
-            <div class="current-vip-alert" style="background: linear-gradient(135deg, #2b1f0c 0%, #0a1f1c 100%); border: 1px solid #c8933a; color: #f0e0c0;">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="#c8933a" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
-                    <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
-                </svg>
-                <div>
-                    <h5 class="mb-1 fw-bold" style="color: #c8933a;">Đặc quyền VIP CROWN đang được kích hoạt!</h5>
-                    <p class="mb-0 small" style="color: #d1c8b4;">Chiết khấu <?= $current_vip['discount_percent'] ?>% toàn hệ thống. Đặc quyền sẽ kết thúc vào: <strong style="color:#fff;"><?= date('d/m/Y', strtotime($current_vip['end_date'])) ?></strong></p>
+            <div class="current-vip-alert" style="background: linear-gradient(135deg, #2b1f0c 0%, #0a1f1c 100%); border: 1px solid #c8933a; color: #f0e0c0; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="#c8933a" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+                        <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
+                    </svg>
+                    <div>
+                        <h5 class="mb-1 fw-bold" style="color: #c8933a;">Đặc quyền VIP CROWN đang được kích hoạt!</h5>
+                        <p class="mb-0 small" style="color: #d1c8b4;">Chiết khấu <?= $current_vip['discount_percent'] ?>% toàn hệ thống. Đặc quyền sẽ kết thúc vào: <strong style="color:#fff;"><?= date('d/m/Y', strtotime($current_vip['end_date'])) ?></strong></p>
+                    </div>
                 </div>
+                <form action="config/process_vip_cancel.php" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn hủy gia hạn gói VIP này? Mọi đặc quyền của gói sẽ kết thúc ngay lập tức.');">
+                    <button type="submit" name="cancel_vip" class="btn btn-outline-danger btn-sm px-4 py-2" style="border-radius: 8px; font-weight: 600; white-space: nowrap;">
+                        <i class="fas fa-times-circle me-1"></i> Hủy Gia Hạn
+                    </button>
+                </form>
             </div>
         <?php endif; ?>
 

@@ -49,6 +49,18 @@ if ($success) {
     $msg_tele .= "- Gói: " . $plan['name'] . "\n";
     $msg_tele .= "- Giá: " . number_format($plan['price'], 0, ',', '.') . " VNĐ\n";
     $msg_tele .= "- Phương thức: " . ($payment_method == 'credit_card' ? 'Thẻ Tín Dụng' : 'Chuyển Khoản') . "\n";
+    // Lấy thông tin user
+    $u_stmt = $db->prepare("SELECT email FROM users WHERE id = :id");
+    $u_stmt->bindParam(':id', $user_id, PDO::PARAM_INT);
+    $u_stmt->execute();
+    $u_info = $u_stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Gửi email chúc mừng
+    if ($u_info && !empty($u_info['email'])) {
+        $end_date_str = date('d/m/Y', strtotime("+" . $plan['duration_days'] . " days"));
+        @sendVipRegistrationEmail($u_info['email'], $uname, $plan['name'], $plan['price'], $end_date_str);
+    }
+
     @sendTelegramNotification($msg_tele);
 
 } else {
