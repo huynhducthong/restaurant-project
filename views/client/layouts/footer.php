@@ -255,6 +255,23 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
     </div>
 </div>
 
+<?php
+$is_logged_in_chat = isset($_SESSION['user_id']);
+$chat_user_name = '';
+$chat_user_phone = '';
+if ($is_logged_in_chat) {
+    try {
+        $stmt_c = $db->prepare("SELECT full_name, phone FROM users WHERE id = ?");
+        $stmt_c->execute([$_SESSION['user_id']]);
+        $u_chat = $stmt_c->fetch(PDO::FETCH_ASSOC);
+        if ($u_chat) {
+            $chat_user_name = $u_chat['full_name'];
+            $chat_user_phone = $u_chat['phone'] ?? '0000000000';
+        }
+    } catch(PDOException $e) {}
+}
+?>
+
 <!-- CHAT MODAL -->
 <div class="chat-modal-overlay" id="chatModalOverlay" style="display: none;">
     <div class="chat-modal-container">
@@ -272,20 +289,32 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
             </div>
             
             <div id="chatInitForm" class="chat-init-form">
-                <p class="text-center mb-3" style="font-size: 14px;">Vui lòng cho chúng tôi biết thông tin của bạn trước khi bắt đầu trò chuyện.</p>
-                <div class="mb-3">
-                    <input type="text" id="chatCustomerName" class="form-control" placeholder="Họ và Tên *" required>
-                </div>
-                <div class="mb-3">
-                    <input type="text" id="chatCustomerPhone" class="form-control" placeholder="Số điện thoại *" required>
-                </div>
-                <button type="button" class="btn btn-chat-gold w-100" onclick="initChatSession()">BẮT ĐẦU TRÒ CHUYỆN</button>
+                <?php if (!$is_logged_in_chat): ?>
+                    <div style="padding: 40px 20px; text-align: center;">
+                        <i class="fas fa-user-lock fa-3x" style="color: #ccc; margin-bottom: 20px;"></i>
+                        <p class="mb-4" style="font-size: 15px; color: #555;">Vui lòng đăng nhập để sử dụng tính năng trò chuyện trực tuyến với nhà hàng.</p>
+                        <a href="<?= safe_url('public/login.php', $path_prefix) ?>" class="btn btn-chat-gold w-100" style="text-decoration: none; padding: 12px; display: block; border-radius: 6px;">ĐĂNG NHẬP NGAY</a>
+                    </div>
+                <?php else: ?>
+                    <div class="text-center" style="padding: 50px 20px;">
+                        <i class="fas fa-spinner fa-spin fa-2x" style="color: #C19A5B;"></i>
+                        <p class="mt-3" style="color: #666;">Đang kết nối...</p>
+                        <input type="hidden" id="chatCustomerName" value="<?= htmlspecialchars($chat_user_name, ENT_QUOTES) ?>">
+                        <input type="hidden" id="chatCustomerPhone" value="<?= htmlspecialchars($chat_user_phone, ENT_QUOTES) ?>">
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
 
         <div class="chat-footer" id="chatFooter" style="display: none;">
             <div class="typing-indicator" id="typingIndicator" style="display: none;">
                 <span></span><span></span><span></span> <small class="ms-2 text-muted" id="typingText">Bot đang soạn câu trả lời...</small>
+            </div>
+            
+            <div class="customer-quick-replies pb-2 px-3 pt-2" style="background: #f8f9fa; border-top: 1px solid #eee; overflow-x: auto; white-space: nowrap;">
+                <button type="button" class="btn btn-sm btn-outline-secondary me-1" style="border-radius: 20px; font-size: 12px; padding: 4px 10px;" onclick="sendCustomerQuickReply('Tôi muốn đặt bàn')">Tôi muốn đặt bàn</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary me-1" style="border-radius: 20px; font-size: 12px; padding: 4px 10px;" onclick="sendCustomerQuickReply('Thực đơn nhà hàng có gì?')">Xem thực đơn</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary me-1" style="border-radius: 20px; font-size: 12px; padding: 4px 10px;" onclick="sendCustomerQuickReply('Gặp nhân viên hỗ trợ')">Gặp nhân viên</button>
             </div>
             <div class="d-flex align-items-center gap-2">
                 <input type="file" id="chatImageInput" accept="image/jpeg, image/png" style="display: none;" onchange="sendChatImage(this)">
@@ -300,15 +329,14 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
 <style>
 /* === CHAT MODAL === */
 .chat-modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5); z-index: 10000;
-    display: flex; align-items: center; justify-content: center;
+    position: fixed; bottom: 20px; right: 20px; z-index: 10000;
+    display: flex; align-items: flex-end; justify-content: flex-end;
 }
 .chat-modal-container {
-    background: #fff; width: 380px; height: 550px;
+    background: #fff; width: 360px; height: 550px;
     border-radius: 12px; overflow: hidden;
     display: flex; flex-direction: column;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
     animation: slideUp 0.3s ease;
 }
 @keyframes slideUp {
@@ -438,6 +466,11 @@ function openChatModal() {
         document.getElementById('chatFooter').style.display = 'block';
         loadChatMessages();
         startChatPolling();
+    } else {
+        <?php if ($is_logged_in_chat): ?>
+        // Tự động bắt đầu chat nếu đã đăng nhập
+        initChatSession();
+        <?php endif; ?>
     }
 }
 
@@ -447,13 +480,13 @@ function closeChatModal() {
 }
 
 function initChatSession() {
-    const name = document.getElementById('chatCustomerName').value.trim();
-    const phone = document.getElementById('chatCustomerPhone').value.trim();
+    const nameInput = document.getElementById('chatCustomerName');
+    const phoneInput = document.getElementById('chatCustomerPhone');
     
-    if (!name || !phone) {
-        alert('Vui lòng nhập đầy đủ Tên và Số điện thoại!');
-        return;
-    }
+    if (!nameInput || !phoneInput) return;
+
+    const name = nameInput.value.trim() || 'Khách hàng';
+    const phone = phoneInput.value.trim() || '0000000000';
     
     // Tạo session tạm
     chatSessionId = 'sess_' + Date.now() + '_' + Math.floor(Math.random()*1000);
@@ -499,18 +532,23 @@ function appendMessage(sender, type, content) {
 function sendChatMessage() {
     const input = document.getElementById('chatInputMessage');
     const msg = input.value.trim();
-    if (!msg) return;
+    if (!msg || !chatSessionId) return;
     
     input.value = '';
-    showTyping('Bot đang soạn câu trả lời...');
+    // Xóa dòng appendMessage tạm thời để tránh bị nhân đôi tin nhắn khi loadChatMessages gọi về
+    showTyping('Đang gửi...');
     
     fetch('api/chat/client_api.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: `action=send_message&session_id=${chatSessionId}&content=${encodeURIComponent(msg)}`
-    }).then(res => res.json()).then(data => {
-        loadChatMessages();
-    }).catch(err => console.error(err));
+    }).then(() => loadChatMessages());
+}
+
+function sendCustomerQuickReply(text) {
+    const input = document.getElementById('chatInputMessage');
+    input.value = text;
+    sendChatMessage();
 }
 
 function sendChatImage(input) {
@@ -545,6 +583,11 @@ function loadChatMessages() {
     })
     .then(data => {
         if (!data) return;
+        if (data.status === 'invalid_session') {
+            localStorage.removeItem('restaurantly_chat_session_id');
+            location.reload();
+            return;
+        }
         if (data.status === 'success' && data.messages.length > 0) {
             hideTyping();
             data.messages.forEach(m => {

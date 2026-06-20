@@ -76,9 +76,19 @@ if ($active_session) {
     <div class="chat-console">
         <!-- Cột 1: Danh sách Sessions -->
         <div class="col-sessions">
-            <div class="header-panel d-flex justify-content-between align-items-center">
-                <span>Danh sách khách hàng</span>
-                <span class="badge bg-danger" id="waitingCount">0 chờ</span>
+            <div class="header-panel">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Danh sách khách hàng</span>
+                    <span class="badge bg-danger" id="waitingCount">0 chờ</span>
+                </div>
+                <input type="text" id="searchChat" class="form-control form-control-sm mb-2" placeholder="Tìm tên hoặc SĐT..." onkeyup="renderSessions()">
+                <select id="filterChat" class="form-select form-select-sm" onchange="renderSessions()">
+                    <option value="all">Tất cả trạng thái</option>
+                    <option value="waiting_agent">Đang chờ</option>
+                    <option value="agent_handling">Đang chat</option>
+                    <option value="bot_handling">Bot xử lý</option>
+                    <option value="closed">Đã đóng</option>
+                </select>
             </div>
             <div class="session-list" id="sessionList">
                 <?php foreach ($sessions as $s): 
@@ -115,7 +125,12 @@ if ($active_session) {
                 <!-- Messages JS loaded -->
             </div>
             <?php if ($customer['status'] !== 'closed'): ?>
-            <div class="chat-input-area">
+            <div class="quick-replies px-3 pt-2 bg-light border-top">
+                <button class="btn btn-sm btn-outline-secondary me-1 mb-1" onclick="sendQuickReply('Cảm ơn bạn đã liên hệ với Restaurantly!')">Cảm ơn</button>
+                <button class="btn btn-sm btn-outline-secondary me-1 mb-1" onclick="sendQuickReply('Bạn vui lòng cung cấp thông tin để nhà hàng hỗ trợ nhé.')">Xin thông tin</button>
+                <button class="btn btn-sm btn-outline-secondary me-1 mb-1" onclick="sendQuickReply('Dạ, bạn có thể tham khảo thực đơn tại Website của nhà hàng ạ.')">Link Menu</button>
+            </div>
+            <div class="chat-input-area border-top-0 pt-2">
                 <input type="file" id="adminChatImage" accept="image/jpeg, image/png" style="display:none;" onchange="sendAdminImage(this)">
                 <button class="btn btn-light" onclick="document.getElementById('adminChatImage').click()"><i class="fas fa-paperclip"></i></button>
                 <input type="text" id="adminChatInput" class="form-control" placeholder="Nhập tin nhắn..." onkeypress="if(event.key==='Enter') sendAdminMessage()">
@@ -229,6 +244,12 @@ function sendAdminMessage() {
     }).then(() => loadAdminMessages());
 }
 
+function sendQuickReply(text) {
+    const input = document.getElementById('adminChatInput');
+    input.value = text;
+    sendAdminMessage();
+}
+
 function sendAdminImage(input) {
     if (!input.files || input.files.length === 0) return;
     const file = input.files[0];
@@ -275,8 +296,48 @@ if (activeSession) {
     setInterval(loadAdminMessages, 3000);
 }
 
+let allSessions = [];
+
+function renderSessions() {
+    const listContainer = document.getElementById('sessionList');
+    const searchVal = document.getElementById('searchChat') ? document.getElementById('searchChat').value.toLowerCase() : '';
+    const filterVal = document.getElementById('filterChat') ? document.getElementById('filterChat').value : 'all';
+    
+    let html = '';
+    allSessions.forEach(s => {
+        // Filter logic
+        if (filterVal !== 'all' && s.status !== filterVal) return;
+        if (searchVal) {
+            if (!s.customer_name.toLowerCase().includes(searchVal) && !s.customer_phone.includes(searchVal)) {
+                return;
+            }
+        }
+
+        const isActive = s.session_id === activeSession ? 'active' : '';
+        const isWaiting = s.status === 'waiting_agent' ? 'waiting' : '';
+        let stClass = ''; let stText = '';
+        if(s.status === 'waiting_agent') { stClass = 'st-waiting'; stText = 'Đang chờ'; }
+        else if(s.status === 'agent_handling') { stClass = 'st-agent'; stText = 'Đang chat'; }
+        else if(s.status === 'bot_handling') { stClass = 'st-bot'; stText = 'Bot xử lý'; }
+        else if(s.status === 'closed') { stClass = 'st-closed'; stText = 'Đã đóng'; }
+        
+        html += `<a href="?session_id=${s.session_id}" class="session-item ${isActive} ${isWaiting}">
+            <div class="d-flex justify-content-between">
+                <div class="session-name">${s.customer_name}</div>
+                <span class="session-status ${stClass}">${stText}</span>
+            </div>
+            <div class="text-muted" style="font-size:12px;">${s.customer_phone}</div>
+        </a>`;
+    });
+    
+    if (html === '') {
+        html = '<div class="p-3 text-center text-muted">Không tìm thấy phiên chat phù hợp</div>';
+    }
+    listContainer.innerHTML = html;
+}
+
 // Global Polling cho Header (waiting_agent)
-setInterval(() => {
+function pollSessions() {
     fetch('api/chat_admin_api.php?action=check_alerts')
     .then(res => res.json())
     .then(data => {
@@ -303,29 +364,14 @@ setInterval(() => {
     .then(res => res.json())
     .then(data => {
         if (data.status === 'success') {
-            const listContainer = document.getElementById('sessionList');
-            let html = '';
-            data.sessions.forEach(s => {
-                const isActive = s.session_id === activeSession ? 'active' : '';
-                const isWaiting = s.status === 'waiting_agent' ? 'waiting' : '';
-                let stClass = ''; let stText = '';
-                if(s.status === 'waiting_agent') { stClass = 'st-waiting'; stText = 'Đang chờ'; }
-                else if(s.status === 'agent_handling') { stClass = 'st-agent'; stText = 'Đang chat'; }
-                else if(s.status === 'bot_handling') { stClass = 'st-bot'; stText = 'Bot đang xử lý'; }
-                else if(s.status === 'closed') { stClass = 'st-closed'; stText = 'Đã đóng'; }
-                
-                html += `<a href="?session_id=${s.session_id}" class="session-item ${isActive} ${isWaiting}">
-                    <div class="d-flex justify-content-between">
-                        <div class="session-name">${s.customer_name}</div>
-                        <span class="session-status ${stClass}">${stText}</span>
-                    </div>
-                    <div class="text-muted" style="font-size:12px;">${s.customer_phone}</div>
-                </a>`;
-            });
-            listContainer.innerHTML = html;
+            allSessions = data.sessions;
+            renderSessions();
         }
     });
-}, 3000);
+}
+
+pollSessions();
+setInterval(pollSessions, 3000);
 </script>
 
 <?php include __DIR__ . '/../public/admin_layout_footer.php'; ?>

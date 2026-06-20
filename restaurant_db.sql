@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 20, 2026 at 10:17 AM
+-- Generation Time: Jun 20, 2026 at 01:50 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -735,6 +735,52 @@ INSERT INTO `booking_inventory_deductions` (`id`, `booking_id`, `ingredient_id`,
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `bot_context_logs`
+--
+
+DROP TABLE IF EXISTS `bot_context_logs`;
+CREATE TABLE `bot_context_logs` (
+  `id` int(11) NOT NULL,
+  `keyword_searched` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `bot_context_logs`
+--
+
+INSERT INTO `bot_context_logs` (`id`, `keyword_searched`, `created_at`) VALUES
+(1, 'chào bạn', '2026-06-20 11:19:03'),
+(2, 'gặp nhân viên', '2026-06-20 11:19:28'),
+(3, 'ở đâu', '2026-06-20 11:42:02'),
+(4, '.', '2026-06-20 11:43:27'),
+(5, 'nhân viên', '2026-06-20 11:43:33');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bot_responses`
+--
+
+DROP TABLE IF EXISTS `bot_responses`;
+CREATE TABLE `bot_responses` (
+  `id` int(11) NOT NULL,
+  `keywords` text NOT NULL,
+  `answer` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `bot_responses`
+--
+
+INSERT INTO `bot_responses` (`id`, `keywords`, `answer`) VALUES
+(1, 'chào,hello,hi', 'Chào bạn! Mình có thể giúp gì cho bạn?'),
+(2, 'địa chỉ,ở đâu,vị trí', 'Nhà hàng Restaurantly nằm tại số 123 Đường ABC, Quận XYZ, TP. HCM bạn nhé.'),
+(3, 'giờ mở cửa,thời gian,mấy giờ', 'Nhà hàng mở cửa từ 8:00 sáng đến 22:00 tối các ngày trong tuần ạ.');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `categories`
 --
 
@@ -754,6 +800,76 @@ INSERT INTO `categories` (`id`, `name`) VALUES
 (3, 'Tráng miệng'),
 (4, 'Đồ uống'),
 (5, 'Món ăn kèm');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `chat_messages`
+--
+
+DROP TABLE IF EXISTS `chat_messages`;
+CREATE TABLE `chat_messages` (
+  `id` int(11) NOT NULL,
+  `session_id` varchar(50) NOT NULL,
+  `sender_type` enum('customer','bot','admin') NOT NULL,
+  `message_type` enum('text','image') DEFAULT 'text',
+  `content` text NOT NULL,
+  `is_read` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `chat_messages`
+--
+
+INSERT INTO `chat_messages` (`id`, `session_id`, `sender_type`, `message_type`, `content`, `is_read`, `created_at`) VALUES
+(4, 'sess_1781954337712_976', 'bot', 'text', 'Chào Quản trị viên! Mình là Trợ lý ảo của Restaurantly. Mình có thể giúp gì cho bạn hôm nay?', 0, '2026-06-20 11:18:57'),
+(5, 'sess_1781954337712_976', 'customer', 'text', 'chào bạn', 1, '2026-06-20 11:19:03'),
+(6, 'sess_1781954337712_976', 'bot', 'text', 'Xin lỗi, mình chưa hiểu ý bạn. Bạn có muốn \'gặp nhân viên\' không?', 0, '2026-06-20 11:19:03'),
+(7, 'sess_1781954337712_976', 'customer', 'text', 'gặp nhân viên', 1, '2026-06-20 11:19:28'),
+(8, 'sess_1781954337712_976', 'bot', 'text', 'Vui lòng đợi giây lát, nhân viên sẽ hỗ trợ bạn ngay.', 0, '2026-06-20 11:19:28'),
+(9, 'sess_1781954337712_976', 'admin', 'text', 'xin chào', 0, '2026-06-20 11:19:34'),
+(10, 'sess_1781954337712_976', 'customer', 'text', 'Thực đơn nhà hàng có gì?', 1, '2026-06-20 11:31:31'),
+(11, 'sess_1781954337712_976', 'customer', 'text', 'Gặp nhân viên hỗ trợ', 1, '2026-06-20 11:31:33'),
+(12, 'sess_1781954337712_976', 'customer', 'text', 'Tôi muốn đặt bàn', 1, '2026-06-20 11:31:34'),
+(13, 'sess_1781954337712_976', 'customer', 'text', 'Thực đơn nhà hàng có gì?', 1, '2026-06-20 11:31:35'),
+(14, 'sess_1781954337712_976', 'admin', 'text', 'Dạ, bạn có thể tham khảo thực đơn tại Website của nhà hàng ạ.', 0, '2026-06-20 11:32:28'),
+(15, 'sess_1781954337712_976', 'customer', 'text', 'Thực đơn nhà hàng có gì?', 1, '2026-06-20 11:32:55'),
+(16, 'sess_1781954337712_976', 'customer', 'text', 'ở đâu', 1, '2026-06-20 11:39:20'),
+(17, 'sess_1781954337712_976', 'customer', 'text', 'ơ đâu', 1, '2026-06-20 11:40:56'),
+(18, 'sess_1781954337712_976', 'customer', 'text', 'ở đâu', 1, '2026-06-20 11:41:02'),
+(19, 'sess_1781954337712_976', 'customer', 'text', 'ở đâu', 1, '2026-06-20 11:41:11'),
+(20, 'sess_1781954337712_976', 'customer', 'text', 'ở đâu', 1, '2026-06-20 11:42:02'),
+(21, 'sess_1781954337712_976', 'bot', 'text', 'Nhà hàng Restaurantly nằm tại số 123 Đường ABC, Quận XYZ, TP. HCM bạn nhé.', 0, '2026-06-20 11:42:02'),
+(22, 'sess_1781954337712_976', 'customer', 'text', '.', 1, '2026-06-20 11:43:15'),
+(23, 'sess_1781954337712_976', 'customer', 'text', '.', 1, '2026-06-20 11:43:27'),
+(24, 'sess_1781954337712_976', 'bot', 'text', 'Xin lỗi, mình chưa hiểu ý bạn. Bạn có muốn \'gặp nhân viên\' không?', 0, '2026-06-20 11:43:27'),
+(25, 'sess_1781954337712_976', 'customer', 'text', 'nhân viên', 1, '2026-06-20 11:43:33'),
+(26, 'sess_1781954337712_976', 'bot', 'text', 'Vui lòng đợi giây lát, nhân viên sẽ hỗ trợ bạn ngay.', 0, '2026-06-20 11:43:33');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `chat_sessions`
+--
+
+DROP TABLE IF EXISTS `chat_sessions`;
+CREATE TABLE `chat_sessions` (
+  `session_id` varchar(50) NOT NULL,
+  `customer_name` varchar(100) NOT NULL,
+  `customer_phone` varchar(20) NOT NULL,
+  `status` enum('bot_handling','waiting_agent','agent_handling','closed') DEFAULT 'bot_handling',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `first_response_at` timestamp NULL DEFAULT NULL,
+  `closed_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `chat_sessions`
+--
+
+INSERT INTO `chat_sessions` (`session_id`, `customer_name`, `customer_phone`, `status`, `created_at`, `first_response_at`, `closed_at`) VALUES
+('sess_1781954337712_976', 'Quản trị viên', '0000000000', 'agent_handling', '2026-06-20 11:18:57', '2026-06-20 11:19:34', '2026-06-20 11:43:21');
 
 -- --------------------------------------------------------
 
@@ -3929,10 +4045,35 @@ ALTER TABLE `booking_inventory_deductions`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `bot_context_logs`
+--
+ALTER TABLE `bot_context_logs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `bot_responses`
+--
+ALTER TABLE `bot_responses`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `categories`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `chat_messages`
+--
+ALTER TABLE `chat_messages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `session_id` (`session_id`);
+
+--
+-- Indexes for table `chat_sessions`
+--
+ALTER TABLE `chat_sessions`
+  ADD PRIMARY KEY (`session_id`);
 
 --
 -- Indexes for table `chefs`
@@ -4336,10 +4477,28 @@ ALTER TABLE `booking_inventory_deductions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=231;
 
 --
+-- AUTO_INCREMENT for table `bot_context_logs`
+--
+ALTER TABLE `bot_context_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `bot_responses`
+--
+ALTER TABLE `bot_responses`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `chat_messages`
+--
+ALTER TABLE `chat_messages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `chefs`
@@ -4622,6 +4781,12 @@ ALTER TABLE `warehouses`
 --
 
 --
+-- Constraints for table `chat_messages`
+--
+ALTER TABLE `chat_messages`
+  ADD CONSTRAINT `chat_messages_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `chat_sessions` (`session_id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `combos`
 --
 ALTER TABLE `combos`
@@ -4695,44 +4860,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2026-06-11 11:30:40
-
-
--- --------------------------------------------------------
-
---
--- Table structure for table `chat_sessions`
---
-
-CREATE TABLE `chat_sessions` (
-  `session_id` varchar(50) NOT NULL,
-  `customer_name` varchar(100) NOT NULL,
-  `customer_phone` varchar(20) NOT NULL,
-  `status` enum('bot_handling','waiting_agent','agent_handling','closed') DEFAULT 'bot_handling',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `first_response_at` timestamp NULL DEFAULT NULL,
-  `closed_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`session_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-
--- --------------------------------------------------------
-
---
--- Table structure for table `chat_messages`
---
-
-CREATE TABLE `chat_messages` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `session_id` varchar(50) NOT NULL,
-  `sender_type` enum('customer','bot','admin') NOT NULL,
-  `message_type` enum('text','image') DEFAULT 'text',
-  `content` text NOT NULL,
-  `is_read` tinyint(1) DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `session_id` (`session_id`),
-  CONSTRAINT `chat_messages_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `chat_sessions` (`session_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
