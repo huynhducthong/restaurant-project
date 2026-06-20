@@ -880,7 +880,7 @@ include '../../public/admin_layout_header.php';
         <form class="modal-content border-0 shadow-lg" method="POST" action="POController.php" style="border-radius:20px;overflow:hidden;">
             <input type="hidden" name="create_po" value="1">
             <div class="modal-header bg-dark  py-3 px-4">
-                <h5 class="modal-title mb-0" style="font-family:'Playfair Display',serif;">
+                <h5 class="modal-title mb-0" style="font-family:'Cormorant Garamond', serif;">
                     <i class="fas fa-file-invoice-dollar me-2 text-warning"></i> TẠO PHIẾU ĐẶT HÀNG MỚI
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -968,7 +968,7 @@ include '../../public/admin_layout_header.php';
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg" style="border-radius:20px;overflow:hidden;">
             <div class="modal-header bg-dark  py-3 px-4">
-                <h5 class="modal-title fw-bold" style="font-family:'Playfair Display',serif;"><i class="fas fa-info-circle me-2 text-warning"></i>CHI TIẾT PHIẾU: <span id="view-po-code" class="text-warning"></span></h5>
+                <h5 class="modal-title fw-bold" style="font-family:'Cormorant Garamond', serif;"><i class="fas fa-info-circle me-2 text-warning"></i>CHI TIẾT PHIẾU: <span id="view-po-code" class="text-warning"></span></h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-0">
@@ -995,7 +995,7 @@ include '../../public/admin_layout_header.php';
             <input type="hidden" name="receive_po_final" value="1">
             <input type="hidden" name="po_id" id="receive-po-id">
             <div class="modal-header bg-success  py-3 px-4">
-                <h5 class="modal-title fw-bold" style="font-family:'Playfair Display',serif;">
+                <h5 class="modal-title fw-bold" style="font-family:'Cormorant Garamond', serif;">
                     <i class="fas fa-check-double me-2"></i>NHẬN HÀNG VÀ NHẬP KHO: <span id="receive-po-code" class=""></span>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>

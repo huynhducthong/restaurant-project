@@ -14,7 +14,7 @@ $units = $db->query("SELECT name FROM inventory_units ORDER BY name ASC")->fetch
 
 <div class="main-content">
     <div class="container-fluid">
-        <h2 class="mb-4" style="font-family: 'Playfair Display', serif;">Thiết lập Định mức Món ăn (Recipes)</h2>
+        <h2 class="mb-4" style="font-family: 'Cormorant Garamond', serif;">Thiết lập Định mức Món ăn (Recipes)</h2>
         
         <div class="card card-custom p-4">
             <p class="text-muted mb-4">Chọn món ăn để thiết lập các nguyên liệu cấu thành và lượng tiêu hao.</p>

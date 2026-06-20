@@ -63,7 +63,7 @@ include 'views/client/layouts/header.php';
     font-family: 'Open Sans', sans-serif;
 }
 .payment-card {
-    background: #262629;
+    background: #FFFFFF;
     border: 1px solid rgba(212, 176, 106, 0.3);
     border-radius: 0;
     padding: 40px;
@@ -74,7 +74,7 @@ include 'views/client/layouts/header.php';
     color: #333;
 }
 .qr-container {
-    background: #262629;
+    background: #FFFFFF;
     padding: 15px;
     display: inline-block;
     margin: 20px 0;
@@ -97,7 +97,7 @@ include 'views/client/layouts/header.php';
     width: 100%;
     margin-top: 20px;
     text-transform: uppercase;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     letter-spacing: 1px;
 }
 .btn-gold:hover {
@@ -123,14 +123,14 @@ include 'views/client/layouts/header.php';
     color: #111;
     font-weight: 700;
     margin: 15px 0;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
 }
 </style>
 
 <div class="payment-wrapper">
     <div class="payment-card">
         <i class="fas fa-qrcode" style="font-size: 40px; color: #d4b06a; margin-bottom: 15px;"></i>
-        <h2 style="color: #d4b06a; font-family: 'Montserrat', sans-serif; margin-bottom: 10px; font-weight: 600;">Thanh Toán Tiền Cọc</h2>
+        <h2 style="color: #d4b06a; font-family: 'Cormorant Garamond', serif; margin-bottom: 10px; font-weight: 600;">Thanh Toán Tiền Cọc</h2>
         <p style="color: #777; font-size: 14px; margin-bottom: 25px;">Vui lòng dùng ứng dụng Ngân hàng để quét mã QR và hoàn tất việc đặt cọc giữ chỗ.</p>
         
         <div class="amount-highlight"><?= number_format($amount) ?> VNĐ</div>
@@ -139,7 +139,7 @@ include 'views/client/layouts/header.php';
             <img src="<?= $qr_url ?>" alt="VietQR QR Code" onerror="this.onerror=null; this.src='https://img.vietqr.io/image/vcb-1012345678-compact2.png?amount=<?= $amount ?>&addInfo=<?= urlencode($add_info) ?>&accountName=FINE%20DINING';">
         </div>
 
-        <div style="text-align: left; background: #262629; padding: 20px; margin-top: 10px; border: 1px solid #f0f0f0;">
+        <div style="text-align: left; background: #FFFFFF; padding: 20px; margin-top: 10px; border: 1px solid #f0f0f0;">
             <div class="pay-info"><span>Ngân hàng:</span> <span class="pay-val">Vietcombank</span></div>
             <div class="pay-info"><span>Chủ tài khoản:</span> <span class="pay-val"><?= $account_name ?></span></div>
             <div class="pay-info"><span>Số tài khoản:</span> <span class="pay-val"><?= $account_no ?></span></div>

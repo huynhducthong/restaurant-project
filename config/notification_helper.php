@@ -271,11 +271,11 @@ function sendBookingEmailConfirmation($emailNguoiNhan, $booking_info) {
 
         $mail->Body = "
             <div style='max-width: 600px; margin: auto; border: 2px solid #A88746; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
-                <div style='background-color: #0c0b09; padding: 20px; text-align: center;'>
+                <div style='background-color: #F9F9F9; padding: 20px; text-align: center;'>
                     <h1 style='color: #A88746; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
                     <p style='color: #fff; margin: 5px 0 0; font-size: 14px;'>Fine Dining Experience</p>
                 </div>
-                <div style='padding: 30px; background-color: #262629;'>
+                <div style='padding: 30px; background-color: #FFFFFF;'>
                     <h2 style='color: #2c2c2c; margin-top: 0;'>Kính chào $name,</h2>
                     <p style='color: #555; line-height: 1.6;'>Cảm ơn quý khách đã tin tưởng và lựa chọn dịch vụ tại Restaurantly. Chúng tôi xin trân trọng xác nhận yêu cầu đặt bàn của quý khách đã được hệ thống ghi nhận thành công.</p>
                     
@@ -343,11 +343,11 @@ function sendBookingReminderEmail($emailNguoiNhan, $booking_info) {
 
         $mail->Body = "
             <div style='max-width: 600px; margin: auto; border: 2px solid #A88746; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
-                <div style='background-color: #0c0b09; padding: 20px; text-align: center;'>
+                <div style='background-color: #F9F9F9; padding: 20px; text-align: center;'>
                     <h1 style='color: #A88746; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
                     <p style='color: #fff; margin: 5px 0 0; font-size: 14px;'>Fine Dining Experience</p>
                 </div>
-                <div style='padding: 30px; background-color: #262629;'>
+                <div style='padding: 30px; background-color: #FFFFFF;'>
                     <h2 style='color: #2c2c2c; margin-top: 0;'>Kính chào $name,</h2>
                     <p style='color: #555; line-height: 1.6;'>Đây là lời nhắc nhở tự động từ nhà hàng Restaurantly. Bạn có một lịch hẹn đặt bàn sẽ diễn ra trong khoảng <strong>30 phút nữa</strong>.</p>
                     
@@ -415,11 +415,11 @@ function sendBookingCancelEmail($emailNguoiNhan, $booking_info) {
 
         $mail->Body = "
             <div style='max-width: 600px; margin: auto; border: 2px solid #A88746; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
-                <div style='background-color: #0c0b09; padding: 20px; text-align: center;'>
+                <div style='background-color: #F9F9F9; padding: 20px; text-align: center;'>
                     <h1 style='color: #A88746; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
                     <p style='color: #fff; margin: 5px 0 0; font-size: 14px;'>Fine Dining Experience</p>
                 </div>
-                <div style='padding: 30px; background-color: #262629;'>
+                <div style='padding: 30px; background-color: #FFFFFF;'>
                     <h2 style='color: #d32f2f; margin-top: 0;'>Kính chào $name,</h2>
                     <p style='color: #555; line-height: 1.6;'>Chúng tôi vô cùng xin lỗi vì sự bất tiện này, nhưng do sự cố khách quan vượt ngoài mong muốn, chúng tôi buộc phải <strong>hủy lịch đặt bàn</strong> của quý khách.</p>
                     

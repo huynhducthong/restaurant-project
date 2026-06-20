@@ -223,8 +223,8 @@ $banners = $db->query(
 
 $fonts = [
     "'Poppins', sans-serif"       => "Poppins (Hiện đại)",
-    "'Playfair Display', serif"   => "Playfair (Cổ điển sang trọng)",
-    "'Montserrat', sans-serif"    => "Montserrat (Trẻ trung)",
+    "'Cormorant Garamond', serif"   => "Playfair (Cổ điển sang trọng)",
+    "'Cormorant Garamond', serif"    => "Montserrat (Trẻ trung)",
     "'Lora', serif"               => "Lora (Thanh lịch)",
     "'Dancing Script', cursive"   => "Dancing Script (Bay bướm)",
     "'Pacifico', cursive"         => "Pacifico (Nghệ thuật)",
@@ -238,7 +238,7 @@ $font_sizes = [12,14,16,18,20,22,24,26,28,36,48,56,64,72];
 include '../../public/admin_layout_header.php';
 ?>
 
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Lora:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;700&family=Oswald:wght@400;700&family=Pacifico&family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Lora:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Oswald:wght@400;700&family=Pacifico&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Poppins:wght@300;400;600;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
     :root {

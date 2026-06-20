@@ -1,0 +1,39 @@
+<?php
+return [
+    // Header
+    'home' => 'Trang chủ',
+    'about' => 'Giới thiệu',
+    'menu' => 'Thực đơn',
+    'combos' => 'Combos',
+    'chefs' => 'Đầu bếp',
+    'gallery' => 'Thư viện',
+    'contact' => 'Liên hệ',
+    'book_table' => 'ĐẶT BÀN',
+    'login' => 'Đăng nhập',
+    'logout' => 'Đăng xuất',
+    'profile' => 'Thông tin cá nhân',
+    'admin_panel' => 'Quản trị',
+    
+    // Buttons
+    'view_more' => 'Xem thêm',
+    'read_more' => 'Đọc thêm',
+    'discover' => 'Khám phá',
+    'send_message' => 'Gửi tin nhắn',
+    
+    // Index specific (Add more as needed)
+    'our_menu' => 'Thực Đơn Của Chúng Tôi',
+    'special_combos' => 'Combo Đặc Biệt',
+    'our_chefs' => 'Đầu Bếp Của Chúng Tôi',
+    'gallery_title' => 'Thư Viện Ảnh',
+    'contact_us' => 'Liên Hệ Với Chúng Tôi',
+    'address' => 'Địa chỉ',
+    'email' => 'Email',
+    'call_us' => 'Gọi cho chúng tôi',
+    'open_hours' => 'Giờ mở cửa',
+    
+    // Footer
+    'useful_links' => 'Liên kết hữu ích',
+    'newsletter' => 'Bản tin',
+    'subscribe' => 'Đăng ký',
+    'newsletter_desc' => 'Đăng ký để nhận thông tin ưu đãi mới nhất từ chúng tôi.',
+];

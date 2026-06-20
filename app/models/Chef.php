@@ -27,7 +27,7 @@ include __DIR__ . '/layouts/header.php';
 
 <style>
 /* ===== CHEF PAGE — DARK LUXURY STYLE ===== */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
 
 :root {
     --accent-burgundy:       #A88746;
@@ -98,7 +98,7 @@ include __DIR__ . '/layouts/header.php';
 }
 
 .chefs-hero h1 {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: clamp(2.8rem, 6vw, 5rem);
     font-weight: 600;
     color: #fff;
@@ -291,7 +291,7 @@ include __DIR__ . '/layouts/header.php';
 }
 
 .chef-name {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1.65rem;
     font-weight: 600;
     color: #fff;
@@ -350,7 +350,7 @@ include __DIR__ . '/layouts/header.php';
 }
 
 .chef-quote p {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-style: italic;
     font-size: 1rem;
     color: var(--text-light);
@@ -376,7 +376,7 @@ include __DIR__ . '/layouts/header.php';
 }
 
 .chefs-empty p {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1.4rem;
     font-style: italic;
 }

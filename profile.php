@@ -217,25 +217,25 @@ $plans = $vipPlanModel->getAllPlans();
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
 <style>
 /* ══ TOKENS ══ */
 :root{
-  --F:      #143B36;        /* forest — dùng ít */
-  --F-lt:   #1a4d46;
-  --F-pale: #e8f0ef;        /* forest rất nhạt — bg highlight */
-  --accent-burgundy:   #c8933a;
-  --accent-burgundy-lt:#f0e0c0;
-  --bg:     #f7f5f1;         /* kem ấm — nền chính */
-  --bg2:    #ffffff;
-  --ink:    #1a1814;
-  --ink2:   #4a4640;
-  --muted:  #8a8480;
-  --border: #e8e2d8;
-  --r:      14px;
-  --sh:     0 2px 16px rgba(26,24,20,.07);
-  --sh-lg:  0 8px 32px rgba(26,24,20,.1);
+  --F:      #E65C00;        /* Orange */
+  --F-lt:   #FF7A00;        /* Bright orange hover */
+  --F-pale: rgba(230, 92, 0, 0.1);  /* Orange pale bg highlight */
+  --accent-burgundy:   #E65C00;
+  --accent-burgundy-lt: rgba(230, 92, 0, 0.3);
+  --bg:     #F9F9F9;         /* Dark background */
+  --bg2:    rgba(38, 38, 41, 0.45); /* Glassmorphism dark bg */
+  --ink:    #ffffff;         /* White text */
+  --ink2:   #222222;         /* Light grey text */
+  --muted:  #A88746;         /* Olive/Gold muted text */
+  --border: rgba(168, 135, 70, 0.2); /* Faint olive border */
+  --r:      12px;            /* Slightly softer radius for glass */
+  --sh:     0 8px 32px rgba(0,0,0,0.4);
+  --sh-lg:  0 15px 40px rgba(0,0,0,0.6);
 }
 
 *{box-sizing:border-box;}
@@ -267,39 +267,37 @@ body{
 .profile-wrap{
   padding:110px 0 80px;
   min-height:100vh;
+  background: radial-gradient(circle at top center, rgba(230, 92, 0, 0.08) 0%, var(--bg) 70%);
 }
 
 /* ══ SIDEBAR ══ */
 .prof-sidebar{
   background:var(--bg2);
+  backdrop-filter: blur(15px);
   border-radius:var(--r);
   box-shadow:var(--sh);
   overflow:hidden;
-  border:1px solid var(--border);
+  border:1px solid rgba(255,255,255,0.05);
 }
 
-/* Avatar section — accent #143B36 */
+/* Avatar section */
 .prof-top{
-  background:linear-gradient(145deg, var(--F) 0%, var(--F-lt) 100%);
+  background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(26,26,29,0.3) 100%);
   padding:32px 24px 28px;
   text-align:center;
   position:relative;
-}
-.prof-top::after{
-  content:'';position:absolute;bottom:-1px;left:0;right:0;
-  height:24px;background:var(--bg2);
-  border-radius:var(--r) var(--r) 0 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 .av-ring{
-  width:96px;height:96px;border-radius:50%;
-  border:3px solid rgba(255,255,255,.4);
-  overflow:hidden;margin:0 auto 14px;
-  background:rgba(255,255,255,.1);
-  box-shadow:0 4px 20px rgba(0,0,0,.2);
+  width:110px;height:110px;border-radius:50%;
+  border:2px solid var(--F);
+  overflow:hidden;margin:0 auto 16px;
+  background:rgba(255,255,255,.05);
+  box-shadow:0 0 20px rgba(230, 92, 0, 0.4);
 }
 .av-ring img{width:100%;height:100%;object-fit:cover;}
 .prof-name{
-  font-family:'Montserrat',serif;font-weight:600;
+  font-family:'Cormorant Garamond', serif;font-weight:600;
   font-size:1.1rem;color:#fff;margin:0 0 4px;
 }
 .prof-email{font-size:12px;color:rgba(255,255,255,.6);margin:0;}
@@ -313,7 +311,7 @@ body{
   transition:all .2s;border-left:3px solid transparent;
 }
 .prof-nav a i{width:18px;text-align:center;font-size:14px;color:var(--muted);transition:.2s;}
-.prof-nav a:hover{background:#f9f6f0;color:var(--F);border-left-color:rgba(20,59,54,.25);}
+.prof-nav a:hover{background:var(--F-pale);color:var(--F);border-left-color:var(--F);}
 .prof-nav a:hover i{color:var(--F);}
 .prof-nav a.on{
   background:var(--F-pale);color:var(--F);
@@ -322,7 +320,7 @@ body{
 .prof-nav a.on i{color:var(--F);}
 .prof-nav a.logout{color:#d64545;}
 .prof-nav a.logout i{color:#d64545;}
-.prof-nav a.logout:hover{background:#fff5f5;border-left-color:#d64545;}
+.prof-nav a.logout:hover{background:rgba(214, 69, 69, 0.1);border-left-color:#d64545;}
 .prof-nav-sep{height:1px;background:var(--border);margin:8px 16px;}
 
 /* Quick stats */
@@ -334,15 +332,16 @@ body{
 .stat-cell{
   background:var(--bg2);padding:14px 10px;text-align:center;
 }
-.stat-val{font-family:'Montserrat',serif;font-size:1.4rem;color:var(--F);font-weight:600;}
+.stat-val{font-family:'Cormorant Garamond', serif;font-size:1.4rem;color:var(--F);font-weight:600;}
 .stat-lbl{font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:.04em;}
 
 /* ══ CONTENT CARD ══ */
 .prof-card{
   background:var(--bg2);
+  backdrop-filter: blur(15px);
   border-radius:var(--r);
   box-shadow:var(--sh);
-  border:1px solid var(--border);
+  border:1px solid rgba(255,255,255,0.05);
   overflow:hidden;
   min-height:520px;
 }
@@ -353,12 +352,12 @@ body{
 }
 .pc-icon{
   width:36px;height:36px;border-radius:9px;
-  background:var(--F-pale);border:1px solid rgba(20,59,54,.15);
+  background:var(--F-pale);border:1px solid rgba(230, 92, 0, 0.3);
   display:flex;align-items:center;justify-content:center;
   font-size:16px;color:var(--F);flex-shrink:0;
 }
 .pc-title{
-  font-family:'Montserrat',serif;font-size:1.1rem;
+  font-family:'Cormorant Garamond', serif;font-size:1.1rem;
   font-weight:600;color:var(--ink);margin:0;padding-bottom:18px;
   border-bottom:2px solid var(--F);display:inline-block;
   line-height:1.2;
@@ -369,17 +368,17 @@ body{
 .fl{
   display:block;font-size:11px;font-weight:600;
   letter-spacing:.09em;text-transform:uppercase;
-  color:var(--muted);margin-bottom:6px;
+  color:var(--ink2);margin-bottom:8px;
 }
 .fi{
-  width:100%;padding:11px 14px;
-  border:1.5px solid var(--border);border-radius:9px;
+  width:100%;padding:12px 16px;
+  border:1px solid rgba(0,0,0,0.1);border-radius:9px;
   font-family:'Be Vietnam Pro',sans-serif;font-size:14px;
-  color:var(--ink);background:var(--bg);
-  outline:none;transition:.2s;
+  color:var(--ink);background:rgba(255,255,255,0.03);
+  outline:none;transition:all .3s ease;
 }
-.fi:focus{border-color:var(--F);box-shadow:0 0 0 3px rgba(20,59,54,.08);background: #262629;}
-.fi::placeholder{color:rgba(26,24,20,.3);}
+.fi:focus{border-color:var(--F);box-shadow:0 0 0 3px rgba(230, 92, 0, 0.15);background: rgba(255,255,255,0.08);}
+.fi::placeholder{color:rgba(255,255,255,.2);}
 
 /* Avatar upload in form */
 .av-upload{
@@ -396,7 +395,7 @@ body{
 .av-upload-ring img{width:100%;height:100%;object-fit:cover;}
 .av-upload-ring::after{
   content:'📷';position:absolute;inset:0;
-  background:rgba(20,59,54,.5);color:#fff;font-size:20px;
+  background:rgba(230, 92, 0, 0.6);color:#fff;font-size:20px;
   display:flex;align-items:center;justify-content:center;
   opacity:0;transition:.2s;border-radius:50%;
 }
@@ -438,9 +437,9 @@ body{
   padding:13px 16px;border-radius:9px;margin-bottom:20px;
   font-size:13px;font-weight:500;
 }
-.prof-alert.success{background:#edf7f0;border:1px solid #a8d5b8;color:#1a5c30;}
-.prof-alert.danger{background:#fff0f0;border:1px solid #f5b8b8;color:#8b2020;}
-.prof-alert.warning{background:#fffbf0;border:1px solid #f0d890;color:#7a5c10;}
+.prof-alert.success{background:rgba(40, 167, 69, 0.1);border:1px solid #28a745;color:#28a745;}
+.prof-alert.danger{background:rgba(220, 53, 69, 0.1);border:1px solid #dc3545;color:#dc3545;}
+.prof-alert.warning{background:rgba(255, 193, 7, 0.1);border:1px solid #ffc107;color:#ffc107;}
 
 /* ══ STATUS TABS ══ */
 .s-tabs{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap;}
@@ -462,16 +461,16 @@ body{
 }
 .bk-card:hover{box-shadow:var(--sh);}
 .bk-id{font-size:10px;letter-spacing:.12em;color:var(--F);font-weight:600;text-transform:uppercase;margin-bottom:3px;}
-.bk-date{font-family:'Montserrat',serif;font-size:1rem;color:var(--ink);font-weight:600;}
+.bk-date{font-family:'Cormorant Garamond', serif;font-size:1rem;color:var(--ink);font-weight:600;}
 .bk-meta{font-size:12px;color:var(--muted);margin-top:4px;}
 .bk-badge{
   display:inline-block;font-size:10px;font-weight:600;padding:4px 10px;border-radius:6px;
   letter-spacing:.06em;text-transform:uppercase;
 }
-.bk-badge.confirmed{background:#e8f5ed;color:#1a7a40;}
-.bk-badge.pending{background:#fff8e8;color:#8a6010;}
-.bk-badge.cancelled{background:#fff0f0;color:#a02020;}
-.bk-badge.completed{background:#e8f0ff;color:#2040a0;}
+.bk-badge.confirmed{background:rgba(40, 167, 69, 0.15);color:#2ecc71;}
+.bk-badge.pending{background:rgba(255, 193, 7, 0.15);color:#f39c12;}
+.bk-badge.cancelled{background:rgba(220, 53, 69, 0.15);color:#e74c3c;}
+.bk-badge.completed{background:rgba(52, 152, 219, 0.15);color:#3498db;}
 
 /* ══ ADDRESS CARD ══ */
 .addr-card{
@@ -489,12 +488,12 @@ body{
 .addr-default{
   font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
   padding:2px 8px;background:var(--F-pale);color:var(--F);
-  border:1px solid rgba(20,59,54,.2);border-radius:4px;margin-left:8px;
+  border:1px solid rgba(230, 92, 0, 0.3);border-radius:4px;margin-left:8px;
 }
 
 /* ══ SECURITY TIPS ══ */
 .sec-tip{
-  background:var(--F-pale);border:1px solid rgba(20,59,54,.15);
+  background:var(--F-pale);border:1px solid rgba(230, 92, 0, 0.3);
   border-radius:10px;padding:14px 16px;margin-bottom:20px;
   font-size:13px;color:var(--F);display:flex;gap:10px;align-items:flex-start;
 }
@@ -514,7 +513,7 @@ body{
   border-radius:var(--r);box-shadow:var(--sh-lg);
 }
 .modal-header{border-bottom:1px solid var(--border);padding:20px 24px;}
-.modal-title{font-family:'Montserrat',serif;font-size:1rem;color:var(--ink);font-weight:600;}
+.modal-title{font-family:'Cormorant Garamond', serif;font-size:1rem;color:var(--ink);font-weight:600;}
 .modal-footer{border-top:1px solid var(--border);padding:16px 24px;gap:8px;}
 .btn-close{opacity:.4;}
 
@@ -690,17 +689,17 @@ body{
         <?php elseif($tab=='vip'): ?>
         <style>
             .checkout-container {
-                background: #fff;
+                background: #FFFFFF;
                 border-radius: 12px;
                 box-shadow: 0 10px 40px rgba(0,0,0,0.08);
                 overflow: hidden;
                 display: flex;
                 flex-wrap: wrap;
                 margin-top: 20px;
-                border: 1px solid #eee;
+                border: 1px solid rgba(168, 135, 70, 0.2);
             }
             .plan-summary {
-                background: #0a1f1c;
+                background: #F9F9F9;
                 color: #fff;
                 padding: 40px;
                 width: 45%;
@@ -710,12 +709,12 @@ body{
                 content: '';
                 position: absolute;
                 top: 0; left: 0; right: 0; bottom: 0;
-                background: linear-gradient(135deg, rgba(200,147,58,0.15) 0%, rgba(0,0,0,0) 100%);
+                background: linear-gradient(135deg, rgba(230, 92, 0, 0.15) 0%, rgba(0,0,0,0) 100%);
                 pointer-events: none;
             }
             .plan-summary h2 {
-                font-family: 'Playfair Display', serif;
-                color: #c8933a;
+                font-family: 'Cormorant Garamond', serif;
+                color: #E65C00;
                 font-size: 1.8rem;
                 margin-bottom: 20px;
             }
@@ -729,7 +728,7 @@ body{
             }
             .duration-tag {
                 font-size: 0.95rem;
-                color: rgba(255,255,255,0.7);
+                color: rgba(0,0,0,0.7);
                 margin-bottom: 25px;
                 padding-bottom: 20px;
                 border-bottom: 1px dashed rgba(255,255,255,0.2);
@@ -748,12 +747,12 @@ body{
             }
             .benefits-list li i {
                 position: absolute; left: 0; top: 3px;
-                color: #c8933a; font-size: 1.1rem;
+                color: #E65C00; font-size: 1.1rem;
             }
             .payment-form {
                 width: 55%;
                 padding: 40px;
-                background: #fff;
+                background: #FFFFFF;
                 display: none; /* Ẩn form lúc đầu */
             }
             .payment-form.active {
@@ -765,59 +764,58 @@ body{
                 to { opacity: 1; transform: translateX(0); }
             }
             .payment-form h3 {
-                font-family: 'Playfair Display', serif;
+                font-family: 'Cormorant Garamond', serif;
                 font-size: 1.4rem;
-                color: #143B36;
+                color: #ffffff;
                 margin-bottom: 20px;
             }
             .payment-methods {
                 display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;
             }
             .payment-method-card {
-                border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px;
+                border: 1px solid rgba(168, 135, 70, 0.2); border-radius: 8px; padding: 15px;
                 cursor: pointer; transition: all 0.2s; position: relative;
             }
-            .payment-method-card:hover { border-color: #c8933a; background: #fffdf9; }
+            .payment-method-card:hover { border-color: #E65C00; background: rgba(230, 92, 0, 0.05); }
             .payment-method-card input[type="radio"] { display: none; }
             .payment-method-card input[type="radio"]:checked + .method-content::before {
                 content: '\f058'; font-family: 'FontAwesome'; position: absolute;
-                top: -10px; right: -10px; color: #c8933a; background: #fff;
+                top: -10px; right: -10px; color: #E65C00; background: #FFFFFF;
                 border-radius: 50%; font-size: 1.4rem; line-height: 1;
             }
-            .payment-method-card input[type="radio"]:checked + .method-content { color: #143B36; }
+            .payment-method-card input[type="radio"]:checked + .method-content { color: #E65C00; }
             .payment-method-card:has(input[type="radio"]:checked) {
-                border-color: #c8933a; background: #fffdf9; box-shadow: 0 4px 10px rgba(200,147,58,0.1);
+                border-color: #E65C00; background: rgba(230, 92, 0, 0.05); box-shadow: 0 4px 10px rgba(230, 92, 0, 0.2);
             }
             .method-content {
                 display: flex; flex-direction: column; align-items: center; gap: 8px;
-                color: #666; font-weight: 500; font-size: 0.9rem; text-align: center;
+                color: #222222; font-weight: 500; font-size: 0.9rem; text-align: center;
             }
-            .method-content i { font-size: 1.8rem; color: #c8933a; }
+            .method-content i { font-size: 1.8rem; color: #E65C00; }
             .card-details {
-                background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee;
+                background: #F9F9F9; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(168, 135, 70, 0.2);
             }
             .form-control-lux {
-                width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.95rem; transition: 0.3s;
+                width: 100%; padding: 10px 15px; border: 1px solid rgba(168, 135, 70, 0.3); border-radius: 6px; font-size: 0.95rem; transition: 0.3s;
             }
-            .form-control-lux:focus { outline: none; border-color: #c8933a; box-shadow: 0 0 0 3px rgba(200,147,58,0.1); }
+            .form-control-lux:focus { outline: none; border-color: #E65C00; box-shadow: 0 0 0 3px rgba(230, 92, 0, 0.2); background: #F9F9F9; color: #fff; }
             .btn-pay {
-                background: #c8933a; color: #fff; border: none; width: 100%; padding: 14px;
+                background: linear-gradient(135deg, #E65C00, #FF7A00); color: #fff; border: none; width: 100%; padding: 14px;
                 font-size: 1.05rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.3s;
             }
-            .btn-pay:hover { background: #e0a94d; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(200,147,58,0.3); }
+            .btn-pay:hover { background: linear-gradient(135deg, #FF7A00, #E65C00); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(230, 92, 0, 0.4); }
             
             .btn-open-pay {
-                background: #c8933a; color: #fff; border: none; width: 100%; padding: 15px;
+                background: linear-gradient(135deg, #E65C00, #FF7A00); color: #fff; border: none; width: 100%; padding: 15px;
                 font-size: 1.1rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.3s;
-                margin-top: 30px; display: flex; justify-content: center; align-items: center; gap: 10px;
             }
-            .btn-open-pay:hover { background: #e0a94d; transform: translateY(-2px); }
+            .btn-open-pay:hover { background: linear-gradient(135deg, #FF7A00, #E65C00); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(230, 92, 0, 0.4); }
             
             .current-vip-alert {
-                background: #fff8e8; border: 1px solid #c8933a; color: #8a6010;
+                background: rgba(230, 92, 0, 0.1); border: 1px solid #E65C00; color: #E65C00;
                 padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px;
             }
-            .current-vip-alert i { font-size: 24px; color: #c8933a; }
+            .current-vip-alert i { font-size: 24px; color: #E65C00; }
             
             @media (max-width: 768px) {
                 .plan-summary { width: 100%; }
@@ -972,7 +970,7 @@ body{
         <form method="POST">
           <div class="row g-4">
             <div class="col-md-12 mb-2">
-              <h6 style="color:var(--accent-burgundy); font-family:'Montserrat',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-fire me-2"></i>Mức độ chín của Bò (Meat Doneness)</h6>
+              <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-fire me-2"></i>Mức độ chín của Bò (Meat Doneness)</h6>
               <div class="d-flex flex-wrap gap-3 mt-3">
                 <?php $dopts = ['Rare', 'Medium Rare', 'Medium', 'Medium Well', 'Well Done']; 
                 foreach($dopts as $d): ?>
@@ -984,7 +982,7 @@ body{
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--accent-burgundy); font-family:'Montserrat',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-palette me-2"></i>Phong cách Hương vị (Flavor Profile)</h6>
+              <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-palette me-2"></i>Phong cách Hương vị (Flavor Profile)</h6>
               <div class="d-flex flex-column gap-2 mt-3">
                 <?php $fopts = ['Đậm vị (Bold/Rich)', 'Thanh nhẹ (Light/Fresh)', 'Umami (Ngọt tự nhiên)', 'Ít béo (Low Fat)', 'Ăn Cay (Spicy)']; 
                 foreach($fopts as $f): ?>
@@ -996,7 +994,7 @@ body{
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--accent-burgundy); font-family:'Montserrat',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-star me-2"></i>Nguyên liệu yêu thích (Favorites)</h6>
+              <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-star me-2"></i>Nguyên liệu yêu thích (Favorites)</h6>
               <div class="d-flex flex-column gap-2 mt-3">
                 <?php 
                 $favopts = [
@@ -1015,7 +1013,7 @@ body{
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--accent-burgundy); font-family:'Montserrat',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-x-circle me-2"></i>Không thích ăn (Dislikes)</h6>
+              <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-x-circle me-2"></i>Không thích ăn (Dislikes)</h6>
               <div class="d-flex flex-wrap gap-2 mt-3">
                 <?php $disopts = ['Hành lá', 'Rau mùi', 'Hành tây', 'Tỏi', 'Ớt chuông', 'Tiêu xanh', 'Thịt mỡ']; 
                 foreach($disopts as $dis): ?>
@@ -1027,7 +1025,7 @@ body{
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:#d64545; font-family:'Montserrat',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-exclamation-triangle-fill me-2"></i>Dị ứng Y Tế (Allergies)</h6>
+              <h6 style="color:#d64545; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-exclamation-triangle-fill me-2"></i>Dị ứng Y Tế (Allergies)</h6>
               <div class="d-flex flex-wrap gap-2 mt-3">
                 <?php 
                 $algopts = ['Sữa', 'Trứng', 'Đậu phộng', 'Đậu nành', 'Lúa mì / Gluten', 'Hải sản', 'Cá', 'Hải sản có vỏ', 'Hải sản thân mềm', 'Mè / Vừng', 'Mù tạt', 'Quả hạch', 'Sulphites', 'Đậu Lupin']; 
@@ -1293,10 +1291,10 @@ body{
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content" style="border:none; border-radius:12px; overflow:hidden;">
       <div class="modal-header" style="background:var(--F); color:#fff; border-bottom:none;">
-        <h5 class="modal-title" style="font-family:'Montserrat',serif;"><i class="bi bi-receipt me-2"></i>Chi Tiết Đơn Đặt Bàn</h5>
+        <h5 class="modal-title" style="font-family:'Cormorant Garamond', serif;"><i class="bi bi-receipt me-2"></i>Chi Tiết Đơn Đặt Bàn</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body" id="bookingDetailsContent" style="padding:25px; background: #262629;">
+      <div class="modal-body" id="bookingDetailsContent" style="padding:25px; background: #FFFFFF;">
         <div class="text-center p-4 text-muted"><i class="bi bi-arrow-repeat spin me-2"></i>Đang tải dữ liệu...</div>
       </div>
     </div>
