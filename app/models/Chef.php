@@ -9,7 +9,7 @@ $db = $database->getConnection();
 
 // Lấy danh sách đầu bếp đang hiển thị, ghim nổi bật lên đầu
 $query = "SELECT * FROM chefs 
-          WHERE is_active = 1 
+          WHERE is_active = 1 AND position IN ('Bếp trưởng', 'Bếp phó', 'Bếp chính')
           ORDER BY is_featured DESC, sort_order ASC, id DESC";
 $stmt = $db->prepare($query);
 $stmt->execute();
@@ -428,16 +428,11 @@ include __DIR__ . '/layouts/header.php';
 
                         <!-- IMAGE + SOCIAL OVERLAY -->
                         <div class="chef-img-wrap">
-                            <?php if (!empty($chef['image'])): ?>
-                                <img
-                                    src="<?= htmlspecialchars('public/assets/img/chefs/' . $chef['image']) ?>"
-                                    alt="<?= htmlspecialchars($chef['name']) ?>"
-                                    loading="lazy">
-                            <?php else: ?>
-                                <div class="chef-img-placeholder">
-                                    <i class="fas fa-user-tie"></i>
-                                </div>
-                            <?php endif; ?>
+                            <img
+                                src="<?= htmlspecialchars('public/assets/img/chefs/' . ($chef['image'] ?: 'default-chef.jpg')) ?>"
+                                alt="<?= htmlspecialchars($chef['name']) ?>"
+                                loading="lazy"
+                                onerror="this.onerror=null; this.src='public/assets/img/chefs/default-chef.jpg'">
 
                             <!-- Social links appear on hover -->
                             <?php

@@ -16,6 +16,19 @@ if (isset($_SESSION['user_id'])) {
 }
 
 $type = $_GET['type'] ?? 'table';
+$chef_id = isset($_GET['chef_id']) ? (int)$_GET['chef_id'] : 0;
+$autofill_chef_msg = '';
+$autofilled_chef_name = '';
+if ($chef_id > 0) {
+    $stmt_c = $db->prepare("SELECT name FROM chefs WHERE id = ? AND is_active = 1");
+    $stmt_c->execute([$chef_id]);
+    $autofilled_chef = $stmt_c->fetch(PDO::FETCH_ASSOC);
+    if ($autofilled_chef) {
+        $autofilled_chef_name = $autofilled_chef['name'];
+        $autofill_chef_msg = "Yêu cầu Bếp trưởng " . $autofilled_chef['name'] . " phục vụ.";
+    }
+}
+
 $svc  = [
     'table'    => ['title'=>'Đặt Chỗ Cao Cấp','sub'=>'Ẩm thực đỉnh cao chuẩn Michelin','icon'=>'table'],
     'birthday' => ['title'=>'Không Gian Kỷ Niệm','sub'=>'Riêng tư, sang trọng và đẳng cấp','icon'=>'birthday'],
@@ -593,7 +606,7 @@ select.input-lux {
                         <select id="selected_chef" class="input-lux" onchange="updateChefReq(); us();">
                             <option value="">-- Nhà hàng tự sắp xếp --</option>
                             <?php foreach ($chefs as $c): ?>
-                                <option value="<?= htmlspecialchars($c['name']) ?>">Chef <?= htmlspecialchars($c['name']) ?></option>
+                                <option value="<?= htmlspecialchars($c['name']) ?>" <?= ($autofilled_chef_name === $c['name']) ? 'selected' : '' ?>>Chef <?= htmlspecialchars($c['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
                         <label class="label-lux" >Bếp trưởng chỉ định</label>
@@ -945,7 +958,7 @@ select.input-lux {
                 </div>
 
                 <div class="input-group-lux mb-0 mt-4">
-                    <textarea name="message" class="input-lux" rows="2" placeholder=" "></textarea>
+                    <textarea name="message" class="input-lux" rows="2" placeholder=" "><?= htmlspecialchars($autofill_chef_msg) ?></textarea>
                     <label class="label-lux"><i class="fas fa-comment-dots me-1"></i> Ghi chú / Yêu cầu đặc biệt khác</label>
                 </div>
             </div> <!-- Close panel-section (Hồ sơ yêu cầu) -->
@@ -1107,6 +1120,9 @@ select.input-lux {
         validateStep1();
         validateStep2();
         checkSubmitButton();
+        if (typeof updateChefReq === 'function') {
+            updateChefReq();
+        }
     });
     </script>
 

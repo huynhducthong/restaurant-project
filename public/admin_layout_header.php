@@ -619,10 +619,30 @@ try {
                 </li>
 
                 <?php if (checkMenuAccess($user_role, ['chef'])): ?>
-                <li class="<?= isActive('manage_chefs.php') ?>">
-                    <a href="/restaurant-project/admin/manage_chefs.php">
-                        <i class="fas fa-users"></i> Quản lý Đầu bếp
+                <?php 
+                    $isChefMenu = isActive('manage_chefs.php') || isActive('manage_chef_reviews.php');
+                ?>
+                <li class="<?= $isChefMenu ? 'active' : '' ?> chef-menu-toggle">
+                    <a href="#chefSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isChefMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <i class="fas fa-users"></i> Quản lý Đầu bếp
+                        </div>
+                        <div>
+                            <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: auto;"></i>
+                        </div>
                     </a>
+                    <ul class="collapse list-unstyled <?= $isChefMenu ? 'show' : '' ?>" id="chefSubmenu" style="background: rgba(0,0,0,0.03);">
+                        <li class="<?= isActive('manage_chefs.php') ?>">
+                            <a href="/restaurant-project/admin/manage_chefs.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-users" style="font-size: 12px; margin-right: 6px;"></i> Danh sách Đầu bếp
+                            </a>
+                        </li>
+                        <li class="<?= isActive('manage_chef_reviews.php') ?>">
+                            <a href="/restaurant-project/admin/manage_chef_reviews.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-comments" style="font-size: 12px; margin-right: 6px;"></i> Đánh giá Đầu bếp
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <?php endif; ?>
 
@@ -742,6 +762,7 @@ try {
                     'manage_inventory.php'    => 'Quản Lý Kho Nguyên Liệu',
                     'ReportController.php'    => 'Báo Cáo & Thống Kê Kho',
                     'manage_chefs.php'        => 'Quản Lý Đầu Bếp',
+                    'manage_chef_reviews.php' => 'Quản Lý Đánh Giá Đầu Bếp',
                     'manage_banners.php'      => 'Quản Lý Banner',
                     'manage_videos.php'       => 'Quản Lý Video',
                     'settings.php'            => 'Cài Đặt Hệ Thống Chung',
@@ -872,4 +893,27 @@ try {
                         }
                     }).catch(e => {});
                 }, 3000);
+
+                // Hover effect for Chef Menu
+                document.addEventListener("DOMContentLoaded", function() {
+                    const chefMenu = document.querySelector('.chef-menu-toggle');
+                    if (chefMenu) {
+                        const submenu = document.getElementById('chefSubmenu');
+                        if (submenu) {
+                            const isInitiallyActive = chefMenu.classList.contains('active');
+                            let bsCollapse = bootstrap.Collapse.getInstance(submenu);
+                            if (!bsCollapse) {
+                                bsCollapse = new bootstrap.Collapse(submenu, {toggle: false});
+                            }
+                            chefMenu.addEventListener('mouseenter', function() {
+                                bsCollapse.show();
+                            });
+                            chefMenu.addEventListener('mouseleave', function() {
+                                if (!isInitiallyActive) {
+                                    bsCollapse.hide();
+                                }
+                            });
+                        }
+                    }
+                });
             </script>
