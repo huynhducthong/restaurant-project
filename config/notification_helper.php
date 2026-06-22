@@ -447,14 +447,14 @@ function sendBookingCancelEmail($emailNguoiNhan, $booking_info) {
     }
 }
 
-function sendVipRegistrationEmail($emailNguoiNhan, $name, $plan_name, $price, $end_date) {
+function sendVipRegistrationEmail($emailNguoiNhan, $name, $plan_name, $price, $end_date, $txn_id = 'N/A', $payment_method = 'N/A') {
     if (empty($emailNguoiNhan)) return false;
     
     if (!class_exists('PHPMailer\\PHPMailer\\PHPMailer')) {
         require_once __DIR__ . '/../vendor/autoload.php';
     }
 
-    $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+    $mail = new PHPMailer(true);
 
     try {
         $mail->isSMTP();
@@ -487,10 +487,22 @@ function sendVipRegistrationEmail($emailNguoiNhan, $name, $plan_name, $price, $e
                     <div style='background-color: #f9f6f0; padding: 20px; border-left: 4px solid #A88746; margin: 25px 0;'>
                         <h3 style='margin-top: 0; color: #A88746;'>Thông Tin Gói VIP</h3>
                         <table style='width: 100%; border-collapse: collapse; font-size: 15px;'>
-                            <tr><td style='padding: 8px 0; color: #666; width: 40%;'>Gói Hội Viên:</td><td style='padding: 8px 0; font-weight: bold;'>$plan_name</td></tr>
+                            <tr><td style='padding: 8px 0; color: #666; width: 40%;'>Mã Giao Dịch:</td><td style='padding: 8px 0; font-weight: bold;'>$txn_id</td></tr>
+                            <tr><td style='padding: 8px 0; color: #666;'>Gói Hội Viên:</td><td style='padding: 8px 0; font-weight: bold;'>$plan_name</td></tr>
                             <tr><td style='padding: 8px 0; color: #666;'>Giá:</td><td style='padding: 8px 0; font-weight: bold;'>$priceStr VNĐ</td></tr>
+                            <tr><td style='padding: 8px 0; color: #666;'>Phương Thức:</td><td style='padding: 8px 0; font-weight: bold;'>$payment_method</td></tr>
                             <tr><td style='padding: 8px 0; color: #666;'>Hiệu lực đến:</td><td style='padding: 8px 0; font-weight: bold;'>$end_date</td></tr>
                         </table>
+                    </div>
+                    
+                    <div style='margin-top: 25px;'>
+                        <h3 style='color: #A88746; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px;'>Lợi Ích Đặc Quyền VIP của quý khách:</h3>
+                        <ul style='color: #555; line-height: 1.8; padding-left: 20px; font-size: 14px;'>
+                            <li>Giảm giá trực tiếp <strong>10%</strong> cho mọi hóa đơn thanh toán.</li>
+                            <li><strong>Ưu tiên đặt bàn</strong>, cam kết có vị trí đẹp nhất (kể cả Lễ, Tết).</li>
+                            <li>Mở khóa dịch vụ cao cấp: <strong>Đầu bếp tại gia</strong> &amp; <strong>Thiết kế tiệc riêng</strong>.</li>
+                            <li>Nhận huy hiệu <strong>VIP Crown</strong> trên hồ sơ tài khoản.</li>
+                        </ul>
                     </div>
                     
                     <p style='color: #555; line-height: 1.6;'>Giờ đây, quý khách có thể tận hưởng toàn bộ các đặc quyền của hạng thẻ $plan_name, bao gồm chiết khấu hóa đơn, ưu tiên đặt bàn và các dịch vụ Fine Dining thượng lưu khác.</p>
@@ -513,7 +525,7 @@ function sendVipCancellationEmail($emailNguoiNhan, $name) {
         require_once __DIR__ . '/../vendor/autoload.php';
     }
 
-    $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+    $mail = new PHPMailer(true);
 
     try {
         $mail->isSMTP();

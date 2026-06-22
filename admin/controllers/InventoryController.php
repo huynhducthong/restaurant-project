@@ -236,7 +236,7 @@ if (isset($_POST['action'])) {
             createBatch($db, $id, $main_warehouse_id, $qty, $_POST['expiry_date'], $price, "Nhập trực tiếp");
 
             // Cập nhật lại HSD tổng (Lấy ngày sớm nhất của các lô còn hàng)
-            $stmt_min_hsd = $db->prepare("SELECT MIN(expiry_date) FROM inventory_batches WHERE ingredient_id = ? AND quantity > 0 AND expiry_date IS NOT NULL");
+            $stmt_min_hsd = $db->prepare("SELECT MIN(expiry_date) FROM inventory_batches WHERE ingredient_id = ? AND quantity > 0 AND expiry_date IS NOT NULL AND warehouse_id NOT IN (6, 7)");
             $stmt_min_hsd->execute([$id]);
             $earliest_hsd = $stmt_min_hsd->fetchColumn() ?: ($_POST['expiry_date'] ?: null);
             $db->prepare("UPDATE inventory SET expiry_date = ? WHERE id = ?")->execute([$earliest_hsd, $id]);

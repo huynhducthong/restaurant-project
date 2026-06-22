@@ -108,7 +108,7 @@ function deductStockFEFO($db, $ingredient_id, $warehouse_id, $quantity_to_deduct
     // Tuy nhiên thực tế inventory_stocks và tổng inventory_batches phải khớp nhau.
 
     // 2. Cập nhật HSD tổng cho nguyên liệu (Lấy ngày sớm nhất của các lô CÒN HÀNG)
-    $stmt_min = $db->prepare("SELECT MIN(expiry_date) FROM inventory_batches WHERE ingredient_id = ? AND quantity > 0 AND expiry_date IS NOT NULL");
+    $stmt_min = $db->prepare("SELECT MIN(expiry_date) FROM inventory_batches WHERE ingredient_id = ? AND quantity > 0 AND expiry_date IS NOT NULL AND warehouse_id NOT IN (6, 7)");
     $stmt_min->execute([$ingredient_id]);
     $next_hsd = $stmt_min->fetchColumn();
     

@@ -280,7 +280,10 @@ if ($is_logged_in_chat) {
                 <h5 class="m-0" style="font-family: 'Playfair Display', serif; color: #C19A5B;">Restaurantly Support</h5>
                 <small id="chatStatusText" style="color: #bbb;">Trợ lý ảo thông minh</small>
             </div>
-            <button class="chat-close-btn" onclick="closeChatModal()"><i class="fas fa-times"></i></button>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <button class="chat-close-btn" onclick="clearChatHistory()" title="Xóa lịch sử trò chuyện" style="font-size: 14px; opacity: 0.8; color: #ccc;"><i class="fas fa-trash-alt"></i></button>
+                <button class="chat-close-btn" onclick="closeChatModal()"><i class="fas fa-times"></i></button>
+            </div>
         </div>
         
         <div class="chat-body" id="chatBody">
@@ -354,11 +357,17 @@ if ($is_logged_in_chat) {
 }
 .chat-init-form { padding: 30px 20px; }
 .chat-messages-container { padding: 15px; display: none; flex-direction: column; gap: 10px; }
-.chat-msg { max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
+.chat-msg { position: relative; max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; word-wrap: break-word; margin-bottom: 5px;}
 .chat-msg.customer { background: #C19A5B; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
 .chat-msg.bot { background: #e9ecef; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; }
 .chat-msg.admin { background: #113f36; color: #fff; align-self: flex-start; border-bottom-left-radius: 4px; }
 .chat-msg img { max-width: 100%; border-radius: 8px; margin-top: 5px; }
+
+.chat-msg .msg-delete-icon { position: absolute; top: 50%; transform: translateY(-50%); font-size: 11px; color: #dc3545; cursor: pointer; opacity: 0; transition: opacity 0.2s; background: #fff; border-radius: 50%; padding: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 10; }
+.chat-msg.customer .msg-delete-icon { left: -32px; }
+.chat-msg.bot .msg-delete-icon, .chat-msg.admin .msg-delete-icon { right: -32px; }
+.chat-msg:hover .msg-delete-icon { opacity: 1; }
+
 .chat-footer { padding: 12px 15px; background: #fff; border-top: 1px solid #eee; position: relative; }
 .chat-input { border-radius: 20px; background: #f1f3f5; border: none; padding-left: 15px; }
 .chat-input:focus { box-shadow: none; border: 1px solid #C19A5B; }
@@ -479,6 +488,39 @@ function closeChatModal() {
     if (chatPollingInterval) clearInterval(chatPollingInterval);
 }
 
+function clearChatHistory() {
+    if (confirm('Bạn có chắc chắn muốn xóa lịch sử trò chuyện trên thiết bị này không?')) {
+        localStorage.removeItem('restaurantly_chat_session_id');
+        chatSessionId = '';
+        document.getElementById('chatMessages').innerHTML = '';
+        lastMessageId = 0;
+        if (chatPollingInterval) clearInterval(chatPollingInterval);
+        
+        <?php if ($is_logged_in_chat): ?>
+            // Tạo phiên mới ngay lập tức
+            initChatSession();
+        <?php else: ?>
+            // Quay về form đăng nhập
+            document.getElementById('chatMessages').style.display = 'none';
+            document.getElementById('chatFooter').style.display = 'none';
+            document.getElementById('chatInitForm').style.display = 'block';
+        <?php endif; ?>
+    }
+}
+
+function deleteSingleMessage(msgId) {
+    if (!msgId) return;
+    let deletedMsgs = JSON.parse(localStorage.getItem('deleted_msgs_' + chatSessionId) || '[]');
+    if (!deletedMsgs.includes(msgId)) {
+        deletedMsgs.push(msgId);
+        localStorage.setItem('deleted_msgs_' + chatSessionId, JSON.stringify(deletedMsgs));
+    }
+    const msgDiv = document.getElementById('chat_msg_' + msgId);
+    if (msgDiv) {
+        msgDiv.remove();
+    }
+}
+
 function initChatSession() {
     const nameInput = document.getElementById('chatCustomerName');
     const phoneInput = document.getElementById('chatCustomerPhone');
@@ -516,14 +558,33 @@ function hideTyping() {
     document.getElementById('typingIndicator').style.display = 'none';
 }
 
-function appendMessage(sender, type, content) {
+function appendMessage(sender, type, content, msgId) {
+    let deletedMsgs = JSON.parse(localStorage.getItem('deleted_msgs_' + chatSessionId) || '[]');
+    if (msgId && deletedMsgs.includes(msgId)) return; // Không hiển thị tin nhắn đã xóa
+
     const msgDiv = document.createElement('div');
     msgDiv.className = `chat-msg ${sender}`;
+    if (msgId) msgDiv.id = 'chat_msg_' + msgId;
+    
+    let innerHtml = '';
     if (type === 'image') {
-        msgDiv.innerHTML = `<img src="${content}" alt="Image">`;
+        innerHtml = `<img src="${content}" alt="Image">`;
     } else {
-        msgDiv.innerText = content;
+        // Render raw string or escape it if you prefer, currently just assigning it later or using innerText
+        innerHtml = `<span></span>`;
     }
+    
+    if (msgId) {
+        innerHtml += `<i class="fas fa-trash-alt msg-delete-icon" onclick="deleteSingleMessage(${msgId})" title="Xóa tin nhắn này"></i>`;
+    }
+    
+    msgDiv.innerHTML = innerHtml;
+    
+    // Set actual text safely
+    if (type !== 'image') {
+        msgDiv.querySelector('span').innerText = content;
+    }
+    
     document.getElementById('chatMessages').appendChild(msgDiv);
     const body = document.getElementById('chatBody');
     body.scrollTop = body.scrollHeight;
@@ -591,7 +652,7 @@ function loadChatMessages() {
         if (data.status === 'success' && data.messages.length > 0) {
             hideTyping();
             data.messages.forEach(m => {
-                appendMessage(m.sender_type, m.message_type, m.content);
+                appendMessage(m.sender_type, m.message_type, m.content, m.id);
                 lastMessageId = Math.max(lastMessageId, m.id);
             });
         }

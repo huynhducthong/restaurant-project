@@ -435,16 +435,18 @@ include '../../public/admin_layout_header.php';
                                         ?>
                                     </td>
                                     <td>
-                                        <?php if ($exp): ?>
-                                            <?php if ($isExpired): ?>
-                                                <span class="text-danger fw-bold text-decoration-underline"><?= $exp ?></span>
-                                                <div class="badge badge-ghost-danger mt-1">Đã hết hạn</div>
-                                            <?php elseif ($isExpiring): ?>
-                                                <span class="text-warning fw-bold"><?= $exp ?></span>
-                                            <?php else: ?>
-                                                <span class="text-muted"><?= $exp ?></span>
-                                            <?php endif; ?>
-                                        <?php else: ?>—<?php endif; ?>
+                                        <div class="hsd-info">
+                                            <?php if ($exp): ?>
+                                                <?php if ($isExpired): ?>
+                                                    <span class="text-danger fw-bold text-decoration-underline"><?= $exp ?></span>
+                                                    <div class="badge badge-ghost-danger mt-1">Đã hết hạn</div>
+                                                <?php elseif ($isExpiring): ?>
+                                                    <span class="text-warning fw-bold"><?= $exp ?></span>
+                                                <?php else: ?>
+                                                    <span class="text-muted"><?= $exp ?></span>
+                                                <?php endif; ?>
+                                            <?php else: ?>—<?php endif; ?>
+                                        </div>
                                     </td>
                                     <td class="text-success fw-bold small"><?= number_format($i['cost_price']) ?>đ</td>
                                     <td class="text-end">
@@ -1751,10 +1753,13 @@ include '../../public/admin_layout_header.php';
     });
     // ================= LỌC & PHÂN TRANG =================
     let activeWarehouse = sessionStorage.getItem('activeInventoryWarehouse') || 'all'; // 'all' hoặc ID kho cụ thể
+    let initialBtn = document.querySelector(`.wh-filter-btn[data-wh="${activeWarehouse}"]`);
+    let activeWarehouseType = initialBtn ? (initialBtn.getAttribute('data-wh-type') || '') : '';
 
     // Xử lý click nút filter theo kho
     $(document).on('click', '.wh-filter-btn', function () {
         activeWarehouse = $(this).data('wh').toString();
+        activeWarehouseType = $(this).data('wh-type') || '';
         sessionStorage.setItem('activeInventoryWarehouse', activeWarehouse);
         
         // Cập nhật active state cho kho
@@ -1848,10 +1853,18 @@ include '../../public/admin_layout_header.php';
             const badges = r.querySelectorAll('.wh-badge');
             const totalDiv = r.querySelector('.wh-total');
             const emptyDiv = r.querySelector('.wh-empty');
+            const hsdInfo = r.querySelector('.hsd-info');
 
-            // Luôn hiển thị kho và tồn kho
-            if (totalDiv) totalDiv.style.display = '';
+            if (activeWarehouseType === 'virtual') {
+                // Ẩn tổng và thông tin HSD nếu đang xem kho ảo (Kho Xuất, Kho Hủy)
+                if (totalDiv) totalDiv.style.display = 'none';
+                if (hsdInfo) hsdInfo.style.display = 'none';
+            } else {
+                if (totalDiv) totalDiv.style.display = '';
+                if (hsdInfo) hsdInfo.style.display = '';
+            }
             if (emptyDiv) emptyDiv.style.display = '';
+            
             badges.forEach(b => {
                 if (activeWarehouse === 'all' || activeWarehouse === '1') {
                     b.style.display = '';
@@ -2257,14 +2270,23 @@ $(document).ready(function() {
 
     // ================= GỢI Ý NHẬP HÀNG TỰ ĐỘNG =================
     window.loadSuggestions = function() {
-        const btn = event.target.closest('button');
-        const originalText = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang tải...';
+        let btn = null;
+        let originalText = '';
+        if (typeof event !== 'undefined' && event && event.target && typeof event.target.closest === 'function') {
+            btn = event.target.closest('button');
+        }
+        
+        if (btn) {
+            originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang tải...';
+        }
 
         $.post('../controllers/InventoryController.php', { action: 'get_reorder_list' }, function(res) {
-            btn.disabled = false;
-            btn.innerHTML = originalText;
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
 
             if(res.status === 'success' && res.data.length > 0) {
                 // Xóa dòng đầu tiên nếu nó trống
@@ -2313,8 +2335,10 @@ $(document).ready(function() {
                 alert('ℹ️ Hiện tại không có nguyên liệu nào dưới mức tồn tối thiểu.');
             }
         }, 'json').fail(function() {
-            btn.disabled = false;
-            btn.innerHTML = originalText;
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
             alert('❌ Lỗi kết nối máy chủ.');
         });
     };

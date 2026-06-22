@@ -74,7 +74,7 @@ foreach($combos_raw as $cb) {
 $t_open = []; $t_room = [];
 if ($type !== 'chef') {
     $t_open = $db->query("SELECT * FROM restaurant_tables WHERE category='open' ORDER BY id")->fetchAll(PDO::FETCH_ASSOC);
-    $t_room = $db->query("SELECT * FROM restaurant_tables WHERE category='room'  ORDER BY id")->fetchAll(PDO::FETCH_ASSOC);
+    $t_room = $db->query("SELECT * FROM restaurant_tables WHERE category='room' ORDER BY id")->fetchAll(PDO::FETCH_ASSOC);
 }
 
 $foods_raw  = $db->query("
