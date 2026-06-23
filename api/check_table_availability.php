@@ -28,7 +28,7 @@ try {
         FROM service_bookings 
         WHERE table_id IS NOT NULL 
           AND LOWER(status) IN ('pending', 'confirmed')
-          AND ABS(TIMESTAMPDIFF(MINUTE, booking_date, ?)) < 150
+          AND ABS(TIMESTAMPDIFF(MINUTE, booking_date, ?)) < 120
     ");
     $stmt->execute([$datetime]);
     $unavailable_online = $stmt->fetchAll(PDO::FETCH_COLUMN);

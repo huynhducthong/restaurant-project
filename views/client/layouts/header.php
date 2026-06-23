@@ -119,7 +119,7 @@ if (!empty($logo_path)) {
 
     <!-- GOOGLE FONT -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
         rel="stylesheet">
 
     <!-- BOOTSTRAP -->
@@ -141,7 +141,7 @@ if (!empty($logo_path)) {
         body {
             margin: 0;
             padding: 0 !important;
-            font-family: 'Open Sans', sans-serif;
+            font-family: 'Source Sans 3', sans-serif;
         }
 
         /* =======================
@@ -772,7 +772,7 @@ if (!empty($logo_path)) {
                 // Create a custom Toast notification
                 var toastHTML = '<div id="bdToast" style="position:fixed;top:120px;right:20px;z-index:99999;background:rgba(9,30,27,0.98);border:1px solid #A88746;padding:25px;border-radius:12px;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,0.6);transform:translateX(150%);transition:0.6s cubic-bezier(0.34, 1.56, 0.64, 1);max-width:320px;text-align:center;">'+
                 '<i class="fas fa-gift fa-3x mb-3" style="color:#A88746"></i>'+
-                '<h4 style="font-family:\'Montserrat\',serif;color:#A88746;margin-bottom:12px;font-size:1.5rem">Chúc Mừng Sinh Nhật!</h4>'+
+                '<h4 style="font-family:\'Source Sans 3\',serif;color:#A88746;margin-bottom:12px;font-size:1.5rem">Chúc Mừng Sinh Nhật!</h4>'+
                 '<p style="font-size:13px;margin:0;line-height:1.6;color:rgba(255,255,255,0.85)">Hệ thống ghi nhận hôm nay là sinh nhật của Quý khách. Nền tảng đã chuẩn bị sẵn đặc quyền ưu đãi dành riêng cho Đơn đặt bàn ngày hôm nay!</p>'+
                 '</div>';
                 document.body.insertAdjacentHTML('beforeend', toastHTML);
@@ -816,7 +816,7 @@ if (!empty($logo_path)) {
             if(!sessionStorage.getItem('holiday_greeted_' + '<?= $h_month.$h_day ?>')) {
                 var toastHTML = '<div id="holToast" style="position:fixed;top:120px;right:20px;z-index:99999;background:rgba(9,30,27,0.98);border:1px solid #A88746;padding:25px;border-radius:12px;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,0.6);transform:translateX(150%);transition:0.6s cubic-bezier(0.34, 1.56, 0.64, 1);max-width:320px;text-align:center;">'+
                 '<i class="fas <?= $holiday_icon ?> fa-3x mb-3"></i>'+
-                '<h4 style="font-family:\'Montserrat\',serif;color:#A88746;margin-bottom:12px;font-size:1.5rem"><?= $holiday_name ?></h4>'+
+                '<h4 style="font-family:\'Source Sans 3\',serif;color:#A88746;margin-bottom:12px;font-size:1.5rem"><?= $holiday_name ?></h4>'+
                 '<p style="font-size:13px;margin:0;line-height:1.6;color:rgba(255,255,255,0.85)"><?= $holiday_msg ?></p>'+
                 '</div>';
                 document.body.insertAdjacentHTML('beforeend', toastHTML);

@@ -813,7 +813,7 @@ function executeDeleteProcessedReports(ids) {
 </script>
 
 <!-- Bootstrap JS (Required for Tabs and Modals) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 
 <script>
 tinymce.init({
@@ -824,7 +824,7 @@ tinymce.init({
       'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount'
     ],
     toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | align lineheight | link image media table | numlist bullist indent outdent | emoticons charmap | removeformat',
-    font_family_formats: 'Arial=arial,helvetica,sans-serif; Courier New=courier new,courier,monospace; Akubra=alkubra; Poppins=poppins,sans-serif; Playfair Display=playfair display,serif; Times New Roman=times new roman,times,serif; Verdana=verdana,geneva,sans-serif',
+    font_family_formats: 'Arial=arial,helvetica,sans-serif; Courier New=courier new,courier,monospace; Akubra=alkubra; Poppins=poppins,sans-serif; Cormorant Garamond=Cormorant Garamond,serif; Times New Roman=times new roman,times,serif; Verdana=verdana,geneva,sans-serif',
     content_style: '@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Poppins:wght@300;400;500;600;700&display=swap"); body { font-family: "Poppins", sans-serif; font-size: 14px; }',
     image_title: true,
     automatic_uploads: true,

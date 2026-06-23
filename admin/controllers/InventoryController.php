@@ -24,7 +24,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'get_reorder_list') {
         SELECT i.id, i.item_name, i.unit_name, i.cost_price, i.min_stock,
                IFNULL(SUM(s.quantity), 0) as total_stock
         FROM inventory i
-        LEFT JOIN inventory_stocks s ON i.id = s.ingredient_id
+        LEFT JOIN inventory_stocks s ON i.id = s.ingredient_id AND s.warehouse_id NOT IN (6, 7)
         WHERE i.is_active = 1
         GROUP BY i.id
         HAVING total_stock <= CASE WHEN i.min_stock > 0 THEN i.min_stock ELSE $cfg_low_stock END

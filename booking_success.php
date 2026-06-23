@@ -65,7 +65,7 @@ if ($is_success) {
     }
 }
 ?>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
     /* === TOKENS === */
     :root {
@@ -90,7 +90,7 @@ if ($is_success) {
     .bk-page {
         background: var(--bg-smoke);
         min-height: 100vh;
-        font-family: 'Open Sans', sans-serif;
+        font-family: 'Source Sans 3', sans-serif;
         padding-bottom: 80px
     }
 
@@ -242,7 +242,7 @@ if ($is_success) {
     }
 
     .opt-badge {
-        font-family: 'Open Sans', sans-serif;
+        font-family: 'Source Sans 3', sans-serif;
         font-size: 10px;
         padding: 3px 10px;
         border-radius: 50px;
@@ -280,7 +280,7 @@ if ($is_success) {
         padding: 13px 16px;
         border: 1.5px solid #e5dfd5;
         border-radius: 10px;
-        font-family: 'Open Sans', sans-serif;
+        font-family: 'Source Sans 3', sans-serif;
         font-size: 14px;
         color: var(--ink);
         background: #faf9f6;
@@ -375,7 +375,7 @@ if ($is_success) {
         gap: 8px;
         transition: all .2s;
         margin-bottom: 16px;
-        font-family: 'Open Sans', sans-serif;
+        font-family: 'Source Sans 3', sans-serif;
     }
 
     .map-open-btn:hover {
@@ -589,7 +589,7 @@ if ($is_success) {
         outline: none;
         display: none;
         background: #FFFFFF;
-        font-family: 'Open Sans', sans-serif;
+        font-family: 'Source Sans 3', sans-serif;
     }
 
     .mrow-qty:focus {
@@ -708,7 +708,7 @@ if ($is_success) {
         background: linear-gradient(135deg, var(--accent-burgundy), #b8923e);
         border: none;
         color: var(--g0);
-        font-family: 'Open Sans', sans-serif;
+        font-family: 'Source Sans 3', sans-serif;
         font-size: 14px;
         font-weight: 700;
         letter-spacing: .08em;
@@ -913,7 +913,7 @@ if ($is_success) {
     </style>
 
     <div class="bk-wrap" style="margin-top: -60px; grid-template-columns: 1fr; max-width: 850px; animation: fadeInUp 1s var(--ease) 0.5s both;">
-        <div class="seamless-box" style="padding: 50px; border: 1px solid rgba(212, 176, 106, 0.2); background: #FFFFFF url('https://www.transparenttextures.com/patterns/cubes.png');">
+        <div class="seamless-box" style="padding: 50px; border: 1px solid rgba(212, 176, 106, 0.2); background: #FFFFFF;">
             <div style="text-align: center; margin-bottom: 40px;">
                 <h3 class="section-heading" style="justify-content: center; font-size: 1.8rem; margin-bottom: 10px;">Chi tiết đặt dịch vụ</h3>
                 <div style="width: 50px; height: 2px; background: var(--accent-burgundy); margin: 0 auto;"></div>

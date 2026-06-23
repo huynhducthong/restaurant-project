@@ -217,7 +217,7 @@ $plans = $vipPlanModel->getAllPlans();
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
 
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
 <style>
 /* ══ TOKENS ══ */
@@ -465,10 +465,10 @@ body{
   display:inline-block;font-size:10px;font-weight:600;padding:4px 10px;border-radius:6px;
   letter-spacing:.06em;text-transform:uppercase;
 }
-.bk-badge.confirmed{background:rgba(40, 167, 69, 0.15);color:#2ecc71;}
+.bk-badge.confirmed{background:rgba(52, 152, 219, 0.15);color:#3498db;}
 .bk-badge.pending{background:rgba(255, 193, 7, 0.15);color:#f39c12;}
 .bk-badge.cancelled{background:rgba(220, 53, 69, 0.15);color:#e74c3c;}
-.bk-badge.completed{background:rgba(52, 152, 219, 0.15);color:#3498db;}
+.bk-badge.completed{background:rgba(40, 167, 69, 0.15);color:#2ecc71;}
 
 /* ══ ADDRESS CARD ══ */
 .addr-card{

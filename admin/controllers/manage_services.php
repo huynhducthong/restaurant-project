@@ -483,13 +483,13 @@ $upcoming_stmt = $db->query("
 
 $filter = $_GET['filter'] ?? 'all';
 if ($filter == 'all') {
-    $stmt = $db->prepare("SELECT * FROM service_bookings WHERE is_archived = 0 ORDER BY created_at DESC");
+    $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id WHERE sb.is_archived = 0 ORDER BY sb.created_at DESC");
     $stmt->execute();
 } elseif ($filter == 'bespoke') {
-    $stmt = $db->prepare("SELECT * FROM service_bookings WHERE combo_id = -1 AND is_archived = 0 ORDER BY created_at DESC");
+    $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id WHERE sb.combo_id = -1 AND sb.is_archived = 0 ORDER BY sb.created_at DESC");
     $stmt->execute();
 } else {
-    $stmt = $db->prepare("SELECT * FROM service_bookings WHERE service_type = :type AND is_archived = 0 ORDER BY created_at DESC");
+    $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id WHERE sb.service_type = :type AND sb.is_archived = 0 ORDER BY sb.created_at DESC");
     $stmt->execute([':type' => $filter]);
 }
 $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -530,7 +530,7 @@ include '../../public/admin_layout_header.php';
             <h4 class="fw-bold m-0"><i class="fas fa-clipboard-list me-2" style="color: var(--gold);"></i>Danh sách yêu cầu dịch vụ</h4>
             <div class="d-flex gap-2">
                 <div class="btn-group">
-                    <?php foreach (['all' => 'Tất cả', 'table' => 'Đặt bàn', 'birthday' => 'Sinh nhật', 'chef' => 'Đầu bếp', 'bespoke' => '✨ Thiết kế riêng'] as $k => $v): ?>
+                    <?php foreach (['all' => 'Tất cả', 'table' => 'Đặt bàn', 'birthday' => 'Tiệc', 'chef' => 'Đầu bếp', 'bespoke' => '✨ Thiết kế riêng'] as $k => $v): ?>
                         <a href="?filter=<?= $k ?>"
                             class="btn filter-btn <?= $filter == $k ? 'btn-dark' : 'btn-outline-gold' ?>"><?= $v ?></a>
                     <?php endforeach; ?>
@@ -570,6 +570,11 @@ include '../../public/admin_layout_header.php';
                                 <?php if ($s['combo_id'] == -1): ?>
                                     <div class="mt-1">
                                         <span class="badge bg-warning text-dark border-gold" style="font-size: 10px; border: 1px solid var(--gold); background: #fff5e6;"><i class="fas fa-scroll me-1" style="color:#b38600;"></i>Thiết kế riêng</span>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($s['service_type'] == 'home' && !empty($s['chef_name'])): ?>
+                                    <div class="mt-1">
+                                        <span class="badge bg-info text-dark border" style="font-size: 10px;"><i class="fas fa-user-tie me-1"></i>Bếp: <?= htmlspecialchars($s['chef_name']) ?></span>
                                     </div>
                                 <?php endif; ?>
                             </td>
@@ -644,7 +649,7 @@ include '../../public/admin_layout_header.php';
 
 <!-- MODAL DETAIL -->
 <div class="modal fade" id="modalDetail" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow">
             <div class="modal-header border-bottom-0 pb-0">
                 <h5 class="modal-title fw-bold" style="color: var(--gold);">Chi tiết dịch vụ</h5>
@@ -663,8 +668,8 @@ include '../../public/admin_layout_header.php';
                         <div class="col-7 fw-bold" id="m-type"></div>
                     </div>
                     <div class="row border-bottom py-2" id="row-table">
-                        <div class="col-4 text-muted" id="lbl-table">Bàn/Phòng:</div>
-                        <div class="col-8 fw-bold" id="m-table"></div>
+                        <div class="col-5 text-muted" id="lbl-table">Bàn/Phòng:</div>
+                        <div class="col-7 fw-bold" id="m-table"></div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-5 text-muted">Thời gian:</div>
@@ -705,9 +710,9 @@ include '../../public/admin_layout_header.php';
                         <div class="col-7" id="m-foods"></div>
                     </div>
                     <div class="row border-bottom py-2" id="row-chef-req" style="display:none;">
-                        <div class="col-4 text-muted"><i class="fas fa-scroll"></i> Y/c Bếp trưởng:</div>
-                        <div class="col-8">
-                            <div class="p-2 rounded bg-light" id="m-chef-req" style="font-size: 0.9em; line-height: 1.5; color: #333;"></div>
+                        <div class="col-5 text-muted"><i class="fas fa-scroll"></i> Y/c Bếp trưởng:</div>
+                        <div class="col-7">
+                            <div id="m-chef-req" style="font-size: 0.9em; line-height: 1.5; color: #333;"></div>
                         </div>
                     </div>
                     <div class="row mb-2">
@@ -787,7 +792,7 @@ include '../../public/admin_layout_header.php';
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 
 <script>
     $(document).ready(function () {
@@ -1048,13 +1053,13 @@ include '../../public/admin_layout_header.php';
                     function formatNotes(text) {
                         if (!text) return '';
                         let html = text.replace(/\n/g, '<br>');
-                        html = html.replace(/- Độ chín:/g, '<span class="fw-bold text-danger">- Độ chín:</span>');
-                        html = html.replace(/- Hương vị:/g, '<span class="fw-bold text-primary">- Hương vị:</span>');
+                        html = html.replace(/- Độ chín:/g, '<span class="fw-bold">- Độ chín:</span>');
+                        html = html.replace(/- Hương vị:/g, '<span class="fw-bold">- Hương vị:</span>');
                         
                         html = html.replace(/(?:-\s*)?DỊ ỨNG:\s*(.*?)(?=\s*\||<br>|$)/g, '<span class="badge bg-danger text-white" style="font-size: 11px;"><i class="fas fa-exclamation-triangle me-1"></i>DỊ ỨNG</span> <strong class="text-danger">$1</strong>');
-                        html = html.replace(/Chế độ ăn:\s*(.*?)(?=\s*\||<br>|$)/g, '<span class="badge bg-success text-white" style="font-size: 11px;"><i class="fas fa-leaf me-1"></i>Chế độ ăn</span> <strong class="text-success">$1</strong>');
-                        html = html.replace(/Mục đích:\s*(.*?)(?=\s*\||<br>|$)/g, '<span class="badge bg-info text-dark" style="font-size: 11px;"><i class="fas fa-glass-cheers me-1"></i>Mục đích</span> <strong>$1</strong>');
-                        html = html.replace(/--- HỒ SƠ KHẨU VỊ \(CULINARY DNA\) ---/g, '<br><span class="text-warning fw-bold"><i class="fas fa-dna me-1"></i>HỒ SƠ KHẨU VỊ (CULINARY DNA)</span><br>');
+                        html = html.replace(/Chế độ ăn:\s*(.*?)(?=\s*\||<br>|$)/g, '<span class="fw-bold"><i class="fas fa-leaf me-1 text-success"></i>Chế độ ăn:</span> <strong>$1</strong>');
+                        html = html.replace(/Mục đích:\s*(.*?)(?=\s*\||<br>|$)/g, '<span class="fw-bold"><i class="fas fa-glass-cheers me-1 text-info"></i>Mục đích:</span> <strong>$1</strong>');
+                        html = html.replace(/--- HỒ SƠ KHẨU VỊ \(CULINARY DNA\) ---/g, '<br><span class="fw-bold"><i class="fas fa-dna me-1 text-secondary"></i>HỒ SƠ KHẨU VỊ (CULINARY DNA)</span><br>');
                         
                         return html;
                     }

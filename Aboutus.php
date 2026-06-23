@@ -180,7 +180,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     color: var(--news-text);
     min-height: 85vh;
     padding: 180px 0 60px 0; /* Clear header space */
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
 }
 
 /* Typography elements */

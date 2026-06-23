@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once '../config/google_setup.php';
 $login_url = $client->createAuthUrl(); 
@@ -11,7 +11,7 @@ $login_url = $client->createAuthUrl();
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -33,7 +33,7 @@ $login_url = $client->createAuthUrl();
     body {
       background: linear-gradient(rgba(26,26,29,0.85), rgba(26,26,29,0.85)), url('assets/img/about-bg.jpg') center/cover no-repeat fixed;
       color: var(--text);
-      font-family: 'Open Sans', sans-serif;
+      font-family: 'Source Sans 3', sans-serif;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -164,7 +164,7 @@ $login_url = $client->createAuthUrl();
       border: 1px solid var(--border);
       border-radius: 0;
       padding: 13px 14px 13px 40px;
-      font-family: 'Open Sans', sans-serif;
+      font-family: 'Source Sans 3', sans-serif;
       font-size: 14px;
       color: var(--text);
       outline: none;
@@ -206,7 +206,7 @@ $login_url = $client->createAuthUrl();
       border: none;
       border-radius: 0;
       padding: 14px;
-      font-family: 'Open Sans', sans-serif;
+      font-family: 'Source Sans 3', sans-serif;
       font-size: 14px;
       font-weight: 600;
       letter-spacing: 0.04em;
@@ -258,7 +258,7 @@ $login_url = $client->createAuthUrl();
       border: 1px solid var(--border);
       border-radius: 0;
       padding: 12px 14px;
-      font-family: 'Open Sans', sans-serif;
+      font-family: 'Source Sans 3', sans-serif;
       font-size: 14px;
       font-weight: 500;
       cursor: pointer;

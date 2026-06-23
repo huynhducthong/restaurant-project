@@ -38,7 +38,7 @@ foreach ($foods as $food) {
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
 
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
 <style>
 :root {
@@ -48,7 +48,7 @@ include __DIR__ . '/views/client/layouts/header.php';
   --cd-olive: #A88746;
   --cd-gold: #A88746;
   --cd-serif: 'Cormorant Garamond', serif;
-  --cd-sans: 'Open Sans', sans-serif;
+  --cd-sans: 'Source Sans 3', sans-serif;
 }
 
 body { background-color: var(--cd-bg); }

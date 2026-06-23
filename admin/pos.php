@@ -132,7 +132,7 @@ if (!isset($_SESSION['user_id'])) {
     <!-- Pane 1: Tables -->
     <div class="pane">
         <div class="pane-header">
-            <span><i class="fas fa-border-all me-2 text-primary"></i> SƠ ĐỒ BÀN</span>
+            <span><i class="fas fa-border-all me-2 text-warning"></i> SƠ ĐỒ BÀN</span>
             <a href="admin_dashboard.php" class="btn btn-sm btn-outline-secondary"><i class="fas fa-sign-out-alt"></i> Thoát</a>
         </div>
         <div class="pane-content" id="tables-container">
@@ -143,8 +143,8 @@ if (!isset($_SESSION['user_id'])) {
     <!-- Pane 2: Menu -->
     <div class="pane">
         <div class="pane-header">
-            <span><i class="fas fa-utensils me-2 text-primary"></i> THỰC ĐƠN</span>
-            <span id="selected-table-label" class="badge bg-primary px-3 py-2" style="display: none; font-size: 0.9rem; cursor: pointer;" onclick="deselectTable()" title="Bỏ chọn bàn này"></span>
+            <span><i class="fas fa-utensils me-2 text-warning"></i> THỰC ĐƠN</span>
+            <span id="selected-table-label" class="badge bg-dark text-warning px-3 py-2" style="display: none; font-size: 0.9rem; cursor: pointer;" onclick="deselectTable()" title="Bỏ chọn bàn này"></span>
         </div>
         <div class="pane-content">
             <div class="menu-filter" id="menu-filters">
@@ -161,7 +161,7 @@ if (!isset($_SESSION['user_id'])) {
     <!-- Pane 3: Cart -->
     <div class="pane">
         <div class="pane-header">
-            <span><i class="fas fa-file-invoice-dollar me-2 text-primary"></i> HÓA ĐƠN</span>
+            <span><i class="fas fa-file-invoice-dollar me-2 text-warning"></i> HÓA ĐƠN</span>
             <span id="order-id-label" class="text-muted" style="font-size: 0.85rem;"></span>
         </div>
         <div class="pane-content" id="cart-container" style="padding: 10px;">
@@ -175,11 +175,11 @@ if (!isset($_SESSION['user_id'])) {
                 <span class="cart-total-label">Tổng cộng</span>
                 <span class="cart-total-value" id="cart-total">0đ</span>
             </div>
-            <button class="btn btn-warning w-100 mb-2 font-weight-bold" id="btn-send-kitchen" style="display: none; border-radius: 8px; padding: 12px; color: #9a3412; border: 1px solid #fed7aa;" onclick="sendToKitchen()">
+            <button class="btn btn-dark w-100 mb-2 font-weight-bold" id="btn-send-kitchen" style="display: none; border-radius: 8px; padding: 12px; background: #333; color: #A88746; border: 1px solid #333;" onclick="sendToKitchen()">
                 <i class="fas fa-paper-plane me-2"></i> GỬI BẾP (<span id="draft-count">0</span> món mới)
             </button>
             <div style="display: flex; gap: 10px;">
-                <button class="btn btn-outline-danger" id="btn-cancel-order" disabled onclick="cancelOrder()" style="font-weight: 600; padding: 15px; border-radius: 8px;">
+                <button class="btn btn-outline-secondary" id="btn-cancel-order" disabled onclick="cancelOrder()" style="font-weight: 600; padding: 15px; border-radius: 8px;">
                     <i class="fas fa-trash-alt"></i> HỦY BÀN
                 </button>
                 <button class="btn-checkout" id="btn-checkout" disabled onclick="showCheckoutModal()" style="flex: 1;">
@@ -376,7 +376,7 @@ function renderMenuItems() {
                 <div class="d-flex justify-content-between align-items-center mt-1">
                     <div class="menu-price">${formatMoney(item.price)}</div>
                     <button class="btn btn-sm btn-light rounded-circle" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0;" onclick="event.stopPropagation(); showItemDetail(${item.id}, '${item.type}')" title="Xem chi tiết">
-                        <i class="fas fa-info text-primary"></i>
+                        <i class="fas fa-info text-warning"></i>
                     </button>
                 </div>
             </div>
@@ -1021,7 +1021,7 @@ function addCurrentDetailItem() {
         </div>
         
         <div id="qr-container" class="qr-container">
-            <div class="mb-2 font-weight-bold text-primary">Quét mã để thanh toán</div>
+            <div class="mb-2 font-weight-bold text-warning">Quét mã để thanh toán</div>
             <img id="vietqr-img" src="" style="max-width: 100%; height: auto; border-radius: 8px;">
             <div class="mt-2 text-muted" style="font-size: 0.85rem;">Ngân hàng: MB Bank<br>STK: 000000000<br>Tên tài khoản: NHA HANG DEMO</div>
         </div>
@@ -1040,6 +1040,7 @@ function addCurrentDetailItem() {
     </div>
   </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>

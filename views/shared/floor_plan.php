@@ -17,7 +17,7 @@ $all_tables = array_merge($t_open, $t_room);
     background-position: center center;
     position: relative;
     margin: 0 auto;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     color: var(--text-main, #333333);
     border: 3px solid #333; /* Outer building wall */
     box-shadow: 0 20px 50px rgba(0,0,0,0.1);
