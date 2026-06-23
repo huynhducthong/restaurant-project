@@ -60,7 +60,7 @@ include 'views/client/layouts/header.php';
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
 }
 .payment-card {
     background: #FFFFFF;

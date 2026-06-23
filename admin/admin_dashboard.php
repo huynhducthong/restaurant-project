@@ -63,6 +63,23 @@ try {
     
     $selected_revenue = $booking_rev + $pos_rev;
     
+    // Expenses
+    $expense_conditions = [];
+    $expense_params = [];
+    if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $start_date)) {
+        $expense_conditions[] = "expense_date >= ?";
+        $expense_params[] = $start_date;
+    }
+    if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $end_date)) {
+        $expense_conditions[] = "expense_date <= ?";
+        $expense_params[] = $end_date;
+    }
+    $where_expense = count($expense_conditions) > 0 ? implode(" AND ", $expense_conditions) : "1=1";
+    
+    $stmt_expense = $db->prepare("SELECT SUM(amount) FROM restaurant_expenses WHERE $where_expense");
+    $stmt_expense->execute($expense_params);
+    $selected_expenses = $stmt_expense->fetchColumn() ?: 0;
+    
     for ($m = 1; $m <= 12; $m++) {
         $stmt1 = $db->prepare("SELECT SUM(total_amount) FROM service_bookings WHERE status != 'Cancelled' AND MONTH(created_at)=? AND YEAR(created_at)=?");
         $stmt1->execute([$m, $year_revenue]);
@@ -289,6 +306,18 @@ try {
             </div>
         </div>
 
+        <!-- Chi phí -->
+        <div class="col">
+            <div class="stat-card bg-white h-100">
+                <div class="stat-icon" style="background:#ffebee">💸</div>
+                <div>
+                    <div class="stat-label small">Chi phí</div>
+                    <div class="stat-val text-danger" style="font-size: 1.4rem;"><?= number_format($selected_expenses) ?>đ</div>
+                    <span class="stat-label small mt-1 d-block">Lợi nhuận: <b class="text-success"><?= number_format($selected_revenue - $selected_expenses) ?>đ</b></span>
+                </div>
+            </div>
+        </div>
+
         <!-- Món ăn -->
         <div class="col">
             <div class="stat-card bg-white h-100">
@@ -355,7 +384,9 @@ try {
                         <button class="btn btn-sm btn-outline-primary">Xem</button>
                     </form>
                 </div>
-                <canvas id="barChart" height="100"></canvas>
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="barChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -374,7 +405,9 @@ try {
                         <button class="btn btn-sm btn-outline-primary">Xem</button>
                     </form>
                 </div>
-                <canvas id="pieChart" height="200"></canvas>
+                <div style="position: relative; height: 250px; width: 100%;">
+                    <canvas id="pieChart"></canvas>
+                </div>
                 <!-- Legend số liệu -->
                 <div class="d-flex justify-content-center gap-3 mt-3 flex-wrap">
                     <?php
@@ -461,6 +494,7 @@ new Chart(document.getElementById('barChart'), {
     },
     options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
             legend: { display: false },
             tooltip: {
@@ -500,6 +534,7 @@ new Chart(document.getElementById('pieChart'), {
     },
     options: {
         responsive: true,
+        maintainAspectRatio: false,
         cutout: '65%',
         plugins: { legend: { display: false } }
     }

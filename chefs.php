@@ -56,21 +56,21 @@ $chefs = array_slice($all_chefs, $offset, $limit);
 
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source Sans 3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg-color: #1A1A1D;
-  --card-bg: #262629;
-  --text-main: #EAEAEA;
-  --text-muted: #A0A0A5;
+  --bg-color: #FFFFFF;
+  --card-bg: #F9F9F9;
+  --text-main: #1A1A1D;
+  --text-muted: #666666;
   --accent-burgundy: #A88746;
-  --border-light: rgba(168, 135, 70, 0.25);
+  --border-light: rgba(0, 0, 0, 0.1);
   --ease: cubic-bezier(.4,0,.2,1);
   --gold: #A88746;
   --olive: #8B6D36;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg-color); color: var(--text-main); font-family: 'Open Sans', sans-serif; }
+body { background: var(--bg-color); color: var(--text-main); font-family: 'Source Sans 3', sans-serif; }
 
 /* HERO */
 .ch-hero {
@@ -146,7 +146,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
   border: 1px solid var(--border-light);
   color: var(--text-muted);
   text-decoration: none;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Source Sans 3', sans-serif;
   font-weight: 600;
   font-size: 14px;
   transition: all 0.3s var(--ease);
@@ -264,7 +264,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
   max-width: 1000px;
   height: 85vh;
   max-height: 750px;
-  background: #1E1E22;
+  background: var(--bg-color);
   border: 1px solid var(--border-light);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   position: relative;
@@ -280,8 +280,8 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
   position: absolute;
   top: 20px;
   right: 20px;
-  background: rgba(0,0,0,0.5);
-  border: 1px solid var(--border-light);
+  background: #f8f9fa;
+  border: 1px solid #ddd;
   width: 40px;
   height: 40px;
   display: flex;
@@ -291,12 +291,12 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
   cursor: pointer;
   z-index: 10;
   transition: 0.3s;
-  color: #fff;
+  color: #333;
 }
 .chef-modal-close:hover {
-  background: var(--gold);
+  background: #A67B27;
   color: #fff;
-  border-color: var(--gold);
+  border-color: #A67B27;
 }
 .chef-modal-body {
   display: flex;
@@ -323,7 +323,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
   display: flex;
   flex-direction: column;
   position: relative;
-  background: #1E1E22;
+  background: #ffffff;
 }
 .chef-modal-scroll-content {
   flex: 1;
@@ -335,45 +335,45 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
   width: 6px;
 }
 .chef-modal-scroll-content::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.02);
+  background: #f1f1f1;
 }
 .chef-modal-scroll-content::-webkit-scrollbar-thumb {
-  background: var(--gold);
+  background: #A67B27;
   border-radius: 3px;
 }
 .chef-modal-pos {
   font-size: 11px;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--gold);
+  color: #A67B27;
   font-weight: 600;
   display: block;
   margin-bottom: 8px;
 }
 .chef-modal-name {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cormorant Garamond', serif;
   font-size: 2.2rem;
   font-weight: 700;
-  color: var(--gold);
+  color: #A67B27;
   margin-bottom: 20px;
   line-height: 1.2;
 }
 .chef-modal-quote-wrap {
   position: relative;
-  border-left: 3px solid var(--gold);
+  border-left: 3px solid #A67B27;
   padding-left: 20px;
   margin-bottom: 25px;
 }
 .chef-modal-quote {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cormorant Garamond', serif;
   font-style: italic;
   font-size: 1.15rem;
-  color: var(--text-main);
+  color: #333333;
   line-height: 1.6;
 }
 .chef-modal-desc {
   font-size: 14px;
-  color: var(--text-muted);
+  color: #555555;
   line-height: 1.8;
   margin-bottom: 30px;
 }
@@ -383,9 +383,9 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
   padding-top: 25px;
 }
 .chef-modal-section .section-title {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cormorant Garamond', serif;
   font-size: 1.25rem;
-  color: #fff;
+  color: #222222;
   margin-bottom: 15px;
   font-weight: 600;
   display: flex;
@@ -393,7 +393,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
   gap: 10px;
 }
 .chef-modal-section .section-title i {
-  color: var(--gold);
+  color: #A67B27;
 }
 
 /* Awards grid */
@@ -406,13 +406,13 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
   display: flex;
   align-items: center;
   gap: 12px;
-  background: var(--bg-color);
+  background: #f8f9fa;
   padding: 12px 15px;
-  border: 1px solid var(--border-light);
+  border: 1px solid #e0e0e0;
 }
 .award-icon {
   font-size: 22px;
-  color: var(--gold);
+  color: #A67B27;
   display: flex;
   align-items: center;
 }
@@ -423,11 +423,11 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
 .award-title {
   font-size: 13px;
   font-weight: 600;
-  color: var(--text-main);
+  color: #222222;
 }
 .award-subtitle {
   font-size: 11px;
-  color: var(--text-muted);
+  color: #666666;
 }
 
 /* Signature dishes grid */
@@ -439,14 +439,14 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
 .dish-item {
   display: flex;
   gap: 12px;
-  border: 1px solid var(--border-light);
-  background: var(--bg-color);
+  border: 1px solid #e0e0e0;
+  background: #f8f9fa;
   padding: 10px;
   align-items: center;
   transition: border-color 0.2s;
 }
 .dish-item:hover {
-  border-color: var(--gold);
+  border-color: #A67B27;
 }
 .dish-img {
   width: 70px;
@@ -469,14 +469,14 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
 .dish-name {
   font-size: 13px;
   font-weight: 600;
-  color: var(--text-main);
+  color: #222222;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .dish-desc {
   font-size: 11px;
-  color: var(--text-muted);
+  color: #666666;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -774,7 +774,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
   border-radius: 2px;
 }
 .dish-modal-title {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cormorant Garamond', serif;
   font-size: 1.6rem;
   color: var(--gold);
   margin-bottom: 8px;
@@ -1019,7 +1019,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Open 
 
             <!-- Submit Review Form -->
             <div class="write-review-form">
-              <h5 style="font-family:'Playfair Display',serif; font-size: 1.1rem; color: #fff; margin-bottom: 12px;">Gửi đánh giá của bạn</h5>
+              <h5 style="font-family:'Cormorant Garamond',serif; font-size: 1.1rem; color: var(--text-main); margin-bottom: 12px;">Gửi đánh giá của bạn</h5>
               <form id="submitReviewForm" onsubmit="submitChefReview(event)">
                 <input type="hidden" name="chef_id" id="reviewChefId">
                 
@@ -1164,7 +1164,7 @@ function openChefModal(chef) {
     
     if (currentChefDishes.length > 0) {
         currentChefDishes.forEach((dish, idx) => {
-            let dishImg = dish.image ? 'public/assets/img/foods/' + dish.image : 'https://placehold.co/400x530/F6F2E9/4F5B3A?text=Dish';
+            let dishImg = dish.image ? 'public/assets/img/menu/' + dish.image : 'https://placehold.co/400x530/F6F2E9/4F5B3A?text=Dish';
             let formattedPrice = parseFloat(dish.price).toLocaleString('vi-VN') + ' đ';
             let dishItem = document.createElement('div');
             dishItem.className = 'dish-item';
@@ -1232,7 +1232,7 @@ function openDishModal(idx) {
     let dish = currentChefDishes[idx];
     if (!dish) return;
     
-    let dishImg = dish.image ? 'public/assets/img/foods/' + dish.image : 'https://placehold.co/400x530/F6F2E9/4F5B3A?text=Dish';
+    let dishImg = dish.image ? 'public/assets/img/menu/' + dish.image : 'https://placehold.co/400x530/F6F2E9/4F5B3A?text=Dish';
     document.getElementById('dishModalImg').src = dishImg;
     document.getElementById('dishModalName').textContent = dish.name;
     document.getElementById('dishModalPrice').textContent = parseFloat(dish.price).toLocaleString('vi-VN') + ' đ';

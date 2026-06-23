@@ -142,7 +142,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 
                 <p style="
                     color: <?= $row['desc_color'] ?? '#eeeeee' ?>; 
-                    font-family: <?= $row['desc_font_family'] ?? "'Open Sans', sans-serif" ?>; 
+                    font-family: <?= $row['desc_font_family'] ?? "'Source Sans 3', sans-serif" ?>; 
                     font-size: <?= $row['desc_font_size'] ?? 24 ?>px; 
                     font-weight: <?= $desc_weight ?>; 
                     font-style: <?= $desc_style ?>;
@@ -158,7 +158,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                     text-decoration:none;
                     font-weight:600;
                     font-size:14px;
-                    font-family:'Open Sans', sans-serif;
+                    font-family:'Source Sans 3', sans-serif;
                     letter-spacing:1px;
                     background-color: <?= htmlspecialchars($row['button_color'] ?? '#A88746') ?>;
                     color: #fff;
@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <h2 style="font-family: 'Cormorant Garamond', serif; color: #A88746; font-size: 3rem; margin-bottom: 25px; font-weight: 700; line-height: 1.2;">
               <?= $v_title ?>
             </h2>
-            <p style="font-family: 'Open Sans', sans-serif; font-weight: 300; line-height: 2; color: #222222; font-size: 1.15rem; margin-bottom: 25px;">
+            <p style="font-family: 'Source Sans 3', sans-serif; font-weight: 300; line-height: 2; color: #222222; font-size: 1.15rem; margin-bottom: 25px;">
               <?= nl2br(htmlspecialchars($v_desc)) ?>
             </p>
           </div>
@@ -303,9 +303,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <!-- Tiêu đề -->
     <div class="text-center mb-5" style="position:relative; z-index:2;">
-      <p style="color:#A88746; font-family:'Open Sans',sans-serif; font-size:13px; letter-spacing:4px; text-transform:uppercase; margin-bottom:12px;">Hương Vị Tinh Tế</p>
+      <p style="color:#A88746; font-family:'Source Sans 3',sans-serif; font-size:13px; letter-spacing:4px; text-transform:uppercase; margin-bottom:12px;">Hương Vị Tinh Tế</p>
       <h2 style="color:#A88746; font-family:'Cormorant Garamond', serif; font-size:clamp(2rem,5vw,3.2rem); font-weight:700; margin-bottom:16px;">Một Trải Nghiệm Độc Đáo</h2>
-      <p style="color:#666666; font-family:'Open Sans',sans-serif; font-size:15px; max-width:900px; margin:0 auto; line-height:1.8;">
+      <p style="color:#666666; font-family:'Source Sans 3',sans-serif; font-size:15px; max-width:900px; margin:0 auto; line-height:1.8;">
         Khám phá bản giao hưởng hương vị nơi truyền thống cổ xưa hòa quyện với nghệ thuật hiện đại. Mỗi món ăn là một kiệt tác được tuyển chọn kỹ lưỡng, không chỉ để thưởng thức mà còn để cảm nhận.
       </p>
     </div>
@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     .menu-gallery-name {
       color: #fff;
-      font-family: 'Open Sans', sans-serif;
+      font-family: 'Source Sans 3', sans-serif;
       font-size: 15px;
       font-weight: 600;
       display: block;
@@ -453,7 +453,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     .menu-gallery-price {
       color: #ffffff;
-      font-family: 'Open Sans', sans-serif;
+      font-family: 'Source Sans 3', sans-serif;
       font-size: 14px;
       font-weight: 700;
       text-shadow: 0 1px 3px rgba(0,0,0,0.6);
@@ -478,7 +478,7 @@ document.addEventListener('DOMContentLoaded', function() {
       background: #E65C00;
       border: 1.5px solid #E65C00;
       color: #ffffff;
-      font-family: 'Open Sans', sans-serif;
+      font-family: 'Source Sans 3', sans-serif;
       font-size: 12px;
       font-weight: 700;
       letter-spacing: 4px;
@@ -528,7 +528,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     <div class="container" style="position: relative; z-index: 1;">
       <div class="section-title text-center mb-5" style="margin-bottom: 30px !important;">
-        <p style="color: #A88746; font-family: 'Open Sans', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Tuyển Chọn Thượng Hạng</p>
+        <p style="color: #A88746; font-family: 'Source Sans 3', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Tuyển Chọn Thượng Hạng</p>
         <h2 style="color: #A88746; font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Bộ Sưu Tập Hương Vị</h2>
       </div>
 
@@ -1085,7 +1085,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <section id="atmosphere" style="background: #F9F9F9; padding: 140px 0; position: relative;">
     <div class="container" style="position: relative; z-index: 1;">
       <div class="section-title text-center mb-5" style="margin-bottom: 30px !important;">
-        <p style="color: #A88746; font-family: 'Open Sans', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Không Gian & Trải Nghiệm</p>
+        <p style="color: #A88746; font-family: 'Source Sans 3', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Không Gian & Trải Nghiệm</p>
         <h2 style="color: #A88746; font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Kiệt Tác Kiến Trúc Tĩnh Lặng</h2>
       </div>
 
@@ -1186,7 +1186,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   .explore-menu-link {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 0.9rem;
     letter-spacing: 3px;
     color: #A88746;
@@ -1362,7 +1362,7 @@ document.addEventListener('DOMContentLoaded', function() {
     letter-spacing: 4px;
     text-transform: uppercase;
     color: #A88746;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
   }
 
   .chefs-title {
@@ -1475,7 +1475,7 @@ document.addEventListener('DOMContentLoaded', function() {
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 3px;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
   }
 
   /* --- ATMOSPHERE & GALLERY --- */

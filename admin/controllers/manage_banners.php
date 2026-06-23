@@ -224,7 +224,7 @@ $banners = $db->query(
 $fonts = [
     "'Poppins', sans-serif"       => "Poppins (Hiện đại)",
     "'Cormorant Garamond', serif"   => "Playfair (Cổ điển sang trọng)",
-    "'Cormorant Garamond', serif"    => "Montserrat (Trẻ trung)",
+    "'Cormorant Garamond', serif"    => "Source Sans 3 (Trẻ trung)",
     "'Lora', serif"               => "Lora (Thanh lịch)",
     "'Dancing Script', cursive"   => "Dancing Script (Bay bướm)",
     "'Pacifico', cursive"         => "Pacifico (Nghệ thuật)",
@@ -557,7 +557,7 @@ include '../../public/admin_layout_header.php';
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <script>

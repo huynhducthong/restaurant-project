@@ -52,7 +52,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $msg .= "\n[Phục vụ riêng] " . $ds_text;
     }
 
+    // Tính toán quy mô ekip Đầu bếp tại gia
+    if ($type === 'home') {
+        $crew_msg = "";
+        if ($guests <= 4) {
+            $crew_msg = "Quy mô ekip (1-4 khách): 1 Chef + 1 Phục vụ";
+        } elseif ($guests <= 8) {
+            $crew_msg = "Quy mô ekip (5-8 khách): 1 Chef + 1 Phụ bếp + 1 Phục vụ";
+        } else {
+            $crew_msg = "Quy mô ekip (9-16 khách): 1 Chef + 1 Phụ bếp + 2 Phục vụ";
+        }
+        $msg .= "\n[Đầu bếp tại gia] " . $crew_msg;
+    }
+
     $chef_requirements = $_POST['chef_requirements'] ?? null;
+    $chef_id_val = isset($_POST['chef_id']) && (int)$_POST['chef_id'] > 0 ? (int)$_POST['chef_id'] : null;
 
     // Gắn thêm Hồ sơ Khẩu vị (Culinary DNA) nếu có
     if ($user_id) {
@@ -84,6 +98,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
+    $booking_timestamp = strtotime($date);
+
+    // BẢO MẬT: BẮT BUỘC ĐẶT TRƯỚC THEO TỪNG LOẠI DỊCH VỤ
+    $min_hours = 1;
+    if ($type === 'event') $min_hours = 3;
+    if ($type === 'home') $min_hours = 24;
+    if ($type === 'bespoke') $min_hours = 48;
+    
+    // Cho phép chênh lệch tối đa 5 phút (300 giây) để trừ hao độ trễ thao tác điền form
+    $min_timestamp = time() + ($min_hours * 3600) - 300;
+
+    if ($booking_timestamp < $min_timestamp) {
+        $setting_stmt = $db->query("SELECT key_value FROM settings WHERE key_name = 'open_time'");
+        $open_time_setting = $setting_stmt->fetchColumn() ?: '09:00 AM - 11:00 PM';
+        
+        $error_msg = "Xin vui lòng chọn thời gian đặt bàn từ " . htmlspecialchars($open_time_setting) . " (tối thiểu trước {$min_hours} tiếng)";
+        if ($type === 'event') $error_msg = "Dịch vụ Tiệc kỷ niệm yêu cầu chuẩn bị chu đáo, quý khách vui lòng đặt trước ít nhất 3 tiếng.";
+        if ($type === 'home') $error_msg = "Dịch vụ Đầu bếp tại gia cần chọn lọc nguyên liệu riêng, quý khách vui lòng đặt trước ít nhất 24 tiếng.";
+        if ($type === 'bespoke') $error_msg = "Dịch vụ Thiết kế riêng đòi hỏi sự chuẩn bị hoàn mỹ nhất, quý khách vui lòng đặt trước ít nhất 48 tiếng.";
+
+        echo "<script>alert('{$error_msg}'); window.history.back();</script>";
+        exit;
+    }
+
+    // BẢO MẬT: KIỂM TRA GIỜ MỞ CỬA CỦA NHÀ HÀNG
+    $setting_stmt = $db->query("SELECT key_value FROM settings WHERE key_name = 'open_time'");
+    $open_time_setting = $setting_stmt->fetchColumn();
+    if (!$open_time_setting) $open_time_setting = '09:00 AM - 11:00 PM'; // Mặc định nếu chưa cài
+
+    $time_parts = explode('-', $open_time_setting);
+    if (count($time_parts) == 2) {
+        $start_time_24 = date('H:i', strtotime(trim($time_parts[0])));
+        $end_time_24 = date('H:i', strtotime(trim($time_parts[1])));
+        $booking_time_only = date('H:i', $booking_timestamp);
+        
+        if ($booking_time_only < $start_time_24 || $booking_time_only > $end_time_24) {
+            echo "<script>alert('Nhà hàng hân hạnh phục vụ quý khách trong khung giờ " . htmlspecialchars($open_time_setting) . ". Vui lòng chọn lại thời gian phù hợp.'); window.history.back();</script>";
+            exit;
+        }
+    }
+
     // TÍNH NĂNG ĐỒNG BỘ: KIỂM TRA TRẠNG THÁI BÀN (Luồng 1 & Luồng 2)
     if ($table_id) {
         $booking_timestamp = strtotime($date);
@@ -98,11 +153,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             AND ABS(TIMESTAMPDIFF(SECOND, booking_date, ?)) < ?
         ");
         $check_stmt->execute([$table_id, $date, $two_hours]);
-        if ($check_stmt->fetch()) {
-            echo "<script>alert('Bàn này đã có khách đặt trước trong khung giờ này. Vui lòng chọn giờ khác hoặc bàn khác!'); window.history.back();</script>";
+        if ($check_stmt->rowCount() > 0) {
+            echo "<script>alert('Bàn này đã được khách khác đặt trước hoặc sau giờ bạn chọn quá sát (trong vòng 2 tiếng). Vui lòng chọn giờ khác hoặc bàn khác!'); window.history.back();</script>";
             exit;
         }
-
+        
         // 2. Kiểm tra Luồng 2 (Khách vãng lai đang ngồi ăn ở POS)
         // Nếu giờ đặt bàn nằm trong khoảng từ quá khứ 1 tiếng đến tương lai 2 tiếng so với HIỆN TẠI
         $time_diff_from_now = $booking_timestamp - time();
@@ -113,6 +168,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo "<script>alert('Bàn này hiện đang có khách ngồi ăn tại quán (Luồng POS). Vui lòng chọn bàn khác!'); window.history.back();</script>";
                 exit;
             }
+        }
+    }
+
+    // TÍNH NĂNG ĐỒNG BỘ: CHỐNG TRÙNG LỊCH ĐẦU BẾP TẠI GIA (Luồng 3)
+    if ($type === 'home' && $chef_id_val) {
+        $four_hours = 4 * 3600;
+        $check_chef_stmt = $db->prepare("
+            SELECT id FROM service_bookings 
+            WHERE chef_id = ? 
+            AND status IN ('Pending', 'Confirmed') 
+            AND ABS(TIMESTAMPDIFF(SECOND, booking_date, ?)) < ?
+        ");
+        $check_chef_stmt->execute([$chef_id_val, $date, $four_hours]);
+        if ($check_chef_stmt->rowCount() > 0) {
+            echo "<script>alert('Bếp trưởng đã có lịch trình vào khung giờ này. Vui lòng chọn thời gian khác cách ít nhất 4 tiếng, hoặc chọn Đầu bếp khác!'); window.history.back();</script>";
+            exit;
         }
     }
 
@@ -280,9 +351,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Tính 30% cọc
         $deposit_amount = $total_amount * 0.3;
 
-        // 2. Lưu đơn đặt bàn chính vào service_bookings (Bổ sung user_id và deposit_amount)
-        $stmt_booking = $db->prepare("INSERT INTO service_bookings (user_id, service_type, customer_name, customer_phone, booking_date, guests, message, table_id, combo_id, total_amount, deposit_amount, status, event_type, decor_package, decor_id, has_cake, has_flower, has_candle, has_handwritten_card, card_message, flower_preference, music_playlist, light_tone, chef_requirements) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt_booking->execute([$user_id, $type, $name, $phone, $date, $guests, $msg, $table_id, $combo_id, $total_amount, $deposit_amount, $event_type, $decor_package, $decor_id, $has_cake, $has_flower, $has_candle, $has_handwritten_card, $card_message, $flower_preference, $music_playlist, $light_tone, $chef_requirements]);
+        // 2. Lưu đơn đặt bàn chính vào service_bookings (Bổ sung user_id, deposit_amount, chef_id)
+        $stmt_booking = $db->prepare("INSERT INTO service_bookings (user_id, service_type, customer_name, customer_phone, booking_date, guests, message, table_id, combo_id, total_amount, deposit_amount, status, event_type, decor_package, decor_id, has_cake, has_flower, has_candle, has_handwritten_card, card_message, flower_preference, music_playlist, light_tone, chef_requirements, chef_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt_booking->execute([$user_id, $type, $name, $phone, $date, $guests, $msg, $table_id, $combo_id, $total_amount, $deposit_amount, $event_type, $decor_package, $decor_id, $has_cake, $has_flower, $has_candle, $has_handwritten_card, $card_message, $flower_preference, $music_playlist, $light_tone, $chef_requirements, $chef_id_val]);
         $last_id = $db->lastInsertId();
 
         // 3. Lưu chi tiết các món ăn khách chọn lẻ và toppings

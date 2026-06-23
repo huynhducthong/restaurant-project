@@ -1,4 +1,4 @@
-<?php 
+﻿<?php 
 session_start(); 
 
 if (!isset($_SESSION['reset_otp_verified']) && !isset($_SESSION['reset_email'])) {
@@ -14,7 +14,7 @@ if (!isset($_SESSION['reset_otp_verified']) && !isset($_SESSION['reset_email']))
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -34,7 +34,7 @@ if (!isset($_SESSION['reset_otp_verified']) && !isset($_SESSION['reset_email']))
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Open Sans', sans-serif;
+      font-family: 'Source Sans 3', sans-serif;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -161,7 +161,7 @@ if (!isset($_SESSION['reset_otp_verified']) && !isset($_SESSION['reset_email']))
       border: 1.5px solid var(--border);
       border-radius: 10px;
       padding: 13px 42px 13px 40px;
-      font-family: 'Open Sans', sans-serif;
+      font-family: 'Source Sans 3', sans-serif;
       font-size: 14px;
       color: var(--text);
       outline: none;
@@ -184,7 +184,7 @@ if (!isset($_SESSION['reset_otp_verified']) && !isset($_SESSION['reset_email']))
       border: none;
       border-radius: 10px;
       padding: 14px;
-      font-family: 'Open Sans', sans-serif;
+      font-family: 'Source Sans 3', sans-serif;
       font-size: 14px;
       font-weight: 600;
       letter-spacing: 0.04em;

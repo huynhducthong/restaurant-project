@@ -143,7 +143,7 @@ usort($all_foods, function($a, $b) {
 
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 /* === EDITORIAL FINE DINING VARIABLES === */
 :root {
@@ -153,7 +153,7 @@ include __DIR__ . '/views/client/layouts/header.php';
   --accent-burgundy: #A88746;          /* Olive Green */
   --accent-burgundy: #A88746;           /* Gold Accent */
   --font-serif: 'Cormorant Garamond', serif;
-  --font-sans: 'Open Sans', sans-serif;
+  --font-sans: 'Source Sans 3', sans-serif;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -459,20 +459,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
   position: relative;
 }
 
-.ed-fire-video {
-  position: absolute;
-  top: -10%; left: -10%; width: 130%; height: 120%;
-  object-fit: cover;
-  mix-blend-mode: screen;
-  pointer-events: none;
-  opacity: 0;
-  z-index: 100;
-  transition: opacity 0.3s ease;
-}
 
-.ed-modal.open .ed-fire-video {
-  opacity: 1; /* Fade in when modal opens */
-}
 .ed-modal-img img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
 .ed-modal-content {
   flex: 1; padding: 50px 40px; position: relative;
@@ -792,7 +779,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
   <div class="ed-modal-box">
     <div class="ed-modal-img">
       <img id="ed-m-img" src="" alt="" onerror="this.onerror=null; this.src='https://placehold.co/800x600/262629/A88746?text=No+Image'">
-      <video id="ed-fire-video" class="ed-fire-video" src="public/assets/img/45595-446485571.mp4" muted playsinline loop autoplay preload="auto"></video>
+
     </div>
     <div class="ed-modal-content">
       <button class="ed-modal-close" onclick="closeEdModal(null)">✕</button>
@@ -891,11 +878,7 @@ function openEdModal(data) {
     document.getElementById('edModal').classList.add('open');
     document.body.style.overflow = 'hidden';
     
-    var fireVid = document.getElementById('ed-fire-video');
-    if(fireVid) {
-        fireVid.currentTime = 0;
-        fireVid.play().catch(e => console.log('Video play prevented:', e));
-    }
+
 }
 
 function closeEdModal(e) {
@@ -903,10 +886,7 @@ function closeEdModal(e) {
     document.getElementById('edModal').classList.remove('open');
     document.body.style.overflow = '';
     
-    var fireVid = document.getElementById('ed-fire-video');
-    if(fireVid) {
-        fireVid.pause();
-    }
+
 }
 document.addEventListener('keydown', function(e) {
     if(e.key === 'Escape') closeEdModal(null);

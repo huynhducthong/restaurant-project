@@ -12,7 +12,7 @@ $user_id = (int)$_SESSION['user_id'];
 $db = (new Database())->getConnection();
 
 // Fetch booking info
-$stmt = $db->prepare("SELECT * FROM service_bookings WHERE id = ? AND user_id = ?");
+$stmt = $db->prepare("SELECT s.*, t.table_code FROM service_bookings s LEFT JOIN restaurant_tables t ON s.table_id = t.id WHERE s.id = ? AND s.user_id = ?");
 $stmt->execute([$booking_id, $user_id]);
 $booking = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -47,7 +47,7 @@ unset($it);
 
 $total = 0;
 ?>
-<div style="font-family:'Open Sans', sans-serif;">
+<div style="font-family:'Source Sans 3', sans-serif;">
     <div style="display:flex; justify-content:space-between; margin-bottom:15px; padding-bottom:15px; border-bottom:1px dashed #e8e2d9;">
         <div>
             <div style="font-size:12px; color:#888;">Mã Đặt Bàn</div>
@@ -69,7 +69,7 @@ $total = 0;
     </div>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; font-size:13px;">
-        <div><span style="color:#888;">Dịch vụ:</span> <strong style="color:var(--accent-burgundy); text-transform:uppercase;"><?= htmlspecialchars($booking['service_type']) ?></strong></div>
+        <div><span style="color:#888;">Dịch vụ:</span> <strong style="color:var(--accent-burgundy); text-transform:uppercase;"><?= htmlspecialchars($booking['service_type']) ?> <?= $booking['table_code'] ? ' - Bàn: ' . htmlspecialchars($booking['table_code']) : '' ?></strong></div>
         <div><span style="color:#888;">Thời gian:</span> <strong><?= date('H:i - d/m/Y', strtotime($booking['booking_date'])) ?></strong></div>
         <div><span style="color:#888;">Khách:</span> <strong><?= $booking['guests'] ?> người</strong></div>
         <div><span style="color:#888;">Cọc:</span> <strong style="color:#d64545;"><?= number_format($booking['deposit_amount']) ?>đ</strong></div>

@@ -114,7 +114,8 @@
                                     "allergies" => $u["allergies"] ?? "",
                                     "name" => $u["full_name"],
                                     "total_bookings" => $u["total_bookings"] ?? 0,
-                                    "total_spent" => $u["total_spent"] ?? 0
+                                    "total_spent" => $u["total_spent"] ?? 0,
+                                    "vip_plan" => $u["vip_plan_name"] ?? null
                                 ])) ?>)' title="Customer 360 View"><i class="fas fa-address-card"></i> Hồ Sơ 360</button>
                                 <button class="btn btn-sm btn-light border" onclick='openEditModal(<?= json_encode($u) ?>)' title="Sửa thông tin"><i class="fas fa-edit text-primary"></i> Sửa</button>
                                 <!-- Chặn Admin tự xóa tài khoản của chính mình -->
@@ -293,7 +294,7 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 
 <script>
     function openUserModal() {
@@ -335,15 +336,22 @@
         // Tính toán Phân hạng (Tier)
         let tier = 'Khách Mới';
         let tierColor = 'text-secondary';
-        if (spent >= 10000000) {
-            tier = 'VIP DIAMOND <i class="fas fa-crown"></i>';
-            tierColor = 'text-warning';
-        } else if (spent >= 5000000) {
-            tier = 'GOLD MEMBER';
-            tierColor = 'text-warning';
-        } else if (bookings > 0) {
-            tier = 'SILVER MEMBER';
-            tierColor = 'text-info';
+        
+        // Ưu tiên hiển thị thẻ Hội viên VIP nếu có đăng ký
+        if (data.vip_plan) {
+            tier = 'HỘI VIÊN VIP <i class="fas fa-gem ms-1"></i><br><small class="text-muted" style="font-size: 0.75rem;">' + data.vip_plan + '</small>';
+            tierColor = 'text-danger';
+        } else {
+            if (spent >= 10000000) {
+                tier = 'VIP DIAMOND <i class="fas fa-crown"></i>';
+                tierColor = 'text-warning';
+            } else if (spent >= 5000000) {
+                tier = 'GOLD MEMBER';
+                tierColor = 'text-warning';
+            } else if (bookings > 0) {
+                tier = 'SILVER MEMBER';
+                tierColor = 'text-info';
+            }
         }
         $('#crm-tier').html(tier).removeClass().addClass('fw-bold ' + tierColor);
 

@@ -1,214 +1,549 @@
 <?php
 $is_admin = $is_admin ?? false;
-// Fallback if data is not passed
 $t_open = $t_open ?? [];
 $t_room = $t_room ?? [];
 $all_tables = array_merge($t_open, $t_room);
 ?>
 <style>
 .fp-container {
-    width: 1200px; /* Mở rộng chiều ngang thành hình chữ nhật */
+    width: 1150px; 
     height: 800px;
-    background: var(--bg-cream, #1A1A1D);
+    background-color: #FDFBF7;
+    /* Lưới CAD Background */
+    background-image: 
+        linear-gradient(rgba(168, 135, 70, 0.1) 1px, transparent 1px), 
+        linear-gradient(90deg, rgba(168, 135, 70, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-position: center center;
     position: relative;
     margin: 0 auto;
-    font-family: 'Open Sans', sans-serif;
-    color: var(--text-main, #D1D1D1);
-    /* Bỏ lưới CAD, thêm border viền mờ tinh tế và shadow nhẹ */
-    border: 1px solid rgba(168, 135, 70, 0.3);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.05);
-    border-radius: 2px; /* Không bo tròn nhiều để giữ nét thanh lịch */
+    font-family: 'Source Sans 3', sans-serif;
+    color: var(--text-main, #333333);
+    border: 3px solid #333; /* Outer building wall */
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
 }
-.fp-area {
+
+/* CAD Static Areas (Solid walls) */
+.fp-cad-room {
     position: absolute;
+    border: 2px solid #555;
+    background: rgba(240, 238, 230, 0.9);
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 15px;
-    font-weight: 600;
+    font-weight: bold;
+    font-size: 11px;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    letter-spacing: 3px;
-    color: var(--accent-burgundy, #A88746);
-    background: rgba(168, 135, 70, 0.03); /* Nền gold cực kỳ nhạt */
-    border: 1px solid rgba(168, 135, 70, 0.2); /* Viền gold nhạt, nét liền, không dashed */
-    pointer-events: none;
+    color: #555;
+    z-index: 1;
 }
-.fp-entrance { bottom: 0; left: 400px; width: 200px; height: 50px; border-bottom: none; }
-.fp-reception { bottom: 70px; left: 400px; width: 200px; height: 60px; }
-.fp-bar { top: 300px; left: 20px; width: 100px; height: 250px; }
-.fp-stage { bottom: 20px; left: 20px; width: 250px; height: 120px; border-radius: 150px 150px 0 0; border-bottom: none; }
-.fp-restroom { top: 20px; left: 20px; width: 120px; height: 120px; }
-.fp-wine-cellar { top: 20px; left: 810px; width: 280px; height: 140px; border-radius: 4px; border: 1px solid rgba(168, 135, 70, 0.3); background: rgba(168, 135, 70, 0.05); }
+.fp-cad-room::after {
+    content: attr(data-title);
+    position: absolute;
+    top: 8px; left: 10px;
+    font-size: 10px; color: #888;
+}
 
-/* BOH Areas (Quản trị viên) */
-.fp-boh-pass { top: 120px; left: 350px; width: 350px; height: 40px; border: 1px solid #ff4757; color: #ff4757; background: rgba(255, 71, 87, 0.05); z-index: 2; font-family: 'Open Sans', sans-serif; letter-spacing: 1px; font-size: 12px;}
-.fp-boh-hot { top: 20px; left: 350px; width: 170px; height: 90px; border: 1px solid #ff4757; color: #ff4757; background: rgba(255, 71, 87, 0.02); font-family: 'Open Sans', sans-serif; letter-spacing: 1px; font-size: 12px;}
-.fp-boh-cold { top: 20px; left: 530px; width: 170px; height: 90px; border: 1px solid #1e90ff; color: #1e90ff; background: rgba(30, 144, 255, 0.02); font-family: 'Open Sans', sans-serif; letter-spacing: 1px; font-size: 12px;}
+/* Specific Rooms */
+.cad-v3 { top: 0; left: 0; width: 250px; height: 180px; }
+.cad-restroom { top: 0; left: 250px; width: 150px; height: 120px; border-left: none; }
+.cad-hot { top: 0; left: 400px; width: 250px; height: 120px; border-left: none; color: #d63031; }
+.cad-cold { top: 0; left: 650px; width: 200px; height: 120px; border-left: none; color: #0984e3; }
+.cad-pass { top: 120px; left: 400px; width: 450px; height: 40px; border-top: none; color: #d63031; }
+.cad-v2 { top: 0; left: 850px; width: 296px; height: 200px; border-left: none; } /* 1150-850=300 minus borders */
 
-/* Thiết kế BÀN ĂN FINE DINING */
+.cad-bar { top: 200px; left: 950px; width: 196px; height: 350px; border-top: none; }
+.cad-v4 { top: 550px; left: 850px; width: 296px; height: 246px; border-bottom: none; border-right: none;} /* 800-550=250 */
+
+.cad-v1 { top: 550px; left: 0; width: 250px; height: 246px; border-bottom: none; border-left: none;}
+.cad-lounge { top: 680px; left: 250px; width: 600px; height: 116px; border-left: none; border-bottom: none;}
+.cad-entrance { top: 760px; left: 475px; width: 150px; height: 40px; background: #fff; border: 2px dashed #A88746; border-bottom: none; z-index: 2; color: #A88746;}
+
+/* Bar Styling */
+.bar-counter {
+    position: absolute;
+    top: 25px;
+    left: 20px;
+    width: 60px;
+    height: 300px;
+    background: rgba(168, 135, 70, 0.1);
+    border: 2px solid #A88746;
+    border-radius: 30px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+}
+.bar-stool {
+    position: absolute;
+    left: -15px; /* Sticking out into the restaurant */
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border: 2px solid #A88746;
+    border-radius: 50%;
+}
+.bar-stool:nth-child(1) { top: 30px; }
+.bar-stool:nth-child(2) { top: 70px; }
+.bar-stool:nth-child(3) { top: 110px; }
+.bar-stool:nth-child(4) { top: 150px; }
+.bar-stool:nth-child(5) { top: 190px; }
+.bar-stool:nth-child(6) { top: 230px; }
+.bar-stool:nth-child(7) { top: 270px; }
+
+/* Window Styling */
+.fp-window-h {
+    position: absolute;
+    height: 8px;
+    background: #e0f7fa; /* Light cyan glass */
+    border: 1px solid #00bcd4;
+    border-radius: 4px;
+    z-index: 5;
+    box-shadow: 0 0 8px rgba(0, 188, 212, 0.4);
+}
+.fp-window-v {
+    position: absolute;
+    width: 8px;
+    background: #e0f7fa;
+    border: 1px solid #00bcd4;
+    border-radius: 4px;
+    z-index: 5;
+    box-shadow: 0 0 8px rgba(0, 188, 212, 0.4);
+}
+.fp-plant {
+    position: absolute;
+    width: 30px; height: 30px;
+    background: #e8f5e9;
+    border: 2px dashed #4caf50;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #4caf50; font-size: 14px;
+}
+
+/* Kitchen Bar Redesign */
+.kitchen-i-shape {
+    position: absolute;
+    top: 25px;
+    right: 15px;
+    width: 45px;
+    height: 300px;
+    background: #f5f5f5;
+    border: 2px solid #888;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+.kitchen-island {
+    position: absolute;
+    top: 75px;
+    left: 40px;
+    width: 55px;
+    height: 200px;
+    background: rgba(168, 135, 70, 0.15);
+    border: 2px solid #A88746;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+.island-stool {
+    position: absolute;
+    left: -18px;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border: 2px solid #A88746;
+    border-radius: 50%;
+}
+.island-stool:nth-child(1) { top: 20px; }
+.island-stool:nth-child(2) { top: 70px; }
+.island-stool:nth-child(3) { top: 120px; }
+.island-stool:nth-child(4) { top: 170px; }
+
+.bar-shelves { width: 30px; height: 120px; border: 2px solid rgba(168, 135, 70, 0.5); border-radius: 2px; background: rgba(168, 135, 70, 0.05); display: flex; flex-direction: column; justify-content: space-evenly; }
+.shelf-line { width: 100%; height: 2px; background: rgba(168, 135, 70, 0.5); }
+.kitchen-sink { width: 30px; height: 50px; border: 2px solid #aaa; border-radius: 4px; background: #cfd8dc; }
+
+
+
+
+
+
+
+/* VIP Decor: Curtains & Paintings */
+.vip-curtain-h {
+    position: absolute;
+    width: 25px; height: 12px;
+    background: #c2b5a3;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 6;
+}
+.vip-curtain-v {
+    position: absolute;
+    width: 12px; height: 25px;
+    background: #c2b5a3;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 6;
+}
+.vip-painting-h {
+    position: absolute;
+    width: 50px; height: 6px;
+    background: #bfa184;
+    border: 1px solid #8f7259;
+    box-shadow: 0 3px 5px rgba(0,0,0,0.15);
+    z-index: 2;
+}
+.vip-painting-v {
+    position: absolute;
+    width: 6px; height: 50px;
+    background: #bfa184;
+    border: 1px solid #8f7259;
+    box-shadow: 0 3px 5px rgba(0,0,0,0.15);
+    z-index: 2;
+}
+
+
+/* Minimalist Entrance Design */
+.lounge-floor {
+    position: absolute; inset: 0;
+    z-index: 0;
+}
+.coat-check {
+    position: absolute; top: -2px; left: -2px; width: 170px; height: 25px;
+    background: #fff; border: 2px solid #A88746; border-radius: 4px 0 4px 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: bold; color: #555; z-index: 2;
+}
+.coat-rack {
+    position: absolute; top: 21px; left: -2px; width: 35px; height: 80px;
+    background: #fff; border: 2px solid #A88746; border-radius: 0 0 4px 4px; z-index: 2;
+}
+.coat-rack::after {
+    content: "||||||||||"; color: #A88746; font-size: 8px; letter-spacing: 2px;
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(90deg);
+}
+.reception-desk {
+    position: absolute; bottom: 5px; left: 60px; width: 90px; height: 60px;
+    background: #fff; border: 2px solid #A88746; border-radius: 4px;
+    z-index: 2;
+}
+.reception-counter {
+    position: absolute; right: 0; top: 0; width: 25px; height: 100%;
+    background: #f5f5f5; border-left: 2px solid #A88746; border-radius: 0 4px 4px 0;
+}
+.reception-chair2 {
+    position: absolute; top: 20px; left: 20px; width: 22px; height: 22px;
+    background: #fff; border: 2px solid #A88746; border-radius: 50%; z-index: 1;
+}
+.lounge-rug {
+    position: absolute; top: 5px; right: 5px; width: 190px; height: 106px;
+    background: transparent;
+    border: 1px dashed #A88746; border-radius: 2px; z-index: 1;
+}
+.sofa-burgundy-h {
+    position: absolute; width: 60px; height: 30px;
+    background: #fff; border: 2px solid #A88746; border-radius: 8px; z-index: 2;
+}
+.sofa-burgundy-v {
+    position: absolute; width: 30px; height: 60px;
+    background: #fff; border: 2px solid #A88746; border-radius: 8px; z-index: 2;
+}
+.armchair-burgundy {
+    position: absolute; width: 30px; height: 30px;
+    background: #fff; border: 2px solid #A88746; border-radius: 8px; z-index: 2;
+}
+.sofa-pillows {
+    display: none;
+}
+.center-coffee-table {
+    position: absolute; width: 45px; height: 45px; top: 35px; right: 75px;
+    background: #fff;
+    border: 2px solid #A88746; border-radius: 50%; z-index: 2;
+}
+.side-table {
+    position: absolute; width: 20px; height: 20px; background: #fff; border: 2px solid #A88746; border-radius: 4px; z-index: 2;
+}
+
+/* The rest of Table CSS */
+.fp-chair.d-top { top: -10px; left: -10px; }
+.fp-chair.d-right { top: -10px; right: -10px; }
+.fp-chair.d-bottom { bottom: -10px; right: -10px; }
+.fp-chair.d-left { bottom: -10px; left: -10px; }
+.fp-piano { position: absolute; top: 370px; left: 550px; width: 100px; height: 100px; border-radius: 50%; border: 2px solid rgba(168, 135, 70, 0.5); background: #fff; display: flex; align-items: center; justify-content: center; z-index: 5;}
+
 .fp-table {
     position: absolute;
-    background: #262629; 
-    border: 2px solid var(--forest, #A88746); /* Viền màu Olive sang trọng */
-    border-radius: 0; /* Bàn vuông/chữ nhật theo yêu cầu */
+    background: #FFFFFF; 
+    border: 2px solid var(--forest, #A88746);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center; 
     cursor: pointer; 
-    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-    transform: translate(-50%, -50%);
+    transition: all 0.4s;
+    /* transform handled inline if rotated */
     z-index: 10;
-    box-shadow: 0 10px 20px rgba(168, 135, 70, 0.08); /* Đổ bóng nhẹ nhàng */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* Các phòng VIP sẽ là hình chữ nhật bo góc nhẹ */
-.fp-table[data-cat="room"] {
-    border-radius: 8px;
-}
-
-.fp-table.available:hover { 
-    background: var(--forest, #A88746);
-    color: #ffffff;
-    transform: translate(-50%, -50%) scale(1.08); 
-    z-index: 12; 
-    box-shadow: 0 15px 30px rgba(168, 135, 70, 0.2); 
-}
-.fp-table.available:hover .fp-t-code,
-.fp-table.available:hover .fp-t-cap {
-    color: #ffffff;
-}
-
-.fp-table.booked { 
-    background: var(--forest, #A88746);
-    border: 2px solid var(--forest, #A88746);
-    color: #ffffff;
-    cursor: not-allowed; 
-    box-shadow: none;
-    opacity: 0.8;
-}
-.fp-table.booked .fp-t-code,
-.fp-table.booked .fp-t-cap {
-    color: rgba(255,255,255,0.8);
-}
-.fp-table.booked:hover {
-    transform: translate(-50%, -50%);
-}
-
-.fp-table.selected { 
-    background: var(--accent-burgundy, #A88746) !important; 
-    border-color: var(--accent-burgundy, #A88746) !important; 
-    transform: translate(-50%, -50%) scale(1.08); 
-    z-index: 15; 
-    box-shadow: 0 15px 30px rgba(168, 135, 70, 0.3);
-}
-
-.fp-t-code { 
-    font-family: 'Cormorant Garamond', serif; 
-    font-size: 1.6rem; /* Chữ to, rõ ràng, quyền lực */
-    color: var(--forest, #A88746); 
-    display: block; 
-    font-weight: 600;
-    line-height: 1;
-    transition: color 0.4s ease;
-}
-.fp-table.selected .fp-t-code { color: #ffffff; }
-
-.fp-t-cap { 
-    font-size: 11px; 
-    color: var(--text-muted, #666666); 
-    display: flex; 
-    align-items: center;
-    gap: 4px;
-    margin-top: 6px;
-    font-weight: 500;
-    transition: color 0.4s ease;
-}
-.fp-table.selected .fp-t-cap { color: rgba(255,255,255,0.9); }
-
-/* Legend gọn gàng */
-.fp-legend {
+.fp-chair {
     position: absolute;
-    bottom: 25px;
-    right: 25px;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-main, #D1D1D1);
-    background: rgba(255,255,255,0.9);
-    padding: 15px 20px;
-    border-radius: 4px;
-    border: 1px solid rgba(168, 135, 70, 0.2);
-    z-index: 20;
-    display: flex;
-    gap: 20px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border: 2px solid #A88746;
+    border-radius: 50%;
+    transition: all 0.3s;
 }
-.fp-legend-item {
-    display: flex;
-    align-items: center;
-}
-.fp-legend-box {
-    width: 14px; height: 14px; margin-right: 8px; border-radius: 50%;
-}
+.fp-table.available:hover .fp-chair { background: rgba(168, 135, 70, 0.2); }
+
+.fp-chair.top { top: -20px; left: 50%; transform: translateX(-50%); }
+.fp-chair.bottom { bottom: -20px; left: 50%; transform: translateX(-50%); }
+.fp-chair.left { left: -20px; top: 50%; transform: translateY(-50%); }
+.fp-chair.right { right: -20px; top: 50%; transform: translateY(-50%); }
+.fp-chair.r-top-left { top: -5px; left: 5px; }
+.fp-chair.r-top-right { top: -5px; right: 5px; }
+.fp-chair.r-bottom-left { bottom: -5px; left: 5px; }
+.fp-chair.r-bottom-right { bottom: -5px; right: 5px; }
+.fp-chair.r-mid-left { left: -15px; top: 50%; transform: translateY(-50%); }
+.fp-chair.r-mid-right { right: -15px; top: 50%; transform: translateY(-50%); }
+.fp-chair.v-top-left { top: -20px; left: 25%; transform: translateX(-50%); }
+.fp-chair.v-top-right { top: -20px; left: 75%; transform: translateX(-50%); }
+.fp-chair.v-bottom-left { bottom: -20px; left: 25%; transform: translateX(-50%); }
+.fp-chair.v-bottom-right { bottom: -20px; left: 75%; transform: translateX(-50%); }
+.fp-chair.rect-top-left { top: -20px; left: 25%; transform: translateX(-50%); }
+.fp-chair.rect-top-right { top: -20px; left: 75%; transform: translateX(-50%); }
+.fp-chair.rect-bottom-left { bottom: -20px; left: 25%; transform: translateX(-50%); }
+.fp-chair.rect-bottom-right { bottom: -20px; left: 75%; transform: translateX(-50%); }
+
+.fp-t-code { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: #333; }
+.fp-table.available:hover { background: rgba(168, 135, 70, 0.05); }
+.fp-table.booked { background: #f5f5f5; border-color: #aaa; cursor: not-allowed; }
+.fp-table.booked .fp-t-code { color: #888; }
+.fp-table.booked .fp-chair { border-color: #aaa; }
+.fp-table.selected { background: #A88746 !important; border-color: #A88746 !important; z-index: 15; box-shadow: 0 10px 20px rgba(168,135,70,0.5); }
+.fp-table.selected .fp-t-code { color: #fff; }
+
+.fp-legend { margin-top: 20px; font-size: 11px; text-transform: uppercase; font-weight: bold; color: #333; background: #fff; padding: 12px 20px; border: 2px solid #555; border-radius: 4px; display: flex; gap: 20px; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.fp-legend-item { display: flex; align-items: center; }
+.fp-legend-box { width: 14px; height: 14px; margin-right: 8px; border-radius: 50%; }
 </style>
 
-<div style="overflow-x: auto; padding: 0; display: flex; justify-content: center; background: var(--bg-cream, #1A1A1D);">
+<div style="overflow-x: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; background: #e0e0e0;">
     <div class="fp-container" id="floor-plan-canvas">
-        <!-- Static Areas -->
-        <div class="fp-area fp-entrance">Lối Vào</div>
-        <div class="fp-area fp-reception">Lễ Tân</div>
-        <div class="fp-area fp-bar"><div style="transform: rotate(-90deg); white-space: nowrap;">Cocktail Bar</div></div>
         
-        <!-- Bar Stools -->
-        <div style="position:absolute; top:360px; left:135px; width:22px; height:22px; border-radius:50%; border:1px solid rgba(168, 135, 70,0.5); background:rgba(168, 135, 70,0.1);"></div>
-        <div style="position:absolute; top:405px; left:135px; width:22px; height:22px; border-radius:50%; border:1px solid rgba(168, 135, 70,0.5); background:rgba(168, 135, 70,0.1);"></div>
-        <div style="position:absolute; top:450px; left:135px; width:22px; height:22px; border-radius:50%; border:1px solid rgba(168, 135, 70,0.5); background:rgba(168, 135, 70,0.1);"></div>
-
-        <div class="fp-area fp-stage">Grand Piano</div>
-        <div class="fp-area fp-restroom">Restroom</div>
-        <div class="fp-area fp-wine-cellar"><i class="fas fa-wine-glass-alt me-2"></i>Hầm Rượu Vang<br><span style="font-size:10px; opacity:0.7; letter-spacing:1px; margin-top:5px; display:block;">(Premium Wine Cellar)</span></div>
-
-        <!-- VIP Area Wrapper -->
-        <div class="fp-area" style="top:210px; left:810px; width:280px; height:450px; background:rgba(168, 135, 70,0.02); border:1px solid rgba(168, 135, 70,0.1); border-radius:8px; z-index: 1;">
-            <div style="position:absolute; top:-10px; background:var(--bg-cream, #1A1A1D); padding:0 10px; color:var(--accent-burgundy, #A88746); font-size:12px; letter-spacing:2px; font-weight:700;">PRIVATE VIP ROOMS</div>
+        <!-- Connected CAD Rooms -->
+                <div class="fp-cad-room cad-v3" data-title="PHÒNG VIP 3">
+            <div class="fp-window-h" style="top: -4px; left: 50px; width: 100px;"></div>
+            <div class="vip-curtain-h" style="top: -6px; left: 45px;"></div>
+            <div class="vip-curtain-h" style="top: -6px; left: 130px;"></div>
+            
+            <div class="fp-window-v" style="left: -4px; top: 40px; height: 80px;"></div>
+            <div class="vip-curtain-v" style="left: -6px; top: 35px;"></div>
+            <div class="vip-curtain-v" style="left: -6px; top: 100px;"></div>
+            
+            <!-- Painting on the right wall -->
+            <div class="vip-painting-v" style="top: 60px; right: 0;"></div>
+            <div class="vip-painting-h" style="bottom: 0; right: 60px;"></div>
         </div>
+        <div class="fp-cad-room cad-restroom">NHÀ VỆ SINH</div>
+        <div class="fp-cad-room cad-hot">BẾP NÓNG</div>
+        <div class="fp-cad-room cad-cold">BẾP LẠNH</div>
+        <div class="fp-cad-room cad-pass">TRẠM PHỤC VỤ (THE PASS)</div>
+                <div class="fp-cad-room cad-v2" data-title="PHÒNG VIP 2">
+            <div class="fp-window-h" style="top: -4px; right: 50px; width: 120px;"></div>
+            <div class="vip-curtain-h" style="top: -6px; right: 45px;"></div>
+            <div class="vip-curtain-h" style="top: -6px; right: 150px;"></div>
+            
+            <div class="fp-window-v" style="right: -4px; top: 40px; height: 80px;"></div>
+            <div class="vip-curtain-v" style="right: -6px; top: 35px;"></div>
+            <div class="vip-curtain-v" style="right: -6px; top: 100px;"></div>
+            
+            <!-- Painting on the left wall -->
+            <div class="vip-painting-v" style="top: 60px; left: 0;"></div>
+            <div class="vip-painting-h" style="bottom: 0; left: 60px;"></div>
+        </div>
+        
+                <div class="fp-cad-room cad-bar" data-title="QUẦY BAR MỞ">
+            <!-- I-shape Kitchen (Back Wall) -->
+            <div class="kitchen-i-shape">
+                <div class="bar-shelves">
+                    <div class="shelf-line"></div>
+                    <div class="shelf-line"></div>
+                    <div class="shelf-line"></div>
+                    <div class="shelf-line"></div>
+                </div>
+                <div class="kitchen-sink"></div>
+            </div>
+            
+            <!-- Kitchen Island (Front) -->
+            <div class="kitchen-island">
+                <div class="island-stool"></div>
+                <div class="island-stool"></div>
+                <div class="island-stool"></div>
+                <div class="island-stool"></div>
+                <div style="transform: rotate(-90deg); position: absolute; left: -10px; top: 90px; white-space: nowrap; font-size: 10px; letter-spacing: 2px; color: #A88746;">BAR & KITCHEN</div>
+            </div>
+            
+            <!-- Decorative Plants -->
+            <div class="fp-plant" style="top: 10px; left: 10px;"><i class="fas fa-leaf"></i></div>
+            <div class="fp-plant" style="bottom: 10px; left: 10px;"><i class="fas fa-leaf"></i></div>
+        </div>
+        
+                <div class="fp-cad-room cad-v4" data-title="PHÒNG VIP 4">
+            <div class="fp-window-h" style="bottom: -4px; right: 50px; width: 120px;"></div>
+            <div class="vip-curtain-h" style="bottom: -6px; right: 45px;"></div>
+            <div class="vip-curtain-h" style="bottom: -6px; right: 150px;"></div>
+            
+            <div class="fp-window-v" style="right: -4px; top: 60px; height: 100px;"></div>
+            <div class="vip-curtain-v" style="right: -6px; top: 55px;"></div>
+            <div class="vip-curtain-v" style="right: -6px; top: 140px;"></div>
+            
+            <!-- Painting on the left wall -->
+            <div class="vip-painting-v" style="top: 80px; left: 0;"></div>
+            <div class="vip-painting-h" style="top: 0; left: 60px;"></div>
+        </div>
+                <div class="fp-cad-room cad-v1" data-title="PHÒNG VIP 1">
+            <div class="fp-window-h" style="bottom: -4px; left: 50px; width: 100px;"></div>
+            <div class="vip-curtain-h" style="bottom: -6px; left: 45px;"></div>
+            <div class="vip-curtain-h" style="bottom: -6px; left: 130px;"></div>
+            
+            <div class="fp-window-v" style="left: -4px; top: 60px; height: 100px;"></div>
+            <div class="vip-curtain-v" style="left: -6px; top: 55px;"></div>
+            <div class="vip-curtain-v" style="left: -6px; top: 140px;"></div>
+            
+            <!-- Painting on the right wall -->
+            <div class="vip-painting-v" style="top: 80px; right: 0;"></div>
+            <div class="vip-painting-h" style="top: 0; right: 60px;"></div>
+        </div>
+        
+        <div class="fp-cad-room cad-lounge" style="border: 2px solid #555; background: transparent;">
+            <div class="lounge-floor"></div>
+            
+            <!-- Left: Coat Check & Reception -->
+            <div class="coat-check">COAT CHECK</div>
+            <div class="coat-rack"></div>
+            <div class="reception-desk">
+                <div class="reception-chair2"></div>
+                <div class="reception-counter"></div>
+            </div>
+            
+            <!-- Center: Main Entrance -->
+            <div style="position: absolute; top: 40px; width: 100%; text-align: center; font-size: 14px; font-weight: 900; letter-spacing: 2px; color: #222; z-index: 2;">KHU VỰC SẢNH ĐÓN</div>
 
-        <!-- Back of House (Open Kitchen Style) -->
-        <div class="fp-area fp-boh-pass"><i class="fas fa-bell me-2"></i> Trạm Ra Món (The Pass)</div>
-        <div class="fp-area fp-boh-hot"><i class="fas fa-fire me-2"></i>Bếp Nóng (Hot Station)</div>
-        <div class="fp-area fp-boh-cold"><i class="fas fa-snowflake me-2"></i>Bếp Lạnh / Bánh</div>
+            
+            <!-- Lối đi 4 hướng (Crossway) -->
+            <div style="position: absolute; top: 0; bottom: 0; left: 240px; right: 240px; border-left: 1px dashed #ccc; border-right: 1px dashed #ccc; z-index: 0;"></div>
+            
+            <div style="position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%); background: #D32F2F; color: #fff; padding: 4px 12px; border-radius: 4px; font-weight: bold; font-size: 12px; z-index: 10; letter-spacing: 1px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">▲ LỐI VÀO CHÍNH</div>
 
-        <!-- Dynamic Tables -->
+            <!-- Right: Waiting Lounge -->
+            <div class="lounge-rug">
+                <div style="position:absolute; top: 50%; left: 10px; transform: translateY(-50%); font-size: 10px; font-weight: bold; color: #004d40; text-align: center;">WAITING<br>LOUNGE</div>
+            </div>
+            
+            <div class="sofa-burgundy-h" style="top: 10px; right: 65px;">
+                <div class="sofa-pillows" style="bottom: 4px; left: 8px;"></div>
+                <div class="sofa-pillows" style="bottom: 4px; right: 8px;"></div>
+            </div>
+            <div class="sofa-burgundy-h" style="bottom: 10px; right: 65px;">
+                <div class="sofa-pillows" style="top: 4px; left: 8px;"></div>
+                <div class="sofa-pillows" style="top: 4px; right: 8px;"></div>
+            </div>
+            <div class="sofa-burgundy-v" style="top: 28px; right: 15px;">
+                <div class="sofa-pillows" style="left: 4px; top: 8px;"></div>
+                <div class="sofa-pillows" style="left: 4px; bottom: 8px;"></div>
+            </div>
+            
+            <div class="armchair-burgundy" style="top: 15px; right: 145px; transform: rotate(45deg);">
+                <div class="sofa-pillows" style="bottom: 4px; left: 8px;"></div>
+            </div>
+            <div class="armchair-burgundy" style="bottom: 15px; right: 145px; transform: rotate(-45deg);">
+                <div class="sofa-pillows" style="top: 4px; left: 8px;"></div>
+            </div>
+            
+            <div class="side-table" style="top: 10px; right: 10px;"></div>
+            <div class="side-table" style="bottom: 10px; right: 10px;"></div>
+            <div class="center-coffee-table"></div>
+        </div>
+        
+                <div class="fp-piano" style="border: none; background: transparent;">
+            <svg width="100" height="100" viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0;">
+                <path d="M 20 0 L 80 0 A 20 20 0 0 0 100 20 L 100 80 A 20 20 0 0 0 80 100 L 20 100 A 20 20 0 0 0 0 80 L 0 20 A 20 20 0 0 0 20 0 Z" fill="#fff" stroke="#A88746" stroke-width="2"/>
+            </svg>
+            <i class="fas fa-music" style="font-size: 30px; opacity: 0.5; z-index: 1;"></i>
+        </div>
+        <div style="position:absolute; top:480px; left:565px; font-size:10px; font-weight:bold; color:#A88746; z-index: 5;">GRAND PIANO</div>
+
         <?php foreach ($all_tables as $t): ?>
             <?php 
                 $st = $t['is_available'] ? 'available' : 'booked';
-                // Dùng hình tròn cho bàn sảnh, chữ nhật cho VIP
                 $cat = $t['category'] ?? 'open';
-                $w = $cat === 'room' ? 100 : 70;
-                $h = $cat === 'room' ? 80 : 70;
+                $tCode = $t['table_code'];
                 $x = $t['pos_x'] ?? 0;
                 $y = $t['pos_y'] ?? 0;
+
+                $w = 60; $h = 60; $borderRadius = '4px';
+                $shapeType = 'square_small';
+
+                $rotate = '';
+                if (in_array($tCode, ['W1', 'W2', 'W3', 'W4'])) {
+                    $w = 90; $h = 90; $borderRadius = '50%';
+                    $shapeType = 'round_large';
+                } elseif (in_array($tCode, ['W5', 'W6'])) {
+                    $w = 60; $h = 60; $borderRadius = '4px';
+                    $shapeType = 'diamond_med';
+                    $rotate = 'rotate(45deg)';
+                } elseif (in_array($tCode, ['R1', 'R2', 'R3', 'R4', 'R5', 'R6'])) {
+                    $w = 70; $h = 60; $borderRadius = '4px';
+                    $shapeType = 'rect_med';
+                } elseif ($cat === 'room') {
+                    $w = 120; $h = 70; $borderRadius = '8px';
+                    $shapeType = 'vip';
+                }
             ?>
-            <!-- Bắt buộc phải có class 'seat-lux' để kế thừa JS cũ -->
             <div class="fp-table <?= $st ?> seat-lux" 
-                 style="width: <?= $w ?>px; height: <?= $h ?>px; left: <?= $x ?>px; top: <?= $y ?>px;"
-                 data-id="<?= $t['id'] ?>" 
-                 data-price="<?= $t['price'] ?>" 
-                 data-code="<?= htmlspecialchars($t['table_code']) ?>" 
-                 data-cat="<?= $cat ?>"
-                 title="<?= htmlspecialchars($t['table_code']) ?> - <?= $st === 'available' ? 'Trống' : 'Đã đặt' ?>">
-                <span class="fp-t-code"><?= htmlspecialchars(str_replace('VIP', 'V', $t['table_code'])) ?></span>
+                 style="width: <?= $w ?>px; height: <?= $h ?>px; left: <?= $x ?>px; top: <?= $y ?>px; border-radius: <?= $borderRadius ?>; transform: translate(-50%, -50%) <?= !empty($rotate) ? $rotate : '' ?>;"
+                 data-id="<?= $t['id'] ?>" data-price="<?= $t['price'] ?>" data-code="<?= htmlspecialchars($tCode) ?>" data-cat="<?= $cat ?>"
+                 title="<?= htmlspecialchars($tCode) ?> - <?= $st === 'available' ? 'Trống' : 'Đã đặt' ?>">
+                
+                <?php if ($shapeType === 'diamond_med'): ?>
+                    <!-- Ghế xoay theo 4 cạnh vì bàn xoay 45 độ -->
+                    <div class="fp-chair top"></div><div class="fp-chair right"></div>
+                    <div class="fp-chair bottom"></div><div class="fp-chair left"></div>
+                    <div style="transform: rotate(-45deg);">
+                        <span class="fp-t-code" style="display:block; margin-top:20px;"><?= htmlspecialchars(str_replace('VIP', 'V', $tCode)) ?></span>
+                    </div>
+                <?php elseif ($shapeType === 'round_large'): ?>
+                    <div class="fp-chair r-top-left"></div><div class="fp-chair r-top-right"></div>
+                    <div class="fp-chair r-bottom-left"></div><div class="fp-chair r-bottom-right"></div>
+                    <div class="fp-chair r-mid-left"></div><div class="fp-chair r-mid-right"></div>
+                <?php elseif ($shapeType === 'square_small'): ?>
+                    <div class="fp-chair left"></div><div class="fp-chair right"></div>
+                <?php elseif ($shapeType === 'rect_med'): ?>
+                    <div class="fp-chair rect-top-left"></div><div class="fp-chair rect-top-right"></div>
+                    <div class="fp-chair rect-bottom-left"></div><div class="fp-chair rect-bottom-right"></div>
+                <?php elseif ($shapeType === 'vip'): ?>
+                    <div class="fp-chair v-top-left"></div><div class="fp-chair v-top-right"></div>
+                    <div class="fp-chair v-bottom-left"></div><div class="fp-chair v-bottom-right"></div>
+                    <div class="fp-chair left"></div><div class="fp-chair right"></div>
+                <?php endif; ?>
+
+                                <?php if ($shapeType !== 'diamond_med'): ?>
+                <span class="fp-t-code"><?= htmlspecialchars(str_replace('VIP', 'V', $tCode)) ?></span>
+                <?php endif; ?>
+                <?php if (in_array($tCode, ['W1', 'W2', 'W3', 'W4']) || $cat === 'room'): ?>
+                    <i class="fas fa-gem" style="position: absolute; top: -8px; right: -8px; font-size: 12px; color: #A88746; background: #fff; border-radius: 50%; padding: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);"></i>
+                <?php endif; ?>
             </div>
         <?php endforeach; ?>
-
-        <div class="fp-legend">
-            <div class="fp-legend-item"><div class="fp-legend-box" style="background: #262629; border: 2px solid var(--forest, #A88746);"></div> Trống</div>
-            <div class="fp-legend-item"><div class="fp-legend-box" style="background: var(--accent-burgundy, #A88746);"></div> Đang chọn</div>
-            <div class="fp-legend-item"><div class="fp-legend-box" style="background: var(--forest, #A88746); opacity: 0.8;"></div> Đã đặt</div>
-        </div>
+    </div>
+    
+    <div class="fp-legend">
+        <div class="fp-legend-item"><div class="fp-legend-box" style="background: #ffffff; border: 2px solid var(--forest, #A88746);"></div> TRỐNG</div>
+        <div class="fp-legend-item"><div class="fp-legend-box" style="background: var(--accent-burgundy, #A88746); border: 2px solid var(--accent-burgundy, #A88746);"></div> ĐANG CHỌN</div>
+        <div class="fp-legend-item"><div class="fp-legend-box" style="background: #f5f5f5; border: 2px solid #aaa;"></div> ĐÃ ĐẶT</div>
     </div>
 </div>

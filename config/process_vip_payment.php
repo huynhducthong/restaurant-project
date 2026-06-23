@@ -58,7 +58,9 @@ if ($success) {
     // Gửi email chúc mừng
     if ($u_info && !empty($u_info['email'])) {
         $end_date_str = date('d/m/Y', strtotime("+" . $plan['duration_days'] . " days"));
-        @sendVipRegistrationEmail($u_info['email'], $uname, $plan['name'], $plan['price'], $end_date_str);
+        $txn_id = 'VIP' . time() . rand(100, 999);
+        $pm_name = ($payment_method == 'credit_card' ? 'Thẻ Tín Dụng' : 'Chuyển Khoản');
+        @sendVipRegistrationEmail($u_info['email'], $uname, $plan['name'], $plan['price'], $end_date_str, $txn_id, $pm_name);
     }
 
     @sendTelegramNotification($msg_tele);

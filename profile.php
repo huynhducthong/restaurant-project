@@ -217,7 +217,7 @@ $plans = $vipPlanModel->getAllPlans();
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
 
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
 <style>
 /* ══ TOKENS ══ */
@@ -265,7 +265,7 @@ body{
 
 /* ══ WRAPPER ══ */
 .profile-wrap{
-  padding:110px 0 80px;
+  padding:160px 0 40px;
   min-height:100vh;
   background: radial-gradient(circle at top center, rgba(230, 92, 0, 0.08) 0%, var(--bg) 70%);
 }
@@ -465,10 +465,10 @@ body{
   display:inline-block;font-size:10px;font-weight:600;padding:4px 10px;border-radius:6px;
   letter-spacing:.06em;text-transform:uppercase;
 }
-.bk-badge.confirmed{background:rgba(40, 167, 69, 0.15);color:#2ecc71;}
+.bk-badge.confirmed{background:rgba(52, 152, 219, 0.15);color:#3498db;}
 .bk-badge.pending{background:rgba(255, 193, 7, 0.15);color:#f39c12;}
 .bk-badge.cancelled{background:rgba(220, 53, 69, 0.15);color:#e74c3c;}
-.bk-badge.completed{background:rgba(52, 152, 219, 0.15);color:#3498db;}
+.bk-badge.completed{background:rgba(40, 167, 69, 0.15);color:#2ecc71;}
 
 /* ══ ADDRESS CARD ══ */
 .addr-card{
@@ -517,7 +517,7 @@ body{
 
 /* ══ RESPONSIVE ══ */
 @media(max-width:768px){
-  .profile-wrap{padding:90px 0 60px;}
+  .profile-wrap{padding:120px 0 40px;}
   .prof-card-body{padding:20px;}
   .prof-card-head{padding:16px 20px 0;}
 }
@@ -692,7 +692,6 @@ body{
                 box-shadow: 0 10px 40px rgba(0,0,0,0.08);
                 overflow: hidden;
                 display: flex;
-                flex-wrap: wrap;
                 margin-top: 20px;
                 border: 1px solid rgba(168, 135, 70, 0.2);
             }
@@ -817,7 +816,8 @@ body{
             .current-vip-alert i { font-size: 24px; color: #A88746; }
             
             @media (max-width: 768px) {
-                .plan-summary { width: 100%; }
+                .checkout-container { flex-wrap: wrap; }
+                .plan-summary { width: 100% !important; }
                 .payment-form { width: 100%; }
             }
         </style>

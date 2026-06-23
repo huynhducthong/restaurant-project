@@ -21,22 +21,24 @@ if (!function_exists('safe_url')) {
     }
 }
 
-$bgImg      = !empty($ft['footer_bg_image']) ? safe_url('public/assets/img/' . $ft['footer_bg_image'], $path_prefix) : '';
-$logo       = !empty($ft['footer_logo']) ? safe_url('public/assets/img/' . $ft['footer_logo'], $path_prefix) : '';
+$bgImg      = '';
+$logo       = '';
 $showSocial = ($ft['show_social'] ?? '0') == '1';
 $showMap    = ($ft['show_map'] ?? '0') == '1';
 $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
 ?>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+
+<?php $text_color = !empty($ft['footer_text_color']) ? $ft['footer_text_color'] : '#ffffff'; ?>
 
 .footer {
     font-family: 'Cormorant Garamond', serif;
     position: relative;
     padding: 80px 0 40px;
     background-color: <?= !empty($ft['footer_bg_color']) && $ft['footer_bg_color'] !== '#F9F9F9' ? $ft['footer_bg_color'] : '#113f36' ?>;
-    color: <?= $ft['footer_text_color'] ?? '#ffffff' ?>;
+    color: <?= $text_color ?>;
     <?php if ($bgImg): ?>
     background: url('<?= $bgImg ?>') center/cover no-repeat fixed;
     <?php endif; ?>
@@ -52,24 +54,25 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
 <?php endif; ?>
 .footer .container { position: relative; z-index: 2; }
 .footer h4 { 
-    font-family: 'Open Sans', sans-serif; 
-    font-size: 11px; 
+    font-family: 'Source Sans 3', sans-serif; 
+    font-size: 14px; 
     letter-spacing: 2px; 
     text-transform: uppercase; 
-    color: rgba(0,0,0,0.6); 
+    color: inherit; 
+    opacity: 0.8;
     margin-bottom: 25px; 
-    font-weight: 500;
+    font-weight: 700;
 }
 .footer p, .footer a, .footer li { 
     font-family: 'Cormorant Garamond', serif; 
-    font-size: 15px; 
-    color: #ffffff; 
+    font-size: 17px; font-weight: 600; 
+    color: inherit; 
     line-height: 1.8; 
     text-decoration: none; 
     transition: opacity 0.3s;
     margin-bottom: 5px;
 }
-.footer a:hover { opacity: 0.7; color: #fff; }
+.footer a:hover { opacity: 0.7; color: inherit; }
 .footer-logo { max-height: 80px; margin-bottom: 25px; }
 
 .social-icons { margin-top: 25px; }
@@ -77,6 +80,7 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
     display: inline-block;
     margin-right: 15px;
     font-size: 18px;
+    color: inherit;
 }
 
 .explore-links a {
@@ -101,7 +105,7 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
 }
 .map-overlay-message {
     background: #FFFFFF; color: #113f36; padding: 10px 20px;
-    border-radius: 4px; font-size: 12px; font-family: 'Open Sans', sans-serif;
+    border-radius: 4px; font-size: 12px; font-family: 'Source Sans 3', sans-serif;
     font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
     pointer-events: none;
 }
@@ -109,22 +113,24 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
 
 .newsletter-form { margin-top: 10px; }
 .newsletter-form input {
-    width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid rgba(255,255,255,0.3);
-    background: transparent; color: #fff; outline: none; margin-bottom: 15px;
-    font-family: 'Cormorant Garamond', serif; font-size: 15px;
+    width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid currentColor;
+    background: transparent; color: inherit; outline: none; margin-bottom: 15px;
+    font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 600;
+    opacity: 0.8;
 }
-.newsletter-form input::placeholder { color: rgba(0,0,0,0.5); }
+.newsletter-form input::placeholder { color: inherit; opacity: 0.6; }
 .newsletter-form button {
-    background: #FFFFFF; color: #113f36; width: 100%;
+    background: <?= $text_color ?>; color: <?= !empty($ft['footer_bg_color']) && $ft['footer_bg_color'] !== '#F9F9F9' ? $ft['footer_bg_color'] : '#113f36' ?>; width: 100%;
     border: none; padding: 14px 20px; border-radius: 4px; 
-    font-weight: 600; cursor: pointer; font-family: 'Open Sans', sans-serif;
+    font-weight: 600; cursor: pointer; font-family: 'Source Sans 3', sans-serif;
     text-transform: uppercase; letter-spacing: 1.5px; font-size: 12px;
-    transition: background 0.3s;
+    transition: opacity 0.3s;
 }
-.newsletter-form button:hover { background: #e0e0e0; }
+.newsletter-form button:hover { opacity: 0.8; }
 
 .bottom-bar {
-    border-top: 1px solid rgba(255,255,255,0.2);
+    border-top: 1px solid currentColor;
+    opacity: 0.8;
     margin-top: 60px;
     padding-top: 25px;
     display: flex;
@@ -132,7 +138,7 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
     align-items: center;
     font-family: 'Cormorant Garamond', serif;
     font-size: 14px;
-    color: rgba(255,255,255,0.8);
+    color: inherit;
 }
 @media (max-width: 768px) {
     .bottom-bar { flex-direction: column; gap: 15px; text-align: center; }
@@ -148,16 +154,16 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
                     <img src="<?= htmlspecialchars($logo) ?>" alt="Logo" class="footer-logo">
                 <?php else: ?>
                     <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
-                        <h4 style="margin: 0; font-family: 'Cormorant Garamond', serif; font-size: 24px; text-transform: none; letter-spacing: normal; color: #fff; line-height: 1.2;">
+                        <h4 style="margin: 0; font-family: 'Cormorant Garamond', serif; font-size: 24px; text-transform: none; letter-spacing: normal; color: inherit; line-height: 1.2;">
                             <?= htmlspecialchars($ft['restaurant_name'] ?? 'Restaurantly') ?>
                         </h4>
                     </div>
                 <?php endif; ?>
                 
                 <div class="contact-info" style="margin-bottom: 25px;">
-                    <?php if (!empty($ft['address'])): ?><p style="font-size: 13px;"><?= htmlspecialchars($ft['address']) ?></p><?php endif; ?>
-                    <?php if (!empty($ft['phone'])): ?><p style="font-size: 13px; margin-top: 15px;"><?= htmlspecialchars($ft['phone']) ?></p><?php endif; ?>
-                    <?php if (!empty($ft['email'])): ?><p style="font-size: 13px;"><a href="mailto:<?= htmlspecialchars($ft['email']) ?>"><?= htmlspecialchars($ft['email']) ?></a></p><?php endif; ?>
+                    <?php if (!empty($ft['address'])): ?><p style=""><?= htmlspecialchars($ft['address']) ?></p><?php endif; ?>
+                    <?php if (!empty($ft['phone'])): ?><p style=" margin-top: 15px;"><?= htmlspecialchars($ft['phone']) ?></p><?php endif; ?>
+                    <?php if (!empty($ft['email'])): ?><p style=""><a href="mailto:<?= htmlspecialchars($ft['email']) ?>"><?= htmlspecialchars($ft['email']) ?></a></p><?php endif; ?>
                 </div>
                 
                 <?php if ($showSocial): ?>
@@ -175,24 +181,24 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
                 <h4>LIÊN KẾT NHANH</h4>
                 <div class="explore-links" style="margin-bottom: 30px;">
                     <?php foreach ($links as $l): ?>
-                        <a href="<?= htmlspecialchars(safe_url($l['url'], $path_prefix)) ?>" style="font-size: 13px;"><?= htmlspecialchars($l['title']) ?></a>
+                        <a href="<?= htmlspecialchars(safe_url($l['url'], $path_prefix)) ?>" style=""><?= htmlspecialchars($l['title']) ?></a>
                     <?php endforeach; ?>
                     <?php if (empty($links)): ?>
-                        <a href="<?= safe_url('index.php', $path_prefix) ?>" style="font-size: 13px;">Trang chủ</a>
-                        <a href="<?= safe_url('about.php', $path_prefix) ?>" style="font-size: 13px;">Về chúng tôi</a>
-                        <a href="<?= safe_url('contact.php', $path_prefix) ?>" style="font-size: 13px;">Liên hệ</a>
+                        <a href="<?= safe_url('index.php', $path_prefix) ?>" style="">Trang chủ</a>
+                        <a href="<?= safe_url('about.php', $path_prefix) ?>" style="">Về chúng tôi</a>
+                        <a href="<?= safe_url('contact.php', $path_prefix) ?>" style="">Liên hệ</a>
                     <?php endif; ?>
                 </div>
                 
                 <h4>THỰC ĐƠN</h4>
                 <div class="explore-links">
-                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#starters" style="font-size: 13px;">Món khai vị (Appetizers)</a>
-                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#main" style="font-size: 13px;">Món chính (Main Courses)</a>
-                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#seafood" style="font-size: 13px;">Hải sản tươi sống (Seafood)</a>
-                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#bbq" style="font-size: 13px;">Đồ nướng (BBQ & Grill)</a>
-                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#vegetarian" style="font-size: 13px;">Món chay (Vegetarian)</a>
-                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#desserts" style="font-size: 13px;">Tráng miệng (Desserts)</a>
-                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#drinks" style="font-size: 13px;">Đồ uống & Rượu vang (Drinks)</a>
+                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#starters" style="">Món khai vị (Appetizers)</a>
+                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#main" style="">Món chính (Main Courses)</a>
+                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#seafood" style="">Hải sản tươi sống (Seafood)</a>
+                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#bbq" style="">Đồ nướng (BBQ & Grill)</a>
+                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#vegetarian" style="">Món chay (Vegetarian)</a>
+                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#desserts" style="">Tráng miệng (Desserts)</a>
+                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#drinks" style="">Đồ uống & Rượu vang (Drinks)</a>
                 </div>
             </div>
 
@@ -200,20 +206,20 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
             <div class="col-lg-3 col-md-6">
                 <h4>DỊCH VỤ</h4>
                 <div class="explore-links" style="margin-bottom: 30px;">
-                    <a href="<?= safe_url('services.php', $path_prefix) ?>#private" style="font-size: 13px;">Đặt tiệc cá nhân (Private Dining)</a>
-                    <a href="<?= safe_url('services.php', $path_prefix) ?>#events" style="font-size: 13px;">Tiệc cưới & Sự kiện (Events)</a>
-                    <a href="<?= safe_url('services.php', $path_prefix) ?>#catering" style="font-size: 13px;">Phục vụ tận nơi (Catering)</a>
-                    <a href="<?= safe_url('services.php', $path_prefix) ?>#delivery" style="font-size: 13px;">Giao hàng (Delivery)</a>
+                    <a href="<?= safe_url('services.php', $path_prefix) ?>#private" style="">Đặt tiệc cá nhân (Private Dining)</a>
+                    <a href="<?= safe_url('services.php', $path_prefix) ?>#events" style="">Tiệc cưới & Sự kiện (Events)</a>
+                    <a href="<?= safe_url('services.php', $path_prefix) ?>#catering" style="">Phục vụ tận nơi (Catering)</a>
+                    <a href="<?= safe_url('services.php', $path_prefix) ?>#delivery" style="">Giao hàng (Delivery)</a>
                 </div>
                 
                 <h4>MÔ TẢ</h4>
-                <p style="font-size: 13px; line-height: 1.8; color: #fff;"><?= nl2br(htmlspecialchars($ft['footer_description'] ?? 'Trải nghiệm ẩm thực tuyệt vời với không gian sang trọng và các món ăn được chế biến từ nguyên liệu tươi ngon nhất.')) ?></p>
+                <p style=" line-height: 1.8; color: inherit;"><?= nl2br(htmlspecialchars($ft['footer_description'] ?? 'Trải nghiệm ẩm thực tuyệt vời với không gian sang trọng và các món ăn được chế biến từ nguyên liệu tươi ngon nhất.')) ?></p>
             </div>
 
             <!-- Cột 4: Giờ mở cửa & Đặt bàn -->
             <div class="col-lg-3 col-md-6">
                 <h4>GIỜ MỞ CỬA</h4>
-                <div class="contact-info" style="font-size: 13px; line-height: 2;">
+                <div class="contact-info" style=" line-height: 2;">
                     <?php if (!empty($ft['opening_hours'])): ?>
                         <div style="white-space: pre-line;"><?= htmlspecialchars($ft['opening_hours']) ?></div>
                     <?php else: ?>
@@ -224,7 +230,7 @@ $showNews   = ($ft['show_newsletter'] ?? '0') == '1';
                     <?php endif; ?>
                 </div>
                 
-                <a href="<?= safe_url('booking_service.php?type=table', $path_prefix) ?>" style="display: block; text-align: center; background: #FFFFFF; color: #113f36; padding: 12px; border-radius: 6px; font-family: 'Open Sans', sans-serif; font-weight: 600; margin-top: 30px; text-decoration: none; transition: background 0.3s;" onmouseover="this.style.background='#e0e0e0'" onmouseout="this.style.background='#fff'">
+                <a href="<?= safe_url('booking_service.php?type=table', $path_prefix) ?>" style="display: block; text-align: center; background: #FFFFFF; color: #113f36; padding: 12px; border-radius: 6px; font-family: 'Source Sans 3', sans-serif; font-weight: 600; margin-top: 30px; text-decoration: none; transition: background 0.3s;" onmouseover="this.style.background='#e0e0e0'" onmouseout="this.style.background='#fff'">
                     Đặt Bàn Ngay (Book a Table)
                 </a>
 
@@ -277,10 +283,13 @@ if ($is_logged_in_chat) {
     <div class="chat-modal-container">
         <div class="chat-header">
             <div>
-                <h5 class="m-0" style="font-family: 'Playfair Display', serif; color: #C19A5B;">Restaurantly Support</h5>
+                <h5 class="m-0" style="font-family: 'Cormorant Garamond', serif; color: #C19A5B;">Restaurantly Support</h5>
                 <small id="chatStatusText" style="color: #bbb;">Trợ lý ảo thông minh</small>
             </div>
-            <button class="chat-close-btn" onclick="closeChatModal()"><i class="fas fa-times"></i></button>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <button class="chat-close-btn" onclick="clearChatHistory()" title="Xóa lịch sử trò chuyện" style="font-size: 14px; opacity: 0.8; color: #ccc;"><i class="fas fa-trash-alt"></i></button>
+                <button class="chat-close-btn" onclick="closeChatModal()"><i class="fas fa-times"></i></button>
+            </div>
         </div>
         
         <div class="chat-body" id="chatBody">
@@ -292,7 +301,7 @@ if ($is_logged_in_chat) {
                 <?php if (!$is_logged_in_chat): ?>
                     <div style="padding: 40px 20px; text-align: center;">
                         <i class="fas fa-user-lock fa-3x" style="color: #ccc; margin-bottom: 20px;"></i>
-                        <p class="mb-4" style="font-size: 15px; color: #555;">Vui lòng đăng nhập để sử dụng tính năng trò chuyện trực tuyến với nhà hàng.</p>
+                        <p class="mb-4" style="font-size: 17px; font-weight: 600; color: #555;">Vui lòng đăng nhập để sử dụng tính năng trò chuyện trực tuyến với nhà hàng.</p>
                         <a href="<?= safe_url('public/login.php', $path_prefix) ?>" class="btn btn-chat-gold w-100" style="text-decoration: none; padding: 12px; display: block; border-radius: 6px;">ĐĂNG NHẬP NGAY</a>
                     </div>
                 <?php else: ?>
@@ -354,11 +363,17 @@ if ($is_logged_in_chat) {
 }
 .chat-init-form { padding: 30px 20px; }
 .chat-messages-container { padding: 15px; display: none; flex-direction: column; gap: 10px; }
-.chat-msg { max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
+.chat-msg { position: relative; max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; word-wrap: break-word; margin-bottom: 5px;}
 .chat-msg.customer { background: #C19A5B; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
 .chat-msg.bot { background: #e9ecef; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; }
 .chat-msg.admin { background: #113f36; color: #fff; align-self: flex-start; border-bottom-left-radius: 4px; }
 .chat-msg img { max-width: 100%; border-radius: 8px; margin-top: 5px; }
+
+.chat-msg .msg-delete-icon { position: absolute; top: 50%; transform: translateY(-50%); font-size: 14px; color: #dc3545; cursor: pointer; opacity: 0; transition: opacity 0.2s; background: #fff; border-radius: 50%; padding: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 10; }
+.chat-msg.customer .msg-delete-icon { left: -32px; }
+.chat-msg.bot .msg-delete-icon, .chat-msg.admin .msg-delete-icon { right: -32px; }
+.chat-msg:hover .msg-delete-icon { opacity: 1; }
+
 .chat-footer { padding: 12px 15px; background: #fff; border-top: 1px solid #eee; position: relative; }
 .chat-input { border-radius: 20px; background: #f1f3f5; border: none; padding-left: 15px; }
 .chat-input:focus { box-shadow: none; border: 1px solid #C19A5B; }
@@ -395,7 +410,7 @@ if ($is_logged_in_chat) {
   align-items: flex-start;
 }
 .chat-eyebrow {
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Source Sans 3', sans-serif;
   font-size: 8px; /* Scaled down */
   letter-spacing: 1px;
   color: #A88746; /* Gold */
@@ -414,7 +429,7 @@ if ($is_logged_in_chat) {
   display: inline-block;
   background-color: #A88746;
   color: #F9F9F9;
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Source Sans 3', sans-serif;
   font-size: 10px; /* Scaled down */
   font-weight: 600;
   letter-spacing: 1px;
@@ -479,6 +494,39 @@ function closeChatModal() {
     if (chatPollingInterval) clearInterval(chatPollingInterval);
 }
 
+function clearChatHistory() {
+    if (confirm('Bạn có chắc chắn muốn xóa lịch sử trò chuyện trên thiết bị này không?')) {
+        localStorage.removeItem('restaurantly_chat_session_id');
+        chatSessionId = '';
+        document.getElementById('chatMessages').innerHTML = '';
+        lastMessageId = 0;
+        if (chatPollingInterval) clearInterval(chatPollingInterval);
+        
+        <?php if ($is_logged_in_chat): ?>
+            // Tạo phiên mới ngay lập tức
+            initChatSession();
+        <?php else: ?>
+            // Quay về form đăng nhập
+            document.getElementById('chatMessages').style.display = 'none';
+            document.getElementById('chatFooter').style.display = 'none';
+            document.getElementById('chatInitForm').style.display = 'block';
+        <?php endif; ?>
+    }
+}
+
+function deleteSingleMessage(msgId) {
+    if (!msgId) return;
+    let deletedMsgs = JSON.parse(localStorage.getItem('deleted_msgs_' + chatSessionId) || '[]');
+    if (!deletedMsgs.includes(msgId)) {
+        deletedMsgs.push(msgId);
+        localStorage.setItem('deleted_msgs_' + chatSessionId, JSON.stringify(deletedMsgs));
+    }
+    const msgDiv = document.getElementById('chat_msg_' + msgId);
+    if (msgDiv) {
+        msgDiv.remove();
+    }
+}
+
 function initChatSession() {
     const nameInput = document.getElementById('chatCustomerName');
     const phoneInput = document.getElementById('chatCustomerPhone');
@@ -516,14 +564,33 @@ function hideTyping() {
     document.getElementById('typingIndicator').style.display = 'none';
 }
 
-function appendMessage(sender, type, content) {
+function appendMessage(sender, type, content, msgId) {
+    let deletedMsgs = JSON.parse(localStorage.getItem('deleted_msgs_' + chatSessionId) || '[]');
+    if (msgId && deletedMsgs.includes(msgId)) return; // Không hiển thị tin nhắn đã xóa
+
     const msgDiv = document.createElement('div');
     msgDiv.className = `chat-msg ${sender}`;
+    if (msgId) msgDiv.id = 'chat_msg_' + msgId;
+    
+    let innerHtml = '';
     if (type === 'image') {
-        msgDiv.innerHTML = `<img src="${content}" alt="Image">`;
+        innerHtml = `<img src="${content}" alt="Image">`;
     } else {
-        msgDiv.innerText = content;
+        // Render raw string or escape it if you prefer, currently just assigning it later or using innerText
+        innerHtml = `<span></span>`;
     }
+    
+    if (msgId) {
+        innerHtml += `<i class="fas fa-trash-alt msg-delete-icon" onclick="deleteSingleMessage(${msgId})" title="Xóa tin nhắn này"></i>`;
+    }
+    
+    msgDiv.innerHTML = innerHtml;
+    
+    // Set actual text safely
+    if (type !== 'image') {
+        msgDiv.querySelector('span').innerText = content;
+    }
+    
     document.getElementById('chatMessages').appendChild(msgDiv);
     const body = document.getElementById('chatBody');
     body.scrollTop = body.scrollHeight;
@@ -591,7 +658,7 @@ function loadChatMessages() {
         if (data.status === 'success' && data.messages.length > 0) {
             hideTyping();
             data.messages.forEach(m => {
-                appendMessage(m.sender_type, m.message_type, m.content);
+                appendMessage(m.sender_type, m.message_type, m.content, m.id);
                 lastMessageId = Math.max(lastMessageId, m.id);
             });
         }

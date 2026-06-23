@@ -73,7 +73,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if ($action === 'create') {
                         $stmt = $db->prepare("INSERT INTO chefs (name, position, image, experience, specialty, description, quote, facebook, instagram, email, is_active, is_featured, sort_order, awards, signature_dishes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                         if ($stmt->execute([$name, $position, $image_name, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $awards, $signature_dishes])) {
-                            $message_success = "Đã thêm đầu bếp thành công.";
+                            // TỰ ĐỘNG ĐỒNG BỘ SANG BẢNG NHÂN SỰ
+                            try {
+                                $sync_stmt = $db->prepare("INSERT INTO employees (full_name, email, position, salary, status) VALUES (?, ?, ?, 0, 'working')");
+                                $sync_stmt->execute([$name, $email, $position]);
+                                $message_success = "Đã thêm đầu bếp và đồng bộ tự động sang Quản lý Nhân sự.";
+                            } catch (Exception $sync_e) {
+                                $message_success = "Đã thêm đầu bếp (Nhưng lỗi đồng bộ Nhân sự: " . $sync_e->getMessage() . ")";
+                            }
                         } else {
                             $message_error = "Có lỗi xảy ra khi thêm đầu bếp: " . implode(" - ", $stmt->errorInfo());
                         }
