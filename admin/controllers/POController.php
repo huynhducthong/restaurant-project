@@ -247,7 +247,7 @@ if (isset($_POST['receive_po_final'])) {
             $ins_batch->execute([$ing_id, $main_warehouse_id, $po_code_res, $new_qty, $hsd, $new_price, $temp]);
 
             // 3. Cập nhật HSD tổng (Lấy ngày sớm nhất của các lô còn hàng)
-            $stmt_min_hsd = $db->prepare("SELECT MIN(expiry_date) FROM inventory_batches WHERE ingredient_id = ? AND quantity > 0 AND expiry_date IS NOT NULL");
+            $stmt_min_hsd = $db->prepare("SELECT MIN(expiry_date) FROM inventory_batches WHERE ingredient_id = ? AND quantity > 0 AND expiry_date IS NOT NULL AND warehouse_id NOT IN (6, 7)");
             $stmt_min_hsd->execute([$ing_id]);
             $earliest_hsd = $stmt_min_hsd->fetchColumn() ?: $hsd;
 

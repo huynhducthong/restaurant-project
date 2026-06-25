@@ -217,25 +217,25 @@ $plans = $vipPlanModel->getAllPlans();
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
 <style>
 /* ══ TOKENS ══ */
 :root{
-  --F:      #143B36;        /* forest — dùng ít */
-  --F-lt:   #1a4d46;
-  --F-pale: #e8f0ef;        /* forest rất nhạt — bg highlight */
-  --accent-burgundy:   #c8933a;
-  --accent-burgundy-lt:#f0e0c0;
-  --bg:     #f7f5f1;         /* kem ấm — nền chính */
-  --bg2:    #ffffff;
-  --ink:    #1a1814;
-  --ink2:   #4a4640;
-  --muted:  #8a8480;
-  --border: #e8e2d8;
-  --r:      14px;
-  --sh:     0 2px 16px rgba(26,24,20,.07);
-  --sh-lg:  0 8px 32px rgba(26,24,20,.1);
+  --F:      #A88746;        /* Gold */
+  --F-lt:   #d4b06a;        /* Bright gold hover */
+  --F-pale: rgba(168, 135, 70, 0.1);  /* Gold pale bg highlight */
+  --accent-burgundy:   #A88746;
+  --accent-burgundy-lt: rgba(168, 135, 70, 0.3);
+  --bg:     #F5F2ED;         /* Light beige background */
+  --bg2:    #ffffff;         /* White bg for cards/frames */
+  --ink:    #222222;         /* Black text */
+  --ink2:   #555555;         /* Dark grey text */
+  --muted:  #888888;         /* Muted text */
+  --border: rgba(0, 0, 0, 0.1); /* Faint gray border */
+  --r:      12px;            /* Slightly softer radius for glass */
+  --sh:     0 8px 32px rgba(0,0,0,0.06);
+  --sh-lg:  0 15px 40px rgba(0,0,0,0.1);
 }
 
 *{box-sizing:border-box;}
@@ -265,8 +265,9 @@ body{
 
 /* ══ WRAPPER ══ */
 .profile-wrap{
-  padding:110px 0 80px;
+  padding:160px 0 40px;
   min-height:100vh;
+  background: radial-gradient(circle at top center, rgba(230, 92, 0, 0.08) 0%, var(--bg) 70%);
 }
 
 /* ══ SIDEBAR ══ */
@@ -278,31 +279,27 @@ body{
   border:1px solid var(--border);
 }
 
-/* Avatar section — accent #143B36 */
+/* Avatar section */
 .prof-top{
-  background:linear-gradient(145deg, var(--F) 0%, var(--F-lt) 100%);
+  background: #ffffff;
   padding:32px 24px 28px;
   text-align:center;
   position:relative;
-}
-.prof-top::after{
-  content:'';position:absolute;bottom:-1px;left:0;right:0;
-  height:24px;background:var(--bg2);
-  border-radius:var(--r) var(--r) 0 0;
+  border-bottom: 1px solid var(--border);
 }
 .av-ring{
-  width:96px;height:96px;border-radius:50%;
-  border:3px solid rgba(255,255,255,.4);
-  overflow:hidden;margin:0 auto 14px;
-  background:rgba(255,255,255,.1);
-  box-shadow:0 4px 20px rgba(0,0,0,.2);
+  width:110px;height:110px;border-radius:50%;
+  border:2px solid var(--F);
+  overflow:hidden;margin:0 auto 16px;
+  background:#ffffff;
+  box-shadow:0 0 20px rgba(168, 135, 70, 0.2);
 }
 .av-ring img{width:100%;height:100%;object-fit:cover;}
 .prof-name{
-  font-family:'Montserrat',serif;font-weight:600;
-  font-size:1.1rem;color:#fff;margin:0 0 4px;
+  font-family:'Cormorant Garamond', serif;font-weight:600;
+  font-size:1.1rem;color:var(--ink);margin:0 0 4px;
 }
-.prof-email{font-size:12px;color:rgba(255,255,255,.6);margin:0;}
+.prof-email{font-size:12px;color:var(--ink2);margin:0;}
 
 /* Sidebar nav */
 .prof-nav{padding:16px 0 12px;}
@@ -313,7 +310,7 @@ body{
   transition:all .2s;border-left:3px solid transparent;
 }
 .prof-nav a i{width:18px;text-align:center;font-size:14px;color:var(--muted);transition:.2s;}
-.prof-nav a:hover{background:#f9f6f0;color:var(--F);border-left-color:rgba(20,59,54,.25);}
+.prof-nav a:hover{background:var(--F-pale);color:var(--F);border-left-color:var(--F);}
 .prof-nav a:hover i{color:var(--F);}
 .prof-nav a.on{
   background:var(--F-pale);color:var(--F);
@@ -322,7 +319,7 @@ body{
 .prof-nav a.on i{color:var(--F);}
 .prof-nav a.logout{color:#d64545;}
 .prof-nav a.logout i{color:#d64545;}
-.prof-nav a.logout:hover{background:#fff5f5;border-left-color:#d64545;}
+.prof-nav a.logout:hover{background:rgba(214, 69, 69, 0.1);border-left-color:#d64545;}
 .prof-nav-sep{height:1px;background:var(--border);margin:8px 16px;}
 
 /* Quick stats */
@@ -334,7 +331,7 @@ body{
 .stat-cell{
   background:var(--bg2);padding:14px 10px;text-align:center;
 }
-.stat-val{font-family:'Montserrat',serif;font-size:1.4rem;color:var(--F);font-weight:600;}
+.stat-val{font-family:'Cormorant Garamond', serif;font-size:1.4rem;color:var(--F);font-weight:600;}
 .stat-lbl{font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:.04em;}
 
 /* ══ CONTENT CARD ══ */
@@ -353,12 +350,12 @@ body{
 }
 .pc-icon{
   width:36px;height:36px;border-radius:9px;
-  background:var(--F-pale);border:1px solid rgba(20,59,54,.15);
+  background:var(--F-pale);border:1px solid rgba(230, 92, 0, 0.3);
   display:flex;align-items:center;justify-content:center;
   font-size:16px;color:var(--F);flex-shrink:0;
 }
 .pc-title{
-  font-family:'Montserrat',serif;font-size:1.1rem;
+  font-family:'Cormorant Garamond', serif;font-size:1.1rem;
   font-weight:600;color:var(--ink);margin:0;padding-bottom:18px;
   border-bottom:2px solid var(--F);display:inline-block;
   line-height:1.2;
@@ -369,17 +366,17 @@ body{
 .fl{
   display:block;font-size:11px;font-weight:600;
   letter-spacing:.09em;text-transform:uppercase;
-  color:var(--muted);margin-bottom:6px;
+  color:var(--ink2);margin-bottom:8px;
 }
 .fi{
-  width:100%;padding:11px 14px;
-  border:1.5px solid var(--border);border-radius:9px;
+  width:100%;padding:12px 16px;
+  border:1px solid rgba(0,0,0,0.1);border-radius:9px;
   font-family:'Be Vietnam Pro',sans-serif;font-size:14px;
-  color:var(--ink);background:var(--bg);
-  outline:none;transition:.2s;
+  color:var(--ink);background:#fcfcfc;
+  outline:none;transition:all .3s ease;
 }
-.fi:focus{border-color:var(--F);box-shadow:0 0 0 3px rgba(20,59,54,.08);background: #262629;}
-.fi::placeholder{color:rgba(26,24,20,.3);}
+.fi:focus{border-color:var(--F);box-shadow:0 0 0 3px rgba(168, 135, 70, 0.15);background: #ffffff;}
+.fi::placeholder{color:rgba(0,0,0,.3);}
 
 /* Avatar upload in form */
 .av-upload{
@@ -396,7 +393,7 @@ body{
 .av-upload-ring img{width:100%;height:100%;object-fit:cover;}
 .av-upload-ring::after{
   content:'📷';position:absolute;inset:0;
-  background:rgba(20,59,54,.5);color:#fff;font-size:20px;
+  background:rgba(230, 92, 0, 0.6);color:#fff;font-size:20px;
   display:flex;align-items:center;justify-content:center;
   opacity:0;transition:.2s;border-radius:50%;
 }
@@ -438,9 +435,9 @@ body{
   padding:13px 16px;border-radius:9px;margin-bottom:20px;
   font-size:13px;font-weight:500;
 }
-.prof-alert.success{background:#edf7f0;border:1px solid #a8d5b8;color:#1a5c30;}
-.prof-alert.danger{background:#fff0f0;border:1px solid #f5b8b8;color:#8b2020;}
-.prof-alert.warning{background:#fffbf0;border:1px solid #f0d890;color:#7a5c10;}
+.prof-alert.success{background:rgba(40, 167, 69, 0.1);border:1px solid #28a745;color:#28a745;}
+.prof-alert.danger{background:rgba(220, 53, 69, 0.1);border:1px solid #dc3545;color:#dc3545;}
+.prof-alert.warning{background:rgba(255, 193, 7, 0.1);border:1px solid #ffc107;color:#ffc107;}
 
 /* ══ STATUS TABS ══ */
 .s-tabs{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap;}
@@ -462,16 +459,16 @@ body{
 }
 .bk-card:hover{box-shadow:var(--sh);}
 .bk-id{font-size:10px;letter-spacing:.12em;color:var(--F);font-weight:600;text-transform:uppercase;margin-bottom:3px;}
-.bk-date{font-family:'Montserrat',serif;font-size:1rem;color:var(--ink);font-weight:600;}
+.bk-date{font-family:'Cormorant Garamond', serif;font-size:1rem;color:var(--ink);font-weight:600;}
 .bk-meta{font-size:12px;color:var(--muted);margin-top:4px;}
 .bk-badge{
   display:inline-block;font-size:10px;font-weight:600;padding:4px 10px;border-radius:6px;
   letter-spacing:.06em;text-transform:uppercase;
 }
-.bk-badge.confirmed{background:#e8f5ed;color:#1a7a40;}
-.bk-badge.pending{background:#fff8e8;color:#8a6010;}
-.bk-badge.cancelled{background:#fff0f0;color:#a02020;}
-.bk-badge.completed{background:#e8f0ff;color:#2040a0;}
+.bk-badge.confirmed{background:rgba(52, 152, 219, 0.15);color:#3498db;}
+.bk-badge.pending{background:rgba(255, 193, 7, 0.15);color:#f39c12;}
+.bk-badge.cancelled{background:rgba(220, 53, 69, 0.15);color:#e74c3c;}
+.bk-badge.completed{background:rgba(40, 167, 69, 0.15);color:#2ecc71;}
 
 /* ══ ADDRESS CARD ══ */
 .addr-card{
@@ -489,12 +486,12 @@ body{
 .addr-default{
   font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
   padding:2px 8px;background:var(--F-pale);color:var(--F);
-  border:1px solid rgba(20,59,54,.2);border-radius:4px;margin-left:8px;
+  border:1px solid rgba(230, 92, 0, 0.3);border-radius:4px;margin-left:8px;
 }
 
 /* ══ SECURITY TIPS ══ */
 .sec-tip{
-  background:var(--F-pale);border:1px solid rgba(20,59,54,.15);
+  background:var(--F-pale);border:1px solid rgba(230, 92, 0, 0.3);
   border-radius:10px;padding:14px 16px;margin-bottom:20px;
   font-size:13px;color:var(--F);display:flex;gap:10px;align-items:flex-start;
 }
@@ -514,13 +511,13 @@ body{
   border-radius:var(--r);box-shadow:var(--sh-lg);
 }
 .modal-header{border-bottom:1px solid var(--border);padding:20px 24px;}
-.modal-title{font-family:'Montserrat',serif;font-size:1rem;color:var(--ink);font-weight:600;}
+.modal-title{font-family:'Cormorant Garamond', serif;font-size:1rem;color:var(--ink);font-weight:600;}
 .modal-footer{border-top:1px solid var(--border);padding:16px 24px;gap:8px;}
 .btn-close{opacity:.4;}
 
 /* ══ RESPONSIVE ══ */
 @media(max-width:768px){
-  .profile-wrap{padding:90px 0 60px;}
+  .profile-wrap{padding:120px 0 40px;}
   .prof-card-body{padding:20px;}
   .prof-card-head{padding:16px 20px 0;}
 }
@@ -690,18 +687,17 @@ body{
         <?php elseif($tab=='vip'): ?>
         <style>
             .checkout-container {
-                background: #fff;
+                background: #FFFFFF;
                 border-radius: 12px;
                 box-shadow: 0 10px 40px rgba(0,0,0,0.08);
                 overflow: hidden;
                 display: flex;
-                flex-wrap: wrap;
                 margin-top: 20px;
-                border: 1px solid #eee;
+                border: 1px solid rgba(168, 135, 70, 0.2);
             }
             .plan-summary {
-                background: #0a1f1c;
-                color: #fff;
+                background: #F5F2ED;
+                color: #222222;
                 padding: 40px;
                 width: 45%;
                 position: relative;
@@ -710,29 +706,30 @@ body{
                 content: '';
                 position: absolute;
                 top: 0; left: 0; right: 0; bottom: 0;
-                background: linear-gradient(135deg, rgba(200,147,58,0.15) 0%, rgba(0,0,0,0) 100%);
+                background: linear-gradient(135deg, rgba(168, 135, 70, 0.15) 0%, rgba(0,0,0,0) 100%);
                 pointer-events: none;
             }
             .plan-summary h2 {
-                font-family: 'Playfair Display', serif;
-                color: #c8933a;
+                font-family: 'Cormorant Garamond', serif;
+                color: #A88746;
                 font-size: 1.8rem;
                 margin-bottom: 20px;
+                font-weight: 600;
             }
             .price-tag {
                 font-size: 2.8rem;
                 font-weight: 700;
                 font-family: 'Cormorant Garamond', serif;
-                color: #fff;
+                color: #222222;
                 margin-bottom: 5px;
                 line-height: 1;
             }
             .duration-tag {
                 font-size: 0.95rem;
-                color: rgba(255,255,255,0.7);
+                color: rgba(0,0,0,0.7);
                 margin-bottom: 25px;
                 padding-bottom: 20px;
-                border-bottom: 1px dashed rgba(255,255,255,0.2);
+                border-bottom: 1px dashed rgba(0,0,0,0.15);
             }
             .benefits-list {
                 list-style: none;
@@ -744,16 +741,16 @@ body{
                 margin-bottom: 15px;
                 font-size: 0.95rem;
                 line-height: 1.5;
-                color: rgba(255,255,255,0.9);
+                color: rgba(0,0,0,0.8);
             }
             .benefits-list li i {
                 position: absolute; left: 0; top: 3px;
-                color: #c8933a; font-size: 1.1rem;
+                color: #A88746; font-size: 1.1rem;
             }
             .payment-form {
                 width: 55%;
                 padding: 40px;
-                background: #fff;
+                background: #FFFFFF;
                 display: none; /* Ẩn form lúc đầu */
             }
             .payment-form.active {
@@ -765,75 +762,82 @@ body{
                 to { opacity: 1; transform: translateX(0); }
             }
             .payment-form h3 {
-                font-family: 'Playfair Display', serif;
+                font-family: 'Cormorant Garamond', serif;
                 font-size: 1.4rem;
-                color: #143B36;
+                color: #222222;
                 margin-bottom: 20px;
             }
             .payment-methods {
                 display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;
             }
             .payment-method-card {
-                border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px;
+                border: 1px solid rgba(168, 135, 70, 0.2); border-radius: 8px; padding: 15px;
                 cursor: pointer; transition: all 0.2s; position: relative;
             }
-            .payment-method-card:hover { border-color: #c8933a; background: #fffdf9; }
+            .payment-method-card:hover { border-color: #A88746; background: rgba(168, 135, 70, 0.05); }
             .payment-method-card input[type="radio"] { display: none; }
             .payment-method-card input[type="radio"]:checked + .method-content::before {
                 content: '\f058'; font-family: 'FontAwesome'; position: absolute;
-                top: -10px; right: -10px; color: #c8933a; background: #fff;
+                top: -10px; right: -10px; color: #A88746; background: #FFFFFF;
                 border-radius: 50%; font-size: 1.4rem; line-height: 1;
             }
-            .payment-method-card input[type="radio"]:checked + .method-content { color: #143B36; }
+            .payment-method-card input[type="radio"]:checked + .method-content { color: #A88746; }
             .payment-method-card:has(input[type="radio"]:checked) {
-                border-color: #c8933a; background: #fffdf9; box-shadow: 0 4px 10px rgba(200,147,58,0.1);
+                border-color: #A88746; background: rgba(168, 135, 70, 0.05); box-shadow: 0 4px 10px rgba(168, 135, 70, 0.2);
             }
             .method-content {
                 display: flex; flex-direction: column; align-items: center; gap: 8px;
-                color: #666; font-weight: 500; font-size: 0.9rem; text-align: center;
+                color: #222222; font-weight: 500; font-size: 0.9rem; text-align: center;
             }
-            .method-content i { font-size: 1.8rem; color: #c8933a; }
+            .method-content i { font-size: 1.8rem; color: #A88746; }
             .card-details {
-                background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee;
+                background: #F5F2ED; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(168, 135, 70, 0.2);
             }
             .form-control-lux {
-                width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.95rem; transition: 0.3s;
+                width: 100%; padding: 10px 15px; border: 1px solid rgba(168, 135, 70, 0.3); border-radius: 6px; font-size: 0.95rem; transition: 0.3s;
             }
-            .form-control-lux:focus { outline: none; border-color: #c8933a; box-shadow: 0 0 0 3px rgba(200,147,58,0.1); }
+            .form-control-lux:focus { outline: none; border-color: #A88746; box-shadow: 0 0 0 3px rgba(168, 135, 70, 0.2); background: #ffffff; color: #222222; }
             .btn-pay {
-                background: #c8933a; color: #fff; border: none; width: 100%; padding: 14px;
+                background: linear-gradient(135deg, #A88746, #d4b06a); color: #fff; border: none; width: 100%; padding: 14px;
                 font-size: 1.05rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.3s;
             }
-            .btn-pay:hover { background: #e0a94d; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(200,147,58,0.3); }
+            .btn-pay:hover { background: linear-gradient(135deg, #d4b06a, #A88746); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(168, 135, 70, 0.4); }
             
             .btn-open-pay {
-                background: #c8933a; color: #fff; border: none; width: 100%; padding: 15px;
+                background: linear-gradient(135deg, #A88746, #d4b06a); color: #fff; border: none; width: 100%; padding: 15px;
                 font-size: 1.1rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.3s;
-                margin-top: 30px; display: flex; justify-content: center; align-items: center; gap: 10px;
             }
-            .btn-open-pay:hover { background: #e0a94d; transform: translateY(-2px); }
+            .btn-open-pay:hover { background: linear-gradient(135deg, #d4b06a, #A88746); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(168, 135, 70, 0.4); }
             
             .current-vip-alert {
-                background: #fff8e8; border: 1px solid #c8933a; color: #8a6010;
+                background: rgba(168, 135, 70, 0.1); border: 1px solid #A88746; color: #A88746;
                 padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px;
             }
-            .current-vip-alert i { font-size: 24px; color: #c8933a; }
+            .current-vip-alert i { font-size: 24px; color: #A88746; }
             
             @media (max-width: 768px) {
-                .plan-summary { width: 100%; }
+                .checkout-container { flex-wrap: wrap; }
+                .plan-summary { width: 100% !important; }
                 .payment-form { width: 100%; }
             }
         </style>
 
         <?php if($current_vip): ?>
-            <div class="current-vip-alert" style="background: linear-gradient(135deg, #2b1f0c 0%, #0a1f1c 100%); border: 1px solid #c8933a; color: #f0e0c0;">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="#c8933a" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
-                    <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
-                </svg>
-                <div>
-                    <h5 class="mb-1 fw-bold" style="color: #c8933a;">Đặc quyền VIP CROWN đang được kích hoạt!</h5>
-                    <p class="mb-0 small" style="color: #d1c8b4;">Chiết khấu <?= $current_vip['discount_percent'] ?>% toàn hệ thống. Đặc quyền sẽ kết thúc vào: <strong style="color:#fff;"><?= date('d/m/Y', strtotime($current_vip['end_date'])) ?></strong></p>
+            <div class="current-vip-alert" style="background: linear-gradient(135deg, #2b1f0c 0%, #0a1f1c 100%); border: 1px solid #c8933a; color: #f0e0c0; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="#c8933a" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+                        <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
+                    </svg>
+                    <div>
+                        <h5 class="mb-1 fw-bold" style="color: #c8933a;">Đặc quyền VIP CROWN đang được kích hoạt!</h5>
+                        <p class="mb-0 small" style="color: #d1c8b4;">Chiết khấu <?= $current_vip['discount_percent'] ?>% toàn hệ thống. Đặc quyền sẽ kết thúc vào: <strong style="color:#fff;"><?= date('d/m/Y', strtotime($current_vip['end_date'])) ?></strong></p>
+                    </div>
                 </div>
+                <form action="config/process_vip_cancel.php" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn hủy gia hạn gói VIP này? Mọi đặc quyền của gói sẽ kết thúc ngay lập tức.');">
+                    <button type="submit" name="cancel_vip" class="btn btn-outline-danger btn-sm px-4 py-2" style="border-radius: 8px; font-weight: 600; white-space: nowrap;">
+                        <i class="fas fa-times-circle me-1"></i> Hủy Gia Hạn
+                    </button>
+                </form>
             </div>
         <?php endif; ?>
 
@@ -972,7 +976,7 @@ body{
         <form method="POST">
           <div class="row g-4">
             <div class="col-md-12 mb-2">
-              <h6 style="color:var(--accent-burgundy); font-family:'Montserrat',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-fire me-2"></i>Mức độ chín của Bò (Meat Doneness)</h6>
+              <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-fire me-2"></i>Mức độ chín của Bò (Meat Doneness)</h6>
               <div class="d-flex flex-wrap gap-3 mt-3">
                 <?php $dopts = ['Rare', 'Medium Rare', 'Medium', 'Medium Well', 'Well Done']; 
                 foreach($dopts as $d): ?>
@@ -984,7 +988,7 @@ body{
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--accent-burgundy); font-family:'Montserrat',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-palette me-2"></i>Phong cách Hương vị (Flavor Profile)</h6>
+              <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-palette me-2"></i>Phong cách Hương vị (Flavor Profile)</h6>
               <div class="d-flex flex-column gap-2 mt-3">
                 <?php $fopts = ['Đậm vị (Bold/Rich)', 'Thanh nhẹ (Light/Fresh)', 'Umami (Ngọt tự nhiên)', 'Ít béo (Low Fat)', 'Ăn Cay (Spicy)']; 
                 foreach($fopts as $f): ?>
@@ -996,7 +1000,7 @@ body{
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--accent-burgundy); font-family:'Montserrat',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-star me-2"></i>Nguyên liệu yêu thích (Favorites)</h6>
+              <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-star me-2"></i>Nguyên liệu yêu thích (Favorites)</h6>
               <div class="d-flex flex-column gap-2 mt-3">
                 <?php 
                 $favopts = [
@@ -1015,7 +1019,7 @@ body{
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--accent-burgundy); font-family:'Montserrat',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-x-circle me-2"></i>Không thích ăn (Dislikes)</h6>
+              <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-x-circle me-2"></i>Không thích ăn (Dislikes)</h6>
               <div class="d-flex flex-wrap gap-2 mt-3">
                 <?php $disopts = ['Hành lá', 'Rau mùi', 'Hành tây', 'Tỏi', 'Ớt chuông', 'Tiêu xanh', 'Thịt mỡ']; 
                 foreach($disopts as $dis): ?>
@@ -1027,7 +1031,7 @@ body{
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:#d64545; font-family:'Montserrat',serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-exclamation-triangle-fill me-2"></i>Dị ứng Y Tế (Allergies)</h6>
+              <h6 style="color:#d64545; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-exclamation-triangle-fill me-2"></i>Dị ứng Y Tế (Allergies)</h6>
               <div class="d-flex flex-wrap gap-2 mt-3">
                 <?php 
                 $algopts = ['Sữa', 'Trứng', 'Đậu phộng', 'Đậu nành', 'Lúa mì / Gluten', 'Hải sản', 'Cá', 'Hải sản có vỏ', 'Hải sản thân mềm', 'Mè / Vừng', 'Mù tạt', 'Quả hạch', 'Sulphites', 'Đậu Lupin']; 
@@ -1293,10 +1297,10 @@ body{
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content" style="border:none; border-radius:12px; overflow:hidden;">
       <div class="modal-header" style="background:var(--F); color:#fff; border-bottom:none;">
-        <h5 class="modal-title" style="font-family:'Montserrat',serif;"><i class="bi bi-receipt me-2"></i>Chi Tiết Đơn Đặt Bàn</h5>
+        <h5 class="modal-title" style="font-family:'Cormorant Garamond', serif;"><i class="bi bi-receipt me-2"></i>Chi Tiết Đơn Đặt Bàn</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body" id="bookingDetailsContent" style="padding:25px; background: #262629;">
+      <div class="modal-body" id="bookingDetailsContent" style="padding:25px; background: #FFFFFF;">
         <div class="text-center p-4 text-muted"><i class="bi bi-arrow-repeat spin me-2"></i>Đang tải dữ liệu...</div>
       </div>
     </div>

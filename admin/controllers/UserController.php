@@ -208,10 +208,13 @@ $total_pages = ceil($total_records / $limit);
 
 $query = "
     SELECT u.*, 
-           COUNT(sb.id) as total_bookings, 
-           SUM(CASE WHEN sb.status = 'Completed' THEN sb.total_amount ELSE 0 END) as total_spent
+           COUNT(DISTINCT sb.id) as total_bookings, 
+           SUM(CASE WHEN sb.status = 'Completed' THEN sb.total_amount ELSE 0 END) as total_spent,
+           vp.name as vip_plan_name
     FROM users u
     LEFT JOIN service_bookings sb ON u.id = sb.user_id
+    LEFT JOIN user_vip uv ON u.id = uv.user_id AND uv.status = 'active' AND uv.end_date >= NOW()
+    LEFT JOIN vip_plans vp ON uv.plan_id = vp.id
     WHERE $where_clause
     GROUP BY u.id
     ORDER BY u.created_at DESC

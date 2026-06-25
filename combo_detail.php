@@ -38,17 +38,17 @@ foreach ($foods as $food) {
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --cd-bg: #1A1A1D;
-  --cd-text: #D1D1D1;
+  --cd-bg: #F9F9F9;
+  --cd-text: #222222;
   --cd-muted: #666666;
   --cd-olive: #A88746;
   --cd-gold: #A88746;
-  --cd-serif: 'Montserrat', sans-serif;
-  --cd-sans: 'Open Sans', sans-serif;
+  --cd-serif: 'Cormorant Garamond', serif;
+  --cd-sans: 'Source Sans 3', sans-serif;
 }
 
 body { background-color: var(--cd-bg); }
@@ -109,7 +109,7 @@ body { background-color: var(--cd-bg); }
 .cd-container {
   max-width: 900px;
   margin: -80px auto 100px;
-  background: #262629;
+  background: #FFFFFF;
   position: relative;
   z-index: 3;
   padding: 80px 60px;

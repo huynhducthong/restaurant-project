@@ -22,7 +22,7 @@ $db = (new Database())->getConnection();
 
 try {
     // 1. Lấy thông tin cơ bản của đơn đặt bàn
-    $stmt = $db->prepare("SELECT * FROM service_bookings WHERE id = ?");
+    $stmt = $db->prepare("SELECT s.*, t.table_code FROM service_bookings s LEFT JOIN restaurant_tables t ON s.table_id = t.id WHERE s.id = ?");
     $stmt->execute([$id]);
     $booking = $stmt->fetch(PDO::FETCH_ASSOC);
 

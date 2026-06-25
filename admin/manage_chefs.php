@@ -4,6 +4,28 @@ include '../public/admin_layout_header.php';
 require_once __DIR__ . '/../config/csrf.php';
 
 $db = (new Database())->getConnection();
+
+// Automated DB upgrades
+try {
+    $db->exec("ALTER TABLE chefs ADD COLUMN IF NOT EXISTS awards TEXT DEFAULT NULL");
+    $db->exec("ALTER TABLE chefs ADD COLUMN IF NOT EXISTS signature_dishes VARCHAR(255) DEFAULT NULL");
+    
+    // Create chef_reviews table if it does not exist
+    $db->exec("CREATE TABLE IF NOT EXISTS chef_reviews (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        chef_id INT NOT NULL,
+        user_id INT NULL,
+        author_name VARCHAR(100) DEFAULT 'Khách ẩn danh',
+        rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+        comment TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        status ENUM('pending', 'approved', 'rejected') DEFAULT 'approved'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+    $db->exec("ALTER TABLE chef_reviews ADD COLUMN IF NOT EXISTS author_name VARCHAR(100) DEFAULT 'Khách ẩn danh'");
+} catch (Exception $e) {
+    // Ignore database upgrade errors
+}
+
 $message_success = '';
 $message_error = '';
 
@@ -28,6 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sort_order = (int)($_POST['sort_order'] ?? 0);
             $is_active = isset($_POST['is_active']) ? 1 : 0;
             $is_featured = isset($_POST['is_featured']) ? 1 : 0;
+            $awards = trim($_POST['awards'] ?? '');
+            $sig_dishes_arr = $_POST['signature_dishes'] ?? [];
+            $signature_dishes = !empty($sig_dishes_arr) ? implode(',', array_map('intval', $sig_dishes_arr)) : null;
 
             if (empty($name)) {
                 $message_error = "Vui lòng nhập họ tên đầu bếp.";
@@ -46,9 +71,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
 
                     if ($action === 'create') {
-                        $stmt = $db->prepare("INSERT INTO chefs (name, position, image, experience, specialty, description, quote, facebook, instagram, email, is_active, is_featured, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                        if ($stmt->execute([$name, $position, $image_name, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order])) {
-                            $message_success = "Đã thêm đầu bếp thành công.";
+                        $stmt = $db->prepare("INSERT INTO chefs (name, position, image, experience, specialty, description, quote, facebook, instagram, email, is_active, is_featured, sort_order, awards, signature_dishes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        if ($stmt->execute([$name, $position, $image_name, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $awards, $signature_dishes])) {
+                            // TỰ ĐỘNG ĐỒNG BỘ SANG BẢNG NHÂN SỰ
+                            try {
+                                $sync_stmt = $db->prepare("INSERT INTO employees (full_name, email, position, salary, status) VALUES (?, ?, ?, 0, 'working')");
+                                $sync_stmt->execute([$name, $email, $position]);
+                                $message_success = "Đã thêm đầu bếp và đồng bộ tự động sang Quản lý Nhân sự.";
+                            } catch (Exception $sync_e) {
+                                $message_success = "Đã thêm đầu bếp (Nhưng lỗi đồng bộ Nhân sự: " . $sync_e->getMessage() . ")";
+                            }
                         } else {
                             $message_error = "Có lỗi xảy ra khi thêm đầu bếp: " . implode(" - ", $stmt->errorInfo());
                         }
@@ -60,11 +92,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             if ($old_row && !empty($old_row['image']) && file_exists("../public/assets/img/chefs/" . $old_row['image'])) {
                                 @unlink("../public/assets/img/chefs/" . $old_row['image']);
                             }
-                            $stmt = $db->prepare("UPDATE chefs SET name=?, position=?, image=?, experience=?, specialty=?, description=?, quote=?, facebook=?, instagram=?, email=?, is_active=?, is_featured=?, sort_order=? WHERE id=?");
-                            $success = $stmt->execute([$name, $position, $image_name, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $id]);
+                            $stmt = $db->prepare("UPDATE chefs SET name=?, position=?, image=?, experience=?, specialty=?, description=?, quote=?, facebook=?, instagram=?, email=?, is_active=?, is_featured=?, sort_order=?, awards=?, signature_dishes=? WHERE id=?");
+                            $success = $stmt->execute([$name, $position, $image_name, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $awards, $signature_dishes, $id]);
                         } else {
-                            $stmt = $db->prepare("UPDATE chefs SET name=?, position=?, experience=?, specialty=?, description=?, quote=?, facebook=?, instagram=?, email=?, is_active=?, is_featured=?, sort_order=? WHERE id=?");
-                            $success = $stmt->execute([$name, $position, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $id]);
+                            $stmt = $db->prepare("UPDATE chefs SET name=?, position=?, experience=?, specialty=?, description=?, quote=?, facebook=?, instagram=?, email=?, is_active=?, is_featured=?, sort_order=?, awards=?, signature_dishes=? WHERE id=?");
+                            $success = $stmt->execute([$name, $position, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $awards, $signature_dishes, $id]);
                         }
                         if ($success) {
                             $message_success = "Cập nhật thông tin đầu bếp thành công.";
@@ -124,6 +156,10 @@ $sql = "SELECT * FROM chefs WHERE $where_clause ORDER BY sort_order ASC, id DESC
 $stmt = $db->prepare($sql);
 $stmt->execute($params);
 $chefs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch all active foods for signature dishes selection
+$foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <style>
@@ -236,6 +272,9 @@ $chefs = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <?php endif; ?>
                             </td>
                             <td class="text-end pe-4">
+                                <a href="manage_chef_reviews.php?chef_id=<?= $chef['id'] ?>" class="btn btn-sm btn-outline-warning rounded-circle me-1" title="Xem nhận xét">
+                                    <i class="fas fa-comment-dots"></i>
+                                </a>
                                 <button class="btn btn-sm btn-outline-info rounded-circle me-1" title="Chỉnh sửa"
                                     onclick='openModal("edit", <?= htmlspecialchars(json_encode($chef, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS)) ?>)'>
                                     <i class="fas fa-edit"></i>
@@ -359,6 +398,31 @@ $chefs = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <label class="form-check-label fw-bold text-dark" for="chefIsFeatured">Ghim nổi bật</label>
                             </div>
                         </div>
+                        
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-dark">Giải thưởng & Chuyên môn (Awards & Expertise)</label>
+                            <textarea class="form-control" name="awards" id="chefAwards" rows="3" placeholder="Định dạng: Tên giải thưởng | Chi tiết giải thưởng | Class icon Bootstrap (Tùy chọn)&#10;Mỗi giải thưởng viết trên 1 dòng. Ví dụ:&#10;Sao Michelin | Đạt năm 2022 | trophy&#10;Le Cordon Bleu | Tốt nghiệp xuất sắc | mortarboard"></textarea>
+                            <small class="text-muted">Nhập mỗi giải thưởng trên 1 dòng, phân tách tên và chi tiết bằng ký tự gạch đứng (|). Icon tùy chọn có thể là: trophy, award, mortarboard, star, etc.</small>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-dark">Các món ăn đặc trưng (Signature Dishes)</label>
+                            <div class="border p-3 rounded" style="max-height: 200px; overflow-y: auto; background: #fff;">
+                                <div class="row g-2">
+                                    <?php foreach ($foods as $food): ?>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input signature-dish-cb" type="checkbox" name="signature_dishes[]" value="<?= $food['id'] ?>" id="sd_<?= $food['id'] ?>">
+                                                <label class="form-check-label text-dark" for="sd_<?= $food['id'] ?>">
+                                                    <?= htmlspecialchars($food['name']) ?>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <small class="text-muted">Tích chọn các món ăn tiêu biểu do chính tay đầu bếp này chế biến để hiển thị trong chi tiết.</small>
+                        </div>
 
                     </div>
                     
@@ -390,6 +454,8 @@ $chefs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             document.getElementById('previewImage').style.display = 'none';
             document.getElementById('chefIsActive').checked = true;
             document.getElementById('chefIsFeatured').checked = false;
+            document.getElementById('chefAwards').value = '';
+            document.querySelectorAll('.signature-dish-cb').forEach(cb => cb.checked = false);
         } else {
             document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-edit me-2"></i> Cập nhật Thông tin Đầu Bếp';
             document.getElementById('btnSubmit').innerText = 'Cập Nhật';
@@ -426,6 +492,16 @@ $chefs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             document.getElementById('chefIsActive').checked = data.is_active == 1;
             document.getElementById('chefIsFeatured').checked = data.is_featured == 1;
+            
+            document.getElementById('chefAwards').value = data.awards || '';
+            document.querySelectorAll('.signature-dish-cb').forEach(cb => cb.checked = false);
+            if (data.signature_dishes) {
+                let dishes = data.signature_dishes.split(',');
+                dishes.forEach(id => {
+                    let cb = document.getElementById('sd_' + id.trim());
+                    if (cb) cb.checked = true;
+                });
+            }
 
             let preview = document.getElementById('previewImage');
             if(data.image) {

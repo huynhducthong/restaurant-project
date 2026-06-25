@@ -84,14 +84,14 @@ try {
     <title>Quản trị hệ thống - Restaurantly</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     
     <!-- BOOTSTRAP JS REQUIRED FOR MODALS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <style>
         :root {
-            --sidebar-bg: #F6F2E9; /* Kem */
+            --sidebar-bg: #ffffff; /* Trắng */
             --sidebar-border: #e8e1d5;
             --topbar-bg: #ffffff;
 
@@ -105,7 +105,7 @@ try {
             
             /* Dành cho nền sáng (Main Content) */
             --text-main: #222222;
-            --text-muted: #666666;
+            --text-muted: #777777;
             
             --bg-main: #fcfcfc;
             
@@ -222,20 +222,20 @@ try {
         }
 
         .menu-list li a:hover {
-            background-color: var(--accent-green-light);
-            color: #ffffff;
+            background-color: #e3f2fd; /* Xanh nhạt */
+            color: #0277bd; /* Chữ xanh nước biển */
         }
 
         .menu-list li.active > a {
-            background: var(--accent-green);
-            color: #ffffff;
+            background: #bbdefb; /* Xanh đậm hơn chút */
+            color: #0277bd;
             font-weight: 600;
-            border-left: 3px solid var(--accent-color);
+            border-left: 3px solid #0277bd;
             border-radius: 0;
         }
 
         .menu-list li.active > a i {
-            color: var(--accent-color);
+            color: #0277bd;
         }
 
         /* View Homepage pill */
@@ -517,7 +517,7 @@ try {
                     $isFoodMenu = isActive('manage_themes.php') || isActive('FoodController.php') || isActive('manage_toppings.php') || ($current_page == 'ComboController.php' || $current_page == 'add_combo.php' || $current_page == 'edit_combo.php');
                 ?>
                 <li class="<?= $isFoodMenu ? 'active' : '' ?>">
-                    <a href="#foodSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isFoodMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
+                    <a href="javascript:void(0)" data-bs-target="#foodSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isFoodMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
                         <div>
                             <i class="fas fa-utensils"></i> Quản Lý Thực Đơn
                         </div>
@@ -555,7 +555,7 @@ try {
                     $isServiceMenu = isActive('manage_services.php') || isActive('manage_events.php') || isActive('manage_decors.php') || isActive('manage_bespoke.php');
                 ?>
                 <li class="<?= $isServiceMenu ? 'active' : '' ?>">
-                    <a href="#servicesSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isServiceMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
+                    <a href="javascript:void(0)" data-bs-target="#servicesSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isServiceMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
                         <div>
                             <i class="fas fa-concierge-bell"></i>
                             <span>Quản lý Dịch vụ</span>
@@ -610,6 +610,11 @@ try {
                         <i class="fas fa-chart-line"></i> Báo cáo & Thống kê
                     </a>
                 </li>
+                <li class="<?= isActive('manage_expenses.php') ?>">
+                    <a href="/restaurant-project/admin/manage_expenses.php">
+                        <i class="fas fa-file-invoice-dollar"></i> Quản lý Chi Phí
+                    </a>
+                </li>
                 <?php endif; ?>
 
                 <li class="<?= ($current_page == 'manage_videos.php') ? 'active' : '' ?>">
@@ -619,10 +624,30 @@ try {
                 </li>
 
                 <?php if (checkMenuAccess($user_role, ['chef'])): ?>
-                <li class="<?= isActive('manage_chefs.php') ?>">
-                    <a href="/restaurant-project/admin/manage_chefs.php">
-                        <i class="fas fa-users"></i> Quản lý Đầu bếp
+                <?php 
+                    $isChefMenu = isActive('manage_chefs.php') || isActive('manage_chef_reviews.php');
+                ?>
+                <li class="<?= $isChefMenu ? 'active' : '' ?> chef-menu-toggle">
+                    <a href="javascript:void(0)" data-bs-target="#chefSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isChefMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <i class="fas fa-users"></i> Quản lý Đầu bếp
+                        </div>
+                        <div>
+                            <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: auto;"></i>
+                        </div>
                     </a>
+                    <ul class="collapse list-unstyled <?= $isChefMenu ? 'show' : '' ?>" id="chefSubmenu" style="background: rgba(0,0,0,0.03);">
+                        <li class="<?= isActive('manage_chefs.php') ?>">
+                            <a href="/restaurant-project/admin/manage_chefs.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-users" style="font-size: 12px; margin-right: 6px;"></i> Danh sách Đầu bếp
+                            </a>
+                        </li>
+                        <li class="<?= isActive('manage_chef_reviews.php') ?>">
+                            <a href="/restaurant-project/admin/manage_chef_reviews.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-comments" style="font-size: 12px; margin-right: 6px;"></i> Đánh giá Đầu bếp
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <?php endif; ?>
 
@@ -632,11 +657,44 @@ try {
                         <i class="fas fa-envelope"></i> Quản lý Liên hệ
                     </a>
                 </li>
+                
+                <?php 
+                    $isChatMenu = isActive('chat_console.php') || isActive('bot_training.php');
+                ?>
+                <li class="<?= $isChatMenu ? 'active' : '' ?>">
+                    <a href="javascript:void(0)" data-bs-target="#chatSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isChatMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <i class="fas fa-comments"></i>
+                            <span>Hỗ trợ Khách hàng</span>
+                        </div>
+                        <div>
+                            <span class="badge-notify chat-waiting-badge position-static ms-0 me-2" style="display:none;">0</span>
+                            <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: auto;"></i>
+                        </div>
+                    </a>
+                    <ul class="collapse list-unstyled <?= $isChatMenu ? 'show' : '' ?>" id="chatSubmenu" style="background: rgba(0,0,0,0.03);">
+                        <li class="<?= isActive('chat_console.php') ?>">
+                            <a href="/restaurant-project/admin/chat_console.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-headset" style="font-size: 12px; margin-right: 6px;"></i> Trò chuyện trực tuyến
+                            </a>
+                        </li>
+                        <li class="<?= isActive('bot_training.php') ?>">
+                            <a href="/restaurant-project/admin/bot_training.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-robot" style="font-size: 12px; margin-right: 6px;"></i> Quản lý kịch bản Bot
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <?php endif; ?>
 
-                <!-- Chỉ Admin mới thấy phần Cấu hình -->
                 <?php if ($is_admin): ?>
                 <div class="menu-header">Cấu hình</div>
+
+                <li class="<?= isActive('chat_analytics.php') ?>">
+                    <a href="/restaurant-project/admin/chat_analytics.php">
+                        <i class="fas fa-chart-bar"></i> Thống kê Chat
+                    </a>
+                </li>
 
                 <li class="<?= isActive('manage_users.php') ?>">
                     <a href="/restaurant-project/admin/manage_users.php">
@@ -663,11 +721,6 @@ try {
                     </a>
                 </li>
 
-                <li class="<?= isActive('footer_settings.php') ?>">
-                    <a href="/restaurant-project/admin/footer_settings.php">
-                        <i class="fas fa-palette"></i> Cấu hình Footer
-                    </a>
-                </li>
 
 
 
@@ -709,6 +762,7 @@ try {
                     'manage_inventory.php'    => 'Quản Lý Kho Nguyên Liệu',
                     'ReportController.php'    => 'Báo Cáo & Thống Kê Kho',
                     'manage_chefs.php'        => 'Quản Lý Đầu Bếp',
+                    'manage_chef_reviews.php' => 'Quản Lý Đánh Giá Đầu Bếp',
                     'manage_banners.php'      => 'Quản Lý Banner',
                     'manage_videos.php'       => 'Quản Lý Video',
                     'settings.php'            => 'Cài Đặt Hệ Thống Chung',
@@ -718,6 +772,8 @@ try {
                     'manage_contacts.php'     => 'Quản Lý Liên Hệ',
 
                     'UserController.php'      => 'Quản Lý Người Dùng',
+                    'chat_console.php'        => 'Trò Chuyện Trực Tuyến',
+                    'chat_analytics.php'      => 'Thống Kê Trò Chuyện',
                 ];
                 echo $page_titles[$current_page] ?? 'Khu Vực Quản Trị';
                 ?>
@@ -811,4 +867,31 @@ try {
                         }
                     }
                 });
+
+                // Global Chat Alert Polling
+                setInterval(() => {
+                    fetch('/restaurant-project/admin/api/chat_admin_api.php?action=check_alerts')
+                    .then(res => res.json())
+                    .then(data => {
+                        const badges = document.querySelectorAll('.chat-waiting-badge');
+                        badges.forEach(b => {
+                            b.innerText = data.waiting_count;
+                            b.style.display = data.waiting_count > 0 ? 'inline-block' : 'none';
+                        });
+                        
+                        const countLbl = document.getElementById('waitingCount');
+                        if (countLbl) {
+                            countLbl.innerText = data.waiting_count + ' chờ';
+                        }
+
+                        if(data.waiting_count > 0 && !window.lastTingPlayed) {
+                            let audio = new Audio('/restaurant-project/public/assets/audio/ting.mp3');
+                            audio.play().catch(e => {});
+                            window.lastTingPlayed = true; 
+                        } else if (data.waiting_count === 0) {
+                            window.lastTingPlayed = false;
+                        }
+                    }).catch(e => {});
+                }, 3000);
+
             </script>

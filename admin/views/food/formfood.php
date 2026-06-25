@@ -11,7 +11,7 @@ $form_action = $is_edit
     : 'FoodController.php?action=add';
 ?>
 <link rel="stylesheet" href="../../public/assets/admin/css/admin-style.css">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
 .drop-zone{border:2px dashed #cda45e;border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:.2s;background:#fffdf8;position:relative}
@@ -73,7 +73,7 @@ $form_action = $is_edit
 
             <div class="card border-0 shadow-lg" style="border-radius:20px;overflow:hidden;">
                 <div class="card-header bg-dark py-3 px-4 text-center">
-                    <h4 class="mb-0 text-white" style="font-family:'Playfair Display',serif;">
+                    <h4 class="mb-0 text-white" style="font-family:'Cormorant Garamond', serif;">
                         <i class="fas fa-<?= $is_edit ? 'edit' : 'plus-circle' ?> me-2 text-warning"></i>
                         <?= htmlspecialchars($form_title) ?>
                     </h4>
@@ -405,7 +405,7 @@ window.allUnits       = <?= json_encode($all_units) ?>;
 var IS_EDIT           = <?= $is_edit ? 'true' : 'false' ?>;
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
 (function () {
     var MAX_BYTE  = 5 * 1024 * 1024;

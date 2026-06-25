@@ -143,17 +143,17 @@ usort($all_foods, function($a, $b) {
 
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 /* === EDITORIAL FINE DINING VARIABLES === */
 :root {
-  --bg-color: #1A1A1D;       /* Cream */
-  --text-main: #D1D1D1;      /* Dark Gray */
-  --text-muted: #666666;     /* Light Gray for descriptions */
+  --bg-color: #F9F9F9;       /* Cream */
+  --text-main: #222222;      /* Dark Gray */
+  --text-muted: #777777;     /* Light Gray for descriptions */
   --accent-burgundy: #A88746;          /* Olive Green */
   --accent-burgundy: #A88746;           /* Gold Accent */
-  --font-serif: 'Montserrat', sans-serif;
-  --font-sans: 'Open Sans', sans-serif;
+  --font-serif: 'Cormorant Garamond', serif;
+  --font-sans: 'Source Sans 3', sans-serif;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -174,7 +174,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 .editorial-hero-bg {
   position: absolute;
   inset: 0;
-  background-image: url('public/assets/img/hero/1776687242_hero-bg.jpg'); /* Default hero image */
+  background-image: url('public/assets/img/hero/e1ed0ad828fff1d6a15d.jpg'); /* Default hero image */
   background-size: cover;
   background-position: center;
   filter: grayscale(0.2) opacity(0.8);
@@ -183,14 +183,14 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 .editorial-hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(26, 26, 29, 0.7) 0%, rgba(26, 26, 29, 1) 100%);
+  background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);
   z-index: 1;
 }
 .editorial-hero-content {
   position: relative;
   z-index: 2;
   padding: 0 20px;
-  max-width: 700px;
+  max-width: 1000px;
 }
 .eyebrow {
   display: block;
@@ -205,7 +205,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
   font-family: var(--font-serif);
   font-size: clamp(3rem, 6vw, 4.5rem);
   font-weight: 300;
-  color: var(--text-main);
+  color: #ffffff;
   line-height: 1.1;
   margin-bottom: 20px;
 }
@@ -216,9 +216,10 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 .editorial-hero p {
   font-family: var(--font-serif);
   font-size: 1.3rem;
-  color: var(--text-muted);
+  color: rgba(255,255,255,0.85);
   font-style: italic;
   line-height: 1.8;
+  padding: 0 5%;
 }
 
 /* === MENU CONTAINER === */
@@ -369,8 +370,8 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 }
 .menu-item-name {
   font-family: var(--font-serif);
-  font-size: 1.4rem;
-  font-weight: 400;
+  font-size: 1.7rem;
+  font-weight: 600;
   color: var(--text-main);
   background: var(--bg-color);
   padding-right: 15px;
@@ -396,7 +397,8 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 }
 .menu-item-desc {
   font-family: var(--font-serif);
-  font-size: 1.05rem;
+  font-size: 1.25rem;
+  font-weight: 500;
   color: var(--text-muted);
   font-style: italic;
   max-width: 85%;
@@ -432,24 +434,32 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 /* === MODAL MINIMALIST === */
 .ed-modal {
   position: fixed; inset: 0; z-index: 1000;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(10, 10, 12, 0.85);
   display: flex; align-items: center; justify-content: center;
-  opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
-  backdrop-filter: blur(15px);
+  opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
+  backdrop-filter: blur(8px);
 }
 .ed-modal.open { opacity: 1; pointer-events: all; }
+
 .ed-modal-box {
-  background: #262629;
+  background: #FFFFFF;
   width: 100%; max-width: 800px;
   display: flex;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.08);
-  transform: translateY(30px); transition: transform 0.4s ease;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+  transform: translateY(30px); transition: transform 0.6s ease;
+  z-index: 1;
+  position: relative;
+  overflow: hidden;
 }
+
 .ed-modal.open .ed-modal-box { transform: translateY(0); }
+
 .ed-modal-img {
   flex: 0 0 50%;
   position: relative;
 }
+
+
 .ed-modal-img img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
 .ed-modal-content {
   flex: 1; padding: 50px 40px; position: relative;
@@ -462,7 +472,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 }
 .ed-modal-close:hover { color: var(--accent-burgundy); }
 .ed-m-cat { font-family: var(--font-sans); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent-burgundy); margin-bottom: 15px; }
-.ed-m-name { font-family: var(--font-serif); font-size: 2.2rem; color: #ffffff; line-height: 1.2; margin-bottom: 20px; }
+.ed-m-name { font-family: var(--font-serif); font-size: 2.4rem; color: var(--text-main); font-weight: 600; line-height: 1.2; margin-bottom: 20px; }
 .ed-m-desc { font-family: var(--font-serif); font-size: 1.1rem; color: var(--text-muted); font-style: italic; line-height: 1.8; margin-bottom: 30px; }
 .ed-m-price { font-family: var(--font-sans); font-size: 18px; font-weight: 500; color: var(--accent-burgundy); margin-bottom: 30px; letter-spacing: 1px; }
 
@@ -489,7 +499,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
    <div class="editorial-hero-content">
        <span class="eyebrow">Gastronomy Collection</span>
        <h1>Thực đơn<br><em>Restaurantly</em></h1>
-       <p>Một bản giao hưởng của hương vị tinh tế, kết hợp giữa nghệ thuật ẩm thực đương đại và những nguyên liệu thượng hạng nhất.</p>
+       <p>Một bản giao hưởng của hương vị tinh tế, kết hợp giữa nghệ thuật ẩm thực đương đại và những nguyên liệu thượng hạng&nbsp;nhất.</p>
    </div>
 </section>
 
@@ -769,6 +779,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
   <div class="ed-modal-box">
     <div class="ed-modal-img">
       <img id="ed-m-img" src="" alt="" onerror="this.onerror=null; this.src='https://placehold.co/800x600/262629/A88746?text=No+Image'">
+
     </div>
     <div class="ed-modal-content">
       <button class="ed-modal-close" onclick="closeEdModal(null)">✕</button>
@@ -866,12 +877,16 @@ function openEdModal(data) {
     
     document.getElementById('edModal').classList.add('open');
     document.body.style.overflow = 'hidden';
+    
+
 }
 
 function closeEdModal(e) {
     if(e && e.target !== document.getElementById('edModal')) return;
     document.getElementById('edModal').classList.remove('open');
     document.body.style.overflow = '';
+    
+
 }
 document.addEventListener('keydown', function(e) {
     if(e.key === 'Escape') closeEdModal(null);

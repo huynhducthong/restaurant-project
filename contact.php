@@ -72,14 +72,14 @@ $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 include 'views/client/layouts/header.php';
 ?>
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
 <style>
     :root {
-        --bg-color: #1A1A1D;       /* Cream */
+        --bg-color: #F9F9F9;       /* Cream */
         --card-bg: #ffffff;        /* White */
-        --text-main: #D1D1D1;
-        --text-muted: #555555;
+        --text-main: #222222;
+        --text-muted: #777777;
         --accent-burgundy: #A88746;
         --accent-burgundy: #A88746;
         --border-light: rgba(168, 135, 70, 0.15);
@@ -89,7 +89,7 @@ include 'views/client/layouts/header.php';
     .contact-page {
         background: var(--bg-color);
         color: var(--text-main);
-        font-family: 'Open Sans', sans-serif;
+        font-family: 'Source Sans 3', sans-serif;
     }
 
     .contact-hero {
@@ -112,7 +112,7 @@ include 'views/client/layouts/header.php';
     }
 
     .contact-hero h2 {
-        font-family: 'Montserrat', sans-serif;
+        font-family: 'Cormorant Garamond', serif;
         font-size: clamp(3rem, 5vw, 4.5rem);
         color: var(--accent-burgundy);
         margin-bottom: 20px;
@@ -126,7 +126,7 @@ include 'views/client/layouts/header.php';
         font-size: 1.2rem;
         max-width: 600px;
         margin: 0 auto;
-        font-family: 'Montserrat', sans-serif;
+        font-family: 'Cormorant Garamond', serif;
     }
 
     .contact-section {
@@ -161,7 +161,7 @@ include 'views/client/layouts/header.php';
     .info-item h5 {
         color: var(--text-main);
         margin-bottom: 8px;
-        font-family: 'Montserrat', sans-serif;
+        font-family: 'Cormorant Garamond', serif;
         font-size: 1.4rem;
         font-weight: 700;
         letter-spacing: 1px;

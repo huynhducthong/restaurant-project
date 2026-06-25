@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -9,7 +9,7 @@ $db = $database->getConnection();
 
 // Lấy danh sách đầu bếp đang hiển thị, ghim nổi bật lên đầu
 $query = "SELECT * FROM chefs 
-          WHERE is_active = 1 
+          WHERE is_active = 1 AND position IN ('Bếp trưởng', 'Bếp phó', 'Bếp chính')
           ORDER BY is_featured DESC, sort_order ASC, id DESC";
 $stmt = $db->prepare($query);
 $stmt->execute();
@@ -27,7 +27,7 @@ include __DIR__ . '/layouts/header.php';
 
 <style>
 /* ===== CHEF PAGE — DARK LUXURY STYLE ===== */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
 
 :root {
     --accent-burgundy:       #A88746;
@@ -43,7 +43,7 @@ include __DIR__ . '/layouts/header.php';
 .chefs-page {
     background: var(--dark);
     min-height: 100vh;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
 }
 
 /* ---- HERO BANNER ---- */
@@ -88,7 +88,7 @@ include __DIR__ . '/layouts/header.php';
 }
 
 .chefs-hero .subtitle {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: .8rem;
     font-weight: 600;
     letter-spacing: .35em;
@@ -98,7 +98,7 @@ include __DIR__ . '/layouts/header.php';
 }
 
 .chefs-hero h1 {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: clamp(2.8rem, 6vw, 5rem);
     font-weight: 600;
     color: #fff;
@@ -291,7 +291,7 @@ include __DIR__ . '/layouts/header.php';
 }
 
 .chef-name {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1.65rem;
     font-weight: 600;
     color: #fff;
@@ -350,7 +350,7 @@ include __DIR__ . '/layouts/header.php';
 }
 
 .chef-quote p {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-style: italic;
     font-size: 1rem;
     color: var(--text-light);
@@ -376,7 +376,7 @@ include __DIR__ . '/layouts/header.php';
 }
 
 .chefs-empty p {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1.4rem;
     font-style: italic;
 }
@@ -428,16 +428,11 @@ include __DIR__ . '/layouts/header.php';
 
                         <!-- IMAGE + SOCIAL OVERLAY -->
                         <div class="chef-img-wrap">
-                            <?php if (!empty($chef['image'])): ?>
-                                <img
-                                    src="<?= htmlspecialchars('public/assets/img/chefs/' . $chef['image']) ?>"
-                                    alt="<?= htmlspecialchars($chef['name']) ?>"
-                                    loading="lazy">
-                            <?php else: ?>
-                                <div class="chef-img-placeholder">
-                                    <i class="fas fa-user-tie"></i>
-                                </div>
-                            <?php endif; ?>
+                            <img
+                                src="<?= htmlspecialchars('public/assets/img/chefs/' . ($chef['image'] ?: 'default-chef.jpg')) ?>"
+                                alt="<?= htmlspecialchars($chef['name']) ?>"
+                                loading="lazy"
+                                onerror="this.onerror=null; this.src='public/assets/img/chefs/default-chef.jpg'">
 
                             <!-- Social links appear on hover -->
                             <?php

@@ -4,6 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once __DIR__ . '/../../../config/database.php';
+require_once __DIR__ . '/../../../config/language.php';
 
 $database = new Database();
 $db = $database->getConnection();
@@ -118,7 +119,7 @@ if (!empty($logo_path)) {
 
     <!-- GOOGLE FONT -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
         rel="stylesheet">
 
     <!-- BOOTSTRAP -->
@@ -140,7 +141,7 @@ if (!empty($logo_path)) {
         body {
             margin: 0;
             padding: 0 !important;
-            font-family: 'Open Sans', sans-serif;
+            font-family: 'Source Sans 3', sans-serif;
         }
 
         /* =======================
@@ -232,7 +233,7 @@ if (!empty($logo_path)) {
 
             color: #fff;
 
-            font-family: "Montserrat", sans-serif;
+            font-family: 'Cormorant Garamond', serif;
 
             white-space: nowrap;
         }
@@ -241,10 +242,18 @@ if (!empty($logo_path)) {
            NAVBAR
         ======================= */
 
+        @media (min-width: 992px) {
+            .navbar {
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+
         .navbar ul {
             display: flex;
             align-items: center;
-            gap: 22px;
+            gap: 36px;
 
             margin: 0;
             padding: 0;
@@ -258,8 +267,8 @@ if (!empty($logo_path)) {
 
             color: #fff;
 
-            font-family: "Montserrat", sans-serif;
-            font-size: 14px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px;
             font-weight: 600;
 
             text-transform: uppercase;
@@ -290,7 +299,7 @@ if (!empty($logo_path)) {
 
             text-decoration: none;
 
-            font-family: "Montserrat", sans-serif;
+            font-family: 'Cormorant Garamond', serif;
             font-size: 14px;
             font-weight: 600;
 
@@ -371,7 +380,7 @@ if (!empty($logo_path)) {
 
             text-decoration: none;
 
-            font-family: "Montserrat", sans-serif;
+            font-family: 'Cormorant Garamond', serif;
             font-size: 14px;
             font-weight: 600;
 
@@ -413,42 +422,49 @@ if (!empty($logo_path)) {
         }
 
         .oriental-trigger:hover {
-            background: var(--primary-color);
-            color: #1a1814;
+            background: transparent;
+            color: var(--primary-color);
         }
 
         .oriental-trigger i {
-            font-size: 22px;
+            font-size: 38px; /* Much bigger icon */
+            transition: transform 0.4s ease, color 0.3s ease;
+            transform: rotate(0deg);
+            display: inline-block;
+        }
+
+        .oriental-trigger.open i {
+            transform: rotate(180deg);
         }
 
         .btn-book-outside {
-            background-color: #1A1A1D; /* Cream */
-            color: #A88746; /* Olive */
+            background-color: #E65C00;
+            color: #ffffff;
             padding: 8px 16px;
-            font-family: "Montserrat", sans-serif;
-            font-size: 14px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px;
             font-weight: 600;
             letter-spacing: 1px;
             text-transform: uppercase;
             text-decoration: none;
-            border-radius: 0; /* Sharp corners */
-            border: 1px solid #A88746;
+            border-radius: 0;
+            border: 1px solid #E65C00;
             transition: all 0.3s ease;
         }
         
         .btn-book-outside:hover {
-            background-color: #A88746;
-            color: #1A1A1D;
+            background-color: #FF7A00;
+            border-color: #FF7A00;
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(255, 122, 0, 0.6);
         }
 
         .oriental-panel {
             position: absolute;
-            top: 55px;
+            top: 60px;
             right: 0;
-            width: 320px;
-            min-height: auto;
-            background-color: #1A1A1D; /* Cream */
-            border: 1px solid #A88746; /* Olive border */
+            width: 300px;
+            background-color: #ffffff;
             padding: 30px 20px;
             z-index: 10001;
             opacity: 0;
@@ -457,13 +473,11 @@ if (!empty($logo_path)) {
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
-            gap: 0;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15); /* Lighter shadow for bright bg */
-            border-radius: 0; /* Sharp corners */
+            gap: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
         }
 
-        .oriental-nav-wrapper:hover .oriental-panel,
-        .oriental-nav-wrapper:active .oriental-panel {
+        .oriental-panel.show {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
@@ -471,51 +485,28 @@ if (!empty($logo_path)) {
 
         .oriental-item {
             text-decoration: none;
-            color: #A88746; /* Olive */
-            font-family: "Montserrat", sans-serif;
-            font-size: 14px;
+            color: #000000;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 16px;
             font-weight: 600;
-            padding: 15px 20px;
-            border-bottom: 1px solid rgba(168, 135, 70, 0.15); /* Faint olive line */
+            padding: 10px 20px;
+            border-bottom: none;
             transition: all 0.3s ease;
             display: flex;
-            align-items: center;
-            gap: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        .oriental-item:last-child {
-            border-bottom: none;
+            justify-content: center;
+            text-align: center;
+            text-transform: capitalize;
+            letter-spacing: 1px;
         }
 
         .oriental-item:hover {
-            color: #A88746; /* Gold */
-            padding-left: 25px;
-            background-color: rgba(168, 135, 70, 0.05); /* Slight gold hover bg */
+            color: #A88746 !important;
+            background-color: transparent;
         }
 
         .oriental-item i {
-            color: #A88746; /* Olive */
-            font-size: 18px;
-            width: 20px;
-            text-align: center;
-            transition: color 0.3s ease;
+            display: none; /* Hide icons in the new clean menu */
         }
-        
-        .oriental-item:hover i {
-            color: #A88746; /* Gold icon on hover */
-        }
-
-        .oriental-item.text-danger-custom {
-            color: #d63031 !important; /* Standard red for light bg */
-        }
-        
-        .oriental-item.text-danger-custom:hover {
-            background-color: rgba(214, 48, 49, 0.05);
-            color: #d63031 !important;
-        }
-
         @media (max-width: 991px) {
             .navbar {
                 display: none;
@@ -532,7 +523,7 @@ if (!empty($logo_path)) {
 
     <div id="topbar">
 
-        <div class="container d-flex justify-content-between">
+        <div class="container-fluid d-flex justify-content-between" style="padding-left: 8vw; padding-right: 8vw;">
 
             <div class="contact-info d-flex align-items-center flex-wrap">
 
@@ -566,6 +557,12 @@ if (!empty($logo_path)) {
 
             </div>
 
+            <div class="lang-switcher d-flex align-items-center">
+                <a href="?lang=en" style="color: <?= $current_lang == 'en' ? '#C9A66B' : 'rgba(255,255,255,0.7)' ?>; text-decoration: none; font-weight: 600; font-size: 14px; letter-spacing: 1px;">EN</a>
+                <span class="mx-2" style="color: rgba(255,255,255,0.5); font-size: 14px;">/</span>
+                <a href="?lang=vn" style="color: <?= $current_lang == 'vn' ? '#C9A66B' : 'rgba(255,255,255,0.7)' ?>; text-decoration: none; font-weight: 600; font-size: 14px; letter-spacing: 1px;">VN</a>
+            </div>
+
         </div>
 
     </div>
@@ -574,7 +571,7 @@ if (!empty($logo_path)) {
 
     <header id="header">
 
-        <div class="container d-flex align-items-center justify-content-between">
+        <div class="container-fluid d-flex align-items-center justify-content-between" style="padding-left: 8vw; padding-right: 8vw;">
 
             <!-- LOGO -->
 
@@ -606,37 +603,34 @@ if (!empty($logo_path)) {
 
                 <ul>
                     <li>
-                        <a class="<?= ($current_page == 'index.php') ? 'active' : '' ?>"
-                            href="index.php">
-                            Trang chủ
+                        <a class="<?= ($current_page == 'index.php') ? 'active' : '' ?>" href="index.php">
+                            <?= __('home') ?>
                         </a>
                     </li>
 
                     <li>
                         <a class="<?= ($current_page == 'Aboutus.php') ? 'active' : '' ?>"
                             href="Aboutus.php">
-                            Tin Tức
+                            <?= __('news') ?>
                         </a>
                     </li>
 
                     <li>
-                        <a class="<?= ($current_page == 'menu.php') ? 'active' : '' ?>"
-                            href="menu.php">
-                            Thực đơn
+                        <a class="<?= ($current_page == 'menu.php') ? 'active' : '' ?>" href="menu.php">
+                            <?= __('menu') ?>
                         </a>
                     </li>
 
                     <li>
                         <a class="<?= ($current_page == 'chefs.php' || ($current_page == 'Aboutus.php' && strpos($_SERVER['REQUEST_URI'], 'chef') !== false)) ? 'active' : '' ?>"
                             href="<?= safe_url('chefs.php', $path_prefix ?? '') ?>">
-                            Đội Bếp
+                            <?= __('team_chefs') ?>
                         </a>
                     </li>
 
                     <li>
-                        <a class="<?= ($current_page == 'contact.php') ? 'active' : '' ?>"
-                            href="contact.php">
-                            Liên hệ
+                        <a class="<?= ($current_page == 'contact.php') ? 'active' : '' ?>" href="contact.php">
+                            <?= __('contact') ?>
                         </a>
                     </li>
                 </ul>
@@ -653,10 +647,13 @@ if (!empty($logo_path)) {
                     <!-- ORIENTAL MEGA MENU & OUTSIDE BOOKING BUTTON -->
                     <div class="oriental-nav-wrapper" style="display:flex; align-items:center; gap:15px;">
                         <a href="booking_service.php?type=bespoke" class="btn-book-outside" style="background-color: #1a1814; color: #A88746; border-color: #A88746; margin-right: 10px;">BESPOKE DINING</a>
-                        <a href="booking_service.php?type=table" class="btn-book-outside">ĐẶT BÀN</a>
+                        <a href="booking_service.php?type=table" class="btn-book-outside"><?= __('book_table') ?></a>
 
-                        <div class="oriental-trigger">
-                            <i class="bi bi-list"></i>
+                        <!-- Divider line -->
+                        <div style="width: 1px; height: 35px; background-color: rgba(168, 135, 70, 0.4); margin: 0 10px;"></div>
+
+                        <div class="oriental-trigger" onclick="toggleOrientalMenu(event)">
+                            <i class="bi bi-list" id="orientalIcon"></i>
                         </div>
                         
                         <div class="oriental-panel" id="orientalPanel">
@@ -665,28 +662,29 @@ if (!empty($logo_path)) {
                                 <!-- TRANG QUẢN TRỊ / BẢNG CÔNG -->
                                 <?php if (in_array($user_role, ['admin', 'staff', 'waiter', 'chef', 'cashier', 1, 2])): ?>
                                     <a href="admin/admin_dashboard.php" class="oriental-item" style="color: var(--primary-color);">
-                                        <i class="bi bi-speedometer2"></i> Trang quản trị
+                                        Trang quản trị
                                     </a>
                                 <?php endif; ?>
 
                                 <!-- THÔNG TIN CÁ NHÂN -->
                                 <a href="profile.php" class="oriental-item">
-                                    <i class="bi bi-person"></i> Thông tin cá nhân
+                                        Thông tin cá nhân
                                 </a>
 
                                 <!-- ĐĂNG XUẤT -->
                                 <a href="public/logout.php" class="oriental-item text-danger-custom fw-bold">
-                                    <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <?= __('logout') ?>
                                 </a>
                             <?php else: ?>
                                 <!-- ĐĂNG KÝ -->
                                 <a href="<?= safe_url('public/register.php', $path_prefix ?? '') ?>" class="oriental-item">
-                                    <i class="bi bi-person-plus"></i> Đăng ký
+                                        Đăng ký
                                 </a>
 
                                 <!-- ĐĂNG NHẬP -->
                                 <a href="public/login.php" class="oriental-item">
-                                    <i class="bi bi-box-arrow-in-right"></i> Đăng nhập
+                                        Đăng nhập
                                 </a>
                             <?php endif; ?>
                         </div>
@@ -774,7 +772,7 @@ if (!empty($logo_path)) {
                 // Create a custom Toast notification
                 var toastHTML = '<div id="bdToast" style="position:fixed;top:120px;right:20px;z-index:99999;background:rgba(9,30,27,0.98);border:1px solid #A88746;padding:25px;border-radius:12px;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,0.6);transform:translateX(150%);transition:0.6s cubic-bezier(0.34, 1.56, 0.64, 1);max-width:320px;text-align:center;">'+
                 '<i class="fas fa-gift fa-3x mb-3" style="color:#A88746"></i>'+
-                '<h4 style="font-family:\'Montserrat\',serif;color:#A88746;margin-bottom:12px;font-size:1.5rem">Chúc Mừng Sinh Nhật!</h4>'+
+                '<h4 style="font-family:\'Source Sans 3\',serif;color:#A88746;margin-bottom:12px;font-size:1.5rem">Chúc Mừng Sinh Nhật!</h4>'+
                 '<p style="font-size:13px;margin:0;line-height:1.6;color:rgba(255,255,255,0.85)">Hệ thống ghi nhận hôm nay là sinh nhật của Quý khách. Nền tảng đã chuẩn bị sẵn đặc quyền ưu đãi dành riêng cho Đơn đặt bàn ngày hôm nay!</p>'+
                 '</div>';
                 document.body.insertAdjacentHTML('beforeend', toastHTML);
@@ -818,7 +816,7 @@ if (!empty($logo_path)) {
             if(!sessionStorage.getItem('holiday_greeted_' + '<?= $h_month.$h_day ?>')) {
                 var toastHTML = '<div id="holToast" style="position:fixed;top:120px;right:20px;z-index:99999;background:rgba(9,30,27,0.98);border:1px solid #A88746;padding:25px;border-radius:12px;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,0.6);transform:translateX(150%);transition:0.6s cubic-bezier(0.34, 1.56, 0.64, 1);max-width:320px;text-align:center;">'+
                 '<i class="fas <?= $holiday_icon ?> fa-3x mb-3"></i>'+
-                '<h4 style="font-family:\'Montserrat\',serif;color:#A88746;margin-bottom:12px;font-size:1.5rem"><?= $holiday_name ?></h4>'+
+                '<h4 style="font-family:\'Source Sans 3\',serif;color:#A88746;margin-bottom:12px;font-size:1.5rem"><?= $holiday_name ?></h4>'+
                 '<p style="font-size:13px;margin:0;line-height:1.6;color:rgba(255,255,255,0.85)"><?= $holiday_msg ?></p>'+
                 '</div>';
                 document.body.insertAdjacentHTML('beforeend', toastHTML);
@@ -830,6 +828,38 @@ if (!empty($logo_path)) {
     </script>
     <?php endif; ?>
 
+    <script>
+        function toggleOrientalMenu(e) {
+            e.stopPropagation();
+            const panel = document.getElementById('orientalPanel');
+            const icon = document.getElementById('orientalIcon');
+            panel.classList.toggle('show');
+            if (panel.classList.contains('show')) {
+                icon.classList.remove('bi-list');
+                icon.classList.add('bi-x');
+                icon.parentElement.classList.add('open');
+            } else {
+                icon.classList.remove('bi-x');
+                icon.classList.add('bi-list');
+                icon.parentElement.classList.remove('open');
+            }
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('orientalPanel');
+            const trigger = document.querySelector('.oriental-trigger');
+            if (panel && panel.classList.contains('show') && !panel.contains(e.target) && !trigger.contains(e.target)) {
+                panel.classList.remove('show');
+                const icon = document.getElementById('orientalIcon');
+                if (icon) {
+                    icon.classList.remove('bi-x');
+                    icon.classList.add('bi-list');
+                    icon.parentElement.classList.remove('open');
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

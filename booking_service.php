@@ -15,7 +15,27 @@ if (isset($_SESSION['user_id'])) {
     $is_vip = $current_vip ? true : false;
 }
 
+// Lấy Giờ mở cửa từ Cài đặt chung
+$setting_stmt = $db->query("SELECT key_value FROM settings WHERE key_name = 'open_time'");
+$open_time_setting = $setting_stmt->fetchColumn() ?: '09:00 AM - 11:00 PM';
+$time_parts = explode('-', $open_time_setting);
+$restaurant_start_time = count($time_parts) == 2 ? date('H:i', strtotime(trim($time_parts[0]))) : '09:00';
+$restaurant_end_time = count($time_parts) == 2 ? date('H:i', strtotime(trim($time_parts[1]))) : '23:00';
+
 $type = $_GET['type'] ?? 'table';
+$chef_id = isset($_GET['chef_id']) ? (int)$_GET['chef_id'] : 0;
+$autofill_chef_msg = '';
+$autofilled_chef_name = '';
+if ($chef_id > 0) {
+    $stmt_c = $db->prepare("SELECT name FROM chefs WHERE id = ? AND is_active = 1");
+    $stmt_c->execute([$chef_id]);
+    $autofilled_chef = $stmt_c->fetch(PDO::FETCH_ASSOC);
+    if ($autofilled_chef) {
+        $autofilled_chef_name = $autofilled_chef['name'];
+        $autofill_chef_msg = "Yêu cầu Bếp trưởng " . $autofilled_chef['name'] . " phục vụ.";
+    }
+}
+
 $svc  = [
     'table'    => ['title'=>'Đặt Chỗ Cao Cấp','sub'=>'Ẩm thực đỉnh cao chuẩn Michelin','icon'=>'table'],
     'birthday' => ['title'=>'Không Gian Kỷ Niệm','sub'=>'Riêng tư, sang trọng và đẳng cấp','icon'=>'birthday'],
@@ -61,7 +81,7 @@ foreach($combos_raw as $cb) {
 $t_open = []; $t_room = [];
 if ($type !== 'chef') {
     $t_open = $db->query("SELECT * FROM restaurant_tables WHERE category='open' ORDER BY id")->fetchAll(PDO::FETCH_ASSOC);
-    $t_room = $db->query("SELECT * FROM restaurant_tables WHERE category='room'  ORDER BY id")->fetchAll(PDO::FETCH_ASSOC);
+    $t_room = $db->query("SELECT * FROM restaurant_tables WHERE category='room' ORDER BY id")->fetchAll(PDO::FETCH_ASSOC);
 }
 
 $foods_raw  = $db->query("
@@ -220,27 +240,27 @@ uksort($grouped_foods, function($a, $b) use ($category_order) {
 include 'views/client/layouts/header.php';
 ?>
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
 <style>
 /* === MINIMALIST TOKENS === */
 :root {
-  --bg-cream: #1A1A1D;
+  --bg-cream: #F9F9F9;
   --forest: #A88746; /* Olive */
   --forest-light: #8B6D36;
   --accent-burgundy: #A88746;
   --accent-burgundy-glow: rgba(168, 135, 70, 0.2);
-  --glass-bg: #262629;
-  --glass-border: #333336;
-  --text-main: #D1D1D1;
-  --text-muted: #666666;
+  --glass-bg: #FFFFFF;
+  --glass-border: #E5E5E5;
+  --text-main: #222222;
+  --text-muted: #777777; /* Brightened from #666666 for better visibility */
   --ease: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 body {
     background-color: var(--bg-cream);
     color: var(--text-main);
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
 }
 
 /* === CINEMATIC HERO === */
@@ -261,15 +281,15 @@ body {
 }
 .hero-tagline::after { content: ''; display: inline-block; width: 40px; height: 1px; background: var(--forest); margin-left: 15px; }
 .hero-luxury h1 {
-    font-family: 'Montserrat', sans-serif; font-size: clamp(3.5rem, 6vw, 5rem); font-weight: 600; line-height: 1.1; margin-bottom: 20px; color: var(--text-main);
+    font-family: 'Cormorant Garamond', serif; font-size: clamp(3.5rem, 6vw, 5rem); font-weight: 600; line-height: 1.1; margin-bottom: 20px; color: #ffffff;
 }
-.hero-sub { color: var(--text-muted); font-weight: 400; font-size: 1.05rem; line-height: 1.6; max-width: 550px; margin-bottom: 40px; }
+.hero-sub { color: rgba(255,255,255,0.8); font-weight: 400; font-size: 1.05rem; line-height: 1.6; max-width: 550px; margin-bottom: 40px; }
 .hero-btns { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
 .btn-hero-primary {
     background: var(--forest); color: #fff; font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
     padding: 14px 35px; border-radius: 0; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s var(--ease); border: 1px solid var(--forest);
 }
-.btn-hero-primary:hover { background: #262629; color: var(--forest); }
+.btn-hero-primary:hover { background: #FFFFFF; color: var(--forest); }
 .btn-hero-secondary {
     background: transparent; border: 1px solid var(--forest); color: var(--forest); font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
     padding: 14px 35px; border-radius: 0; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s var(--ease);
@@ -279,7 +299,7 @@ body {
 /* === TABS DỊCH VỤ === */
 .service-selector-inline { display: flex; gap: 8px; margin-bottom: 30px; flex-wrap: wrap; }
 .svc-card-inline {
-    background: #262629; border: 1px solid var(--glass-border); padding: 10px 12px; border-radius: 0; color: var(--text-muted); font-size: 11px; font-weight: 500; text-transform: uppercase; text-decoration: none; transition: 0.3s; letter-spacing: 1px; flex-grow: 1; text-align: center;
+    background: #FFFFFF; border: 1px solid var(--glass-border); padding: 10px 12px; border-radius: 0; color: var(--text-muted); font-size: 11px; font-weight: 500; text-transform: uppercase; text-decoration: none; transition: 0.3s; letter-spacing: 1px; flex-grow: 1; text-align: center;
 }
 .svc-card-inline:hover { border-color: var(--forest); color: var(--forest); }
 .svc-card-inline.active { background: var(--forest); border-color: var(--forest); color: #fff; font-weight: 600; }
@@ -292,7 +312,7 @@ body {
 .wizard-header { display: flex; justify-content: space-between; position: relative; margin-bottom: 30px; padding: 0 10px; }
 .wizard-header::before { content: ''; position: absolute; top: 15px; left: 30px; right: 30px; height: 2px; background: var(--glass-border); z-index: 1; }
 .step-indicator { position: relative; z-index: 2; text-align: center; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
-.step-circle { width: 32px; height: 32px; border-radius: 50%; background: #262629; border: 2px solid var(--glass-border); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; margin-bottom: 8px; transition: 0.3s; }
+.step-circle { width: 32px; height: 32px; border-radius: 50%; background: #FFFFFF; border: 2px solid var(--glass-border); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; margin-bottom: 8px; transition: 0.3s; }
 .step-label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; transition: 0.3s; }
 
 .step-indicator.active .step-circle { border-color: var(--accent-burgundy); background: var(--accent-burgundy); color: #fff; }
@@ -311,18 +331,18 @@ body {
 .booking-section { position: relative; max-width: 1450px; margin: -80px auto 100px; padding: 0 20px; z-index: 10; display: grid; grid-template-columns: 1fr 450px; gap: 40px; }
 @media (max-width: 992px) { .booking-section { grid-template-columns: 1fr; margin-top: 0; padding-top: 30px; gap: 20px; } }
 
-.luxury-panel { background: #262629; border: 1px solid var(--glass-border); border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; }
+.luxury-panel { background: #FFFFFF; border: 1px solid var(--glass-border); border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; }
 .panel-section { padding: 35px 40px; border-bottom: 1px solid var(--glass-border); }
 .panel-section:last-child { border-bottom: none; }
-.section-title-lux { font-family: 'Montserrat', sans-serif; font-size: 1.8rem; color: var(--forest); margin-bottom: 25px; display: flex; align-items: center; gap: 15px; font-weight: 600;}
+.section-title-lux { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--forest); margin-bottom: 25px; display: flex; align-items: center; gap: 15px; font-weight: 600;}
 
 /* === INPUTS === */
 .row-lux { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 @media(max-width:600px) { .row-lux { grid-template-columns: 1fr; } }
 .input-group-lux { position: relative; margin-bottom: 20px; }
 .input-lux {
-    width: 100%; background: #262629; border: 1px solid var(--glass-border); padding: 16px 20px;
-    color: var(--text-main); font-family: 'Open Sans', sans-serif; font-size: 14px; border-radius: 0; transition: all 0.3s ease; outline: none;
+    width: 100%; background: #FFFFFF; border: 1px solid var(--glass-border); padding: 16px 20px;
+    color: var(--text-main); font-family: 'Source Sans 3', sans-serif; font-size: 14px; border-radius: 0; transition: all 0.3s ease; outline: none;
     height: 54px; box-sizing: border-box;
 }
 .input-lux:focus { border-color: var(--accent-burgundy); }
@@ -331,18 +351,18 @@ body {
     position: absolute; top: 18px; left: 20px; color: #cccccc; font-size: 14px; pointer-events: none; transition: 0.3s ease; z-index: 2;
 }
 .input-lux:focus ~ .label-lux, .input-lux:not(:placeholder-shown) ~ .label-lux, select.input-lux ~ .label-lux {
-    top: -8px; left: 15px; font-size: 11px; color: var(--accent-burgundy); background: #262629; padding: 0 5px; letter-spacing: 1px; text-transform: uppercase; z-index: 2; font-weight: 600;
+    top: -8px; left: 15px; font-size: 11px; color: #D4AF37; /* Brighter gold for labels */ background: #FFFFFF; padding: 0 5px; letter-spacing: 1px; text-transform: uppercase; z-index: 2; font-weight: 600;
 }
 select.input-lux {
     appearance: none; -webkit-appearance: none; -moz-appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23C9A66B'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
     background-repeat: no-repeat; background-position: right 20px center; background-size: 18px; padding-right: 45px; cursor: pointer;
 }
-.input-lux option { background: #262629; color: var(--text-main); }
+.input-lux option { background: #FFFFFF; color: var(--text-main); }
 
 /* Guest Counter */
-.guest-lux { display: flex; align-items: center; background: #262629; border: 1px solid var(--glass-border); border-radius: 0; padding: 0; height: 54px; box-sizing: border-box; }
-.btn-qty { width: 44px; height: 100%; border-radius: 0; border: none; background: #262629; color: var(--text-main); cursor: pointer; transition: 0.3s; font-size: 16px; }
+.guest-lux { display: flex; align-items: center; background: #FFFFFF; border: 1px solid var(--glass-border); border-radius: 0; padding: 0; height: 54px; box-sizing: border-box; }
+.btn-qty { width: 44px; height: 100%; border-radius: 0; border: none; background: #FFFFFF; color: var(--text-main); cursor: pointer; transition: 0.3s; font-size: 16px; }
 .btn-qty:first-child { border-right: 1px solid var(--glass-border); }
 .btn-qty:last-child { border-left: 1px solid var(--glass-border); }
 .btn-qty:hover { background: var(--forest); color: #fff; border-color: var(--forest); }
@@ -350,57 +370,59 @@ select.input-lux {
 
 /* === MAP BTN & CARDS === */
 .map-btn-lux {
-    width: 100%; padding: 25px; border: 1px solid var(--forest); border-radius: 0; color: var(--forest); text-transform: uppercase; letter-spacing: 2px; font-size: 12px; cursor: pointer; transition: 0.3s; text-align: center; background: #262629; font-weight: 600;
+    width: 100%; padding: 25px; border: 1px solid var(--forest); border-radius: 0; color: var(--forest); text-transform: uppercase; letter-spacing: 2px; font-size: 12px; cursor: pointer; transition: 0.3s; text-align: center; background: #FFFFFF; font-weight: 600;
 }
 .map-btn-lux:hover { background: var(--forest); color: #fff; }
 
 .card-select {
-    border: 1px solid var(--glass-border); background: #262629; border-radius: 0; padding: 20px; cursor: pointer; transition: all 0.3s ease; position: relative; margin-bottom: 15px; overflow: hidden;
+    border: 1px solid var(--glass-border); background: #FFFFFF; border-radius: 0; padding: 20px; cursor: pointer; transition: all 0.3s ease; position: relative; margin-bottom: 15px; overflow: hidden;
 }
 .card-select:hover { border-color: var(--forest); }
 .card-select.active { border-color: var(--forest); background: rgba(168, 135, 70, 0.05); }
 .card-select.active::after { content: '✓'; position: absolute; top: 15px; right: 15px; color: var(--forest); font-weight: bold; }
 
 /* Thực đơn Add-on */
-.menu-item-lux { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid var(--glass-border); transition: 0.3s; border-radius: 0; background: #262629; }
-.menu-item-lux:hover { background: #262629; }
+.menu-item-lux { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid var(--glass-border); transition: 0.3s; border-radius: 0; background: #FFFFFF; }
+.menu-item-lux:hover { background: #FFFFFF; }
 .menu-checkbox { appearance: none; width: 18px; height: 18px; border: 1px solid var(--glass-border); border-radius: 0; cursor: pointer; position: relative; transition: 0.2s; }
 .menu-checkbox:checked { background: var(--forest); border-color: var(--forest); }
 .menu-checkbox:checked::after { content: '✓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #fff; font-size: 10px; font-weight: bold; }
-.menu-qty-input { width: 60px; background: #262629; border: 1px solid var(--glass-border); color: var(--text-main); text-align: center; border-radius: 0; padding: 4px; opacity: 0.3; pointer-events: none; transition: 0.3s; }
-.menu-note-input { width: 200px; background: #262629; border: 1px solid var(--glass-border); color: var(--text-main); border-radius: 0; padding: 4px; opacity: 0.3; pointer-events: none; transition: 0.3s; }
+.menu-qty-input { width: 60px; background: #FFFFFF; border: 1px solid var(--glass-border); color: var(--text-main); text-align: center; border-radius: 0; padding: 4px; opacity: 0.3; pointer-events: none; transition: 0.3s; }
+.menu-note-input { width: 200px; background: #FFFFFF; border: 1px solid var(--glass-border); color: var(--text-main); border-radius: 0; padding: 4px; opacity: 0.3; pointer-events: none; transition: 0.3s; }
 .menu-item-lux.checked .menu-qty-input, .menu-item-lux.checked .menu-note-input { opacity: 1; pointer-events: auto; border-color: var(--forest); }
 
 /* === FLOATING SUMMARY === */
 .summary-floating {
-    position: sticky; top: 100px; background: var(--forest); border: none; border-radius: 0; padding: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); color: #fff;
+    position: sticky; top: 100px; background: #ffffff; border: 1px solid var(--glass-border); border-radius: 0; padding: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); color: #000000;
 }
-.sum-title { font-family: 'Montserrat', sans-serif; font-size: 1.6rem; color: var(--accent-burgundy); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 20px; }
-.sum-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 13px; color: rgba(255,255,255,0.7); }
-.sum-val { color: #fff; font-weight: 400; text-align: right;}
-.sum-val.highlight { color: var(--accent-burgundy); font-weight: 600;}
+.sum-title { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: #000000; font-weight: 700; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 15px; margin-bottom: 20px; }
+.sum-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 15px; color: #000000; font-weight: 500; }
+.sum-val { color: #000000; font-weight: 400; text-align: right;}
+.sum-val.highlight { color: #000000; font-weight: 700;}
 
 /* Override for billing summary (yellow background) */
 .billing-summary .sum-row { color: rgba(0, 0, 0, 0.75); font-weight: 500; border-color: rgba(0,0,0,0.1); }
-.billing-summary .sum-val { color: #1a1a1d; font-weight: 700; }
+.billing-summary .sum-val { color: #F9F9F9; font-weight: 700; }
 .billing-summary .sum-val.highlight { color: #000; font-weight: 800; }
-.billing-summary p { color: #1a1a1d !important; }
+.billing-summary p { color: #F9F9F9 !important; }
 
-.total-box { margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; }
-.deposit-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 5px; }
-.deposit-amount { font-family: 'Montserrat', sans-serif; font-size: 2.5rem; color: var(--accent-burgundy); line-height: 1.2; margin: 5px 0;}
-.deposit-note { font-size: 11px; font-style: italic; color: rgba(255,255,255,0.4); }
+.total-box { margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.1); text-align: center; }
+.deposit-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(0,0,0,0.5); margin-bottom: 5px; }
+.deposit-amount { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; color: var(--accent-burgundy); line-height: 1.2; margin: 5px 0;}
+.deposit-note { font-size: 11px; font-style: italic; color: rgba(0,0,0,0.5); }
 
 /* Overrides for billing summary total box */
 .billing-summary .total-box { border-top-color: rgba(0,0,0,0.1); }
-.billing-summary .deposit-label { color: rgba(0,0,0,0.6); font-weight: 600; }
-.billing-summary .deposit-amount { color: #000; }
-.billing-summary .deposit-note { color: rgba(0,0,0,0.5); }
+.billing-summary .deposit-label { color: rgba(255,255,255,0.8); font-weight: 600; }
+.billing-summary .deposit-amount { color: #ffffff; font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,0.2); }
+.billing-summary .deposit-note { color: rgba(255,255,255,0.6); }
 
 .btn-gold-grad {
     width: 100%; padding: 16px; background: var(--accent-burgundy); border: 1px solid var(--accent-burgundy); border-radius: 0; color: #fff; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-size: 13px; cursor: pointer; transition: all 0.3s ease;
 }
-.btn-gold-grad:hover { background: transparent; color: var(--accent-burgundy); }
+.btn-gold-grad:hover { background: #1a1a1a; color: #ffffff; border-color: #1a1a1a; }
+.billing-summary .btn-gold-grad { background: #ffffff; color: #000000; border: 1px solid #ffffff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.billing-summary .btn-gold-grad:hover { background: #1a1a1a; color: #ffffff; border-color: #1a1a1a; }
 
 .btn-outline-lux {
     background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 10px 25px; border-radius: 0; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-size: 13px; cursor: pointer; transition: all 0.3s ease;
@@ -408,24 +430,24 @@ select.input-lux {
 .btn-outline-lux:hover { background: var(--text-muted); color: #fff; }
 
 /* === MAP MODAL VIP === */
-.modal-content.dark-lux { background: #262629; border: 1px solid var(--forest); border-radius: 0; color: var(--text-main); }
+.modal-content.dark-lux { background: #FFFFFF; border: 1px solid var(--forest); border-radius: 0; color: var(--text-main); }
 .modal-header.lux { border-bottom: 1px solid var(--glass-border); padding: 20px 30px; }
-.modal-title.lux { font-family: 'Montserrat', sans-serif; color: var(--forest); font-size: 1.5rem; font-weight: 600; }
+.modal-title.lux { font-family: 'Cormorant Garamond', serif; color: var(--forest); font-size: 1.5rem; font-weight: 600; }
 .btn-close-lux { opacity: 0.5; }
 .cinematic-map { padding: 40px; background: var(--bg-cream); }
 .map-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
 .vip-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
 
 .seat-lux {
-    background: #262629; border: 1px solid var(--glass-border); border-radius: 0; padding: 15px 10px; text-align: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;
+    background: #FFFFFF; border: 1px solid var(--glass-border); border-radius: 0; padding: 15px 10px; text-align: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;
 }
 .seat-lux.available:hover { border-color: var(--forest); transform: scale(1.05); z-index: 2; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
 .seat-lux.booked { opacity: 0.5; cursor: not-allowed; background: #f0f0f0;}
 .seat-lux.selected { background: var(--forest); border-color: var(--forest); transform: scale(1.05); z-index: 3; }
-.seat-code { font-family: 'Montserrat', sans-serif; font-size: 1.2rem; color: var(--text-main); display: block; font-weight: 600;}
+.seat-code { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--text-main); display: block; font-weight: 600;}
 .seat-lux.selected .seat-code { color: #fff; }
 .seat-info { font-size: 10px; color: var(--text-muted); display: block; margin-top: 5px;}
-.seat-lux.selected .seat-info { color: rgba(255,255,255,0.7); }
+.seat-lux.selected .seat-info { color: rgba(0,0,0,0.7); }
 </style>
 
 <section class="hero-luxury">
@@ -461,7 +483,7 @@ select.input-lux {
 
             <?php if (!$is_vip && in_array($type, ['chef', 'bespoke'])): ?>
                 <div style="position: relative;">
-                    <div style="position: absolute; inset: 0; background: rgba(255,255,255,0.7); backdrop-filter: blur(5px); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; border-radius: 10px;">
+                    <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; border-radius: 10px;">
                         <i class="fas fa-lock" style="font-size: 3rem; color: var(--gold); margin-bottom: 20px;"></i>
                         <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--forest); margin-bottom: 15px;">Chỉ Dành Cho Hội Viên VIP</h3>
                         <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 30px;">Dịch vụ <strong><?= $cfg['title'] ?></strong> là đặc quyền đẳng cấp thiết kế riêng cho khách hàng VIP.</p>
@@ -512,9 +534,9 @@ select.input-lux {
                             <input type="number" name="guests" id="gi" value="2" min="1" max="50" readonly onchange="us()">
                             <button type="button" class="btn-qty" onclick="cg(1)">+</button>
                         </div>
-                        <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--accent-burgundy); background: #262629; padding: 0 5px; letter-spacing: 1px; text-transform: uppercase; z-index: 2; font-weight: 600;">Số lượng khách *</label>
+                        <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--accent-burgundy); background: #FFFFFF; padding: 0 5px; letter-spacing: 1px; text-transform: uppercase; z-index: 2; font-weight: 600;">Số lượng khách *</label>
                         <?php if ($type === 'chef'): ?>
-                            <div class="mt-2 p-2" style="background: #fdfdfd; border: 1px solid var(--glass-border); font-size: 11px; color: var(--text-main); line-height: 1.5; border-radius: 0;">
+                            <div class="mt-2 p-3" style="background: rgba(168, 135, 70, 0.08); border: 1px solid rgba(168, 135, 70, 0.3); font-size: 12px; color: var(--text-main); line-height: 1.6; border-radius: 4px;">
                                 <i class="fas fa-info-circle me-1" style="color: var(--forest);"></i> <strong style="color: var(--forest);">Phí phục vụ Bếp trưởng</strong> thay đổi theo số lượng khách:<br>
                                 • ≤ 2 khách: 250.000đ<br>
                                 • 3-6 khách: 500.000đ<br>
@@ -539,7 +561,7 @@ select.input-lux {
                             </select>
                             <label class="label-lux" >Loại hình kỷ niệm</label>
                             <div id="event_img_wrap" style="display:none; margin-top:15px; text-align:center;">
-                                <img id="event_img_preview" src="" style="width:100%; height:140px; object-fit:cover; border-radius:10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--glass-border);">
+                                <img id="event_img_preview" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="width:100%; height:140px; object-fit:cover; border-radius:10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--glass-border); display:none;">
                             </div>
                         </div>
                         <div class="input-group-lux w-100">
@@ -548,7 +570,7 @@ select.input-lux {
                             </select>
                             <label class="label-lux">Gói trang trí</label>
                             <div id="decor_img_wrap" style="display:none; margin-top:15px; text-align:center;">
-                                <img id="decor_img_preview" src="" style="width:100%; height:140px; object-fit:cover; border-radius:10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--glass-border);">
+                                <img id="decor_img_preview" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="width:100%; height:140px; object-fit:cover; border-radius:10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--glass-border); display:none;">
                             </div>
                         </div>
                     </div>
@@ -593,7 +615,7 @@ select.input-lux {
                         <select id="selected_chef" class="input-lux" onchange="updateChefReq(); us();">
                             <option value="">-- Nhà hàng tự sắp xếp --</option>
                             <?php foreach ($chefs as $c): ?>
-                                <option value="<?= htmlspecialchars($c['name']) ?>">Chef <?= htmlspecialchars($c['name']) ?></option>
+                                <option value="<?= htmlspecialchars($c['name']) ?>" <?= ($autofilled_chef_name === $c['name']) ? 'selected' : '' ?>>Chef <?= htmlspecialchars($c['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
                         <label class="label-lux" >Bếp trưởng chỉ định</label>
@@ -692,7 +714,7 @@ select.input-lux {
                         'img'  => $theme_data['img']
                     ]), ENT_QUOTES, 'UTF-8');
                 ?>
-                <p style="font-size:13px; color:var(--accent-burgundy); margin-bottom:10px; font-family:'Montserrat', sans-serif; text-transform:uppercase; letter-spacing:1px; border-bottom: 1px dashed rgba(212,176,106,0.3); padding-bottom:5px; cursor:pointer;" onclick='showThemeInfo(<?= $themeJson ?>)'>
+                <p style="font-size:13px; color:var(--accent-burgundy); margin-bottom:10px; font-family:'Cormorant Garamond', serif; text-transform:uppercase; letter-spacing:1px; border-bottom: 1px dashed rgba(212,176,106,0.3); padding-bottom:5px; cursor:pointer;" onclick='showThemeInfo(<?= $themeJson ?>)'>
                     SET MENU TỪ CHỦ ĐỀ: <?= htmlspecialchars($theme_name) ?> <i class="fas fa-info-circle ms-1" style="font-size:11px; opacity:0.7;"></i>
                 </p>
                 <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:15px; margin-bottom: 25px;">
@@ -715,8 +737,8 @@ select.input-lux {
 
                 <?php endif; ?>
 
-                <div id="bespoke-menu-fields" style="display:<?= $type === 'bespoke' ? 'block' : 'none' ?>; margin-top:20px; border: 1px solid var(--glass-border); padding:20px; background: #262629;">
-                    <h4 style="font-family:'Montserrat',serif; color:var(--accent-burgundy); font-size:1.2rem; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px;"><i class="fas fa-scroll me-2"></i> Yêu cầu Thiết kế Thực đơn riêng</h4>
+                <div id="bespoke-menu-fields" style="display:<?= $type === 'bespoke' ? 'block' : 'none' ?>; margin-top:20px; border: 1px solid var(--glass-border); padding:20px; background: #FFFFFF;">
+                    <h4 style="font-family:'Cormorant Garamond', serif; color:var(--accent-burgundy); font-size:1.2rem; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px;"><i class="fas fa-scroll me-2"></i> Yêu cầu Thiết kế Thực đơn riêng</h4>
                     <div class="row-lux mb-3">
                         <div class="input-group-lux">
                             <select name="chef_budget" id="chef_budget" class="input-lux" onchange="updateChefReq(); us(); calcTotal();">
@@ -833,7 +855,7 @@ select.input-lux {
                         </div>
                     </label>
 
-                    <div class="p-2 rounded" style="background: #262629; border:1px solid var(--glass-border); transition:0.3s; border-radius:0;">
+                    <div class="p-2 rounded" style="background: #FFFFFF; border:1px solid var(--glass-border); transition:0.3s; border-radius:0;">
                         <label class="d-flex align-items-center gap-3" style="cursor:pointer; margin-bottom:0;" onclick="document.getElementById('flower-input-wrap').style.display = document.getElementById('bespoke-flower').checked ? 'block' : 'none'; us();">
                             <input type="checkbox" name="has_bespoke_flower" id="bespoke-flower" class="menu-checkbox">
                             <div>
@@ -849,7 +871,7 @@ select.input-lux {
                         </div>
                     </div>
 
-                    <div class="p-2 rounded" style="background: #262629; border:1px solid var(--glass-border); transition:0.3s; border-radius:0;">
+                    <div class="p-2 rounded" style="background: #FFFFFF; border:1px solid var(--glass-border); transition:0.3s; border-radius:0;">
                         <label class="d-flex align-items-center gap-3" style="cursor:pointer; margin-bottom:0;" onclick="document.getElementById('card-input-wrap').style.display = document.getElementById('bespoke-card').checked ? 'block' : 'none'; us();">
                             <input type="checkbox" name="has_handwritten_card" id="bespoke-card" class="menu-checkbox">
                             <div>
@@ -911,7 +933,7 @@ select.input-lux {
                 
                 <div class="row mb-4">
                     <div class="col-md-4 mb-3 mb-md-0">
-                        <label class="fw-bold mb-3" style="color: var(--accent-burgundy); font-family: 'Montserrat', sans-serif; font-size: 1.1rem;"><i class="fas fa-exclamation-triangle me-1"></i> Dị ứng thực phẩm</label>
+                        <label class="fw-bold mb-3" style="color: var(--accent-burgundy); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;"><i class="fas fa-exclamation-triangle me-1"></i> Dị ứng thực phẩm</label>
                         <div class="d-flex flex-column gap-2" style="font-size: 0.95rem;">
                             <label class="form-check-label cursor-pointer"><input type="checkbox" name="allergies[]" value="Hải sản" class="form-check-input me-2" style="cursor:pointer"> Hải sản</label>
                             <label class="form-check-label cursor-pointer"><input type="checkbox" name="allergies[]" value="Sữa" class="form-check-input me-2" style="cursor:pointer"> Sữa</label>
@@ -922,7 +944,7 @@ select.input-lux {
                     </div>
                     
                     <div class="col-md-4 mb-3 mb-md-0">
-                        <label class="fw-bold mb-3" style="color: var(--accent-burgundy); font-family: 'Montserrat', sans-serif; font-size: 1.1rem;"><i class="fas fa-leaf me-1"></i> Chế độ ăn</label>
+                        <label class="fw-bold mb-3" style="color: var(--accent-burgundy); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;"><i class="fas fa-leaf me-1"></i> Chế độ ăn</label>
                         <div class="d-flex flex-column gap-2" style="font-size: 0.95rem;">
                             <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Healthy" class="form-check-input me-2" style="cursor:pointer"> Healthy</label>
                             <label class="form-check-label cursor-pointer"><input type="radio" name="diet" value="Vegetarian" class="form-check-input me-2" style="cursor:pointer"> Vegetarian</label>
@@ -933,7 +955,7 @@ select.input-lux {
                     </div>
 
                     <div class="col-md-4">
-                        <label class="fw-bold mb-3" style="color: var(--accent-burgundy); font-family: 'Montserrat', sans-serif; font-size: 1.1rem;"><i class="fas fa-glass-cheers me-1"></i> Mục đích</label>
+                        <label class="fw-bold mb-3" style="color: var(--accent-burgundy); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;"><i class="fas fa-glass-cheers me-1"></i> Mục đích</label>
                         <div class="d-flex flex-column gap-2" style="font-size: 0.95rem;">
                             <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Hẹn hò" class="form-check-input me-2" style="cursor:pointer"> Hẹn hò</label>
                             <label class="form-check-label cursor-pointer"><input type="radio" name="purpose" value="Sinh nhật" class="form-check-input me-2" style="cursor:pointer"> Sinh nhật</label>
@@ -945,7 +967,7 @@ select.input-lux {
                 </div>
 
                 <div class="input-group-lux mb-0 mt-4">
-                    <textarea name="message" class="input-lux" rows="2" placeholder=" "></textarea>
+                    <textarea name="message" class="input-lux" rows="2" placeholder=" "><?= htmlspecialchars($autofill_chef_msg) ?></textarea>
                     <label class="label-lux"><i class="fas fa-comment-dots me-1"></i> Ghi chú / Yêu cầu đặc biệt khác</label>
                 </div>
             </div> <!-- Close panel-section (Hồ sơ yêu cầu) -->
@@ -990,14 +1012,14 @@ select.input-lux {
             <div class="sum-row"><span>Bộ Sưu Tập Hương Vị / Món</span> <span class="sum-val" id="sm">0 đ</span></div>
             
             <?php if ($is_vip && isset($current_vip['discount_percent']) && $current_vip['discount_percent'] > 0): ?>
-                <div class="sum-row" style="color: #c8933a; border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 10px; margin-top: 10px;">
+                <div class="sum-row" style="color: #000000; font-weight: 700; border-top: 1px dashed rgba(0,0,0,0.1); padding-top: 12px; margin-top: 12px;">
                     <span><i class="fas fa-crown"></i> Ưu đãi VIP (-<?= floatval($current_vip['discount_percent']) ?>%)</span> 
-                    <span class="sum-val" id="s-vip-discount" style="color: #c8933a;">0 đ</span>
+                    <span class="sum-val" id="s-vip-discount" style="color: #000000;">0 đ</span>
                 </div>
             <?php endif; ?>
             
-            <div id="selected-foods-list" style="margin-top: 15px; border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 15px; display: none;">
-                <div style="font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 10px;">Chi tiết món đã chọn:</div>
+            <div id="selected-foods-list" style="margin-top: 15px; border-top: 1px dashed rgba(0,0,0,0.15); padding-top: 15px; display: none;">
+                <div style="font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: rgba(0,0,0,0.5); margin-bottom: 10px;">Chi tiết món đã chọn:</div>
                 <div id="selected-foods-container" style="display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; padding-right: 5px;">
                     <!-- Dynamic selected food items will go here -->
                 </div>
@@ -1062,8 +1084,56 @@ select.input-lux {
     function validateStep1() {
         let name = document.querySelector('[name="customer_name"]').value.trim();
         let phone = document.querySelector('[name="customer_phone"]').value.trim();
-        let date = document.getElementById('bd').value;
-        let isValid = name !== '' && phone !== '' && date !== '';
+        let dateInput = document.getElementById('bd');
+        let dateVal = dateInput.value;
+        let isValid = name !== '' && phone !== '' && dateVal !== '';
+        
+        let dateErrorMsg = document.getElementById('date-error-msg');
+        if (!dateErrorMsg) {
+            dateErrorMsg = document.createElement('small');
+            dateErrorMsg.id = 'date-error-msg';
+            dateErrorMsg.className = 'text-danger mt-1 d-block fw-bold';
+            dateInput.parentNode.appendChild(dateErrorMsg);
+        }
+        dateErrorMsg.innerText = '';
+        
+        if (dateVal !== '') {
+            let bookingDate = new Date(dateVal);
+            let now = new Date();
+            let bookingType = '<?= $type ?>';
+            let minHours = 1;
+            let errorMsgText = 'Xin vui lòng chọn thời gian đặt bàn từ <?= $open_time_setting ?> (tối thiểu trước 1 tiếng)';
+
+            if (bookingType === 'event') {
+                minHours = 3;
+                errorMsgText = 'Dịch vụ Tiệc kỷ niệm yêu cầu chuẩn bị chu đáo, quý khách vui lòng đặt trước ít nhất 3 tiếng.';
+            } else if (bookingType === 'home') {
+                minHours = 24;
+                errorMsgText = 'Dịch vụ Đầu bếp tại gia cần chọn lọc nguyên liệu riêng, quý khách vui lòng đặt trước ít nhất 24 tiếng.';
+            } else if (bookingType === 'bespoke') {
+                minHours = 48;
+                errorMsgText = 'Dịch vụ Thiết kế riêng đòi hỏi sự chuẩn bị hoàn mỹ nhất, quý khách vui lòng đặt trước ít nhất 48 tiếng.';
+            }
+
+            let minAllowedTime = new Date(now.getTime() + minHours * 60 * 60000); 
+            
+            if (bookingDate < minAllowedTime) {
+                isValid = false;
+                dateErrorMsg.innerText = errorMsgText;
+            } else {
+                let hours = bookingDate.getHours().toString().padStart(2, '0');
+                let mins = bookingDate.getMinutes().toString().padStart(2, '0');
+                let timeStr = hours + ':' + mins;
+                let startTime = '<?= $restaurant_start_time ?>';
+                let endTime = '<?= $restaurant_end_time ?>';
+                
+                if (timeStr < startTime || timeStr > endTime) {
+                    isValid = false;
+                    dateErrorMsg.innerText = 'Nhà hàng hân hạnh phục vụ quý khách trong khung giờ ' + '<?= $open_time_setting ?>' + '.';
+                }
+            }
+        }
+        
         let btnNext = document.getElementById('btn-next-1');
         if (btnNext) btnNext.disabled = !isValid;
         return isValid;
@@ -1107,23 +1177,26 @@ select.input-lux {
         validateStep1();
         validateStep2();
         checkSubmitButton();
+        if (typeof updateChefReq === 'function') {
+            updateChefReq();
+        }
     });
     </script>
 
 <!-- MODAL CHI TIẾT & TÙY CHỌN MÓN ĂN -->
 <div class="modal fade" id="foodOptionModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered" style="max-width: 750px;">
-    <div class="modal-content" style="background: #262629; border:1px solid var(--forest); border-radius:0; position:relative; overflow:hidden;">
+    <div class="modal-content" style="background: #FFFFFF; border:1px solid var(--forest); border-radius:0; position:relative; overflow:hidden;">
       <div class="modal-body p-0">
         <button type="button" class="btn-close" onclick="cancelFoodOption()" style="position:absolute; top:15px; right:15px; z-index:10; background:none; border:none; font-size:20px; color:var(--text-muted); line-height:1;">✕</button>
         <div class="row g-0">
-          <div class="col-md-5" style="position:relative; min-height:350px; background:#1A1A1D;">
-            <img id="foodOptImg" src="" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;" alt="Food Image" onerror="this.onerror=null; this.src='https://placehold.co/800x600/262629/A88746?text=No+Image'">
+          <div class="col-md-5" style="position:relative; min-height:350px; background:#F9F9F9;">
+            <img id="foodOptImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;" alt="Food Image" onerror="this.onerror=null; this.src='https://placehold.co/800x600/262629/A88746?text=No+Image'">
           </div>
-          <div class="col-md-7" style="padding: 40px; display:flex; flex-direction:column; justify-content:space-between; background: #262629; max-height: 85vh; overflow-y: auto;">
+          <div class="col-md-7" style="padding: 40px; display:flex; flex-direction:column; justify-content:space-between; background: #FFFFFF; max-height: 85vh; overflow-y: auto;">
             <div>
               <div style="font-size:10px; font-family:var(--font-sans); letter-spacing:2px; text-transform:uppercase; color:var(--accent-burgundy); margin-bottom:5px;">Chi tiết món ăn</div>
-              <h4 id="foodOptName" style="color:var(--forest); font-family:'Montserrat', sans-serif; font-size:1.8rem; font-weight:600; margin-bottom:5px;">Tên món</h4>
+              <h4 id="foodOptName" style="color:var(--forest); font-family:'Cormorant Garamond', serif; font-size:1.8rem; font-weight:600; margin-bottom:5px;">Tên món</h4>
               <div id="foodOptCategory" style="font-size:12px; color:var(--text-muted); margin-bottom:5px;">Danh mục: ...</div>
               <div id="foodOptStatus" style="font-size:12px; margin-bottom:10px; font-weight:bold;">Trạng thái: ...</div>
               <div id="foodOptPrice" style="font-size:1.1rem; color:var(--accent-burgundy); font-weight:600; margin-bottom:15px;">Giá gốc: 0 đ</div>
@@ -1138,7 +1211,7 @@ select.input-lux {
               <!-- Doneness Wrap -->
               <div id="donenessWrap" style="display:none; margin-bottom:20px;">
                 <label style="color:var(--forest); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:8px;">Độ chín thịt (Meat Doneness):</label>
-                <select id="foodOptDoneness" class="form-select form-select-sm" style="border:1px solid var(--glass-border); border-radius:0; font-size:13px; background: #262629;" onchange="updateModalPrice()">
+                <select id="foodOptDoneness" class="form-select form-select-sm" style="border:1px solid var(--glass-border); border-radius:0; font-size:13px; background: #FFFFFF;" onchange="updateModalPrice()">
                     <option value="">-- Mặc định --</option>
                     <option value="Rare (Tái)">Rare (Tái)</option>
                     <option value="Medium Rare (Tái vừa)">Medium Rare (Tái vừa)</option>
@@ -1159,14 +1232,14 @@ select.input-lux {
               <!-- Note Wrap -->
               <div style="margin-bottom:20px;">
                 <label style="color:var(--forest); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:8px;">Ghi chú cho nhà bếp:</label>
-                <textarea id="foodOptNote" class="form-control" rows="2" maxlength="255" placeholder="Ví dụ: ít cay, không hành, thêm sốt riêng..." style="border:1px solid var(--glass-border); border-radius:0; font-size:13px; background: #262629;"></textarea>
+                <textarea id="foodOptNote" class="form-control" rows="2" maxlength="255" placeholder="Ví dụ: ít cay, không hành, thêm sốt riêng..." style="border:1px solid var(--glass-border); border-radius:0; font-size:13px; background: #FFFFFF;"></textarea>
               </div>
             </div>
             
             <div style="border-top:1px dashed var(--glass-border); padding-top:20px; display:flex; justify-content:space-between; align-items:center;">
               <div>
                 <div style="font-size:11px; color:var(--text-muted);">Số lượng:</div>
-                <div style="display:flex; align-items:center; border:1px solid var(--glass-border); margin-top:5px; width:fit-content; background: #262629;">
+                <div style="display:flex; align-items:center; border:1px solid var(--glass-border); margin-top:5px; width:fit-content; background: #FFFFFF;">
                   <button type="button" class="btn btn-sm" onclick="adjustModalQty(-1)" style="padding:4px 12px; border:none; background:none; font-weight:bold;">-</button>
                   <input type="number" id="foodOptQty" value="1" min="1" style="width:40px; text-align:center; border:none; background:none; font-weight:600; font-size:13px;" readonly>
                   <button type="button" class="btn btn-sm" onclick="adjustModalQty(1)" style="padding:4px 12px; border:none; background:none; font-weight:bold;">+</button>
@@ -1191,14 +1264,14 @@ select.input-lux {
   <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
     <div class="modal-content" style="background:#111; border:1px solid var(--forest); border-radius:0;">
       <div class="modal-header" style="border-bottom:1px solid rgba(212,176,106,0.2);">
-        <h5 class="modal-title" style="color:var(--accent-burgundy); font-family:'Montserrat', sans-serif;"><i class="fas fa-book-open me-2"></i>Chi tiết Chủ đề</h5>
+        <h5 class="modal-title" style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif;"><i class="fas fa-book-open me-2"></i>Chi tiết Chủ đề</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body" style="padding:0;">
-          <img id="themeInfoImg" src="" alt="Theme Image" style="width:100%; height:250px; object-fit:cover; display:none;">
+          <img id="themeInfoImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Theme Image" style="width:100%; height:250px; object-fit:cover; display:none;">
           <div style="padding:20px;">
-              <h4 id="themeInfoName" style="color:var(--accent-burgundy); font-family:'Montserrat', sans-serif; margin-bottom:15px; font-size:1.5rem;"></h4>
-              <p id="themeInfoDesc" style="color:var(--text-muted); font-size:15px; line-height:1.6; font-style:italic; font-family:'Montserrat', sans-serif;"></p>
+              <h4 id="themeInfoName" style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; margin-bottom:15px; font-size:1.5rem;"></h4>
+              <p id="themeInfoDesc" style="color:var(--text-muted); font-size:15px; line-height:1.6; font-style:italic; font-family:'Cormorant Garamond', serif;"></p>
           </div>
       </div>
     </div>
@@ -1219,7 +1292,7 @@ select.input-lux {
                     include 'views/shared/floor_plan.php';
                 ?>
             </div>
-            <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1); display:flex; justify-content:flex-end; align-items:center;">
+            <div class="modal-footer" style="border-top: 1px solid rgba(0,0,0,0.1); display:flex; justify-content:flex-end; align-items:center;">
                 <div>
                     <button type="button" class="btn-outline-lux me-2" data-bs-dismiss="modal">Hủy bỏ</button>
                     <button type="button" class="btn-gold-grad" id="mapConfirm" data-bs-dismiss="modal" style="width:auto; padding:10px 30px;">Xác Nhận Chọn Bàn</button>
@@ -1275,7 +1348,7 @@ function togBespoke(cb) {
 
 function cg(d){
     var i=document.getElementById('gi');
-    i.value=Math.max(1,Math.min(50,parseInt(i.value||2)+d));
+    i.value=Math.max(1,Math.min(16,parseInt(i.value||2)+d));
     us();
 }
 
@@ -1496,7 +1569,7 @@ function openFoodOptionModal(id) {
             if (trimIng !== '') {
                 hasIng = true;
                 var span = document.createElement('span');
-                span.style.cssText = "background:#1A1A1D; color:var(--forest); padding:4px 10px; font-size:12px; font-weight:500; border-radius:0; border: 1px solid var(--glass-border);";
+                span.style.cssText = "background:#F9F9F9; color:var(--forest); padding:4px 10px; font-size:12px; font-weight:500; border-radius:0; border: 1px solid var(--glass-border);";
                 span.textContent = trimIng;
                 ingList.appendChild(span);
             }
@@ -2023,16 +2096,16 @@ function us(){
                 var note = document.getElementById('fn' + id).value;
                 
                 var itemDiv = document.createElement('div');
-                itemDiv.style.cssText = "background: rgba(255,255,255,0.05); padding: 10px; border-left: 3px solid var(--accent-burgundy); font-size: 12px; margin-bottom: 5px;";
+                itemDiv.style.cssText = "background: rgba(0,0,0,0.02); padding: 10px; border-left: 3px solid var(--accent-burgundy); font-size: 12px; margin-bottom: 5px;";
                 
                 var titleDiv = document.createElement('div');
-                titleDiv.style.cssText = "display: flex; justify-content: space-between; font-weight: 600; color: #fff;";
+                titleDiv.style.cssText = "display: flex; justify-content: space-between; font-weight: 600; color: #000;";
                 titleDiv.innerHTML = '<span>' + name + ' x' + qty + '</span><span>' + totalPrice.toLocaleString('vi-VN') + ' đ</span>';
                 itemDiv.appendChild(titleDiv);
                 
                 if (note && note.trim() !== '') {
                     var noteDiv = document.createElement('div');
-                    noteDiv.style.cssText = "color: rgba(255,255,255,0.7); font-size: 11px; margin-top: 4px; font-style: italic; word-break: break-word;";
+                    noteDiv.style.cssText = "color: rgba(0,0,0,0.7); font-size: 11px; margin-top: 4px; font-style: italic; word-break: break-word;";
                     noteDiv.textContent = note;
                     itemDiv.appendChild(noteDiv);
                 }

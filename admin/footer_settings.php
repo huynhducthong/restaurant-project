@@ -35,7 +35,7 @@ $links = $db->query("SELECT * FROM footer_links ORDER BY priority ASC")->fetchAl
     .footer-admin .btn-outline-gold { border: 1px solid var(--gold); color: var(--gold); }
     .footer-admin .btn-outline-gold:hover { background: var(--gold); color: #fff; }
     .live-preview-wrapper { position: sticky; top: 20px; }
-    .live-preview { background: #0c0b09; color: #fff; border-radius: 12px; padding: 30px; min-height: 300px; font-family: 'Playfair Display', serif; }
+    .live-preview { background: #0c0b09; color: #fff; border-radius: 12px; padding: 30px; min-height: 300px; font-family: 'Cormorant Garamond', serif; }
     .live-preview h4 { color: #fff; font-size: 18px; margin-bottom: 15px; font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 1px; font-weight: 500;}
     .live-preview p, .live-preview span { font-size: 13px; color: #ccc; line-height: 1.6; }
     .live-preview .social-icons i { margin-right: 10px; font-size: 16px; color: #fff; }
@@ -152,7 +152,7 @@ $links = $db->query("SELECT * FROM footer_links ORDER BY priority ASC")->fetchAl
                 <div class="live-preview" id="previewFooter">
                     <div class="row">
                         <div class="col-sm-4 mb-3">
-                            <h4 id="previewName" style="color: #fff; font-family: 'Playfair Display', serif; text-transform: none; font-size: 20px;"><?= htmlspecialchars($ft['restaurant_name'] ?? 'Restaurantly') ?></h4>
+                            <h4 id="previewName" style="color: #fff; font-family: 'Cormorant Garamond', serif; text-transform: none; font-size: 20px;"><?= htmlspecialchars($ft['restaurant_name'] ?? 'Restaurantly') ?></h4>
                             <p id="previewDesc" class="mb-3"><?= nl2br(htmlspecialchars($ft['footer_description'] ?? '')) ?></p>
                             
                             <div class="mb-1"><i class="fas fa-map-marker-alt" style="width: 15px;"></i> <span id="previewAddr"><?= htmlspecialchars($ft['address'] ?? '') ?></span></div>
