@@ -189,7 +189,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --news-bg: #F6F2E9;              /* Luxury Cream background */
+    --news-bg: #FFFFFF;              /* White background */
     --news-card-bg: #ffffff;          /* Pure White cards */
     --news-dark-bg: #fcfbfa;          /* Elegant background for inputs */
     --news-gold: #C9A66B;             /* Luxury Gold accent */
@@ -200,8 +200,8 @@ include __DIR__ . '/views/client/layouts/header.php';
     --news-text-dark: #222222;        /* High contrast text */
     --news-text-muted: #555555;       /* Muted subtext */
     --news-text-muted-dark: #666666;  /* High contrast subtext inside white cards */
-    --news-border: rgba(79, 91, 58, 0.15); /* Olive outline */
-    --news-border-light: rgba(201, 166, 107, 0.22); /* Gold outline */
+    --news-border: rgba(168, 135, 70, 0.3); /* Theme Gold-Bronze outline */
+    --news-border-light: rgba(201, 166, 107, 0.45); /* Theme Light Gold outline */
     --accent-burgundy: #C9A66B;       /* Map old burgundy class to gold */
 }
 
