@@ -13,6 +13,18 @@ if (!$content_id || empty($comment)) {
     echo json_encode(['status'=>'error','message'=>'Thiếu thông tin']); exit;
 }
 
+// Kiểm tra tên hiển thị không được giả mạo (Chỉ Admin mới được dùng)
+$user_role = $_SESSION['role'] ?? '';
+if ($user_role !== 'admin') {
+    $restricted_names = ['admin', 'quản trị viên', 'quan tri vien', 'administrator', 'quản trị', 'quan tri'];
+    $lower_author_name = mb_strtolower($author_name, 'UTF-8');
+    foreach ($restricted_names as $rname) {
+        if (mb_strpos($lower_author_name, $rname) !== false) {
+            echo json_encode(['status'=>'error','message'=>'Tên hiển thị không hợp lệ hoặc chứa từ khóa bị cấm! (Chỉ dành cho Quản trị viên)']); exit;
+        }
+    }
+}
+
 $db = (new Database())->getConnection();
 
 // Kiểm tra ban
