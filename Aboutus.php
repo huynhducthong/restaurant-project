@@ -39,6 +39,17 @@ function safe_html_render($html) {
     return preg_replace('/href\s*=\s*["\']javascript:[^"\']*["\']/i', 'href="#"', $cleaned);
 }
 
+function get_category_icon($slug) {
+    $slug = strtolower($slug);
+    if (strpos($slug, 'wine') !== false || strpos($slug, 'ruou') !== false) return '🍷';
+    if (strpos($slug, 'chef') !== false || strpos($slug, 'dau-bep') !== false) return '👨‍🍳';
+    if (strpos($slug, 'fine') !== false || strpos($slug, 'am-thuc') !== false) return '🍽️';
+    if (strpos($slug, 'art') !== false || strpos($slug, 'nghe-thuat') !== false) return '🎨';
+    if (strpos($slug, 'menu') !== false || strpos($slug, 'mon-an') !== false) return '🍂';
+    if (strpos($slug, 'event') !== false || strpos($slug, 'su-kien') !== false) return '✨';
+    return '🍽️';
+}
+
 // Check if we are viewing a specific article
 $article_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $article = null;
@@ -102,10 +113,10 @@ if ($article_id > 0) {
 $cat_id = isset($_GET['cat_id']) ? (int)$_GET['cat_id'] : 0;
 
 if ($cat_id > 0) {
-    $stmt = $db->prepare("SELECT a.*, c.name as cat_name FROM about_content a JOIN about_categories c ON a.category_id=c.id WHERE a.status=1 AND a.category_id=? ORDER BY a.is_pinned DESC, a.display_order ASC, a.created_at DESC");
+    $stmt = $db->prepare("SELECT a.*, c.name as cat_name FROM about_content a JOIN about_categories c ON a.category_id=c.id WHERE a.status=1 AND a.category_id=? ORDER BY a.is_pinned DESC, a.display_order ASC, a.id DESC");
     $stmt->execute([$cat_id]);
 } else {
-    $stmt = $db->prepare("SELECT a.*, c.name as cat_name FROM about_content a JOIN about_categories c ON a.category_id=c.id WHERE a.status=1 ORDER BY a.is_pinned DESC, a.display_order ASC, a.created_at DESC");
+    $stmt = $db->prepare("SELECT a.*, c.name as cat_name FROM about_content a JOIN about_categories c ON a.category_id=c.id WHERE a.status=1 ORDER BY a.is_pinned DESC, a.display_order ASC, a.id DESC");
     $stmt->execute();
 }
 $all_posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -118,6 +129,17 @@ foreach ($all_posts as &$post) {
     $s=$db->prepare("SELECT COUNT(*) FROM about_shares WHERE content_id=? AND platform='view'"); $s->execute([$pid]); $post['view_count']=(int)$s->fetchColumn();
 }
 unset($post);
+
+// Partition posts for editorial magazine layout
+$hero_post = !empty($all_posts) ? $all_posts[0] : null;
+$secondary_posts = [];
+$standard_posts = [];
+if (count($all_posts) > 1) {
+    $secondary_posts = array_slice($all_posts, 1, 2);
+}
+if (count($all_posts) > 3) {
+    $standard_posts = array_slice($all_posts, 3);
+}
 
 // Popular Articles for Sidebar (computed from actual views in about_shares)
 $popular_stmt = $db->prepare("
@@ -148,7 +170,13 @@ if (empty($popular_posts) || $popular_posts[0]['view_count'] == 0) {
 }
 
 // Fetch active categories
-$cat_stmt = $db->prepare("SELECT id, name, slug FROM about_categories ORDER BY id ASC");
+$cat_stmt = $db->prepare("
+    SELECT c.id, c.name, c.slug, COUNT(a.id) as post_count 
+    FROM about_categories c 
+    LEFT JOIN about_content a ON c.id = a.category_id AND a.status = 1 
+    GROUP BY c.id 
+    ORDER BY c.id ASC
+");
 $cat_stmt->execute();
 $categories = $cat_stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -158,20 +186,23 @@ include __DIR__ . '/views/client/layouts/header.php';
 ?>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
 :root {
-    --news-bg: #F9F9F9;         /* Cream */
-    --news-card-bg: #ffffff;     /* Pure White cards to pop off the cream */
-    --news-dark-bg: #ffffff;    /* Very light gray for inner inputs */
-    --news-gold: #A88746;       /* Gold highlights */
-    --news-gold-hover: #b89248; /* Saturated hover state for gold links */
-    --news-gold-muted: rgba(168, 135, 70, 0.1);
-    --news-text: #222222;       /* Bright pure white text for outside cards */
-    --news-text-dark: #222222;  /* High contrast dark text for inside white cards */
-    --news-text-muted: #555555; /* Bright light gray text for outside cards */
-    --news-text-muted-dark: #555555; /* High contrast medium dark gray for tóm tắt/meta inside white cards */
-    --news-border: rgba(168, 135, 70, 0.15);
-    --news-border-light: rgba(168, 135, 70, 0.15); /* Olive border */
-    --accent-burgundy: #A88746;
+    --news-bg: #FFFFFF;              /* White background */
+    --news-card-bg: #ffffff;          /* Pure White cards */
+    --news-dark-bg: #fcfbfa;          /* Elegant background for inputs */
+    --news-gold: #C9A66B;             /* Luxury Gold accent */
+    --news-gold-hover: #b39158;       /* Hover Gold */
+    --news-gold-muted: rgba(201, 166, 107, 0.08);
+    --news-olive: #4F5B3A;            /* Brand Olive Green */
+    --news-text: #222222;             /* Dark text for headers & copy */
+    --news-text-dark: #222222;        /* High contrast text */
+    --news-text-muted: #555555;       /* Muted subtext */
+    --news-text-muted-dark: #666666;  /* High contrast subtext inside white cards */
+    --news-border: rgba(168, 135, 70, 0.3); /* Theme Gold-Bronze outline */
+    --news-border-light: rgba(201, 166, 107, 0.45); /* Theme Light Gold outline */
+    --accent-burgundy: #C9A66B;       /* Map old burgundy class to gold */
 }
 
 /* Base Reset and Layout */
@@ -180,12 +211,12 @@ include __DIR__ . '/views/client/layouts/header.php';
     color: var(--news-text);
     min-height: 85vh;
     padding: 180px 0 60px 0; /* Clear header space */
-    font-family: 'Source Sans 3', sans-serif;
+    font-family: 'Poppins', 'Inter', sans-serif;
 }
 
 /* Typography elements */
 .font-playfair {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Playfair Display', Georgia, serif;
 }
 
 /* Breadcrumbs */
@@ -222,7 +253,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     box-shadow: 0 10px 30px rgba(0,0,0,0.02);
 }
 .widget-title {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 16px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -253,7 +284,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     padding-bottom: 0;
 }
 .popular-number {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 38px;
     font-weight: 700;
     color: var(--news-gold);
@@ -323,7 +354,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     box-shadow: 0 10px 30px rgba(0,0,0,0.02);
 }
 .newsletter-sidebar-title {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--news-gold);
@@ -437,7 +468,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     justify-content: space-between;
 }
 .news-row-title {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -504,7 +535,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     letter-spacing: 1px;
 }
 .article-headline {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 34px;
     font-weight: 700;
     line-height: 1.35;
@@ -661,7 +692,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     padding-top: 30px;
 }
 .related-title {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -696,7 +727,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     padding: 12px;
 }
 .related-card-title {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 14px;
     color: var(--news-text-dark);
     font-weight: 600;
@@ -726,7 +757,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     margin-bottom: 20px;
 }
 .vne-comments-title {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 20px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -796,7 +827,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     gap: 4px;
 }
 .vne-comment-inp-name {
-    background: #FFFFFF;
+    background: #262629;
     border: 1px solid var(--news-border-light);
     border-radius: 4px;
     padding: 4px 8px;
@@ -906,7 +937,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     left: 50%;
     transform: translateX(-50%);
     background: #A88746;
-    color: #F9F9F9;
+    color: #0c0b09;
     padding: 10px 20px;
     border-radius: 50px;
     font-weight: 700;
@@ -958,7 +989,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     font-size: 16px;
     font-weight: 700;
     color: var(--news-text-dark);
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Montserrat', sans-serif;
 }
 .news-modal-close {
     background: none;
@@ -1087,7 +1118,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 .vne-report-textarea {
     width: 100%;
     height: 110px;
-    background: #FFFFFF;
+    background: #262629;
     border: 1px solid var(--news-border-light);
     border-radius: 6px;
     color: var(--news-text-dark);
@@ -1107,6 +1138,488 @@ include __DIR__ . '/views/client/layouts/header.php';
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+}
+
+/* =======================================================
+   LUXURY MAGAZINE STYLING ADDITIONS
+   ======================================================= */
+
+/* Section gaps */
+.news-page-wrap .container > * {
+    margin-bottom: 60px;
+}
+
+/* Luxury Hero Article */
+.luxury-hero {
+    position: relative;
+    width: 100%;
+    height: 480px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid var(--news-border-light);
+    box-shadow: var(--news-gold-muted) 0px 8px 24px;
+    margin-bottom: 50px !important;
+}
+.luxury-hero-img-wrap {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.luxury-hero-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.hero-no-img {
+    width: 100%;
+    height: 100%;
+    background: #2a2824;
+}
+.luxury-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(34, 34, 34, 0.2) 0%, rgba(34, 34, 34, 0.8) 100%);
+    transition: opacity 0.5s;
+}
+.luxury-hero:hover .luxury-hero-img-wrap img {
+    transform: scale(1.04);
+}
+.luxury-hero-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 50px;
+    color: #ffffff;
+    z-index: 10;
+}
+.luxury-hero-badge {
+    display: inline-block;
+    background: var(--news-olive);
+    color: #ffffff;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+.luxury-hero-title {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 15px;
+    color: #ffffff;
+    max-width: 900px;
+}
+.luxury-hero-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 20px;
+    max-width: 750px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.luxury-hero-meta {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 25px;
+}
+.luxury-hero-btn {
+    display: inline-flex;
+    align-items: center;
+    color: var(--news-gold);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.3s, transform 0.3s;
+}
+.luxury-hero-btn:hover {
+    color: #ffffff;
+    transform: translateX(5px);
+}
+
+/* Explore Topics Bar */
+.explore-topics-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+    background: var(--news-card-bg);
+    border: 1px solid var(--news-border-light);
+    margin-bottom: 50px !important;
+}
+.explore-title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--news-olive);
+    margin-bottom: 20px;
+}
+.luxury-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+}
+.luxury-tag {
+    display: inline-block;
+    padding: 8px 22px;
+    background: var(--news-bg);
+    color: var(--news-text);
+    border: 1px solid var(--news-border-light);
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.4s ease;
+}
+.luxury-tag:hover, .luxury-tag.active {
+    background: var(--news-gold);
+    color: #222222;
+    border-color: var(--news-gold);
+    box-shadow: 0 4px 10px rgba(201, 166, 107, 0.2);
+}
+
+/* Secondary Featured Articles Grid */
+.secondary-grid {
+    margin-bottom: 50px !important;
+}
+.secondary-card {
+    background: var(--news-card-bg);
+    border: 1px solid var(--news-border-light);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.secondary-card-img-wrap {
+    width: 100%;
+    aspect-ratio: 16/10;
+    overflow: hidden;
+    position: relative;
+}
+.secondary-card-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+.secondary-card:hover .secondary-card-img-wrap img {
+    transform: scale(1.05);
+}
+.secondary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(79, 91, 58, 0.08);
+}
+.secondary-card-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: var(--news-olive);
+    color: #ffffff;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    font-weight: 600;
+}
+.secondary-card-body {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+.secondary-card-title {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--news-text-dark);
+    margin-bottom: 12px;
+    transition: color 0.3s;
+}
+.secondary-card:hover .secondary-card-title {
+    color: var(--news-gold);
+}
+.secondary-card-excerpt {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--news-text-muted-dark);
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.secondary-card-meta {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--news-text-muted-dark);
+    border-top: 1px solid var(--news-border-light);
+    padding-top: 12px;
+}
+
+/* Redesigned Popular Sidebar list items */
+.popular-thumb-wrap {
+    width: 60px;
+    height: 60px;
+    border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 1px solid var(--news-border-light);
+}
+.popular-thumb-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+.popular-sidebar-item:hover .popular-thumb-wrap img {
+    transform: scale(1.08);
+}
+.popular-thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--news-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--news-gold);
+}
+.pop-cat {
+    color: var(--news-gold) !important;
+    font-weight: 600;
+}
+
+/* Category Sidebar improvements */
+.cat-name-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.cat-icon {
+    font-size: 15px;
+}
+.cat-label {
+    font-size: 13.5px;
+    font-weight: 500;
+}
+.cat-count {
+    font-size: 11px;
+    color: var(--news-text-muted-dark);
+}
+
+/* Newsletter improvements */
+.newsletter-input {
+    border-radius: 4px !important;
+    border: 1px solid var(--news-border-light) !important;
+    background: var(--news-bg) !important;
+}
+.newsletter-input:focus {
+    border-color: var(--news-gold) !important;
+    box-shadow: 0 0 0 0.2rem rgba(201, 166, 107, 0.15) !important;
+}
+.btn-subscribe-gold {
+    background: var(--news-gold);
+    color: #ffffff;
+    border: none;
+    width: 100%;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 12px;
+    border-radius: 4px;
+    transition: all 0.4s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.btn-subscribe-gold:hover {
+    background: var(--news-olive);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(79, 91, 58, 0.15);
+}
+
+/* Scroll reveal class values */
+.reveal-fade {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Detail page typography */
+.article-headline {
+    font-size: 42px !important;
+    line-height: 1.25 !important;
+    color: var(--news-text-dark) !important;
+    margin-bottom: 20px !important;
+}
+.article-read-card {
+    padding: 50px !important;
+    border-color: var(--news-border-light) !important;
+    box-shadow: 0 15px 35px rgba(79, 91, 58, 0.04) !important;
+}
+.article-sapo {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 20px !important;
+    line-height: 1.6 !important;
+    color: var(--news-olive) !important;
+    border-left: 3px solid var(--news-gold) !important;
+    padding-left: 20px !important;
+    margin-bottom: 35px !important;
+}
+.article-body-content {
+    font-size: 17.5px !important;
+    line-height: 1.85 !important;
+    color: var(--news-text-dark) !important;
+}
+.article-body-content p {
+    margin-bottom: 25px !important;
+}
+.article-body-content blockquote {
+    background: var(--news-bg) !important;
+    border-left: 4px solid var(--news-gold) !important;
+    padding: 20px 30px !important;
+    margin: 35px 0 !important;
+    font-style: italic !important;
+    color: var(--news-text-dark) !important;
+    font-size: 18px !important;
+    font-family: 'Playfair Display', Georgia, serif;
+}
+.article-featured-img {
+    border-color: var(--news-border-light) !important;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.03);
+}
+
+/* Comments section improvements */
+.vne-comments-section {
+    border-color: var(--news-border-light) !important;
+}
+.vne-comments-header {
+    border-color: var(--news-border-light) !important;
+}
+.vne-comments-tab.active::after {
+    background: var(--news-gold) !important;
+}
+.vne-comment-form {
+    border-color: var(--news-border-light) !important;
+    background: var(--news-bg) !important;
+    border-radius: 4px !important;
+}
+.vne-comment-inp-name, .vne-comment-textarea {
+    border: 1px solid var(--news-border-light) !important;
+    background: #ffffff !important;
+    color: var(--news-text-dark) !important;
+    padding: 8px 12px !important;
+    border-radius: 4px !important;
+}
+.vne-comment-inp-name:focus, .vne-comment-textarea:focus {
+    border-color: var(--news-gold) !important;
+    outline: none;
+}
+.vne-comment-btn {
+    border: 1px solid var(--news-gold) !important;
+    background: var(--news-gold) !important;
+    color: #ffffff !important;
+    border-radius: 4px !important;
+    padding: 8px 22px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px;
+}
+.vne-comment-btn:hover {
+    background: var(--news-olive) !important;
+    border-color: var(--news-olive) !important;
+    color: #ffffff !important;
+}
+.vne-comment-bubble {
+    background: #ffffff;
+    border: 1px solid var(--news-border-light);
+    padding: 15px 20px;
+    border-radius: 4px;
+}
+.vne-replies-list {
+    border-left: 2px solid var(--news-border-light) !important;
+}
+
+/* Horizontal card enhancement */
+.news-row-card {
+    border: 1px solid var(--news-border-light) !important;
+    border-left: 3px solid var(--news-gold) !important;
+    box-shadow: 0 4px 15px rgba(79, 91, 58, 0.02) !important;
+    transition: transform 0.4s ease, box-shadow 0.4s ease !important;
+}
+.news-row-card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 12px 30px rgba(79, 91, 58, 0.08) !important;
+}
+.news-row-title {
+    font-size: 21px !important;
+    color: var(--news-text-dark) !important;
+    transition: color 0.3s;
+}
+.news-row-card:hover .news-row-title {
+    color: var(--news-gold) !important;
+}
+.text-gold-btn {
+    color: var(--news-gold);
+    font-weight: 600;
+    transition: color 0.3s;
+}
+.news-row-card:hover .text-gold-btn {
+    color: var(--news-olive);
+}
+
+/* Adaptive Responsiveness breakpoints */
+@media (max-width: 991px) {
+    .luxury-hero {
+        height: 380px;
+        margin-bottom: 35px !important;
+    }
+    .luxury-hero-content {
+        padding: 30px;
+    }
+    .luxury-hero-title {
+        font-size: 30px;
+    }
+    .explore-topics-bar {
+        margin-bottom: 35px !important;
+    }
+}
+@media (max-width: 767px) {
+    .luxury-hero {
+        height: 300px;
+    }
+    .luxury-hero-title {
+        font-size: 24px;
+    }
+    .luxury-hero-desc {
+        font-size: 13.5px;
+        -webkit-line-clamp: 2;
+    }
+    .explore-title {
+        font-size: 16px;
+    }
+    .luxury-tag {
+        padding: 6px 14px;
+        font-size: 12px;
+    }
+    .secondary-grid {
+        margin-bottom: 35px !important;
+    }
 }
 </style>
 
@@ -1132,7 +1645,7 @@ include __DIR__ . '/views/client/layouts/header.php';
             <div class="row g-4">
                 <!-- Main Reading Column -->
                 <div class="col-lg-8">
-                    <div class="article-read-card">
+                    <div class="article-read-card reveal-fade">
                         <span class="article-category-label"><?= htmlspecialchars($article['cat_name']) ?></span>
                     <h1 class="article-headline font-playfair"><?= htmlspecialchars($article['title']) ?></h1>
                     
@@ -1150,11 +1663,6 @@ include __DIR__ . '/views/client/layouts/header.php';
                                 <i class="bi <?= $article['user_liked'] ? 'bi-heart-fill' : 'bi-heart' ?>"></i> 
                                 <span id="vne-like-text"><?= $article['user_liked'] ? 'Đã thích' : 'Thích' ?></span> 
                                 (<span id="vne-like-count" onclick="event.stopPropagation(); showLikers(<?= $article['id'] ?>)"><?= $article['like_count'] ?></span>)
-                            </button>
-                            
-                            <button class="article-action-btn <?= $article['user_saved'] ? 'saved' : '' ?>" id="vne-save-btn" onclick="articleSave(<?= $article['id'] ?>)">
-                                <i class="bi <?= $article['user_saved'] ? 'bi-bookmark-fill' : 'bi-bookmark' ?>"></i> 
-                                <span id="vne-save-text"><?= $article['user_saved'] ? 'Đã lưu' : 'Lưu' ?></span>
                             </button>
                             
                             <button class="article-action-btn" onclick="articleShare(<?= $article['id'] ?>)">
@@ -1201,7 +1709,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                     </div>
 
                     <!-- Pinned Related Articles -->
-                    <div class="related-articles-section">
+                    <div class="related-articles-section reveal-fade">
                         <h3 class="related-title font-playfair">Bài viết liên quan</h3>
                         <div class="row g-3">
                             <?php foreach ($related_posts as $rp): ?>
@@ -1224,7 +1732,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                     </div>
 
                     <!-- VnExpress Comment System -->
-                    <div class="vne-comments-section" id="vne-cmt-anchor">
+                    <div class="vne-comments-section reveal-fade" id="vne-cmt-anchor">
                         <div class="vne-comments-header">
                             <h3 class="vne-comments-title font-playfair">Ý kiến (<span id="vne-cmt-count"><?= $article['comment_count'] ?></span>)</h3>
                             <div class="vne-comments-tabs">
@@ -1392,7 +1900,7 @@ include __DIR__ . '/views/client/layouts/header.php';
             <!-- ==========================================
                  NEWS LIST VIEW (MAIN PORTAL)
                  ========================================== -->
-            <div class="news-breadcrumbs">
+            <div class="news-breadcrumbs reveal-fade">
                 <a href="index.php">Trang chủ</a>
                 <span>&gt;</span>
                 <span style="color: #666;">Tin tức &amp; Sự kiện</span>
@@ -1407,50 +1915,137 @@ include __DIR__ . '/views/client/layouts/header.php';
                             }
                         }
                     ?>
-                    <span style="color: #A88746;"><?= htmlspecialchars($selected_cat) ?></span>
+                    <span style="color: #C9A66B;"><?= htmlspecialchars($selected_cat) ?></span>
                 <?php endif; ?>
             </div>
 
+            <!-- Hero Featured Article -->
+            <?php if ($hero_post): 
+                $hero_excerpt = strip_tags(html_entity_decode($hero_post['content'] ?? '', ENT_QUOTES, 'UTF-8'));
+                $hero_time = $hero_post['created_at'] ? date('d/m/Y', strtotime($hero_post['created_at'])) : '';
+            ?>
+                <div class="luxury-hero reveal-fade" onclick="window.location.href='Aboutus.php?id=<?= $hero_post['id'] ?>'">
+                    <div class="luxury-hero-img-wrap">
+                        <?php if ($hero_post['thumbnail']): ?>
+                            <img src="public/assets/img/about/<?= htmlspecialchars($hero_post['thumbnail']) ?>" alt="<?= htmlspecialchars($hero_post['title']) ?>">
+                        <?php else: ?>
+                            <div class="hero-no-img"></div>
+                        <?php endif; ?>
+                        <div class="luxury-hero-overlay"></div>
+                    </div>
+                    <div class="luxury-hero-content">
+                        <span class="luxury-hero-badge"><?= htmlspecialchars($hero_post['cat_name']) ?></span>
+                        <h1 class="luxury-hero-title font-playfair"><?= htmlspecialchars($hero_post['title']) ?></h1>
+                        <p class="luxury-hero-desc"><?= mb_strimwidth($hero_excerpt, 0, 220, "...") ?></p>
+                        <div class="luxury-hero-meta">
+                            <span>📅 <?= $hero_time ?></span>
+                            <span class="mx-2">•</span>
+                            <span>👁️ <?= $hero_post['view_count'] ?> lượt xem</span>
+                        </div>
+                        <a href="Aboutus.php?id=<?= $hero_post['id'] ?>" class="luxury-hero-btn">
+                            ĐỌC CÂU CHUYỆN <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <!-- Explore Topics Bar -->
+            <div class="explore-topics-bar reveal-fade">
+                <span class="explore-title font-playfair">Khám Phá Chủ Đề</span>
+                <div class="luxury-tags">
+                    <a href="Aboutus.php" class="luxury-tag <?= ($cat_id == 0) ? 'active' : '' ?>">Tất cả</a>
+                    <?php foreach ($categories as $cat): ?>
+                        <a href="Aboutus.php?cat_id=<?= $cat['id'] ?>" class="luxury-tag <?= ($cat_id == $cat['id']) ? 'active' : '' ?>">
+                            <?= htmlspecialchars($cat['name']) ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+            <!-- Main Layout Grid -->
             <div class="row g-4">
                 <!-- Main News List Column -->
                 <div class="col-lg-8">
                     <div class="news-list-left-col">
                         <?php if (empty($all_posts)): ?>
-                        <div style="background: var(--news-card-bg); border-radius: 12px; border: 1px solid var(--news-border-light); padding: 40px; text-align: center; color: var(--news-text-muted-dark);">
-                            <i class="bi bi-journal-x" style="font-size: 3rem; color: var(--news-gold);"></i>
-                            <h3 class="font-playfair mt-3 text-dark">Chưa có bài viết nào</h3>
-                            <p class="mb-0">Vui lòng quay lại sau để cập nhật thông tin mới nhất.</p>
-                        </div>
-                    <?php else: ?>
-                        <!-- Horizontal News Row List (VnExpress styled) -->
-                        <div class="news-horizontal-list">
-                            <?php foreach ($all_posts as $post): 
-                                $excerpt = strip_tags(html_entity_decode($post['content'] ?? '', ENT_QUOTES, 'UTF-8'));
-                                $post_time = $post['created_at'] ? date('d/m/Y', strtotime($post['created_at'])) : '';
-                            ?>
-                                <div class="news-row-card" onclick="window.location.href='Aboutus.php?id=<?= $post['id'] ?>'">
-                                    <div class="news-row-img">
-                                        <?php if ($post['thumbnail']): ?>
-                                            <img src="public/assets/img/about/<?= htmlspecialchars($post['thumbnail']) ?>" alt="<?= htmlspecialchars($post['title']) ?>">
-                                        <?php else: ?>
-                                            <div class="no-img-placeholder"><i class="bi bi-image" style="font-size: 1.5rem;"></i></div>
-                                        <?php endif; ?>
-                                        <div class="news-row-badge"><?= htmlspecialchars($post['cat_name']) ?></div>
-                                    </div>
-                                    <div class="news-row-body">
-                                        <div>
-                                            <h3 class="news-row-title font-playfair"><?= htmlspecialchars($post['title']) ?></h3>
-                                            <p class="news-row-excerpt"><?= mb_strimwidth($excerpt, 0, 180, "...") ?></p>
+                            <div class="no-posts-card text-center reveal-fade">
+                                <i class="bi bi-journal-x" style="font-size: 3rem; color: var(--news-gold);"></i>
+                                <h3 class="font-playfair mt-3 text-dark">Chưa có bài viết nào</h3>
+                                <p class="mb-0">Vui lòng quay lại sau để cập nhật thông tin mới nhất.</p>
+                            </div>
+                        <?php else: ?>
+                            
+                            <!-- Secondary Featured Articles -->
+                            <?php if (!empty($secondary_posts)): ?>
+                                <div class="row secondary-grid g-4 reveal-fade">
+                                    <?php foreach ($secondary_posts as $s_post): 
+                                        $s_excerpt = strip_tags(html_entity_decode($s_post['content'] ?? '', ENT_QUOTES, 'UTF-8'));
+                                        $s_time = $s_post['created_at'] ? date('d/m/Y', strtotime($s_post['created_at'])) : '';
+                                    ?>
+                                        <div class="col-md-6">
+                                            <div class="secondary-card" onclick="window.location.href='Aboutus.php?id=<?= $s_post['id'] ?>'">
+                                                <div class="secondary-card-img-wrap">
+                                                    <?php if ($s_post['thumbnail']): ?>
+                                                        <img src="public/assets/img/about/<?= htmlspecialchars($s_post['thumbnail']) ?>" alt="<?= htmlspecialchars($s_post['title']) ?>">
+                                                    <?php else: ?>
+                                                        <div class="no-img-placeholder"><i class="bi bi-image" style="font-size: 1.5rem;"></i></div>
+                                                    <?php endif; ?>
+                                                    <span class="secondary-card-badge"><?= htmlspecialchars($s_post['cat_name']) ?></span>
+                                                </div>
+                                                <div class="secondary-card-body">
+                                                    <h3 class="secondary-card-title font-playfair"><?= htmlspecialchars($s_post['title']) ?></h3>
+                                                    <p class="secondary-card-excerpt"><?= mb_strimwidth($s_excerpt, 0, 110, "...") ?></p>
+                                                    <div class="secondary-card-meta">
+                                                        <span>📅 <?= $s_time ?></span>
+                                                        <span>👁️ <?= $s_post['view_count'] ?></span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="news-row-meta">
-                                            <span>📅 <?= $post_time ?></span>
-                                            <span>❤️ <?= $post['like_count'] ?> • 💬 <?= $post['comment_count'] ?></span>
-                                        </div>
-                                    </div>
+                                    <?php endforeach; ?>
                                 </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
+                            <?php endif; ?>
+
+                            <!-- Standard Horizontal Feed -->
+                            <?php if (!empty($standard_posts)): ?>
+                                <div class="news-horizontal-list mt-5 reveal-fade">
+                                    <?php foreach ($standard_posts as $post): 
+                                        $excerpt = strip_tags(html_entity_decode($post['content'] ?? '', ENT_QUOTES, 'UTF-8'));
+                                        $post_time = $post['created_at'] ? date('d/m/Y', strtotime($post['created_at'])) : '';
+                                    ?>
+                                        <div class="news-row-card" onclick="window.location.href='Aboutus.php?id=<?= $post['id'] ?>'">
+                                            <div class="news-row-img">
+                                                <?php if ($post['thumbnail']): ?>
+                                                    <img src="public/assets/img/about/<?= htmlspecialchars($post['thumbnail']) ?>" alt="<?= htmlspecialchars($post['title']) ?>">
+                                                <?php else: ?>
+                                                    <div class="no-img-placeholder"><i class="bi bi-image" style="font-size: 1.5rem;"></i></div>
+                                                <?php endif; ?>
+                                                <div class="news-row-badge"><?= htmlspecialchars($post['cat_name']) ?></div>
+                                            </div>
+                                            <div class="news-row-body">
+                                                <div>
+                                                    <h3 class="news-row-title font-playfair"><?= htmlspecialchars($post['title']) ?></h3>
+                                                    <p class="news-row-excerpt"><?= mb_strimwidth($excerpt, 0, 150, "...") ?></p>
+                                                </div>
+                                                <div class="news-row-meta">
+                                                    <div class="news-row-meta-left">
+                                                        <span>📅 <?= $post_time ?></span>
+                                                        <span class="mx-2">•</span>
+                                                        <span>👁️ <?= $post['view_count'] ?> lượt xem</span>
+                                                    </div>
+                                                    <div class="news-row-meta-right">
+                                                        <span>❤️ <?= $post['like_count'] ?></span>
+                                                        <span class="mx-2">•</span>
+                                                        <span>💬 <?= $post['comment_count'] ?></span>
+                                                        <span class="ms-3 text-gold-btn">Đọc tiếp <i class="bi bi-arrow-right"></i></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
         <?php endif; ?>
@@ -1461,20 +2056,25 @@ include __DIR__ . '/views/client/layouts/header.php';
                 <div class="col-lg-4">
                     
                     <!-- Popular / Most Viewed widget (VnExpress Style Numbered List) -->
-                    <div class="sidebar-widget">
+                    <div class="sidebar-widget reveal-fade">
                         <h4 class="widget-title">Đọc nhiều nhất</h4>
                         <div class="popular-sidebar-list">
                             <?php 
-                                $num = 1;
                                 foreach ($popular_posts as $pop): 
                                     $pop_time = $pop['created_at'] ? date('d/m/Y', strtotime($pop['created_at'])) : '';
                             ?>
                                 <a href="Aboutus.php?id=<?= $pop['id'] ?>" class="popular-sidebar-item">
-                                    <div class="popular-number"><?= $num++ ?></div>
+                                    <div class="popular-thumb-wrap">
+                                        <?php if ($pop['thumbnail']): ?>
+                                            <img src="public/assets/img/about/<?= htmlspecialchars($pop['thumbnail']) ?>" alt="">
+                                        <?php else: ?>
+                                            <div class="popular-thumb-placeholder"><i class="bi bi-journal-text"></i></div>
+                                        <?php endif; ?>
+                                    </div>
                                     <div class="popular-text">
                                         <h5 class="popular-title font-playfair"><?= htmlspecialchars($pop['title']) ?></h5>
                                         <div class="popular-meta">
-                                            <span style="color:#A88746"><?= htmlspecialchars($pop['cat_name']) ?></span> • <?= $pop_time ?>
+                                            <span class="pop-cat"><?= htmlspecialchars($pop['cat_name']) ?></span> • <?= $pop_time ?> • 👁️ <?= number_format($pop['view_count']) ?>
                                         </div>
                                     </div>
                                 </a>
@@ -1483,19 +2083,26 @@ include __DIR__ . '/views/client/layouts/header.php';
                     </div>
 
                     <!-- Category Widget -->
-                    <div class="sidebar-widget">
+                    <div class="sidebar-widget reveal-fade">
                         <h4 class="widget-title">Chuyên mục</h4>
                         <ul class="cat-sidebar-list">
                             <li class="cat-sidebar-item <?= ($cat_id == 0) ? 'active' : '' ?>">
                                 <a href="Aboutus.php">
-                                    <span>Tất cả tin tức</span>
-                                    <span class="badge bg-dark">★</span>
+                                    <span class="cat-name-wrap">
+                                        <span class="cat-icon">🍽️</span> 
+                                        <span class="cat-label">Tất cả tin tức</span>
+                                    </span>
+                                    <span class="cat-count badge bg-dark">★</span>
                                 </a>
                             </li>
                             <?php foreach ($categories as $cat): ?>
                                 <li class="cat-sidebar-item <?= ($cat_id == $cat['id']) ? 'active' : '' ?>">
                                     <a href="Aboutus.php?cat_id=<?= $cat['id'] ?>">
-                                        <span><?= htmlspecialchars($cat['name']) ?></span>
+                                        <span class="cat-name-wrap">
+                                            <span class="cat-icon"><?= get_category_icon($cat['slug']) ?></span>
+                                            <span class="cat-label"><?= htmlspecialchars($cat['name']) ?></span>
+                                        </span>
+                                        <span class="cat-count"><?= (int)$cat['post_count'] ?> bài viết</span>
                                     </a>
                                 </li>
                             <?php endforeach; ?>
@@ -1503,14 +2110,14 @@ include __DIR__ . '/views/client/layouts/header.php';
                     </div>
 
                     <!-- Newsletter subscription widget -->
-                    <div class="newsletter-sidebar">
-                        <h4 class="newsletter-sidebar-title font-playfair">Đăng ký bản tin</h4>
+                    <div class="newsletter-sidebar reveal-fade">
+                        <h4 class="newsletter-sidebar-title font-playfair">Nhận câu chuyện ẩm thực mỗi tuần</h4>
                         <p class="newsletter-sidebar-desc">Nhận tin tức mới nhất, ưu đãi độc quyền và sự kiện đặc biệt về ẩm thực từ chúng tôi.</p>
                         <form id="newsletter-widget-form" onsubmit="submitSidebarNewsletter(event)">
                             <div class="mb-3">
-                                <input type="email" id="widget-email-inp" class="form-control" placeholder="Địa chỉ email của bạn..." required>
+                                <input type="email" id="widget-email-inp" class="form-control newsletter-input" placeholder="Địa chỉ email của bạn..." required>
                             </div>
-                            <button type="submit" class="btn-subscribe">ĐĂNG KÝ NGAY</button>
+                            <button type="submit" class="btn-subscribe-gold">ĐĂNG KÝ NGAY</button>
                         </form>
                     </div>
 
@@ -1876,7 +2483,7 @@ function showToast(msg, bg = '#A88746') {
     if (!t) return;
     t.textContent = msg;
     t.style.background = bg;
-    t.style.color = bg === '#A88746' ? '#F9F9F9' : '#ffffff';
+    t.style.color = bg === '#A88746' ? '#0c0b09' : '#ffffff';
     t.style.display = 'block';
     setTimeout(() => { t.style.display = 'none'; }, 2800);
 }
@@ -1967,6 +2574,28 @@ function submitReport() {
         showToast('⚠️ Lỗi kết nối máy chủ khi báo cáo.', '#f33e58');
     });
 }
+
+// Intersection Observer for scroll reveal animations
+document.addEventListener('DOMContentLoaded', () => {
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('reveal-visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal-fade').forEach(el => {
+        revealObserver.observe(el);
+    });
+});
 
 // Close modal on Escape key press
 document.addEventListener('keydown', e => {

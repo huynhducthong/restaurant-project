@@ -30,7 +30,7 @@ if(isset($_POST['btn_save'])){
         $id=$_POST['id']??null;
         $title=$_POST['title']; $slug=create_slug($_POST['slug']?:$title);
         $content=$_POST['content']; $cat=$_POST['category_id'];
-        $ord=$_POST['display_order']; $pin=isset($_POST['is_pinned'])?1:0; $st=isset($_POST['status'])?1:0;
+        $ord=(int)($_POST['display_order']??0); $pin=isset($_POST['is_pinned'])?1:0; $st=isset($_POST['status'])?1:0;
         $thumb=$_POST['old_thumbnail']??'';
         if(!empty($_FILES['thumbnail']['name'])){
             $dir='../public/assets/img/about/'; if(!is_dir($dir)) mkdir($dir,0777,true);
@@ -41,14 +41,90 @@ if(isset($_POST['btn_save'])){
                 }
             }
         }
-        if($id){ $db->prepare("UPDATE about_content SET title=?,slug=?,content=?,category_id=?,thumbnail=?,display_order=?,is_pinned=?,status=? WHERE id=?")->execute([$title,$slug,$content,$cat,$thumb,$ord,$pin,$st,$id]); $message="<div class='alert alert-success'>Cập nhật thành công!</div>"; }
-        else { $db->prepare("INSERT INTO about_content(title,slug,content,category_id,thumbnail,display_order,is_pinned,status) VALUES(?,?,?,?,?,?,?,?)")->execute([$title,$slug,$content,$cat,$thumb,$ord,$pin,$st]); $message="<div class='alert alert-success'>Thêm thành công!</div>"; }
+        try {
+            $db->beginTransaction();
+            if($id){
+                // Fetch current status
+                $stmt_old = $db->prepare("SELECT is_pinned, display_order FROM about_content WHERE id = ?");
+                $stmt_old->execute([$id]);
+                $old_data = $stmt_old->fetch(PDO::FETCH_ASSOC);
+
+                if ($old_data) {
+                    $old_pin = (int)$old_data['is_pinned'];
+                    $old_ord = (int)$old_data['display_order'];
+
+                    if ($old_pin == 1 && $pin == 1) {
+                        // Remains pinned.
+                    } elseif ($old_pin == 0 && $pin == 1) {
+                        // Promoted to pinned.
+                        // Find current pinned article (if any)
+                        $stmt_current_pin = $db->prepare("SELECT id FROM about_content WHERE is_pinned = 1 AND id != ? LIMIT 1");
+                        $stmt_current_pin->execute([$id]);
+                        $old_pin_id = $stmt_current_pin->fetchColumn();
+
+                        if ($old_pin_id) {
+                            // Shift normal articles down
+                            $db->prepare("UPDATE about_content SET display_order = display_order + 1 WHERE is_pinned = 0")->execute();
+                            // Demote old pin to normal at 0
+                            $db->prepare("UPDATE about_content SET is_pinned = 0, display_order = 0 WHERE id = ?")->execute([$old_pin_id]);
+                        }
+                        $ord = 0;
+                    } elseif ($old_pin == 1 && $pin == 0) {
+                        // Demoted to normal.
+                        // Shift normal articles with order >= $ord down
+                        $db->prepare("UPDATE about_content SET display_order = display_order + 1 WHERE is_pinned = 0 AND display_order >= ?")->execute([$ord]);
+                    } else {
+                        // Remains normal.
+                        if ($ord < $old_ord) {
+                            $db->prepare("UPDATE about_content SET display_order = display_order + 1 WHERE is_pinned = 0 AND display_order >= ? AND display_order < ?")->execute([$ord, $old_ord]);
+                        } elseif ($ord > $old_ord) {
+                            $db->prepare("UPDATE about_content SET display_order = display_order - 1 WHERE is_pinned = 0 AND display_order > ? AND display_order <= ?")->execute([$old_ord, $ord]);
+                        }
+                    }
+                }
+                $db->prepare("UPDATE about_content SET title=?,slug=?,content=?,category_id=?,thumbnail=?,display_order=?,is_pinned=?,status=? WHERE id=?")->execute([$title,$slug,$content,$cat,$thumb,$ord,$pin,$st,$id]); 
+                $message="<div class='alert alert-success'>Cập nhật thành công!</div>";
+            }
+            else {
+                if ($pin == 1) {
+                    // Find current pinned article
+                    $stmt_current_pin = $db->prepare("SELECT id FROM about_content WHERE is_pinned = 1 LIMIT 1");
+                    $stmt_current_pin->execute();
+                    $old_pin_id = $stmt_current_pin->fetchColumn();
+
+                    if ($old_pin_id) {
+                        $db->prepare("UPDATE about_content SET display_order = display_order + 1 WHERE is_pinned = 0")->execute();
+                        $db->prepare("UPDATE about_content SET is_pinned = 0, display_order = 0 WHERE id = ?")->execute([$old_pin_id]);
+                    }
+                    $ord = 0;
+                } else {
+                    $db->prepare("UPDATE about_content SET display_order = display_order + 1 WHERE is_pinned = 0 AND display_order >= ?")->execute([$ord]);
+                }
+                $db->prepare("INSERT INTO about_content(title,slug,content,category_id,thumbnail,display_order,is_pinned,status) VALUES(?,?,?,?,?,?,?,?)")->execute([$title,$slug,$content,$cat,$thumb,$ord,$pin,$st]); 
+                $message="<div class='alert alert-success'>Thêm thành công!</div>";
+            }
+
+            // Re-index all normal articles consecutively starting from 0 to ensure no duplicates or gaps
+            $stmt_reorder = $db->query("SELECT id FROM about_content WHERE is_pinned = 0 ORDER BY display_order ASC, id DESC");
+            $normal_ids = $stmt_reorder->fetchAll(PDO::FETCH_COLUMN);
+            $current_order = 0;
+            $stmt_update_order = $db->prepare("UPDATE about_content SET display_order = ? WHERE id = ?");
+            foreach ($normal_ids as $nid) {
+                $stmt_update_order->execute([$current_order, $nid]);
+                $current_order++;
+            }
+
+            $db->commit();
+        } catch (Exception $e) {
+            $db->rollBack();
+            $message="<div class='alert alert-danger'>Lỗi: " . htmlspecialchars($e->getMessage()) . "</div>";
+        }
     }
 }
 $edit_data=null;
 if(isset($_GET['edit'])){ $s=$db->prepare("SELECT * FROM about_content WHERE id=?"); $s->execute([$_GET['edit']]); $edit_data=$s->fetch(PDO::FETCH_ASSOC); }
 
-$posts=$db->query("SELECT a.id, a.title, a.slug, a.thumbnail, a.is_pinned, a.display_order, a.status, c.name as cat_name FROM about_content a JOIN about_categories c ON a.category_id=c.id ORDER BY is_pinned DESC,display_order ASC")->fetchAll(PDO::FETCH_ASSOC);
+$posts=$db->query("SELECT a.id, a.title, a.slug, a.thumbnail, a.is_pinned, a.display_order, a.status, c.name as cat_name FROM about_content a JOIN about_categories c ON a.category_id=c.id ORDER BY is_pinned DESC, display_order ASC, id DESC")->fetchAll(PDO::FETCH_ASSOC);
 $categories=$db->query("SELECT * FROM about_categories")->fetchAll(PDO::FETCH_ASSOC);
 
 // Stats aggregation queries (tránh N+1)
