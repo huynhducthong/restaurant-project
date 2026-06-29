@@ -14,11 +14,11 @@ $db = (new Database())->getConnection();
 
 // Fetch reviews
 $stmt = $db->prepare("
-    SELECT r.id, r.author_name, r.rating, r.comment, r.created_at, u.avatar as user_avatar
+    SELECT r.id, r.author_name, r.rating, r.comment, r.created_at, r.experience_type, r.chef_response, u.avatar as user_avatar
     FROM chef_reviews r
     LEFT JOIN users u ON r.user_id = u.id
     WHERE r.chef_id = ? AND r.status = 'approved'
-    ORDER BY r.created_at DESC
+    ORDER BY r.rating DESC, r.created_at DESC
 ");
 $stmt->execute([$chef_id]);
 $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);

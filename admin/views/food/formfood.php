@@ -200,6 +200,92 @@ $form_action = $is_edit
                                           placeholder="Ví dụ: Món ăn sẽ ngon nhất khi thưởng thức cùng vang đỏ Cabernet Sauvignon..."><?= htmlspecialchars($old['chef_note'] ?? '') ?></textarea>
                             </div>
                             
+                                                        <div class="col-12 mt-4">
+                                <h6 class="fw-bold text-dark border-bottom pb-2"><i class="fas fa-route text-warning me-2"></i>Hành Trình Món Ăn (6 Giai Đoạn)</h6>
+                            </div>
+                            <?php
+                            // Cố gắng giải mã JSON, nếu lỗi hoặc không phải JSON thì trả về mảng rỗng
+                            $fj = json_decode($old['food_journey'] ?? '{}', true);
+                            if (!is_array($fj)) $fj = [];
+                            ?>
+                            <div class="col-md-6 mt-2">
+                                <label class="form-label fw-bold small text-muted">1. Nguồn gốc</label>
+                                <textarea name="fj_origin" class="form-control bg-light border-0 mb-2" rows="2"><?= htmlspecialchars($fj['origin'] ?? '') ?></textarea>
+                                <input type="file" name="fj_img_origin" class="form-control form-control-sm bg-light border-0 mb-2" accept="image/*">
+                                <?php if (!empty($fj['origin_img'])): ?>
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <img src="../../public/assets/img/journey/<?= htmlspecialchars($fj['origin_img']) ?>" alt="img" class="rounded" style="width: 50px; height: 50px; object-fit: cover; border: 1px solid #ccc;">
+                                        <small class="text-muted">Đã tải ảnh lên</small>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <div class="p-2 mt-2 bg-white rounded border border-warning border-opacity-25">
+                                    <label class="form-label fw-bold small text-warning"><i class="fas fa-certificate me-1"></i>Chứng nhận nguồn gốc</label>
+                                    <input type="file" name="fj_img_certificate" class="form-control form-control-sm bg-light border-0 mb-2" accept="image/*">
+                                    <?php if (!empty($fj['certificate_img'])): ?>
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <img src="../../public/assets/img/journey/<?= htmlspecialchars($fj['certificate_img']) ?>" alt="cert" class="rounded" style="width: 50px; height: 50px; object-fit: cover; border: 1px solid #ccc;">
+                                            <small class="text-muted">Đã có ảnh chứng nhận</small>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-2">
+                                <label class="form-label fw-bold small text-muted">2. Tuyển chọn</label>
+                                <textarea name="fj_selection" class="form-control bg-light border-0 mb-2" rows="2"><?= htmlspecialchars($fj['selection'] ?? '') ?></textarea>
+                                <input type="file" name="fj_img_selection" class="form-control form-control-sm bg-light border-0 mb-2" accept="image/*">
+                                <?php if (!empty($fj['selection_img'])): ?>
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <img src="../../public/assets/img/journey/<?= htmlspecialchars($fj['selection_img']) ?>" alt="img" class="rounded" style="width: 50px; height: 50px; object-fit: cover; border: 1px solid #ccc;">
+                                        <small class="text-muted">Đã tải ảnh lên</small>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="col-md-6 mt-2">
+                                <label class="form-label fw-bold small text-muted">3. Bảo quản</label>
+                                <textarea name="fj_storage" class="form-control bg-light border-0 mb-2" rows="2"><?= htmlspecialchars($fj['storage'] ?? '') ?></textarea>
+                                <input type="file" name="fj_img_storage" class="form-control form-control-sm bg-light border-0 mb-2" accept="image/*">
+                                <?php if (!empty($fj['storage_img'])): ?>
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <img src="../../public/assets/img/journey/<?= htmlspecialchars($fj['storage_img']) ?>" alt="img" class="rounded" style="width: 50px; height: 50px; object-fit: cover; border: 1px solid #ccc;">
+                                        <small class="text-muted">Đã tải ảnh lên</small>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="col-md-6 mt-2">
+                                <label class="form-label fw-bold small text-muted">4. Sơ chế</label>
+                                <textarea name="fj_prep" class="form-control bg-light border-0 mb-2" rows="2"><?= htmlspecialchars($fj['prep'] ?? '') ?></textarea>
+                                <input type="file" name="fj_img_prep" class="form-control form-control-sm bg-light border-0 mb-2" accept="image/*">
+                                <?php if (!empty($fj['prep_img'])): ?>
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <img src="../../public/assets/img/journey/<?= htmlspecialchars($fj['prep_img']) ?>" alt="img" class="rounded" style="width: 50px; height: 50px; object-fit: cover; border: 1px solid #ccc;">
+                                        <small class="text-muted">Đã tải ảnh lên</small>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="col-md-6 mt-2">
+                                <label class="form-label fw-bold small text-muted">5. Chế biến</label>
+                                <textarea name="fj_cooking_art" class="form-control bg-light border-0 mb-2" rows="2"><?= htmlspecialchars($fj['cooking_art'] ?? '') ?></textarea>
+                                <input type="file" name="fj_img_cooking_art" class="form-control form-control-sm bg-light border-0 mb-2" accept="image/*">
+                                <?php if (!empty($fj['cooking_art_img'])): ?>
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <img src="../../public/assets/img/journey/<?= htmlspecialchars($fj['cooking_art_img']) ?>" alt="img" class="rounded" style="width: 50px; height: 50px; object-fit: cover; border: 1px solid #ccc;">
+                                        <small class="text-muted">Đã tải ảnh lên</small>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="col-md-6 mt-2">
+                                <label class="form-label fw-bold small text-muted">6. Trình bày</label>
+                                <textarea name="fj_presentation" class="form-control bg-light border-0 mb-2" rows="2"><?= htmlspecialchars($fj['presentation'] ?? '') ?></textarea>
+                                <input type="file" name="fj_img_presentation" class="form-control form-control-sm bg-light border-0 mb-2" accept="image/*">
+                                <?php if (!empty($fj['presentation_img'])): ?>
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <img src="../../public/assets/img/journey/<?= htmlspecialchars($fj['presentation_img']) ?>" alt="img" class="rounded" style="width: 50px; height: 50px; object-fit: cover; border: 1px solid #ccc;">
+                                        <small class="text-muted">Đã tải ảnh lên</small>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
                             <div class="col-12 mt-3">
                                 <div class="form-check form-switch p-0 d-flex align-items-center gap-2">
                                     <input class="form-check-input ms-0 mt-0" type="checkbox" role="switch" id="is_chef_recommended" name="is_chef_recommended" value="1" <?= (!empty($old['is_chef_recommended'])) ? 'checked' : '' ?> style="width:40px;height:20px;cursor:pointer;">

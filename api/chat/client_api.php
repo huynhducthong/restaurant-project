@@ -1,6 +1,17 @@
 <?php
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../config/pusher.php';
+
 $db = (new Database())->getConnection();
+
+function triggerChatUpdate($session_id = null) {
+    global $pusher;
+    try {
+        $data = ['time' => time()];
+        if ($session_id) $data['session_id'] = $session_id;
+        $pusher->trigger('chat-channel', 'chat_updated', $data);
+    } catch (Exception $e) {}
+}
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $session_id = $_POST['session_id'] ?? $_GET['session_id'] ?? '';
@@ -27,6 +38,7 @@ switch ($action) {
             $stmt->execute([$session_id, $name, $phone]);
             sendBotMessage($db, $session_id, "Chào $name! Mình là Trợ lý ảo của Restaurantly. Mình có thể giúp gì cho bạn hôm nay?");
         }
+        triggerChatUpdate($session_id);
         echo json_encode(['status' => 'success']);
         break;
 
@@ -52,7 +64,7 @@ switch ($action) {
             exit;
         }
 
-        $stmt = $db->prepare("SELECT * FROM chat_messages WHERE session_id = ? AND id > ? ORDER BY id ASC");
+        $stmt = $db->prepare("SELECT * FROM chat_messages WHERE session_id = ? AND is_hidden = 0 AND id > ? ORDER BY id ASC");
         $stmt->execute([$session_id, $last_id]);
         $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
@@ -151,6 +163,7 @@ switch ($action) {
             }
         }
         
+        triggerChatUpdate($session_id);
         echo json_encode(['status' => 'success']);
         break;
 
@@ -168,6 +181,7 @@ switch ($action) {
                     $url = 'uploads/chat/' . $new_name;
                     $stmt = $db->prepare("INSERT INTO chat_messages (session_id, sender_type, message_type, content) VALUES (?, 'customer', 'image', ?)");
                     $stmt->execute([$session_id, $url]);
+                    triggerChatUpdate($session_id);
                     echo json_encode(['status' => 'success', 'url' => $url]);
                     exit;
                 }

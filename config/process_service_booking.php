@@ -113,7 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $setting_stmt = $db->query("SELECT key_value FROM settings WHERE key_name = 'open_time'");
         $open_time_setting = $setting_stmt->fetchColumn() ?: '09:00 AM - 11:00 PM';
         
-        $error_msg = "Xin vui lòng chọn thời gian đặt bàn từ " . htmlspecialchars($open_time_setting) . " (tối thiểu trước {$min_hours} tiếng)";
+        $error_msg = "Quý khách vui lòng chọn giờ đến sau thời điểm hiện tại ít nhất {$min_hours} tiếng.";
         if ($type === 'event') $error_msg = "Dịch vụ Tiệc kỷ niệm yêu cầu chuẩn bị chu đáo, quý khách vui lòng đặt trước ít nhất 3 tiếng.";
         if ($type === 'home') $error_msg = "Dịch vụ Đầu bếp tại gia cần chọn lọc nguyên liệu riêng, quý khách vui lòng đặt trước ít nhất 24 tiếng.";
         if ($type === 'bespoke') $error_msg = "Dịch vụ Thiết kế riêng đòi hỏi sự chuẩn bị hoàn mỹ nhất, quý khách vui lòng đặt trước ít nhất 48 tiếng.";
@@ -130,10 +130,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $time_parts = explode('-', $open_time_setting);
     if (count($time_parts) == 2) {
         $start_time_24 = date('H:i', strtotime(trim($time_parts[0])));
-        $end_time_24 = date('H:i', strtotime(trim($time_parts[1])));
+        $end_str = trim($time_parts[1]);
+        $end_time_24 = date('H:i', strtotime($end_str));
+        
+        if (stripos($end_str, '12:00 PM') !== false || stripos($end_str, '12:00 AM') !== false) {
+            $end_time_24 = '23:59';
+        }
+        
         $booking_time_only = date('H:i', $booking_timestamp);
         
-        if ($booking_time_only < $start_time_24 || $booking_time_only > $end_time_24) {
+        $isOutsideHours = false;
+        if ($end_time_24 < $start_time_24) {
+            if ($booking_time_only < $start_time_24 && $booking_time_only > $end_time_24) $isOutsideHours = true;
+        } else {
+            if ($booking_time_only < $start_time_24 || $booking_time_only > $end_time_24) $isOutsideHours = true;
+        }
+        
+        if ($isOutsideHours) {
             echo "<script>alert('Nhà hàng hân hạnh phục vụ quý khách trong khung giờ " . htmlspecialchars($open_time_setting) . ". Vui lòng chọn lại thời gian phù hợp.'); window.history.back();</script>";
             exit;
         }
@@ -142,7 +155,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // TÍNH NĂNG ĐỒNG BỘ: KIỂM TRA TRẠNG THÁI BÀN (Luồng 1 & Luồng 2)
     if ($table_id) {
         $booking_timestamp = strtotime($date);
-        $two_hours = 2 * 3600;
+        $two_hours = 90 * 60;
 
         // 1. Kiểm tra Luồng 1 (Đặt trước trùng giờ)
         // Lấy các đơn 'Pending', 'Confirmed' trong vòng ± 2 tiếng
@@ -154,7 +167,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ");
         $check_stmt->execute([$table_id, $date, $two_hours]);
         if ($check_stmt->rowCount() > 0) {
-            echo "<script>alert('Bàn này đã được khách khác đặt trước hoặc sau giờ bạn chọn quá sát (trong vòng 2 tiếng). Vui lòng chọn giờ khác hoặc bàn khác!'); window.history.back();</script>";
+            echo "<script>alert('Bàn này đã được khách khác đặt trước hoặc sau giờ bạn chọn quá sát (trong vòng 1 tiếng rưỡi). Vui lòng chọn giờ khác hoặc bàn khác!'); window.history.back();</script>";
             exit;
         }
         

@@ -51,9 +51,11 @@ foreach ($bad_words as $w) {
     }
 }
 
+$experience_type = mb_substr(strip_tags(trim($_POST['experience_type'] ?? 'Fine Dining')), 0, 100);
+
 // Insert review
-$stmt = $db->prepare("INSERT INTO chef_reviews (chef_id, user_id, author_name, rating, comment, status) VALUES (?, ?, ?, ?, ?, 'approved')");
-$stmt->execute([$chef_id, $user_id, $author_name, $rating, $comment]);
+$stmt = $db->prepare("INSERT INTO chef_reviews (chef_id, user_id, author_name, rating, comment, experience_type, status) VALUES (?, ?, ?, ?, ?, ?, 'approved')");
+$stmt->execute([$chef_id, $user_id, $author_name, $rating, $comment, $experience_type]);
 $new_id = $db->lastInsertId();
 
 // Retrieve user avatar if logged in
@@ -77,11 +79,12 @@ echo json_encode([
     'avg_rating' => $avg_rating,
     'review_count' => $review_count,
     'review' => [
-        'id'           => $new_id,
-        'author_name'  => $author_name,
-        'rating'       => $rating,
-        'comment'      => htmlspecialchars($comment),
-        'user_avatar'  => $user_avatar,
-        'created_at'   => date('d/m/Y H:i')
+        'id'               => $new_id,
+        'author_name'      => $author_name,
+        'rating'           => $rating,
+        'comment'          => htmlspecialchars($comment),
+        'experience_type'  => htmlspecialchars($experience_type),
+        'user_avatar'      => $user_avatar,
+        'created_at'       => date('d/m/Y H:i')
     ]
 ]);

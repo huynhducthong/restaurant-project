@@ -52,6 +52,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $is_featured = isset($_POST['is_featured']) ? 1 : 0;
             $awards = trim($_POST['awards'] ?? '');
             $sig_dishes_arr = $_POST['signature_dishes'] ?? [];
+            $signature_technique = trim($_POST['signature_technique'] ?? '');
+            $signature_technique_specs = trim($_POST['signature_technique_specs'] ?? '');
+            $signature_technique_process = trim($_POST['signature_technique_process'] ?? '');
+            $signature_technique_quote = trim($_POST['signature_technique_quote'] ?? '');
+            $signature_technique_difficulty = trim($_POST['signature_technique_difficulty'] ?? '');
+            $signature_technique_final_result = trim($_POST['signature_technique_final_result'] ?? '');
             $signature_dishes = !empty($sig_dishes_arr) ? implode(',', array_map('intval', $sig_dishes_arr)) : null;
 
             if (empty($name)) {
@@ -59,6 +65,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 try {
                     // Xử lý upload ảnh
+                    // Xử lý upload ảnh Gallery
+                    $gallery_names = [];
+                    if (isset($_FILES['gallery_images']) && !empty($_FILES['gallery_images']['name'][0])) {
+                        $count = count($_FILES['gallery_images']['name']);
+                        $target_dir = "../public/assets/img/chefs/gallery/";
+                        if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
+                        for ($i = 0; $i < $count; $i++) {
+                            if ($_FILES['gallery_images']['error'][$i] === UPLOAD_ERR_OK) {
+                                $ext = strtolower(pathinfo($_FILES['gallery_images']['name'][$i], PATHINFO_EXTENSION));
+                                if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                                    $gname = time() . '_' . $i . '_' . uniqid() . '.' . $ext;
+                                    if (move_uploaded_file($_FILES['gallery_images']['tmp_name'][$i], $target_dir . $gname)) {
+                                        $gallery_names[] = $gname;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    $reset_gallery = isset($_POST['reset_gallery']) ? 1 : 0;
+                    
                     $image_name = null;
                     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
                         $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
@@ -70,6 +96,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     }
 
+                    
+                    // Get existing gallery for update
+                    $existing_gallery = [];
+                    if ($action === 'edit') {
+                        $stmt_g = $db->prepare("SELECT gallery_images FROM chefs WHERE id=?");
+                        $stmt_g->execute([$id]);
+                        $row_g = $stmt_g->fetch(PDO::FETCH_ASSOC);
+                        if ($row_g && !empty($row_g['gallery_images']) && !$reset_gallery) {
+                            $existing_gallery = json_decode($row_g['gallery_images'], true) ?: [];
+                        }
+                    }
+                    $final_gallery = array_merge($existing_gallery, $gallery_names);
+                    $gallery_json = !empty($final_gallery) ? json_encode($final_gallery) : null;
+                    
                     if ($action === 'create') {
                         $stmt = $db->prepare("INSERT INTO chefs (name, position, image, experience, specialty, description, quote, facebook, instagram, email, is_active, is_featured, sort_order, awards, signature_dishes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                         if ($stmt->execute([$name, $position, $image_name, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $awards, $signature_dishes])) {
@@ -317,7 +357,7 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
 
 <!-- Modal Thêm/Sửa -->
 <div class="modal fade" id="chefModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg" style="background:#fff;">
             <div class="modal-header bg-primary text-white border-0">
                 <h5 class="modal-title" id="modalTitle"><i class="fas fa-user-plus me-2"></i> Thêm Đầu Bếp</h5>
@@ -399,8 +439,59 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
                             </div>
                         </div>
                         
+                        
+                        <!-- Tuyệt Kỹ Chế Biến Fields -->
+                        
+                        <div class="col-12 mt-4">
+                            <h6 class="fw-bold text-primary border-bottom pb-2"><i class="fas fa-images me-2"></i>Thư Viện Ảnh Ngang (Gallery)</h6>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold text-dark">Thêm ảnh mới (Chọn nhiều file cùng lúc)</label>
+                            <input type="file" class="form-control" name="gallery_images[]" multiple accept="image/*">
+                            <small class="text-muted">Các ảnh mới sẽ được thêm vào thư viện hiện tại. Khuyên dùng ảnh nằm ngang (ví dụ: 1920x1080).</small>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-center mt-3 mt-md-0">
+                            <div class="form-check form-switch mt-md-4">
+                                <input class="form-check-input" type="checkbox" name="reset_gallery" id="resetGallery" value="1">
+                                <label class="form-check-label fw-bold text-danger" for="resetGallery">Xóa toàn bộ ảnh cũ</label>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-2" id="galleryPreviewContainer" style="display:none;">
+                            <label class="form-label fw-bold text-dark">Thư viện ảnh hiện tại:</label>
+                            <div id="galleryThumbnails" class="d-flex flex-wrap gap-2"></div>
+                        </div>
+
+<div class="col-12 mt-4">
+                            <h6 class="fw-bold text-primary border-bottom pb-2"><i class="fas fa-fire me-2"></i>Tuyệt Kỹ Chế Biến (Signature Technique)</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark">Câu Quote Tuyệt Kỹ</label>
+                            <input type="text" class="form-control" name="signature_technique_quote" id="chefSigQuote" placeholder="VD: Sự hoàn hảo không đến từ những nguyên liệu đắt tiền nhất...">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark">Độ khó (Badge)</label>
+                            <input type="text" class="form-control" name="signature_technique_difficulty" id="chefSigDifficulty" placeholder="VD: Nghệ Nhân (Master)">
+                        </div>
                         <div class="col-12">
-                            <label class="form-label fw-bold text-dark">Giải thưởng & Chuyên môn (Awards & Expertise)</label>
+                            <label class="form-label fw-bold text-dark">Mô tả giới thiệu (Intro)</label>
+                            <textarea class="form-control" name="signature_technique" id="chefSigIntro" rows="3" placeholder="Giới thiệu chung về kỹ thuật..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-dark">Thông số kỹ thuật (Mỗi dòng 1 thông số)</label>
+                            <textarea class="form-control" name="signature_technique_specs" id="chefSigSpecs" rows="3" placeholder="Nhiệt độ ủ: 1°C - 3°C&#10;Độ ẩm: 75% - 80%"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-dark">Timeline Quy trình (Mỗi bước 1 dòng hoặc bắt đầu bằng số)</label>
+                            <textarea class="form-control" name="signature_technique_process" id="chefSigProcess" rows="4" placeholder="1. Xử lý ikejime ngay khi cá còn sống...&#10;2. Làm sạch hoàn toàn máu và nội tạng..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-dark">Thành quả cuối cùng</label>
+                            <textarea class="form-control" name="signature_technique_final_result" id="chefSigFinal" rows="2" placeholder="Thịt mềm tan trong miệng, hương vị bùng nổ..."></textarea>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <h6 class="fw-bold text-primary border-bottom pb-2"><i class="fas fa-award me-2"></i>Giải thưởng & Món đặc trưng</h6>
+                        </div>
+<div class="col-12"><label class="form-label fw-bold text-dark">Giải thưởng & Chuyên môn (Awards & Expertise)</label>
                             <textarea class="form-control" name="awards" id="chefAwards" rows="3" placeholder="Định dạng: Tên giải thưởng | Chi tiết giải thưởng | Class icon Bootstrap (Tùy chọn)&#10;Mỗi giải thưởng viết trên 1 dòng. Ví dụ:&#10;Sao Michelin | Đạt năm 2022 | trophy&#10;Le Cordon Bleu | Tốt nghiệp xuất sắc | mortarboard"></textarea>
                             <small class="text-muted">Nhập mỗi giải thưởng trên 1 dòng, phân tách tên và chi tiết bằng ký tự gạch đứng (|). Icon tùy chọn có thể là: trophy, award, mortarboard, star, etc.</small>
                         </div>
@@ -455,6 +546,12 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
             document.getElementById('chefIsActive').checked = true;
             document.getElementById('chefIsFeatured').checked = false;
             document.getElementById('chefAwards').value = '';
+            document.getElementById('chefSigQuote').value = '';
+            document.getElementById('chefSigDifficulty').value = '';
+            document.getElementById('chefSigIntro').value = '';
+            document.getElementById('chefSigSpecs').value = '';
+            document.getElementById('chefSigProcess').value = '';
+            document.getElementById('chefSigFinal').value = '';
             document.querySelectorAll('.signature-dish-cb').forEach(cb => cb.checked = false);
         } else {
             document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-edit me-2"></i> Cập nhật Thông tin Đầu Bếp';
@@ -494,7 +591,36 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
             document.getElementById('chefIsFeatured').checked = data.is_featured == 1;
             
             document.getElementById('chefAwards').value = data.awards || '';
+            document.getElementById('chefSigQuote').value = data.signature_technique_quote || '';
+            document.getElementById('chefSigDifficulty').value = data.signature_technique_difficulty || '';
+            document.getElementById('chefSigIntro').value = data.signature_technique || '';
+            document.getElementById('chefSigSpecs').value = data.signature_technique_specs || '';
+            document.getElementById('chefSigProcess').value = data.signature_technique_process || '';
+            document.getElementById('chefSigFinal').value = data.signature_technique_final_result || '';
             document.querySelectorAll('.signature-dish-cb').forEach(cb => cb.checked = false);
+            
+            document.getElementById('resetGallery').checked = false;
+            let galleryContainer = document.getElementById('galleryPreviewContainer');
+            let galleryThumbnails = document.getElementById('galleryThumbnails');
+            galleryThumbnails.innerHTML = '';
+            if (data.gallery_images) {
+                try {
+                    let images = JSON.parse(data.gallery_images);
+                    if (images && images.length > 0) {
+                        galleryContainer.style.display = 'block';
+                        images.forEach(img => {
+                            galleryThumbnails.innerHTML += `<img src="/restaurant-project/public/assets/img/chefs/gallery/${img}" style="height: 60px; width: 100px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;">`;
+                        });
+                    } else {
+                        galleryContainer.style.display = 'none';
+                    }
+                } catch(e) {
+                    galleryContainer.style.display = 'none';
+                }
+            } else {
+                galleryContainer.style.display = 'none';
+            }
+            
             if (data.signature_dishes) {
                 let dishes = data.signature_dishes.split(',');
                 dishes.forEach(id => {

@@ -1635,7 +1635,7 @@ include __DIR__ . '/views/client/layouts/header.php';
             <div class="news-breadcrumbs">
                 <a href="index.php">Trang chủ</a>
                 <span>&gt;</span>
-                <a href="Aboutus.php">Tin tức</a>
+                <a href="Aboutus.php">Về chúng tôi</a>
                 <span>&gt;</span>
                 <a href="Aboutus.php?cat_id=<?= $article['category_id'] ?>"><?= htmlspecialchars($article['cat_name']) ?></a>
                 <span>&gt;</span>
@@ -1903,7 +1903,7 @@ include __DIR__ . '/views/client/layouts/header.php';
             <div class="news-breadcrumbs reveal-fade">
                 <a href="index.php">Trang chủ</a>
                 <span>&gt;</span>
-                <span style="color: #666;">Tin tức &amp; Sự kiện</span>
+                <span style="color: #666;">Về chúng tôi</span>
                 <?php if ($cat_id > 0): ?>
                     <span>&gt;</span>
                     <?php 
@@ -2090,7 +2090,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                                 <a href="Aboutus.php">
                                     <span class="cat-name-wrap">
                                         <span class="cat-icon">🍽️</span> 
-                                        <span class="cat-label">Tất cả tin tức</span>
+                                        <span class="cat-label">Tất cả bài viết</span>
                                     </span>
                                     <span class="cat-count badge bg-dark">★</span>
                                 </a>

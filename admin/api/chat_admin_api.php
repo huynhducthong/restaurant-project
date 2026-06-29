@@ -1,6 +1,17 @@
 <?php
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../config/pusher.php';
+
 $db = (new Database())->getConnection();
+
+function triggerChatUpdate($session_id = null) {
+    global $pusher;
+    try {
+        $data = ['time' => time()];
+        if ($session_id) $data['session_id'] = $session_id;
+        $pusher->trigger('chat-channel', 'chat_updated', $data);
+    } catch (Exception $e) {}
+}
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $session_id = $_POST['session_id'] ?? $_GET['session_id'] ?? '';
@@ -47,6 +58,7 @@ switch ($action) {
                 $db->prepare("UPDATE chat_sessions SET status = 'agent_handling' WHERE session_id = ? AND status = 'waiting_agent'")->execute([$session_id]);
             }
         }
+        triggerChatUpdate($session_id);
         echo json_encode(['status' => 'success']);
         break;
 
@@ -71,6 +83,7 @@ switch ($action) {
                         $db->prepare("UPDATE chat_sessions SET status = 'agent_handling' WHERE session_id = ? AND status = 'waiting_agent'")->execute([$session_id]);
                     }
 
+                    triggerChatUpdate($session_id);
                     echo json_encode(['status' => 'success', 'url' => $url]);
                     exit;
                 }
@@ -85,11 +98,13 @@ switch ($action) {
         } catch(PDOException $e) {
             $db->prepare("UPDATE chat_sessions SET status = 'closed' WHERE session_id = ?")->execute([$session_id]);
         }
+        triggerChatUpdate($session_id);
         echo json_encode(['status' => 'success']);
         break;
 
     case 'reopen_session':
         $db->prepare("UPDATE chat_sessions SET status = 'agent_handling' WHERE session_id = ?")->execute([$session_id]);
+        triggerChatUpdate($session_id);
         echo json_encode(['status' => 'success']);
         break;
 
@@ -103,5 +118,43 @@ switch ($action) {
         $stmt = $db->query("SELECT COUNT(*) FROM chat_sessions WHERE status = 'waiting_agent'");
         $waiting_count = (int)$stmt->fetchColumn();
         echo json_encode(['status' => 'success', 'waiting_count' => $waiting_count]);
+        break;
+
+    case 'hide_message':
+        $msg_id = (int)($_POST['msg_id'] ?? 0);
+        if ($msg_id) {
+            $db->prepare("UPDATE chat_messages SET is_hidden = 1 WHERE id = ?")->execute([$msg_id]);
+            $stmt = $db->prepare("SELECT session_id FROM chat_messages WHERE id = ?");
+            $stmt->execute([$msg_id]);
+            $s_id = $stmt->fetchColumn();
+            if ($s_id) {
+                try {
+                    global $pusher;
+                    $pusher->trigger('chat-channel', 'message_hidden', ['message_id' => $msg_id, 'session_id' => $s_id]);
+                } catch (Exception $e) {}
+            }
+            echo json_encode(['status' => 'success']);
+        } else {
+            echo json_encode(['status' => 'error']);
+        }
+        break;
+
+    case 'unhide_message':
+        $msg_id = (int)($_POST['msg_id'] ?? 0);
+        if ($msg_id) {
+            $db->prepare("UPDATE chat_messages SET is_hidden = 0 WHERE id = ?")->execute([$msg_id]);
+            $stmt = $db->prepare("SELECT session_id FROM chat_messages WHERE id = ?");
+            $stmt->execute([$msg_id]);
+            $s_id = $stmt->fetchColumn();
+            if ($s_id) {
+                try {
+                    global $pusher;
+                    $pusher->trigger('chat-channel', 'message_unhidden', ['message_id' => $msg_id, 'session_id' => $s_id]);
+                } catch (Exception $e) {}
+            }
+            echo json_encode(['status' => 'success']);
+        } else {
+            echo json_encode(['status' => 'error']);
+        }
         break;
 }

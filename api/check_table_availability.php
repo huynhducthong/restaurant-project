@@ -28,7 +28,7 @@ try {
         FROM service_bookings 
         WHERE table_id IS NOT NULL 
           AND LOWER(status) IN ('pending', 'confirmed')
-          AND ABS(TIMESTAMPDIFF(MINUTE, booking_date, ?)) < 120
+          AND ABS(TIMESTAMPDIFF(MINUTE, booking_date, ?)) < 90
     ");
     $stmt->execute([$datetime]);
     $unavailable_online = $stmt->fetchAll(PDO::FETCH_COLUMN);
@@ -37,7 +37,7 @@ try {
     // Nếu giờ đặt bàn nằm trong khoảng từ quá khứ 1 tiếng đến tương lai 2 tiếng so với HIỆN TẠI
     $booking_timestamp = strtotime($datetime);
     $time_diff_from_now = $booking_timestamp - time();
-    $two_hours = 7200;
+    $two_hours = 5400; // 90 minutes
     
     $unavailable_pos = [];
     if ($time_diff_from_now > -3600 && $time_diff_from_now < $two_hours) {

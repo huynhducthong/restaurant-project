@@ -2,8 +2,19 @@
 session_start();
 require_once '../../config/database.php';
 require_once '../../config/inventory_helper.php';
+require_once '../../config/pusher.php';
+
 $database = new Database();
 $db = $database->getConnection();
+
+function triggerUpdate() {
+    global $pusher;
+    try {
+        $pusher->trigger('restaurant-channel', 'update_data', ['time' => time()]);
+    } catch (Exception $e) {
+        // Ignore pusher errors
+    }
+}
 
 // Cần kiểm tra quyền admin/nhân viên ở đây
 if (!isset($_SESSION['user_id'])) {
@@ -17,6 +28,13 @@ header('Content-Type: application/json');
 
 try {
     switch ($action) {
+        case 'mark_served':
+            $item_id = $_POST['item_id'] ?? 0;
+            $db->prepare("UPDATE pos_order_items SET status = 'served' WHERE id = ?")->execute([$item_id]);
+            triggerUpdate();
+            echo json_encode(['success' => true]);
+            break;
+
         case 'get_tables':
             // Lấy danh sách bàn và thông tin order hiện tại nếu có
             $stmt = $db->query("
@@ -99,12 +117,16 @@ try {
             $pos_order_id = $db->lastInsertId();
 
             $db->prepare("UPDATE restaurant_tables SET status = 'occupied' WHERE id = ?")->execute([$table_id]);
+            
+            // Đánh dấu booking đã hoàn tất check-in để không hiển thị lặp lại trên KDS
+            $db->prepare("UPDATE service_bookings SET status = 'Completed' WHERE id = ?")->execute([$booking_id]);
 
             $b_details = $db->prepare("SELECT * FROM booking_details WHERE booking_id = ?");
             $b_details->execute([$booking_id]);
             $details = $b_details->fetchAll(PDO::FETCH_ASSOC);
 
-            $ins_item = $db->prepare("INSERT INTO pos_order_items (pos_order_id, item_type, item_id, quantity, price, status) VALUES (?, 'food', ?, ?, ?, 'draft')");
+            // Tự động chuyển các món đã đặt trước sang POS với đúng trạng thái bếp đã nấu
+            $ins_item = $db->prepare("INSERT INTO pos_order_items (pos_order_id, item_type, item_id, quantity, price, status) VALUES (?, 'food', ?, ?, ?, ?)");
             
             foreach ($details as $d) {
                 if ($d['item_type'] == 'food') {
@@ -121,7 +143,8 @@ try {
                             $final_price += (float)$tp->fetchColumn();
                         }
                     }
-                    $ins_item->execute([$pos_order_id, $d['menu_id'], $d['quantity'], $final_price]);
+                    $status = $d['status'] ?? 'pending';
+                    $ins_item->execute([$pos_order_id, $d['menu_id'], $d['quantity'], $final_price, $status]);
                 }
             }
             
@@ -129,6 +152,7 @@ try {
             $upd->execute([$pos_order_id, $pos_order_id]);
 
             $db->commit();
+            triggerUpdate();
             echo json_encode(['success' => true]);
             break;
 
@@ -166,6 +190,18 @@ try {
             $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             echo json_encode(['success' => true, 'data' => ['order' => $order, 'items' => $items]]);
+            break;
+
+        case 'update_guests':
+            $order_id = $_POST['order_id'] ?? 0;
+            $guests = (int)($_POST['guests'] ?? 1);
+            if ($order_id) {
+                $db->prepare("UPDATE pos_orders SET guests = ? WHERE id = ?")->execute([$guests, $order_id]);
+                triggerUpdate();
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Lỗi cập nhật']);
+            }
             break;
 
         case 'add_item':
@@ -210,6 +246,7 @@ try {
             updateOrderTotal($db, $order_id);
 
             $db->commit();
+            triggerUpdate();
             echo json_encode(['success' => true, 'message' => 'Thêm món thành công']);
             break;
 
@@ -229,6 +266,7 @@ try {
                 }
                 updateOrderTotal($db, $order_id);
             }
+            triggerUpdate();
             echo json_encode(['success' => true]);
             break;
 
@@ -236,6 +274,7 @@ try {
             $order_id = $_POST['order_id'] ?? 0;
             if ($order_id) {
                 $db->query("UPDATE pos_order_items SET status = 'pending' WHERE pos_order_id = $order_id AND status = 'draft'");
+                triggerUpdate();
                 echo json_encode(['success' => true]);
             } else {
                 echo json_encode(['success' => false, 'message' => 'Invalid order ID']);
@@ -277,6 +316,7 @@ try {
             ")->fetchAll(PDO::FETCH_ASSOC);
 
             $db->commit();
+            triggerUpdate();
             echo json_encode(['success' => true, 'message' => 'Thanh toán thành công', 'data' => ['order' => $order, 'items' => $items]]);
             break;
 
@@ -296,6 +336,7 @@ try {
                 }
                 
                 $db->commit();
+                triggerUpdate();
                 echo json_encode(['success' => true]);
             } else {
                 echo json_encode(['success' => false, 'message' => 'Invalid order ID']);

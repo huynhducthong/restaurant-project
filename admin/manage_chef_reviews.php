@@ -334,6 +334,11 @@ $chefs = $db->query("SELECT id, name FROM chefs ORDER BY name ASC")->fetchAll(PD
                         <textarea class="form-control" name="comment" id="editReviewComment" rows="4" required></textarea>
                     </div>
                     
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark">Phản hồi từ Đầu bếp (Chef Response)</label>
+                        <textarea class="form-control" name="chef_response" id="editChefResponse" rows="4" placeholder="Nhập lời cảm ơn hoặc phản hồi của Bếp trưởng tại đây..."></textarea>
+                    </div>
+                    
                     <div class="text-end mt-4">
                         <button type="button" class="btn btn-light me-2 text-dark" data-bs-dismiss="modal">Hủy</button>
                         <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
@@ -357,6 +362,7 @@ $chefs = $db->query("SELECT id, name FROM chefs ORDER BY name ASC")->fetchAll(PD
         document.getElementById('editReviewAuthor').value = data.author_name;
         document.getElementById('editReviewRating').value = data.rating;
         document.getElementById('editReviewComment').value = data.comment;
+        document.getElementById('editChefResponse').value = data.chef_response || '';
         
         editModal.show();
     }
