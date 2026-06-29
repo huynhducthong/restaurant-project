@@ -20,7 +20,11 @@ $setting_stmt = $db->query("SELECT key_value FROM settings WHERE key_name = 'ope
 $open_time_setting = $setting_stmt->fetchColumn() ?: '09:00 AM - 11:00 PM';
 $time_parts = explode('-', $open_time_setting);
 $restaurant_start_time = count($time_parts) == 2 ? date('H:i', strtotime(trim($time_parts[0]))) : '09:00';
-$restaurant_end_time = count($time_parts) == 2 ? date('H:i', strtotime(trim($time_parts[1]))) : '23:00';
+$end_str = count($time_parts) == 2 ? trim($time_parts[1]) : '';
+$restaurant_end_time = $end_str ? date('H:i', strtotime($end_str)) : '23:00';
+if (stripos($end_str, '12:00 PM') !== false || stripos($end_str, '12:00 AM') !== false) {
+    $restaurant_end_time = '23:59';
+}
 
 $type = $_GET['type'] ?? 'table';
 $chef_id = isset($_GET['chef_id']) ? (int)$_GET['chef_id'] : 0;
@@ -782,6 +786,7 @@ select.input-lux {
                                           data-price="<?= (float)$fd['price'] ?>"
                                           data-img="public/assets/img/menu/<?= htmlspecialchars($fd['image'] ?: 'default.jpg') ?>"
                                           data-desc="<?= htmlspecialchars($fd['description'] ?? '') ?>"
+                                          data-chefnote="<?= htmlspecialchars($fd['chef_note'] ?? '') ?>"
                                           data-ingredients="<?= htmlspecialchars(($fd['ingredients'] ?? '') . (!empty($fd['recipe_ingredients']) ? ', ' . $fd['recipe_ingredients'] : '')) ?>"
                                           data-toppings-raw="<?= htmlspecialchars($fd['list_toppings'] ?? '') ?>"
                                           data-category="<?= htmlspecialchars($fd['cat_name'] ?? 'Món tự chọn') ?>"
@@ -1102,7 +1107,7 @@ select.input-lux {
             let now = new Date();
             let bookingType = '<?= $type ?>';
             let minHours = 1;
-            let errorMsgText = 'Xin vui lòng chọn thời gian đặt bàn từ <?= $open_time_setting ?> (tối thiểu trước 1 tiếng)';
+            let errorMsgText = 'Quý khách vui lòng chọn giờ đến sau thời điểm hiện tại ít nhất 1 tiếng.';
 
             if (bookingType === 'event') {
                 minHours = 3;
@@ -1127,7 +1132,14 @@ select.input-lux {
                 let startTime = '<?= $restaurant_start_time ?>';
                 let endTime = '<?= $restaurant_end_time ?>';
                 
-                if (timeStr < startTime || timeStr > endTime) {
+                let isOutsideHours = false;
+                if (endTime < startTime) {
+                    if (timeStr < startTime && timeStr > endTime) isOutsideHours = true;
+                } else {
+                    if (timeStr < startTime || timeStr > endTime) isOutsideHours = true;
+                }
+
+                if (isOutsideHours) {
                     isValid = false;
                     dateErrorMsg.innerText = 'Nhà hàng hân hạnh phục vụ quý khách trong khung giờ ' + '<?= $open_time_setting ?>' + '.';
                 }
@@ -1201,6 +1213,12 @@ select.input-lux {
               <div id="foodOptStatus" style="font-size:12px; margin-bottom:10px; font-weight:bold;">Trạng thái: ...</div>
               <div id="foodOptPrice" style="font-size:1.1rem; color:var(--accent-burgundy); font-weight:600; margin-bottom:15px;">Giá gốc: 0 đ</div>
               <p id="foodOptDesc" style="font-size:13px; color:var(--text-muted); font-style:italic; line-height:1.6; margin-bottom:20px;"></p>
+              
+              <!-- Chef Note Wrap -->
+              <div id="chefNoteWrap" style="display:none; margin-bottom:20px; background: rgba(212, 175, 55, 0.05); border-left: 3px solid var(--accent-burgundy); padding: 12px 15px;">
+                <div style="font-family:'Cormorant Garamond', serif; font-size:16px; font-weight:600; color:var(--accent-burgundy); margin-bottom:5px;"><i class="fas fa-pen-nib me-2"></i>Câu chuyện của Bếp trưởng</div>
+                <div id="foodOptChefNote" style="font-size:13px; color:var(--forest); line-height:1.5; font-style:italic;"></div>
+              </div>
               
               <!-- Ingredients List -->
               <div id="ingredientsWrap" style="margin-bottom:20px; display:none;">
@@ -1542,6 +1560,7 @@ function openFoodOptionModal(id) {
     var category = row.getAttribute('data-category');
     var maxToppings = parseInt(row.getAttribute('data-max-toppings') || 4);
     var stock = parseInt(row.getAttribute('data-stock') || 99);
+    var chefNote = row.getAttribute('data-chefnote');
     
     // Set modal content
     document.getElementById('foodOptName').textContent = name;
@@ -1556,6 +1575,15 @@ function openFoodOptionModal(id) {
     
     document.getElementById('foodOptPrice').textContent = "Giá gốc: " + price.toLocaleString('vi-VN') + " đ";
     document.getElementById('foodOptDesc').textContent = desc || "Món ăn thượng hạng được chuẩn bị bởi đầu bếp Restaurantly.";
+    
+    var chefNoteWrap = document.getElementById('chefNoteWrap');
+    if (chefNote && chefNote.trim() !== '') {
+        chefNoteWrap.style.display = 'block';
+        document.getElementById('foodOptChefNote').textContent = chefNote;
+    } else {
+        chefNoteWrap.style.display = 'none';
+    }
+
     document.getElementById('foodOptImg').src = img;
     
     // Ingredients

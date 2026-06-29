@@ -70,7 +70,7 @@ if (!isset($_SESSION['user_id'])) {
         .status-ready { background: #bbf7d0; color: #166534; }
         .status-served { background: #e2e8f0; color: #475569; }
         
-        /* Quantity Controls */
+        /* Update Quantity Controls */
         .qty-controls { display: flex; align-items: center; border: 1px solid #e2e8f0; border-radius: 4px; overflow: hidden; width: max-content; }
         .qty-btn { background: #f8fafc; border: none; padding: 2px 8px; cursor: pointer; color: #64748b; font-size: 0.9rem; }
         .qty-btn:hover { background: #e2e8f0; color: #1e293b; }
@@ -145,6 +145,7 @@ if (!isset($_SESSION['user_id'])) {
         <div class="pane-header">
             <span><i class="fas fa-utensils me-2 text-warning"></i> THỰC ĐƠN</span>
             <span id="selected-table-label" class="badge bg-dark text-warning px-3 py-2" style="display: none; font-size: 0.9rem; cursor: pointer;" onclick="deselectTable()" title="Bỏ chọn bàn này"></span>
+
         </div>
         <div class="pane-content">
             <div class="menu-filter" id="menu-filters">
@@ -293,6 +294,8 @@ async function selectTable(tableId, tableCode) {
     document.getElementById('selected-table-label').style.display = 'inline-block';
     document.getElementById('selected-table-label').innerHTML = `Bàn: ${tableCode} <i class="fas fa-times ms-2"></i>`;
     
+
+    
     // Highlight table
     document.querySelectorAll('.table-card').forEach(el => el.classList.remove('active'));
     event.currentTarget.classList.add('active');
@@ -304,6 +307,7 @@ function deselectTable() {
     currentTableId = null;
     currentOrderId = null;
     document.getElementById('selected-table-label').style.display = 'none';
+
     document.querySelectorAll('.table-card').forEach(el => el.classList.remove('active'));
     renderCart(null);
 }
@@ -447,6 +451,7 @@ async function loadOrder(showLoading = true) {
 const statusMap = {
     'draft': { label: 'Chưa gửi bếp', class: 'status-draft' },
     'pending': { label: 'Chờ chế biến', class: 'status-pending' },
+    'preparing': { label: 'Đang chuẩn bị', class: 'status-cooking' },
     'cooking': { label: 'Đang nấu', class: 'status-cooking' },
     'ready': { label: 'Đã xong', class: 'status-ready' },
     'served': { label: 'Đã lên món', class: 'status-served' }
@@ -473,7 +478,7 @@ function renderCart(data) {
         return;
     }
     
-    orderLabel.innerText = `Order #${data.order.id}`;
+    orderLabel.innerHTML = `<span style="font-size: 14px; font-weight: 600; color: #64748b; margin-right: 8px;">Order #${data.order.id}</span> <span style="font-size:14px; cursor:pointer; color:#1d4ed8; font-weight: bold; background: #dbeafe; padding: 6px 12px; border-radius: 6px; border: 1px solid #bfdbfe; box-shadow: 0 2px 4px rgba(59,130,246,0.15); transition: all 0.2s;" onclick="updateGuests(${data.order.id}, ${data.order.guests || 1})" title="Nhấn để đổi số lượng khách"><i class="fas fa-users me-1"></i> ${data.order.guests || 1} khách</span>`;
     totalEl.innerText = formatMoney(data.order.total_amount);
     cancelBtn.disabled = false;
     
@@ -513,6 +518,7 @@ function renderCart(data) {
                     ${item.notes ? `<div style="font-size: 0.75rem; color: #dc2626; margin-top: 2px;">${item.notes}</div>` : ''}
                     <div class="cart-item-price">${formatMoney(item.price)}</div>
                     <div class="cart-item-status ${statusInfo.class}">${statusInfo.label}</div>
+                    ${item.status === 'ready' ? `<button class="btn btn-success mt-2" onclick="markServed(${item.id})" style="font-size: 0.85rem; padding: 8px 12px; font-weight: 700; width:100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(40,167,69,0.2); letter-spacing: 0.5px; text-transform: uppercase;"><i class="fas fa-concierge-bell me-1"></i> Đã phục vụ</button>` : ''}
                 </div>
                 <div class="qty-controls">
                     <button class="qty-btn" onclick="updateQty(${item.id}, ${item.quantity - 1})" ${!canEdit ? 'disabled' : ''}><i class="fas fa-minus"></i></button>
@@ -626,6 +632,25 @@ async function sendToKitchen() {
         console.error(e);
     } finally {
         hideLoader();
+    }
+}
+
+async function markServed(itemId) {
+    try {
+        const res = await fetch('controllers/pos_controller.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `action=mark_served&item_id=${itemId}`
+        });
+        const data = await res.json();
+        if (data.success) {
+            loadOrder();
+        } else {
+            alert(data.message || 'Lỗi hệ thống');
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Lỗi kết nối');
     }
 }
 
@@ -1043,20 +1068,51 @@ function addCurrentDetailItem() {
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script>
+function updateGuests(orderId, currentGuests) {
+    let newGuests = prompt("Nhập số lượng khách:", currentGuests);
+    if (newGuests !== null && parseInt(newGuests) > 0) {
+        showLoader();
+        const formData = new URLSearchParams();
+        formData.append('action', 'update_guests');
+        formData.append('order_id', orderId);
+        formData.append('guests', parseInt(newGuests));
+        fetch('controllers/pos_controller.php', {
+            method: 'POST',
+            body: formData
+        }).then(res => res.json()).then(json => {
+            hideLoader();
+            if (json.success) {
+                loadOrder(false);
+            } else {
+                alert(json.message || 'Lỗi cập nhật số khách');
+            }
+        }).catch(e => {
+            hideLoader();
+            console.error(e);
+        });
+    }
+}
+
 // Initial load
 loadTables();
 
-// Auto-refresh mechanism (Polling every 10 seconds)
-setInterval(() => {
-    // Only refresh tables silently
+// Real-time updates with Pusher
+var pusher = new Pusher('cfbc6305339f352b0089', {
+  cluster: 'ap1'
+});
+
+var channel = pusher.subscribe('restaurant-channel');
+channel.bind('update_data', function(data) {
+    // Silently refresh data when receiving event
     loadTables(false);
-    
-    // If an order is currently open, refresh it silently to get kitchen updates
     if (currentTableId) {
-        loadOrder(false); // false means don't show loader overlay to avoid flickering
+        loadOrder(false);
     }
-}, 10000);
+});
 </script>
+
+
 </body>
 </html>

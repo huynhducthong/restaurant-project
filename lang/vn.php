@@ -37,7 +37,7 @@ return [
     'subscribe' => 'Đăng ký',
     'newsletter_desc' => 'Đăng ký để nhận thông tin ưu đãi mới nhất từ chúng tôi.',
 
-    'news' => 'Tin Tức',
+    'news' => 'Về chúng tôi',
     'team_chefs' => 'Đội Bếp',
     'hero_title' => 'Chào mừng bạn đến với Restaurantly',
     'hero_subtitle' => 'Cung cấp những món ăn tuyệt vời trong hơn 18 năm!',

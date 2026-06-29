@@ -7,7 +7,7 @@ $time = $_GET['time'] ?? date('H:i');
 
 $booking_datetime = $date . ' ' . $time;
 $booking_timestamp = strtotime($booking_datetime);
-$two_hours = 2 * 3600;
+$two_hours = 90 * 60;
 
 $response = [];
 

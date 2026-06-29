@@ -2,6 +2,14 @@
 session_start();
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/config/inventory_helper.php';
+require_once __DIR__ . '/config/pusher.php';
+
+function triggerUpdate() {
+    global $pusher;
+    try {
+        $pusher->trigger('restaurant-channel', 'update_data', ['time' => time()]);
+    } catch (Exception $e) { }
+}
 
 $role = $_SESSION['role'] ?? '';
 if (!in_array($role, ['admin', 'chef', 1, 2])) {
@@ -26,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $db->prepare("UPDATE restaurant_tables SET is_available = 1 WHERE id = ?")->execute([$table_id]);
         }
         
+        triggerUpdate();
         echo "success";
     } catch(Exception $e) {
         echo "error";
@@ -35,7 +44,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'complete_pos_item') {
     $item_id = intval($_POST['item_id']);
+    $item_type_req = $_POST['item_type'] ?? 'pos';
     try {
+        if ($item_type_req === 'booking') {
+            // For bookings tested before check-in, just update status without complex inventory deduction
+            $db->prepare("UPDATE booking_details SET status = 'ready' WHERE id = ?")->execute([$item_id]);
+            triggerUpdate();
+            echo "success";
+            exit;
+        }
+
         $db->beginTransaction();
 
         $stmt_check = $db->prepare("SELECT item_type, item_id as food_id, quantity, status FROM pos_order_items WHERE id = ? FOR UPDATE");
@@ -45,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         if (!$item) throw new Exception("Không tìm thấy món ăn này.");
         if ($item['status'] === 'ready' || $item['status'] === 'served') {
             $db->rollBack();
+            triggerUpdate();
             echo "success";
             exit;
         }
@@ -122,12 +141,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
         $db->prepare("UPDATE pos_order_items SET status = 'ready' WHERE id = ?")->execute([$item_id]);
         $db->commit();
+        triggerUpdate();
         echo "success";
     } catch(Exception $e) {
         if ($db->inTransaction()) {
             $db->rollBack();
         }
         echo "error|" . $e->getMessage();
+    }
+    exit;
+}
+
+// New handler for progressive status
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_pos_item_status') {
+    $item_id = (int)$_POST['item_id'];
+    $new_status = $_POST['new_status'];
+    
+    // Only allow valid transitions
+    $valid_statuses = ['pending', 'preparing', 'cooking', 'ready', 'served'];
+    if (in_array($new_status, $valid_statuses)) {
+        // If transitioning to 'ready', we should also deduct inventory like the old complete_pos_item did.
+        // But for simplicity in this workflow, if they use the new progressive buttons, we will call the old action for 'ready' from frontend.
+        // So this handler is just for 'preparing' and 'cooking'.
+        $item_type = $_POST['item_type'] ?? 'pos';
+        if ($item_type === 'booking') {
+            $db->prepare("UPDATE booking_details SET status = ? WHERE id = ?")->execute([$new_status, $item_id]);
+        } else {
+            $db->prepare("UPDATE pos_order_items SET status = ? WHERE id = ?")->execute([$new_status, $item_id]);
+        }
+        triggerUpdate();
+        echo "success";
+    } else {
+        echo "error|Invalid status";
     }
     exit;
 }
@@ -150,7 +195,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Lấy danh sách các món ăn lẻ (A la Carte) cho từng đơn
 foreach ($orders as &$order) {
     $stmt_details = $db->prepare("
-        SELECT bd.quantity, bd.notes as special_notes, f.name as food_name, bd.toppings_info
+        SELECT bd.id as order_item_id, bd.quantity, bd.notes as special_notes, f.name as food_name, bd.toppings_info, bd.status
         FROM booking_details bd
         JOIN foods f ON bd.menu_id = f.id
         WHERE bd.booking_id = ?
@@ -193,7 +238,7 @@ $pos_query = "
     JOIN pos_order_items oi ON o.id = oi.pos_order_id
     LEFT JOIN foods f ON oi.item_id = f.id AND oi.item_type = 'food'
     LEFT JOIN combos c ON oi.item_id = c.id AND oi.item_type = 'combo'
-    WHERE oi.status IN ('pending', 'cooking')
+    WHERE oi.status IN ('pending', 'preparing', 'cooking', 'ready') AND o.status != 'completed'
     ORDER BY o.created_at ASC
 ";
 $pos_items = $db->query($pos_query)->fetchAll(PDO::FETCH_ASSOC);
@@ -227,19 +272,77 @@ usort($all_orders, function($a, $b) {
     return strtotime($a['booking_date']) - strtotime($b['booking_date']);
 });
 
+// ── KANBAN CATEGORIZATION ──
+$kanban_todo = [];
+$kanban_inprogress = [];
+$kanban_ready = [];
+
+foreach ($all_orders as $order) {
+    $pending_cnt = 0;
+    $progress_cnt = 0;
+    $ready_cnt = 0;
+    $total_cnt = 0;
+    
+    if (!empty($order['foods'])) {
+        foreach ($order['foods'] as $food) {
+            if (!isset($food['status'])) continue;
+            $total_cnt++;
+            if ($food['status'] === 'pending') $pending_cnt++;
+            if ($food['status'] === 'preparing' || $food['status'] === 'cooking') $progress_cnt++;
+            if ($food['status'] === 'ready' || $food['status'] === 'served') $ready_cnt++;
+        }
+    }
+    
+    if ($progress_cnt > 0) {
+        $kanban_inprogress[] = $order;
+    } elseif ($total_cnt > 0 && $ready_cnt === $total_cnt) {
+        $kanban_ready[] = $order;
+    } else {
+        $kanban_todo[] = $order;
+    }
+}
+
 // Truy vấn các đơn đặt trước (Upcoming)
 $upcoming_query = "
     SELECT 
-        sb.id, sb.customer_name, sb.guests, sb.booking_date, sb.service_type, 
-        c.name as combo_name
+        sb.id, sb.customer_name, sb.guests, sb.booking_date, sb.service_type, sb.chef_requirements, sb.message,
+        c.name as combo_name,
+        u.allergies, u.doneness, u.flavor_profile
     FROM service_bookings sb
     LEFT JOIN combos c ON sb.combo_id = c.id
+    LEFT JOIN users u ON sb.user_id = u.id
     WHERE sb.status = 'Confirmed' AND DATE(sb.booking_date) > CURDATE()
     ORDER BY sb.booking_date ASC
     LIMIT 15
 ";
 $stmt_up = $db->query($upcoming_query);
 $upcoming_orders = $stmt_up->fetchAll(PDO::FETCH_ASSOC);
+
+foreach ($upcoming_orders as &$up_order) {
+    $stmt_details = $db->prepare("
+        SELECT bd.quantity, bd.notes as special_notes, f.name as food_name, bd.toppings_info
+        FROM booking_details bd
+        JOIN foods f ON bd.menu_id = f.id
+        WHERE bd.booking_id = ?
+    ");
+    $stmt_details->execute([$up_order['id']]);
+    $foods_list = $stmt_details->fetchAll(PDO::FETCH_ASSOC);
+    
+    foreach ($foods_list as &$f) {
+        $f['toppings'] = [];
+        if (!empty($f['toppings_info'])) {
+            $t_ids = explode(',', $f['toppings_info']);
+            $t_ids_str = implode(',', array_map('intval', $t_ids));
+            if (!empty($t_ids_str)) {
+                $toppings_query = $db->query("SELECT name FROM toppings WHERE id IN ($t_ids_str)")->fetchAll(PDO::FETCH_COLUMN);
+                $f['toppings'] = $toppings_query;
+            }
+        }
+    }
+    unset($f);
+    $up_order['foods'] = $foods_list;
+}
+unset($up_order);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -258,11 +361,11 @@ $upcoming_orders = $stmt_up->fetchAll(PDO::FETCH_ASSOC);
    TOKENS — Light / Warm Kitchen Theme
 ═══════════════════════════════════════ */
 :root {
-  --bg:        #1A1A1D;
-  --surface:   #ffffff;
-  --surface2:  #1A1A1D;
-  --border:    rgba(209, 209, 209,.1);
-  --border-md: rgba(209, 209, 209,.15);
+  --bg:        #F8F9FA;
+  --surface:   #FFFFFF;
+  --surface2:  #F1F3F5;
+  --border:    #DEE2E6;
+  --border-md: #CED4DA;
 
   --forest:    #A88746;
   --forest-lt: #5f6e45;
@@ -288,9 +391,9 @@ $upcoming_orders = $stmt_up->fetchAll(PDO::FETCH_ASSOC);
   --amber-bg:  #fffbeb;
   --amber-border:rgba(146,88,10,.2);
 
-  --txt:       #D1D1D1;
-  --txt-muted: #555555;
-  --txt-dim:   #777777;
+  --txt:       #212529;
+  --txt-muted: #6C757D;
+  --txt-dim:   #ADB5BD;
 
   --shadow-sm: 0 1px 4px rgba(209, 209, 209,.06), 0 4px 12px rgba(209, 209, 209,.04);
   --shadow-md: 0 4px 16px rgba(209, 209, 209,.08), 0 12px 32px rgba(209, 209, 209,.05);
@@ -871,8 +974,9 @@ body::before {
   pointer-events: none;
 }
 .kds-toast {
-  background: #262629;
+  background: var(--surface);
   border: 1px solid var(--border-md);
+  border-left: 4px solid var(--border-md);
   border-radius: var(--r-sm);
   padding: 14px 18px;
   font-size: 13px;
@@ -883,9 +987,9 @@ body::before {
   pointer-events: all;
   box-shadow: var(--shadow-md);
 }
-.kds-toast.success { border-color: var(--green-border); }
+.kds-toast.success { border-left-color: var(--green); background: #f0fdf4; }
 .kds-toast.success i { color: var(--green); }
-.kds-toast.error { border-color: var(--red-border); }
+.kds-toast.error { border-left-color: var(--red); background: #fef2f2; }
 .kds-toast.error i { color: var(--red); }
 @keyframes toastIn {
   from { opacity: 0; transform: translateY(12px) scale(.96); }
@@ -1011,15 +1115,11 @@ $normalOrders = $totalOrders - $urgentOrders;
   </div>
 
   <div class="topbar-right">
-    <div class="refresh-bar">
-      <span class="refresh-label">Auto&nbsp;15s</span>
-      <div class="refresh-ring">
-        <svg viewBox="0 0 28 28" width="28" height="28">
-          <circle cx="14" cy="14" r="11"/>
-          <circle class="progress" cx="14" cy="14" r="11" id="refreshProgress"/>
-        </svg>
-      </div>
-    </div>
+    <?php if (!empty($upcoming_orders)): ?>
+    <button class="btn-exit" style="cursor:pointer; padding: 7px 12px; background:var(--forest-dim); border:1px solid rgba(168, 135, 70, 0.3); color:var(--forest);" onclick="document.getElementById('upcomingModal').style.display='flex'">
+      <i class="fas fa-calendar-alt"></i> Sắp tới (<?= count($upcoming_orders) ?>)
+    </button>
+    <?php endif; ?>
 
     <div>
       <div class="kds-clock" id="liveClock">00:00:00</div>
@@ -1040,261 +1140,358 @@ $normalOrders = $totalOrders - $urgentOrders;
 <!-- ═══ MAIN ═══ -->
 <main class="kds-main">
 
-  <?php if ($urgentOrders > 0): ?>
-  <div class="kds-section-label" style="color:var(--red);opacity:.7">
-    <i class="fas fa-circle-exclamation" style="font-size:9px"></i>
-    Đơn khẩn — dưới 30 phút
-  </div>
-  <?php endif; ?>
+  <div class="kanban-board" style="display: flex; gap: 20px; padding: 0 28px; height: calc(100vh - 120px); overflow-x: auto; overflow-y: hidden; align-items: stretch;">
 
-  <div class="ticket-grid">
-
-    <?php if (empty($all_orders)): ?>
-    <div class="kds-empty">
-      <div class="kds-empty-ring">✓</div>
-      <h3>Bếp đang rảnh rỗi</h3>
-      <p>// Không có đơn nào chờ chế biến</p>
-    </div>
-
-    <?php else: ?>
-    <?php foreach ($all_orders as $idx => $order):
-      $diff      = strtotime($order['booking_date']) - time();
-      $is_urgent = ($diff > 0 && $diff < 1800);
-      $dt        = new DateTime($order['booking_date']);
-    ?>
-    
-    <?php if (isset($order['is_pos'])): ?>
-    <!-- ═══ POS TICKET ═══ -->
-    <div class="ticket <?= $is_urgent ? 'urgent' : '' ?>" id="ticket-pos-<?= $order['real_order_id'] ?>">
-      <div class="ticket-strip"></div>
-      <div class="ticket-head">
-        <div class="ticket-head-left">
-          <div class="ticket-order-num">POS ORDER # <?= str_pad($order['real_order_id'], 4, '0', STR_PAD_LEFT) ?></div>
-          <div class="ticket-customer" style="color: var(--blue);"><?= htmlspecialchars($order['customer_name']) ?></div>
-        </div>
-        <div class="ticket-time">
-          <div class="time-main"><?= $dt->format('H:i') ?></div>
-          <div class="time-date"><?= $dt->format('d/m') ?></div>
-          <div class="urgent-badge"><i class="fas fa-bolt" style="font-size:8px"></i> KHẨN</div>
-        </div>
-      </div>
-      <div class="ticket-body">
-        
-        <!-- Meta chips -->
-        <div class="meta-row">
-          <span class="meta-chip guests" style="background: var(--blue-bg); border-color: var(--blue-border); color: var(--blue);">
-            <i class="fas fa-chair"></i> Gọi tại bàn
-          </span>
-          <span class="meta-chip svc" style="background: var(--green-bg); border-color: var(--green-border); color: var(--green);">
-            <i class="fas fa-concierge-bell"></i> Lên món liền
-          </span>
-        </div>
-
-        <div class="course-block" style="background: var(--surface2); border-color: var(--border);">
-          <div class="course-icon regular"><i class="fas fa-utensils" style="color:var(--blue);font-size:13px"></i></div>
-          <div>
-            <div class="course-label">Thu Ngân Gọi Món</div>
-            <div class="course-name">Phục vụ tại bàn</div>
-          </div>
-        </div>
-        <div class="food-list">
-          <?php foreach ($order['foods'] as $f): ?>
-            <div class="food-item" style="align-items: center;">
-              <div class="food-name">
-                <span style="font-weight: 700;"><?= htmlspecialchars($f['food_name']) ?></span>
-                <?php if ($f['status'] === 'cooking'): ?>
-                  <span class="badge bg-warning text-dark ms-2" style="font-size: 0.7rem; padding: 2px 6px; border-radius: 4px;">Đang nấu</span>
-                <?php endif; ?>
+    <?php
+    if (!function_exists('renderTicket')) {
+      function renderTicket($order) {
+          $diff      = strtotime($order['booking_date']) - time();
+          $is_urgent = ($diff > 0 && $diff < 1800);
+          $dt        = new DateTime($order['booking_date']);
+          ?>
+          <?php if (isset($order['is_pos'])): ?>
+          <!-- ═══ POS TICKET ═══ -->
+          <div class="ticket <?= $is_urgent ? 'urgent' : '' ?>" id="ticket-pos-<?= $order['real_order_id'] ?>">
+            <div class="ticket-strip"></div>
+            <div class="ticket-head">
+              <div class="ticket-head-left">
+                <div class="ticket-order-num">POS ORDER # <?= str_pad($order['real_order_id'], 4, '0', STR_PAD_LEFT) ?></div>
+                <div class="ticket-customer" style="color: var(--blue);"><?= htmlspecialchars($order['customer_name']) ?></div>
               </div>
-              <div class="food-qty" style="margin-right: 15px;">x<?= $f['quantity'] ?></div>
-              <button class="btn btn-sm btn-outline-success" onclick="completePosItem(<?= $f['order_item_id'] ?>, this)" style="padding: 2px 8px; font-size: 11px; font-weight: bold; border-radius: 4px; border: 1px solid var(--green); color: var(--green); background: transparent; cursor: pointer;">
-                  <i class="fas fa-check"></i> XONG
+              <div class="ticket-time">
+                <div class="time-main"><?= $dt->format('H:i') ?></div>
+                <div class="time-date"><?= $dt->format('d/m') ?></div>
+                <div class="urgent-badge"><i class="fas fa-bolt" style="font-size:8px"></i> KHẨN</div>
+              </div>
+            </div>
+            <div class="ticket-body">
+              
+              <!-- Meta chips -->
+              <div class="meta-row">
+                <span class="meta-chip guests" style="background: var(--blue-bg); border-color: var(--blue-border); color: var(--blue);">
+                  <i class="fas fa-chair"></i> Gọi tại bàn
+                </span>
+                <span class="meta-chip svc" style="background: var(--green-bg); border-color: var(--green-border); color: var(--green);">
+                  <i class="fas fa-concierge-bell"></i> Lên món liền
+                </span>
+              </div>
+
+              <div class="course-block" style="background: var(--surface2); border-color: var(--border);">
+                <div class="course-icon regular"><i class="fas fa-utensils" style="color:var(--blue);font-size:13px"></i></div>
+                <div>
+                  <div class="course-label">Thu Ngân Gọi Món</div>
+                  <div class="course-name">Phục vụ tại bàn</div>
+                </div>
+              </div>
+              <div class="food-list">
+                <?php foreach ($order['foods'] as $f): ?>
+                  <div class="food-item" style="align-items: center;">
+                    <div class="food-name">
+                      <span style="font-weight: 700;"><?= htmlspecialchars($f['food_name']) ?></span>
+                      <?php if ($f['status'] === 'pending'): ?>
+                        <span class="badge bg-secondary ms-2" style="font-size: 0.7rem; padding: 2px 6px; border-radius: 4px;">Đợi bếp</span>
+                      <?php elseif ($f['status'] === 'preparing'): ?>
+                        <span class="badge bg-info text-dark ms-2" style="font-size: 0.7rem; padding: 2px 6px; border-radius: 4px;">Đang chuẩn bị</span>
+                      <?php elseif ($f['status'] === 'cooking'): ?>
+                        <span class="badge bg-warning text-dark ms-2" style="font-size: 0.7rem; padding: 2px 6px; border-radius: 4px;">Đang nấu</span>
+                      <?php elseif ($f['status'] === 'ready'): ?>
+                        <span class="badge bg-success ms-2" style="font-size: 0.7rem; padding: 2px 6px; border-radius: 4px;">Đã xong</span>
+                      <?php endif; ?>
+                    </div>
+                    <div class="food-qty" style="margin-right: 15px;">x<?= $f['quantity'] ?></div>
+                    
+                    <?php if ($f['status'] === 'pending'): ?>
+                      <button type="button" style="padding:8px 16px; font-size:13px; font-weight:600; border:1px solid var(--border-md); background:var(--surface); border-radius:6px; cursor:pointer;" onclick="updatePosStatus(<?= $f['order_item_id'] ?>, 'preparing', this, 'pos')">
+                        <i class="fas fa-play" style="color:var(--txt-muted); margin-right:6px;"></i>Chuẩn bị
+                      </button>
+                    <?php elseif ($f['status'] === 'preparing'): ?>
+                      <button type="button" style="padding:8px 16px; font-size:13px; font-weight:600; border:1px solid var(--border-md); background:var(--surface); border-radius:6px; cursor:pointer; color:#d35400;" onclick="updatePosStatus(<?= $f['order_item_id'] ?>, 'cooking', this, 'pos')">
+                        <i class="fas fa-fire" style="margin-right:6px;"></i>Nấu
+                      </button>
+                    <?php elseif ($f['status'] === 'cooking'): ?>
+                      <button type="button" style="padding:8px 16px; font-size:13px; font-weight:600; border:1px solid var(--green-border); background:var(--green-bg); color:var(--green); border-radius:6px; cursor:pointer;" onclick="completePosItem(<?= $f['order_item_id'] ?>, this, 'pos')">
+                        <i class="fas fa-check" style="margin-right:6px;"></i>Xong
+                      </button>
+                    <?php endif; ?>
+                  </div>
+                <?php endforeach; ?>
+              </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="ticket-foot" style="display: flex; justify-content: center; align-items: center; padding: 12px; background: var(--surface2); border-top: 1px solid var(--border); color: var(--txt-muted); font-size: 11px; font-weight: 500; font-family: var(--mono);">
+              <i class="fas fa-info-circle" style="margin-right: 6px;"></i> Bấm "XONG" từng món khi hoàn tất
+            </div>
+          </div>
+
+          <?php else: ?>
+          <!-- ═══ BOOKING TICKET ═══ -->
+          <div class="ticket <?= $is_urgent ? 'urgent' : '' ?>" id="ticket-<?= $order['id'] ?>">
+            <div class="ticket-strip"></div>
+            <div class="ticket-head">
+              <div class="ticket-head-left">
+                <div class="ticket-order-num">BOOKING # <?= str_pad($order['id'], 4, '0', STR_PAD_LEFT) ?></div>
+                <div class="ticket-customer"><?= htmlspecialchars($order['customer_name']) ?></div>
+              </div>
+              <div class="ticket-time">
+                <div class="time-main"><?= $dt->format('H:i') ?></div>
+                <div class="time-date"><?= $dt->format('d/m') ?></div>
+                <div class="urgent-badge"><i class="fas fa-bolt" style="font-size:8px"></i> KHẨN</div>
+              </div>
+            </div>
+            <div class="ticket-body">
+              <div class="meta-row">
+                <span class="meta-chip guests">
+                  <i class="fas fa-user-friends"></i> <?= $order['guests'] ?> Khách
+                </span>
+                <span class="meta-chip svc">
+                  <i class="fas fa-concierge-bell"></i> <?= htmlspecialchars($order['service_type']) ?>
+                </span>
+              </div>
+
+              <?php if (!empty($order['combo_name'])): ?>
+              <div class="course-block">
+                <div class="course-icon special"><i class="fas fa-star" style="color:var(--amber);font-size:13px"></i></div>
+                <div>
+                  <div class="course-label">Tasting Menu</div>
+                  <div class="course-name"><?= htmlspecialchars($order['combo_name']) ?></div>
+                </div>
+              </div>
+              <?php endif; ?>
+
+              <?php if (!empty($order['foods'])): ?>
+              <div class="food-list">
+                    <?php 
+                    $itemType = (isset($order['is_pos']) && $order['is_pos']) ? 'pos' : 'booking';
+                    foreach ($order['foods'] as $f): 
+                    ?>
+                  <div class="food-item" style="display:flex; flex-direction:column; gap:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                      <div class="food-name">
+                        <span style="font-weight: 700;"><?= htmlspecialchars($f['food_name']) ?></span>
+                        <?php if (!empty($f['toppings'])): ?>
+                          <br>
+                          <span class="food-note" style="background: rgba(168, 135, 70, 0.1); color: var(--accent-burgundy); border: 1px solid rgba(168, 135, 70, 0.2); font-weight: bold; font-style: normal; margin-top: 2px;">
+                            <i class="fas fa-plus-circle" style="font-size:9px; margin-right:3px;"></i>Topping: <?= htmlspecialchars(implode(', ', $f['toppings'])) ?>
+                          </span>
+                        <?php endif; ?>
+                        <?php if (!empty($f['special_notes'])): ?>
+                          <br>
+                          <span class="food-note" style="background: rgba(192, 57, 43, 0.08); color: #c0392b; border: 1px solid rgba(192, 57, 43, 0.15); font-weight: bold; font-style: italic; margin-top: 2px;">
+                            <i class="fas fa-exclamation-circle" style="font-size:9px; margin-right:3px;"></i><?= htmlspecialchars($f['special_notes']) ?>
+                          </span>
+                        <?php endif; ?>
+                      </div>
+                      <div class="food-qty">x<?= $f['quantity'] ?></div>
+                    </div>
+                    <!-- Nút thao tác món -->
+                    <?php if (isset($f['status'])): ?>
+                    <div class="food-actions" style="display:flex; gap:8px; margin-top:4px;">
+                      <?php if ($f['status'] == 'pending'): ?>
+                        <button type="button" style="padding:8px 16px; font-size:13px; font-weight:600; border:1px solid var(--border-md); background:var(--surface); border-radius:6px; cursor:pointer;" onclick="updatePosStatus(<?= $f['order_item_id'] ?>, 'preparing', this, '<?= $itemType ?>')">
+                          <i class="fas fa-play" style="color:var(--txt-muted); margin-right:6px;"></i>Chuẩn bị
+                        </button>
+                      <?php elseif ($f['status'] == 'preparing'): ?>
+                        <button type="button" style="padding:8px 16px; font-size:13px; font-weight:600; border:1px solid var(--border-md); background:var(--surface); border-radius:6px; cursor:pointer; color:#d35400;" onclick="updatePosStatus(<?= $f['order_item_id'] ?>, 'cooking', this, '<?= $itemType ?>')">
+                          <i class="fas fa-fire" style="margin-right:6px;"></i>Nấu
+                        </button>
+                      <?php elseif ($f['status'] == 'cooking'): ?>
+                        <button type="button" style="padding:4px 8px; font-size:11px; border:1px solid var(--green-border); background:var(--green-bg); color:var(--green); border-radius:4px; cursor:pointer; font-weight:600;" onclick="completePosItem(<?= $f['order_item_id'] ?>, this, '<?= $itemType ?>')">
+                          <i class="fas fa-check" style="font-size:9px; margin-right:4px;"></i>Xong
+                        </button>
+                      <?php elseif ($f['status'] == 'ready'): ?>
+                        <span style="font-size:11px; font-weight:600; color:var(--green);"><i class="fas fa-check-circle" style="margin-right:4px;"></i>Đã xong</span>
+                      <?php endif; ?>
+                    </div>
+                    <?php endif; ?>
+                  </div>
+                <?php endforeach; ?>
+              </div>
+              <?php endif; ?>
+
+              <!-- Allergy warning -->
+              <?php if (!empty($order['allergies'])): ?>
+              <div class="allergy-block">
+                <div class="block-label red">
+                  <i class="fas fa-shield-virus" style="font-size:9px"></i>
+                  Cảnh Báo Dị Ứng Y Tế
+                </div>
+                <div class="block-body"><?= htmlspecialchars($order['allergies']) ?></div>
+              </div>
+              <?php endif; ?>
+
+              <!-- DNA -->
+              <?php if (!empty($order['doneness']) || !empty($order['flavor_profile'])): ?>
+              <div class="dna-block">
+                <div class="block-label gold">
+                  <i class="fas fa-dna" style="font-size:9px"></i>
+                  DNA Ẩm Thực Khách Hàng
+                </div>
+                <div class="dna-body">
+                  <?php if (!empty($order['doneness'])): ?>
+                    <div><span>Độ chín bò:</span><?= htmlspecialchars($order['doneness']) ?></div>
+                  <?php endif; ?>
+                  <?php if (!empty($order['flavor_profile'])): ?>
+                    <div><span>Khẩu vị:</span><?= htmlspecialchars($order['flavor_profile']) ?></div>
+                  <?php endif; ?>
+                </div>
+              </div>
+              <?php endif; ?>
+
+              <!-- Chef requirements / Note -->
+              <?php if (!empty($order['chef_requirements'])): ?>
+              <div class="note-block">
+                <div class="block-label muted">
+                  <i class="fas fa-quote-left" style="font-size:8px"></i>
+                  Yêu cầu bếp trưởng
+                </div>
+                <div class="note-text"><?= htmlspecialchars($order['chef_requirements']) ?></div>
+              </div>
+              <?php endif; ?>
+
+              <?php if (!empty($order['message'])): ?>
+              <div class="note-block">
+                <div class="block-label muted">
+                  <i class="fas fa-comment-dots" style="font-size:8px"></i>
+                  Lời nhắn khách hàng
+                </div>
+                <div class="note-text"><?= htmlspecialchars($order['message']) ?></div>
+              </div>
+              <?php endif; ?>
+
+            </div>
+
+            <?php
+            $all_ready = true;
+            if (!empty($order['foods'])) {
+                foreach ($order['foods'] as $f) {
+                    if (!isset($f['status']) || ($f['status'] !== 'ready' && $f['status'] !== 'served')) {
+                        $all_ready = false;
+                        break;
+                    }
+                }
+            }
+            // Nếu đơn không có món nào (lỗi) hoặc chưa xong hết món, thì không hiển thị nút Xong
+            if ($all_ready && !empty($order['foods'])):
+            ?>
+            <!-- Footer -->
+            <div class="ticket-foot">
+              <button class="btn-done" onclick="completeOrder(<?= $order['id'] ?>, this)">
+                <i class="fas fa-check-circle"></i>
+                <span>Chế Biến Xong</span>
               </button>
             </div>
-          <?php endforeach; ?>
-        </div>
-      </div>
-      
-      <!-- Footer -->
-      <div class="ticket-foot" style="display: flex; justify-content: center; align-items: center; padding: 12px; background: var(--surface2); border-top: 1px solid var(--border); color: var(--txt-muted); font-size: 11px; font-weight: 500; font-family: var(--mono);">
-        <i class="fas fa-info-circle" style="margin-right: 6px;"></i> Bấm "XONG" từng món khi hoàn tất
-      </div>
-    </div>
+            <?php endif; ?>
 
-    <?php else: ?>
-    <!-- ═══ BOOKING TICKET (Existing) ═══ -->
-    <div class="ticket <?= $is_urgent ? 'urgent' : '' ?>" id="ticket-<?= $order['id'] ?>">
-
-      <!-- Strip -->
-      <div class="ticket-strip"></div>
-
-      <!-- Head -->
-      <div class="ticket-head">
-        <div class="ticket-head-left">
-          <div class="ticket-order-num">BOOKING # <?= str_pad($order['id'], 4, '0', STR_PAD_LEFT) ?></div>
-          <div class="ticket-customer"><?= htmlspecialchars($order['customer_name']) ?></div>
-        </div>
-        <div class="ticket-time">
-          <div class="time-main"><?= $dt->format('H:i') ?></div>
-          <div class="time-date"><?= $dt->format('d/m') ?></div>
-          <div class="urgent-badge">
-            <i class="fas fa-bolt" style="font-size:8px"></i> KHẨN
           </div>
-        </div>
-      </div>
-
-      <!-- Body -->
-      <div class="ticket-body">
-
-        <!-- Meta chips -->
-        <div class="meta-row">
-          <span class="meta-chip guests">
-            <i class="fas fa-users"></i>
-            <?= $order['guests'] ?> khách
-          </span>
-          <span class="meta-chip svc">
-            <i class="fas fa-concierge-bell"></i>
-            <?= $order['service_type'] === 'chef' ? 'Đầu bếp riêng' : ucfirst($order['service_type']) ?>
-          </span>
-        </div>
-
-        <!-- Course / Combo -->
-        <div class="course-block">
-          <?php if ($order['service_type'] === 'chef' || $order['combo_id'] == -1): ?>
-            <div class="course-icon special">⭐</div>
-            <div>
-              <div class="course-label">Loại thực đơn</div>
-              <div class="course-name">Thực Đơn Thiết Kế Riêng</div>
-            </div>
-          <?php else: ?>
-            <div class="course-icon regular">
-              <i class="fas fa-utensils" style="color:var(--blue);font-size:13px"></i>
-            </div>
-            <div>
-              <div class="course-label">Combo / Thực đơn</div>
-              <div class="course-name"><?= htmlspecialchars($order['combo_name'] ?? 'Món tự chọn — Gọi Món') ?></div>
-            </div>
           <?php endif; ?>
-        </div>
+          <?php
+      }
+    }
+    ?>
 
-        <!-- Danh sách món lẻ -->
-        <?php if (!empty($order['foods'])): ?>
-        <div class="food-list">
-          <?php foreach ($order['foods'] as $f): ?>
-            <div class="food-item">
-              <div class="food-name">
-                <span style="font-weight: 700;"><?= htmlspecialchars($f['food_name']) ?></span>
-                <?php if (!empty($f['toppings'])): ?>
-                  <br>
-                  <span class="food-note" style="background: rgba(168, 135, 70, 0.1); color: var(--accent-burgundy); border: 1px solid rgba(168, 135, 70, 0.2); font-weight: bold; font-style: normal; margin-top: 2px;">
-                    <i class="fas fa-plus-circle" style="font-size:9px; margin-right:3px;"></i>Topping: <?= htmlspecialchars(implode(', ', $f['toppings'])) ?>
-                  </span>
-                <?php endif; ?>
-                <?php if (!empty($f['special_notes'])): ?>
-                  <br>
-                  <span class="food-note" style="background: rgba(192, 57, 43, 0.08); color: #c0392b; border: 1px solid rgba(192, 57, 43, 0.15); font-weight: bold; font-style: italic; margin-top: 2px;">
-                    <i class="fas fa-exclamation-circle" style="font-size:9px; margin-right:3px;"></i><?= htmlspecialchars($f['special_notes']) ?>
-                  </span>
-                <?php endif; ?>
-              </div>
-              <div class="food-qty">x<?= $f['quantity'] ?></div>
-            </div>
-          <?php endforeach; ?>
-        </div>
-        <?php endif; ?>
-
-        <!-- Allergy warning -->
-        <?php if (!empty($order['allergies'])): ?>
-        <div class="allergy-block">
-          <div class="block-label red">
-            <i class="fas fa-shield-virus" style="font-size:9px"></i>
-            Cảnh Báo Dị Ứng Y Tế
-          </div>
-          <div class="block-body"><?= htmlspecialchars($order['allergies']) ?></div>
-        </div>
-        <?php endif; ?>
-
-        <!-- DNA -->
-        <?php if (!empty($order['doneness']) || !empty($order['flavor_profile'])): ?>
-        <div class="dna-block">
-          <div class="block-label gold">
-            <i class="fas fa-dna" style="font-size:9px"></i>
-            DNA Ẩm Thực Khách Hàng
-          </div>
-          <div class="dna-body">
-            <?php if (!empty($order['doneness'])): ?>
-              <div><span>Độ chín bò:</span><?= htmlspecialchars($order['doneness']) ?></div>
-            <?php endif; ?>
-            <?php if (!empty($order['flavor_profile'])): ?>
-              <div><span>Khẩu vị:</span><?= htmlspecialchars($order['flavor_profile']) ?></div>
-            <?php endif; ?>
-          </div>
-        </div>
-        <?php endif; ?>
-
-        <!-- Chef requirements / Note -->
-        <?php if (!empty($order['chef_requirements'])): ?>
-        <div class="note-block">
-          <div class="block-label muted">
-            <i class="fas fa-quote-left" style="font-size:8px"></i>
-            Yêu cầu bếp trưởng
-          </div>
-          <div class="note-text"><?= htmlspecialchars($order['chef_requirements']) ?></div>
-        </div>
-        <?php endif; ?>
-
-        <?php if (!empty($order['message'])): ?>
-        <div class="note-block">
-          <div class="block-label muted">
-            <i class="fas fa-comment-dots" style="font-size:8px"></i>
-            Lời nhắn khách hàng
-          </div>
-          <div class="note-text"><?= htmlspecialchars($order['message']) ?></div>
-        </div>
-        <?php endif; ?>
-
+    <!-- Cột 1: MỚI NHẬN -->
+    <div class="kanban-col" style="flex: 1; min-width: 360px; display: flex; flex-direction: column; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 20px;">
+      <div style="padding: 18px 24px; font-weight: 700; color: var(--forest); border-bottom: 2px solid var(--border-md); background: var(--surface); border-radius: var(--r) var(--r) 0 0; display: flex; justify-content: space-between; align-items: center;">
+        <div><i class="fas fa-inbox me-2"></i> MỚI NHẬN</div>
+        <span style="background: var(--surface2); padding: 4px 10px; border-radius: 20px; font-size: 12px; color: var(--txt); border: 1px solid var(--border);"><?= count($kanban_todo) ?></span>
       </div>
-
-      <!-- Footer -->
-      <div class="ticket-foot">
-        <button class="btn-done" onclick="completeOrder(<?= $order['id'] ?>, this)">
-          <i class="fas fa-check-circle"></i>
-          <span>Chế Biến Xong</span>
-        </button>
+      <div style="flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px;">
+        <?php 
+        if (empty($kanban_todo)) { echo '<div style="text-align:center; padding: 40px; color: var(--txt-muted); font-size: 13px;">Không có đơn</div>'; }
+        foreach ($kanban_todo as $order) { renderTicket($order); } 
+        ?>
       </div>
-
     </div>
-    <?php endif; ?>
-    
-    <?php endforeach; ?>
-    <?php endif; ?>
+
+    <!-- Cột 2: ĐANG CHẾ BIẾN -->
+    <div class="kanban-col" style="flex: 1; min-width: 360px; display: flex; flex-direction: column; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 20px;">
+      <div style="padding: 18px 24px; font-weight: 700; color: #d35400; border-bottom: 2px solid var(--border-md); background: var(--surface); border-radius: var(--r) var(--r) 0 0; display: flex; justify-content: space-between; align-items: center;">
+        <div><i class="fas fa-fire me-2"></i> ĐANG CHẾ BIẾN</div>
+        <span style="background: var(--surface2); padding: 4px 10px; border-radius: 20px; font-size: 12px; color: var(--txt); border: 1px solid var(--border);"><?= count($kanban_inprogress) ?></span>
+      </div>
+      <div style="flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px;">
+        <?php 
+        if (empty($kanban_inprogress)) { echo '<div style="text-align:center; padding: 40px; color: var(--txt-muted); font-size: 13px;">Không có đơn</div>'; }
+        foreach ($kanban_inprogress as $order) { renderTicket($order); } 
+        ?>
+      </div>
+    </div>
+
+    <!-- Cột 3: SẴN SÀNG -->
+    <div class="kanban-col" style="flex: 1; min-width: 360px; display: flex; flex-direction: column; background: var(--bg); border: 1px solid var(--green-border); border-radius: var(--r); margin-bottom: 20px; box-shadow: 0 4px 20px rgba(26,122,74,0.05);">
+      <div style="padding: 18px 24px; font-weight: 700; color: var(--green); border-bottom: 2px solid var(--green-border); background: var(--green-bg); border-radius: var(--r) var(--r) 0 0; display: flex; justify-content: space-between; align-items: center;">
+        <div><i class="fas fa-bell me-2"></i> SẴN SÀNG</div>
+        <span style="background: #fff; padding: 4px 10px; border-radius: 20px; font-size: 12px; color: var(--green); border: 1px solid var(--green-border);"><?= count($kanban_ready) ?></span>
+      </div>
+      <div style="flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; background: #fafdfb;">
+        <?php 
+        if (empty($kanban_ready)) { echo '<div style="text-align:center; padding: 40px; color: var(--txt-muted); font-size: 13px;">Không có đơn</div>'; }
+        foreach ($kanban_ready as $order) { renderTicket($order); } 
+        ?>
+      </div>
+    </div>
 
   </div>
 
-  <!-- Upcoming Orders Section -->
+  <!-- Upcoming Orders Modal -->
   <?php if (!empty($upcoming_orders)): ?>
-  <div class="upcoming-section">
-    <div class="upcoming-title">
-      <i class="fas fa-calendar-alt"></i> Đơn đặt trước cho ngày mai / sắp tới (<?= count($upcoming_orders) ?>)
-    </div>
-    <div class="upcoming-list">
-      <?php foreach ($upcoming_orders as $up): 
-          $up_date = date('d/m/Y - H:i', strtotime($up['booking_date']));
-      ?>
-      <div class="upcoming-card">
-        <div class="up-date"><?= $up_date ?></div>
-        <div class="up-name">
-          Khách: <?= htmlspecialchars($up['customer_name']) ?> (<?= $up['guests'] ?> người)
-        </div>
-        <div class="up-detail">
-          <?php 
-            if ($up['combo_name']) echo "<strong>Combo:</strong> " . htmlspecialchars($up['combo_name']) . "<br>";
-            if ($up['service_type'] !== 'table') echo "<strong>Dịch vụ:</strong> " . htmlspecialchars($up['service_type']) . "<br>";
+  <div id="upcomingModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:var(--bg); width: 600px; max-width: 90%; max-height: 80vh; border-radius: 12px; display:flex; flex-direction:column; overflow:hidden; box-shadow: var(--shadow-lg);">
+      <div style="padding: 16px 24px; border-bottom: 1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background: #fff;">
+        <h3 style="margin:0; font-size: 16px; color: var(--forest);"><i class="fas fa-calendar-alt me-2"></i> Đơn đặt trước cho ngày mai / sắp tới (<?= count($upcoming_orders) ?>)</h3>
+        <button onclick="document.getElementById('upcomingModal').style.display='none'" style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--txt-muted); line-height:1;">&times;</button>
+      </div>
+      <div style="padding: 24px; overflow-y:auto; flex:1;">
+        <div class="upcoming-list">
+          <?php foreach ($upcoming_orders as $up): 
+              $up_date = date('d/m/Y - H:i', strtotime($up['booking_date']));
           ?>
-          <a href="admin/booking_service.php" style="color:var(--forest);font-size:11px;text-decoration:none;margin-top:5px;display:inline-block">Xem chi tiết <i class="fas fa-arrow-right"></i></a>
+          <div class="upcoming-card" style="margin-bottom:12px; padding:16px; border:1px solid var(--border); border-radius:8px; background:#fff; box-shadow: var(--shadow-sm);">
+            <div class="up-date" style="color:var(--forest); font-weight:700; font-size:14px; margin-bottom:4px;"><?= $up_date ?></div>
+            <div class="up-name" style="font-weight:600; font-size:15px; margin-bottom:4px; color:var(--txt);">
+              Khách: <?= htmlspecialchars($up['customer_name']) ?> (<?= $up['guests'] ?> người)
+            </div>
+            <div class="up-detail" style="font-size:13px; color:var(--txt-muted);">
+              <?php 
+                if ($up['combo_name']) echo "<div style='margin-bottom:8px;'><strong style='color:var(--txt)'>Combo Tasting:</strong> " . htmlspecialchars($up['combo_name']) . "</div>";
+                if ($up['service_type'] !== 'table') echo "<div style='margin-bottom:8px;'><strong style='color:var(--txt)'>Dịch vụ:</strong> " . htmlspecialchars($up['service_type']) . "</div>";
+              ?>
+              
+              <?php if (!empty($up['foods'])): ?>
+              <div style="background:var(--surface2); padding:10px 14px; border-radius:6px; margin-bottom:10px;">
+                <strong style="color:var(--txt); display:block; margin-bottom:6px; font-size:12px; text-transform:uppercase;">Danh sách món ăn:</strong>
+                <?php foreach ($up['foods'] as $f): ?>
+                  <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                    <span style="font-weight:600; color:var(--txt);"><?= htmlspecialchars($f['food_name']) ?></span>
+                    <span style="font-weight:700;">x<?= $f['quantity'] ?></span>
+                  </div>
+                  <?php if (!empty($f['toppings'])): ?>
+                    <div style="font-size:11px; color:var(--forest); margin-left:8px; margin-bottom:4px;">+ <?= htmlspecialchars(implode(', ', $f['toppings'])) ?></div>
+                  <?php endif; ?>
+                <?php endforeach; ?>
+              </div>
+              <?php endif; ?>
+
+              <?php if (!empty($up['allergies'])): ?>
+              <div style="background:var(--red-bg); padding:8px 12px; border-radius:6px; margin-bottom:10px; border:1px solid var(--red-border);">
+                <strong style="color:var(--red); font-size:12px;"><i class="fas fa-shield-virus"></i> Cảnh báo dị ứng:</strong>
+                <div style="color:var(--red); font-weight:600; margin-top:2px;"><?= htmlspecialchars($up['allergies']) ?></div>
+              </div>
+              <?php endif; ?>
+
+              <?php if (!empty($up['chef_requirements'])): ?>
+              <div style="background:#fffbeb; padding:8px 12px; border-radius:6px; border:1px solid rgba(146,88,10,0.2);">
+                <strong style="color:#92580a; font-size:12px;"><i class="fas fa-quote-left"></i> Yêu cầu cho bếp:</strong>
+                <div style="color:#92580a; margin-top:2px; font-style:italic;"><?= htmlspecialchars($up['chef_requirements']) ?></div>
+              </div>
+              <?php endif; ?>
+              
+            </div>
+          </div>
+          <?php endforeach; ?>
         </div>
       </div>
-      <?php endforeach; ?>
     </div>
   </div>
   <?php endif; ?>
@@ -1309,6 +1506,7 @@ $normalOrders = $totalOrders - $urgentOrders;
 <audio id="audioUrgent" src="https://assets.mixkit.co/active_storage/sfx/995/995-preview.mp3" preload="auto"></audio>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script>
 /* ── Live Clock ── */
 function updateClock() {
@@ -1344,23 +1542,33 @@ function completeOrder(id, btn) {
   });
 }
 
-function completePosItem(item_id, btn) {
+function updatePosStatus(item_id, new_status, btn, type = 'pos') {
+  let originalHtml = $(btn).html();
   $(btn).html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
   
-  $.post('kds.php', { action: 'complete_pos_item', item_id: item_id }, function(res) {
+  $.post('kds.php', { action: 'update_pos_item_status', item_id: item_id, new_status: new_status, item_type: type }, function(res) {
     if (res.trim() === 'success') {
-      let ticket = $(btn).closest('.ticket');
-      $(btn).closest('.food-item').slideUp(300, function(){ 
-        $(this).remove(); 
-        // If no more food items in this POS ticket, remove the ticket
-        if (ticket.find('.food-item').length === 0) {
-            ticket.fadeOut(300, function() {
-                $(this).remove();
-                checkEmpty();
-            });
-        }
-      });
+      showToast('Đã cập nhật trạng thái!', 'success');
+      // Reload page to reflect new status buttons
+      setTimeout(() => window.location.reload(), 500);
+    } else {
+      let errorMsg = 'Có lỗi xảy ra';
+      if (res.trim().startsWith('error|')) {
+          errorMsg = res.trim().split('|')[1];
+      }
+      showToast(errorMsg, 'error');
+      $(btn).html(originalHtml).prop('disabled', false);
+    }
+  });
+}
+
+function completePosItem(item_id, btn, type = 'pos') {
+  $(btn).html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
+  
+  $.post('kds.php', { action: 'complete_pos_item', item_id: item_id, item_type: type }, function(res) {
+    if (res.trim() === 'success') {
       showToast('Đã báo Xong cho Thu Ngân!', 'success');
+      setTimeout(() => window.location.reload(), 400);
     } else {
       let errorMsg = 'Có lỗi xảy ra';
       if (res.trim().startsWith('error|')) {
@@ -1374,13 +1582,24 @@ function completePosItem(item_id, btn) {
 
 /* ── Check Empty ── */
 
-setInterval(function() {
-  elapsed++;
-  var ratio    = elapsed / REFRESH_SEC;
-  var offset   = circumference * (1 - ratio);
-  if (ring) ring.style.strokeDashoffset = offset;
-  if (elapsed >= REFRESH_SEC) window.location.reload();
-}, 1000);
+
+
+// Real-time updates with Pusher
+var pusher = new Pusher('cfbc6305339f352b0089', {
+  cluster: 'ap1'
+});
+
+var channel = pusher.subscribe('restaurant-channel');
+channel.bind('update_data', function(data) {
+    // Play a tiny notification beep
+    var audio = new Audio('../public/assets/sounds/bell.mp3');
+    audio.play().catch(function(){});
+    
+    // Reload to fetch new KDS tickets
+    setTimeout(() => {
+        window.location.reload();
+    }, 500);
+});
 
 // Auto-trigger Telegram Reminder every 1 minute
 setInterval(() => {

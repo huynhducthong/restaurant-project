@@ -223,26 +223,25 @@ include __DIR__ . '/views/client/layouts/header.php';
 /* ══ TOKENS ══ */
 :root{
   --F:      #A88746;        /* Gold */
-  --F-lt:   #d4b06a;        /* Bright gold hover */
-  --F-pale: rgba(168, 135, 70, 0.1);  /* Gold pale bg highlight */
-  --accent-burgundy:   #A88746;
-  --accent-burgundy-lt: rgba(168, 135, 70, 0.3);
-  --bg:     #F5F2ED;         /* Light beige background */
-  --bg2:    #ffffff;         /* White bg for cards/frames */
-  --ink:    #222222;         /* Black text */
-  --ink2:   #555555;         /* Dark grey text */
-  --muted:  #888888;         /* Muted text */
-  --border: rgba(0, 0, 0, 0.1); /* Faint gray border */
-  --r:      12px;            /* Slightly softer radius for glass */
-  --sh:     0 8px 32px rgba(0,0,0,0.06);
-  --sh-lg:  0 15px 40px rgba(0,0,0,0.1);
+  --F-lt:   #C4A25C;        /* Bright gold hover */
+  --F-pale: rgba(168, 135, 70, 0.04);  /* Extremely subtle gold highlight */
+  --bg:     #FAFAF8;         /* Alabaster/Beige very light */
+  --bg2:    #ffffff;         /* Pure white */
+  --ink:    #1A1A1A;         /* Charcoal black */
+  --ink2:   #4A4A4A;         /* Soft dark grey */
+  --muted:  #999999;         /* Refined grey */
+  --border: rgba(168, 135, 70, 0.18); /* Soft gold border */
+  --r:      6px;             /* Sharper, elegant corners */
+  --sh:     0 2px 14px rgba(0,0,0,0.03); /* Subtle depth */
+  --sh-lg:  0 8px 30px rgba(168, 135, 70, 0.06); /* Luxurious ambient glow */
 }
 
 *{box-sizing:border-box;}
 body{
   background:var(--bg);
   color:var(--ink);
-  font-family:'Be Vietnam Pro',sans-serif;
+  font-family:'Source Sans 3',sans-serif; /* Cleaner elegant sans-serif */
+  letter-spacing: 0.01em;
 }
 
 .vip-crown-badge {
@@ -288,13 +287,16 @@ body{
   border-bottom: 1px solid var(--border);
 }
 .av-ring{
-  width:110px;height:110px;border-radius:50%;
-  border:2px solid var(--F);
-  overflow:hidden;margin:0 auto 16px;
-  background:#ffffff;
-  box-shadow:0 0 20px rgba(168, 135, 70, 0.2);
+  width:120px;height:120px;border-radius:50%;
+  border: 3px solid transparent;
+  background-image: linear-gradient(#ffffff, #ffffff), linear-gradient(135deg, var(--F), #E8D099);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  padding: 4px;
+  overflow:hidden;margin:0 auto 20px;
+  box-shadow: 0 10px 30px rgba(168, 135, 70, 0.15);
 }
-.av-ring img{width:100%;height:100%;object-fit:cover;}
+.av-ring img{width:100%;height:100%;object-fit:cover; border-radius: 50%;}
 .prof-name{
   font-family:'Cormorant Garamond', serif;font-weight:600;
   font-size:1.1rem;color:var(--ink);margin:0 0 4px;
@@ -302,25 +304,26 @@ body{
 .prof-email{font-size:12px;color:var(--ink2);margin:0;}
 
 /* Sidebar nav */
-.prof-nav{padding:16px 0 12px;}
+.prof-nav{padding:12px 0 16px;}
 .prof-nav a{
   display:flex;align-items:center;gap:12px;
-  padding:13px 24px;font-size:13px;font-weight:500;
+  padding:14px 28px;font-size:12px;font-weight:400;
+  letter-spacing: 0.05em; text-transform: uppercase;
   color:var(--ink2);text-decoration:none;
-  transition:all .2s;border-left:3px solid transparent;
+  transition:all .3s ease;border-left:2px solid transparent;
 }
-.prof-nav a i{width:18px;text-align:center;font-size:14px;color:var(--muted);transition:.2s;}
-.prof-nav a:hover{background:var(--F-pale);color:var(--F);border-left-color:var(--F);}
+.prof-nav a i{width:18px;text-align:center;font-size:14px;color:var(--muted);transition:.3s;}
+.prof-nav a:hover{background:var(--F-pale);color:var(--ink);border-left-color:var(--F-lt);}
 .prof-nav a:hover i{color:var(--F);}
 .prof-nav a.on{
   background:var(--F-pale);color:var(--F);
   border-left-color:var(--F);font-weight:600;
 }
 .prof-nav a.on i{color:var(--F);}
-.prof-nav a.logout{color:#d64545;}
-.prof-nav a.logout i{color:#d64545;}
-.prof-nav a.logout:hover{background:rgba(214, 69, 69, 0.1);border-left-color:#d64545;}
-.prof-nav-sep{height:1px;background:var(--border);margin:8px 16px;}
+.prof-nav a.logout{color:#A94442;}
+.prof-nav a.logout i{color:#A94442;}
+.prof-nav a.logout:hover{background:rgba(169, 68, 66, 0.05);border-left-color:#A94442;}
+.prof-nav-sep{height:1px;background:var(--border);margin:12px 20px;}
 
 /* Quick stats */
 .prof-stats{
@@ -364,19 +367,19 @@ body{
 
 /* ══ FORM FIELDS ══ */
 .fl{
-  display:block;font-size:11px;font-weight:600;
-  letter-spacing:.09em;text-transform:uppercase;
-  color:var(--ink2);margin-bottom:8px;
+  display:block;font-size:10px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink2);margin-bottom:6px;
 }
 .fi{
-  width:100%;padding:12px 16px;
-  border:1px solid rgba(0,0,0,0.1);border-radius:9px;
-  font-family:'Be Vietnam Pro',sans-serif;font-size:14px;
-  color:var(--ink);background:#fcfcfc;
-  outline:none;transition:all .3s ease;
+  width:100%;padding:14px 18px;
+  border:1px solid var(--border);border-radius:var(--r);
+  font-family:'Source Sans 3',sans-serif;font-size:14px;
+  color:var(--ink);background:#ffffff;
+  outline:none;transition:all .4s ease;
 }
-.fi:focus{border-color:var(--F);box-shadow:0 0 0 3px rgba(168, 135, 70, 0.15);background: #ffffff;}
-.fi::placeholder{color:rgba(0,0,0,.3);}
+.fi:focus{border-color:var(--F);box-shadow:0 0 0 4px rgba(168, 135, 70, 0.08);}
+.fi::placeholder{color:rgba(0,0,0,.25); font-style: italic;}
 
 /* Avatar upload in form */
 .av-upload{
@@ -402,32 +405,32 @@ body{
 
 /* ══ BUTTON ══ */
 .btn-prim{
-  padding:11px 28px;background:var(--F);
-  color:#fff;border:none;border-radius:9px;
-  font-family:'Be Vietnam Pro',sans-serif;
-  font-size:13px;font-weight:600;cursor:pointer;
-  transition:all .2s;letter-spacing:.03em;
+  padding:12px 32px;background:var(--F);
+  color:#fff;border:none;border-radius:var(--r);
+  font-family:'Source Sans 3',sans-serif;
+  font-size:12px;font-weight:600;cursor:pointer;
+  transition:all .4s ease;letter-spacing:.06em;text-transform: uppercase;
 }
-.btn-prim:hover{background:var(--F-lt);transform:translateY(-1px);}
-.btn-prim:active{transform:none;}
+.btn-prim:hover{background:var(--F-lt); box-shadow: 0 4px 12px rgba(168, 135, 70, 0.3);}
+.btn-prim:active{transform:translateY(1px);}
 
 .btn-out{
-  padding:10px 22px;background:transparent;
-  border:1.5px solid var(--border);border-radius:9px;
-  color:var(--ink2);font-size:13px;font-weight:500;
-  cursor:pointer;transition:.2s;
-  font-family:'Be Vietnam Pro',sans-serif;
-  text-decoration:none;display:inline-flex;align-items:center;gap:6px;
+  padding:10px 26px;background:transparent;
+  border:1px solid var(--border);border-radius:var(--r);
+  color:var(--ink2);font-size:12px;font-weight:500;
+  cursor:pointer;transition:.4s;letter-spacing: .04em;
+  font-family:'Source Sans 3',sans-serif;text-transform: uppercase;
+  text-decoration:none;display:inline-flex;align-items:center;gap:8px;
 }
-.btn-out:hover{border-color:var(--ink2);color:var(--ink);}
+.btn-out:hover{border-color:var(--F);color:var(--F);background: var(--F-pale);}
 
 .btn-danger-out{
-  padding:10px 20px;background:transparent;
-  border:1.5px solid #fcc;border-radius:9px;
-  color:#d64545;font-size:13px;cursor:pointer;transition:.2s;
-  font-family:'Be Vietnam Pro',sans-serif;
+  padding:10px 26px;background:transparent;
+  border:1px solid rgba(169, 68, 66, 0.3);border-radius:var(--r);
+  color:#A94442;font-size:12px;cursor:pointer;transition:.4s;
+  font-family:'Source Sans 3',sans-serif;text-transform: uppercase;letter-spacing:.04em;
 }
-.btn-danger-out:hover{background:#fff5f5;border-color:#d64545;}
+.btn-danger-out:hover{background:rgba(169, 68, 66, 0.05);border-color:#A94442;}
 
 /* ══ ALERT ══ */
 .prof-alert{
@@ -562,22 +565,20 @@ body{
       <!-- Nav -->
       <nav class="prof-nav">
         <a href="?tab=profile"   class="<?= $tab=='profile'   ? 'on':'' ?>">
-          <i class="bi bi-person-circle"></i> Hồ sơ của tôi
+          <i class="bi bi-person-badge"></i> Thông tin Đặc quyền
         </a>
         <a href="?tab=vip" class="<?= $tab=='vip' ? 'on':'' ?>">
-          <i class="bi bi-award"></i> Thẻ VIP
+          <i class="bi bi-gem"></i> Đặc quyền Hội viên
         </a>
         <a href="?tab=gastronomy" class="<?= $tab=='gastronomy' ? 'on':'' ?>">
-          <i class="bi bi-star"></i> Hồ sơ Ẩm thực VIP
+          <i class="bi bi-magic"></i> DNA Ẩm thực
         </a>
         <a href="?tab=bookings"  class="<?= $tab=='bookings'  ? 'on':'' ?>">
-          <i class="bi bi-calendar2-check"></i> Lịch sử đặt bàn
+          <i class="bi bi-journal-richtext"></i> Hành trình Dùng bữa
         </a>
-        <a href="?tab=addresses" class="<?= $tab=='addresses' ? 'on':'' ?>">
-          <i class="bi bi-geo-alt"></i> Sổ địa chỉ
-        </a>
+
         <a href="?tab=security"  class="<?= $tab=='security'  ? 'on':'' ?>">
-          <i class="bi bi-shield-check"></i> Bảo mật
+          <i class="bi bi-shield-lock"></i> Thiết lập Bảo mật
         </a>
         <div class="prof-nav-sep"></div>
         <a href="public/logout.php" class="logout">
@@ -613,11 +614,11 @@ body{
       <!-- Head -->
       <div class="prof-card-head">
         <?php
-          $icons = ['profile'=>'bi-person','vip'=>'bi-award','gastronomy'=>'bi-star','bookings'=>'bi-calendar2-check','addresses'=>'bi-geo-alt','security'=>'bi-shield-lock'];
-          $titles = ['profile'=>'Thông tin cá nhân','vip'=>'Thẻ VIP','gastronomy'=>'Hồ sơ Ẩm thực VIP','bookings'=>'Lịch sử đặt bàn','addresses'=>'Sổ địa chỉ','security'=>'Bảo mật & Mật khẩu'];
+          $icons = ['profile'=>'bi-person-badge','vip'=>'bi-gem','gastronomy'=>'bi-magic','bookings'=>'bi-journal-richtext','addresses'=>'bi-geo-alt','security'=>'bi-shield-lock'];
+          $titles = ['profile'=>'Thông tin Đặc quyền','vip'=>'Đặc quyền Hội viên','gastronomy'=>'DNA Ẩm thực Khách hàng','bookings'=>'Hành trình Dùng bữa','security'=>'Thiết lập Bảo mật'];
         ?>
-        <div class="pc-icon"><i class="bi <?= $icons[$tab]??'bi-person' ?>"></i></div>
-        <h4 class="pc-title"><?= $titles[$tab]??'Thông tin' ?></h4>
+        <div class="pc-icon"><i class="bi <?= $icons[$tab]??'bi-person-badge' ?>"></i></div>
+        <h4 class="pc-title" style="text-transform: uppercase; letter-spacing: 0.1em; font-size: 1.05rem; padding-bottom: 12px; margin-top: 6px;"><?= $titles[$tab]??'Thông tin' ?></h4>
       </div>
 
       <div class="prof-card-body">
@@ -682,6 +683,58 @@ body{
             </div>
           </div>
         </form>
+        </form>
+
+        <!-- Quản lý địa chỉ giao hàng và nhận sách -->
+        <hr class="my-5" style="opacity: 0.1;">
+        <h6 class="mb-4" style="color:var(--F); font-family:var(--font-serif); font-size:1.1rem;">Đầu bếp tại gia / Địa điểm phục vụ</h6>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <p class="text-muted small m-0">Quản lý địa chỉ phục vụ tại gia của bạn</p>
+          <button class="btn-prim" style="padding:9px 18px;font-size:12px"
+                  data-bs-toggle="modal" data-bs-target="#addAddressModal">
+            <i class="bi bi-plus me-1"></i>Thêm địa chỉ
+          </button>
+        </div>
+
+        <?php if(empty($user_addresses)): ?>
+        <div class="empty-state">
+          <i class="bi bi-geo"></i>
+          <p>Bạn chưa lưu địa chỉ nào.</p>
+        </div>
+        <?php else: ?>
+        <?php foreach($user_addresses as $addr): ?>
+        <div class="addr-card">
+          <div class="d-flex align-items-center gap-14" style="gap:14px">
+            <div class="addr-icon">
+              <i class="bi <?= $addr['address_type']=='Home'?'bi-house':'bi-briefcase' ?>"></i>
+            </div>
+            <div>
+              <div class="d-flex align-items-center" style="font-weight:600;font-size:14px;color:var(--ink);">
+                <?= htmlspecialchars($addr['address_type']) ?>
+                <?php if($addr['is_default']): ?>
+                <span class="addr-default">Mặc định</span>
+                <?php endif; ?>
+              </div>
+              <div style="font-size:13px;color:var(--ink2);margin-top:3px"><?= htmlspecialchars($addr['address_detail']) ?></div>
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn-out" style="padding:7px 14px;font-size:12px" 
+                    onclick="openEditAddress(<?= $addr['id'] ?>, '<?= htmlspecialchars($addr['address_type'], ENT_QUOTES) ?>', '<?= htmlspecialchars(str_replace(["\\r", "\\n"], ["\\\\r", "\\\\n"], $addr['address_detail']), ENT_QUOTES) ?>', <?= $addr['is_default'] ?>)">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <form method="POST" style="margin:0">
+              <input type="hidden" name="address_id" value="<?= $addr['id'] ?>">
+              <button type="submit" name="delete_address"
+                      class="btn-danger-out" style="padding:7px 14px;font-size:12px"
+                      onclick="return confirm('Xóa địa chỉ này?')">
+                <i class="bi bi-trash"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+        <?php endforeach; ?>
+        <?php endif; ?>
 
         <!-- ── TAB: THẺ VIP ── -->
         <?php elseif($tab=='vip'): ?>
@@ -1110,6 +1163,7 @@ body{
             <button type="button" onclick="viewBookingDetails(<?= $b['id'] ?>)" class="btn-out" style="font-size:12px;padding:7px 14px;">
               <i class="bi bi-eye"></i> Xem chi tiết
             </button>
+
             <?php if($status_filter=='upcoming'): ?>
             <form method="POST" style="margin:0">
               <input type="hidden" name="booking_id" value="<?= $b['id'] ?>">
@@ -1125,55 +1179,6 @@ body{
         <?php endforeach; ?>
         <?php endif; ?>
 
-        <!-- ── TAB: ĐỊA CHỈ ── -->
-        <?php elseif($tab=='addresses'): ?>
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <p class="text-muted small m-0">Quản lý địa chỉ giao hàng và nhận sách</p>
-          <button class="btn-prim" style="padding:9px 18px;font-size:12px"
-                  data-bs-toggle="modal" data-bs-target="#addAddressModal">
-            <i class="bi bi-plus me-1"></i>Thêm địa chỉ
-          </button>
-        </div>
-
-        <?php if(empty($user_addresses)): ?>
-        <div class="empty-state">
-          <i class="bi bi-geo"></i>
-          <p>Bạn chưa lưu địa chỉ nào.</p>
-        </div>
-        <?php else: ?>
-        <?php foreach($user_addresses as $addr): ?>
-        <div class="addr-card">
-          <div class="d-flex align-items-center gap-14" style="gap:14px">
-            <div class="addr-icon">
-              <i class="bi <?= $addr['address_type']=='Home'?'bi-house':'bi-briefcase' ?>"></i>
-            </div>
-            <div>
-              <div class="d-flex align-items-center" style="font-weight:600;font-size:14px;color:var(--ink);">
-                <?= htmlspecialchars($addr['address_type']) ?>
-                <?php if($addr['is_default']): ?>
-                <span class="addr-default">Mặc định</span>
-                <?php endif; ?>
-              </div>
-              <div style="font-size:13px;color:var(--ink2);margin-top:3px"><?= htmlspecialchars($addr['address_detail']) ?></div>
-            </div>
-          </div>
-          <div class="d-flex gap-2">
-            <button type="button" class="btn-out" style="padding:7px 14px;font-size:12px" 
-                    onclick="openEditAddress(<?= $addr['id'] ?>, '<?= htmlspecialchars($addr['address_type'], ENT_QUOTES) ?>', '<?= htmlspecialchars(str_replace(["\r", "\n"], ["\\r", "\\n"], $addr['address_detail']), ENT_QUOTES) ?>', <?= $addr['is_default'] ?>)">
-              <i class="bi bi-pencil"></i>
-            </button>
-            <form method="POST" style="margin:0">
-              <input type="hidden" name="address_id" value="<?= $addr['id'] ?>">
-              <button type="submit" name="delete_address"
-                      class="btn-danger-out" style="padding:7px 14px;font-size:12px"
-                      onclick="return confirm('Xóa địa chỉ này?')">
-                <i class="bi bi-trash"></i>
-              </button>
-            </form>
-          </div>
-        </div>
-        <?php endforeach; ?>
-        <?php endif; ?>
 
         <!-- ── TAB: BẢO MẬT ── -->
         <?php elseif($tab=='security'): ?>
@@ -1228,9 +1233,9 @@ body{
           <div>
             <label class="fl">Loại địa chỉ</label>
             <select name="address_type" class="fi" style="height:auto;padding:11px 14px;appearance:auto">
-              <option value="Home">🏠 Nhà riêng</option>
-              <option value="Office">💼 Văn phòng</option>
-              <option value="Other">📍 Khác</option>
+              <option value="Home">Nhà riêng</option>
+              <option value="Office">Văn phòng</option>
+              <option value="Other">Khác</option>
             </select>
           </div>
           <div>
@@ -1267,9 +1272,9 @@ body{
           <div>
             <label class="fl">Loại địa chỉ</label>
             <select name="address_type" id="edit_address_type" class="fi" style="height:auto;padding:11px 14px;appearance:auto">
-              <option value="Home">🏠 Nhà riêng</option>
-              <option value="Office">💼 Văn phòng</option>
-              <option value="Other">📍 Khác</option>
+              <option value="Home">Nhà riêng</option>
+              <option value="Office">Văn phòng</option>
+              <option value="Other">Khác</option>
             </select>
           </div>
           <div>
@@ -1347,4 +1352,5 @@ function openEditAddress(id, type, detail, isDefault) {
     new bootstrap.Modal(document.getElementById('editAddressModal')).show();
 }
 </script>
+
 <?php include __DIR__ . '/views/client/layouts/footer.php'; ?>

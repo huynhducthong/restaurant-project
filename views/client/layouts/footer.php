@@ -463,6 +463,7 @@ if ($is_logged_in_chat) {
 }
 </style>
 
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script>
 function activateFooterMap() {
     document.getElementById('footerMapWrapper').classList.add('active');
@@ -567,6 +568,7 @@ function hideTyping() {
 function appendMessage(sender, type, content, msgId) {
     let deletedMsgs = JSON.parse(localStorage.getItem('deleted_msgs_' + chatSessionId) || '[]');
     if (msgId && deletedMsgs.includes(msgId)) return; // Không hiển thị tin nhắn đã xóa
+    if (msgId && document.getElementById('chat_msg_' + msgId)) return; // Tránh trùng lặp tin nhắn
 
     const msgDiv = document.createElement('div');
     msgDiv.className = `chat-msg ${sender}`;
@@ -679,12 +681,29 @@ function loadChatMessages() {
 }
 
 function startChatPolling() {
-    if (chatPollingInterval) clearInterval(chatPollingInterval);
-    chatPollingInterval = setInterval(() => {
-        if (document.getElementById('chatModalOverlay').style.display !== 'none') {
-            loadChatMessages();
-        }
-    }, 3000);
+    if (!window.chatPusherInitialized) {
+        var pusher = new Pusher('cfbc6305339f352b0089', { cluster: 'ap1' });
+        var channel = pusher.subscribe('chat-channel');
+        channel.bind('chat_updated', function(data) {
+            if ((!data.session_id || data.session_id === chatSessionId) && document.getElementById('chatModalOverlay').style.display !== 'none') {
+                loadChatMessages();
+            }
+        });
+        channel.bind('message_hidden', function(data) {
+            if (data.session_id === chatSessionId) {
+                let msgDiv = document.getElementById('chat_msg_' + data.message_id);
+                if (msgDiv) msgDiv.style.display = 'none';
+            }
+        });
+        channel.bind('message_unhidden', function(data) {
+            if (data.session_id === chatSessionId) {
+                document.getElementById('chatMessages').innerHTML = '';
+                lastMessageId = 0;
+                loadChatMessages();
+            }
+        });
+        window.chatPusherInitialized = true;
+    }
 }
 </script>
 

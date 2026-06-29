@@ -182,17 +182,32 @@ if ($active_session) {
     </div>
 </div>
 
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script>
 const activeSession = '<?= $active_session ?? '' ?>';
 let adminLastMessageId = 0;
 
 function appendAdminMessage(msg) {
+    if (document.getElementById('admin_msg_' + msg.id)) return;
+    
     const div = document.createElement('div');
+    div.id = 'admin_msg_' + msg.id;
     div.className = 'msg-bubble ' + (msg.sender_type === 'customer' ? 'msg-customer' : (msg.sender_type === 'bot' ? 'msg-bot' : 'msg-admin'));
+    
+    if (msg.is_hidden == 1) {
+        div.style.opacity = '0.6';
+    }
     
     let html = '';
     if (msg.sender_type !== 'customer') {
-        html += `<div class="sender-name text-end">${msg.sender_type === 'bot' ? 'Bot' : 'Nhân viên'}</div>`;
+        html += `<div class="sender-name text-end d-flex justify-content-end align-items-center" style="gap:6px;">`;
+        if (msg.is_hidden != 1) {
+            html += `<i class="fas fa-eye-slash text-muted" style="cursor:pointer; font-size:12px;" onclick="hideAdminMessage(${msg.id})" title="Ẩn tin nhắn này với khách"></i>`;
+        } else {
+            html += `<i class="fas fa-eye text-primary" style="cursor:pointer; font-size:12px;" onclick="unhideAdminMessage(${msg.id})" title="Bỏ ẩn tin nhắn này"></i>`;
+            html += `<span style="font-size:10px; color:#dc3545;">Đã ẩn</span>`;
+        }
+        html += `<span>${msg.sender_type === 'bot' ? 'Bot' : 'Nhân viên'}</span></div>`;
     }
     
     if (msg.message_type === 'image') {
@@ -209,6 +224,46 @@ function appendAdminMessage(msg) {
     const container = document.getElementById('adminChatMessages');
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
+}
+
+function hideAdminMessage(id) {
+    if (!confirm('Bạn muốn ẩn tin nhắn này khỏi màn hình của khách?')) return;
+    fetch('api/chat_admin_api.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `action=hide_message&msg_id=${id}`
+    }).then(res => res.json()).then(data => {
+        if (data.status === 'success') {
+            const div = document.getElementById('admin_msg_' + id);
+            if (div) {
+                div.style.opacity = '0.6';
+                const nameDiv = div.querySelector('.sender-name');
+                if (nameDiv) {
+                    nameDiv.innerHTML = `<i class="fas fa-eye text-primary" style="cursor:pointer; font-size:12px;" onclick="unhideAdminMessage(${id})" title="Bỏ ẩn tin nhắn này"></i><span style="font-size:10px; color:#dc3545;">Đã ẩn</span><span>${div.classList.contains('msg-bot') ? 'Bot' : 'Nhân viên'}</span>`;
+                }
+            }
+        }
+    });
+}
+
+function unhideAdminMessage(id) {
+    if (!confirm('Bạn muốn hiển thị lại tin nhắn này cho khách hàng?')) return;
+    fetch('api/chat_admin_api.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `action=unhide_message&msg_id=${id}`
+    }).then(res => res.json()).then(data => {
+        if (data.status === 'success') {
+            const div = document.getElementById('admin_msg_' + id);
+            if (div) {
+                div.style.opacity = '1';
+                const nameDiv = div.querySelector('.sender-name');
+                if (nameDiv) {
+                    nameDiv.innerHTML = `<i class="fas fa-eye-slash text-muted" style="cursor:pointer; font-size:12px;" onclick="hideAdminMessage(${id})" title="Ẩn tin nhắn này với khách"></i><span>${div.classList.contains('msg-bot') ? 'Bot' : 'Nhân viên'}</span>`;
+                }
+            }
+        }
+    });
 }
 
 function loadAdminMessages() {
@@ -290,11 +345,19 @@ function reopenSession(id) {
     });
 }
 
-// Polling for messages every 3s
 if (activeSession) {
     loadAdminMessages(); // initial load
-    setInterval(loadAdminMessages, 3000);
 }
+
+// Pusher Real-time integration
+var pusher = new Pusher('cfbc6305339f352b0089', { cluster: 'ap1' });
+var channel = pusher.subscribe('chat-channel');
+channel.bind('chat_updated', function(data) {
+    pollSessions();
+    if (activeSession && (!data.session_id || data.session_id === activeSession)) {
+        loadAdminMessages();
+    }
+});
 
 let allSessions = [];
 
@@ -371,7 +434,7 @@ function pollSessions() {
 }
 
 pollSessions();
-setInterval(pollSessions, 3000);
+// pollSessions interval removed, handled by Pusher
 </script>
 
 <?php include __DIR__ . '/../public/admin_layout_footer.php'; ?>

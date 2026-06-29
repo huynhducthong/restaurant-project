@@ -482,17 +482,40 @@ $upcoming_stmt = $db->query("
 ")->fetchAll(PDO::FETCH_KEY_PAIR);
 
 $filter = $_GET['filter'] ?? 'all';
-if ($filter == 'all') {
-    $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id WHERE sb.is_archived = 0 ORDER BY sb.created_at DESC");
-    $stmt->execute();
-} elseif ($filter == 'bespoke') {
-    $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id WHERE sb.combo_id = -1 AND sb.is_archived = 0 ORDER BY sb.created_at DESC");
-    $stmt->execute();
-} else {
-    $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id WHERE sb.service_type = :type AND sb.is_archived = 0 ORDER BY sb.created_at DESC");
-    $stmt->execute([':type' => $filter]);
+$services = [];
+
+if ($filter != 'pos') {
+    if ($filter == 'all') {
+        $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id WHERE sb.is_archived = 0 ORDER BY sb.created_at DESC");
+        $stmt->execute();
+    } elseif ($filter == 'bespoke') {
+        $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id WHERE sb.combo_id = -1 AND sb.is_archived = 0 ORDER BY sb.created_at DESC");
+        $stmt->execute();
+    } else {
+        $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id WHERE sb.service_type = :type AND sb.is_archived = 0 ORDER BY sb.created_at DESC");
+        $stmt->execute([':type' => $filter]);
+    }
+    $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-$services = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+if ($filter == 'all' || $filter == 'pos') {
+    $stmt_pos = $db->prepare("
+        SELECT id, 'pos' as service_type, 'Khách Vãng Lai' as customer_name, '' as customer_phone, created_at as booking_date, guests, status, total_amount, '' as chef_requirements, '' as message, 1 as is_pos, NULL as combo_id, NULL as chef_name
+        FROM pos_orders 
+        WHERE status IN ('paid', 'open')
+    ");
+    $stmt_pos->execute();
+    $pos_orders = $stmt_pos->fetchAll(PDO::FETCH_ASSOC);
+    
+    foreach ($pos_orders as &$po) {
+        $po['status'] = ($po['status'] == 'paid') ? 'Completed' : 'Pending';
+        $services[] = $po;
+    }
+    
+    usort($services, function($a, $b) {
+        return strtotime($b['booking_date']) - strtotime($a['booking_date']);
+    });
+}
 
 include '../../public/admin_layout_header.php';
 ?>
@@ -530,7 +553,7 @@ include '../../public/admin_layout_header.php';
             <h4 class="fw-bold m-0"><i class="fas fa-clipboard-list me-2" style="color: var(--gold);"></i>Danh sách yêu cầu dịch vụ</h4>
             <div class="d-flex gap-2">
                 <div class="btn-group">
-                    <?php foreach (['all' => 'Tất cả', 'table' => 'Đặt bàn', 'birthday' => 'Tiệc', 'chef' => 'Đầu bếp', 'bespoke' => '✨ Thiết kế riêng'] as $k => $v): ?>
+                    <?php foreach (['all' => 'Tất cả', 'table' => 'Đặt bàn', 'birthday' => 'Tiệc', 'chef' => 'Đầu bếp', 'pos' => 'Khách Vãng Lai (POS)', 'bespoke' => '✨ Thiết kế riêng'] as $k => $v): ?>
                         <a href="?filter=<?= $k ?>"
                             class="btn filter-btn <?= $filter == $k ? 'btn-dark' : 'btn-outline-gold' ?>"><?= $v ?></a>
                     <?php endforeach; ?>
@@ -604,40 +627,49 @@ include '../../public/admin_layout_header.php';
                                 <?php endif; ?>
                             </td>
                             <td class="text-end">
-                                <button class="btn btn-sm btn-outline-secondary btn-view-detail" data-id="<?= $s['id'] ?>"
-                                    data-name="<?= htmlspecialchars($s['customer_name']) ?>"
-                                    data-status="<?= $s['status'] ?>">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-
-                                <?php if (in_array($s['status'], ['Pending', 'Confirmed'])): ?>
-                                    <button class="btn btn-sm btn-outline-info btn-edit-service" data-id="<?= $s['id'] ?>" title="Chỉnh sửa đơn">
-                                        <i class="fas fa-edit"></i>
+                                <?php if (!isset($s['is_pos'])): ?>
+                                    <button class="btn btn-sm btn-outline-secondary btn-view-detail" data-id="<?= $s['id'] ?>"
+                                        data-name="<?= htmlspecialchars($s['customer_name']) ?>"
+                                        data-status="<?= $s['status'] ?>">
+                                        <i class="fas fa-eye"></i>
                                     </button>
-                                <?php endif; ?>
 
-                                <?php if ($s['status'] == 'Pending'): ?>
-                                    <?php if ($s['total_amount'] == 0 || !empty($s['chef_requirements'])): ?>
-                                        <button class="btn btn-sm btn-outline-primary btn-quote-price" data-id="<?= $s['id'] ?>" data-name="<?= htmlspecialchars($s['customer_name']) ?>" title="Báo giá cho khách">
-                                            <i class="fas fa-file-invoice-dollar"></i> Báo giá
+                                    <?php if (in_array($s['status'], ['Pending', 'Confirmed'])): ?>
+                                        <button class="btn btn-sm btn-outline-info btn-edit-service" data-id="<?= $s['id'] ?>" title="Chỉnh sửa đơn">
+                                            <i class="fas fa-edit"></i>
                                         </button>
                                     <?php endif; ?>
-                                    <button class="btn btn-sm btn-outline-gold btn-confirm-ajax" data-id="<?= $s['id'] ?>"
-                                        data-name="<?= htmlspecialchars($s['customer_name']) ?>">
-                                        <i class="fas fa-check me-1"></i> Xác nhận
-                                    </button>
-                                <?php elseif ($s['status'] == 'Confirmed'): ?>
-                                    <button class="btn btn-sm btn-outline-success btn-complete-service" data-id="<?= $s['id'] ?>" title="Khách đã dùng bữa xong">
-                                        <i class="fas fa-check-double me-1"></i> Hoàn thành
-                                    </button>
-                                    <button class="btn btn-sm btn-dark btn-noshow-service" data-id="<?= $s['id'] ?>" title="Khách không đến (No-Show)">
-                                        <i class="fas fa-user-slash"></i>
-                                    </button>
-                                <?php endif; ?>
 
-                                <button class="btn btn-sm btn-outline-danger btn-delete-service" data-id="<?= $s['id'] ?>" title="Lưu trữ (Ẩn khỏi danh sách)">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                    <?php if ($s['status'] == 'Pending'): ?>
+                                        <?php if ($s['total_amount'] == 0 || !empty($s['chef_requirements'])): ?>
+                                            <button class="btn btn-sm btn-outline-primary btn-quote-price" data-id="<?= $s['id'] ?>" data-name="<?= htmlspecialchars($s['customer_name']) ?>" title="Báo giá cho khách">
+                                                <i class="fas fa-file-invoice-dollar"></i> Báo giá
+                                            </button>
+                                        <?php endif; ?>
+                                        <button class="btn btn-sm btn-outline-gold btn-confirm-ajax" data-id="<?= $s['id'] ?>"
+                                            data-name="<?= htmlspecialchars($s['customer_name']) ?>">
+                                            <i class="fas fa-check me-1"></i> Xác nhận
+                                        </button>
+                                    <?php elseif ($s['status'] == 'Confirmed'): ?>
+                                        <button class="btn btn-sm btn-outline-success btn-complete-service" data-id="<?= $s['id'] ?>" title="Khách đã dùng bữa xong">
+                                            <i class="fas fa-check-double me-1"></i> Hoàn thành
+                                        </button>
+                                        <button class="btn btn-sm btn-dark btn-noshow-service" data-id="<?= $s['id'] ?>" title="Khách không đến (No-Show)">
+                                            <i class="fas fa-user-slash"></i>
+                                        </button>
+                                    <?php endif; ?>
+
+                                    <button class="btn btn-sm btn-outline-danger btn-delete-service" data-id="<?= $s['id'] ?>" title="Lưu trữ (Ẩn khỏi danh sách)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                <?php else: ?>
+                                    <button class="btn btn-sm btn-outline-secondary btn-view-detail" data-id="<?= $s['id'] ?>" data-is-pos="1"
+                                        data-name="<?= htmlspecialchars($s['customer_name']) ?>"
+                                        data-status="<?= $s['status'] ?>">
+                                        <i class="fas fa-eye"></i> Xem chi tiết
+                                    </button>
+                                    <span class="badge bg-light text-muted border py-2 px-3 ms-2"><i class="fas fa-receipt me-1"></i> Đơn tại quầy</span>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -728,7 +760,7 @@ include '../../public/admin_layout_header.php';
                         <div class="col-5 text-muted">Tổng ước tính:</div>
                         <div class="col-7 fw-bold text-success" id="m-total"></div>
                     </div>
-                    <div class="row">
+                    <div class="row" id="row-deposit">
                         <div class="col-5 text-muted fw-bold">Tiền cọc (30%):</div>
                         <div class="col-7 fw-bold text-warning fs-5" id="m-deposit"></div>
                     </div>
@@ -967,13 +999,18 @@ include '../../public/admin_layout_header.php';
             const id = $(this).data('id');
             const name = $(this).data('name');
             const status = $(this).data('status');
+            const isPos = $(this).data('is-pos') == 1;
+
             $('#m-name').text(name);
             $('#m-avatar').text(name.charAt(0).toUpperCase());
             $('#m-status').html(status === 'Pending'
                 ? '<span class="badge bg-warning text-dark">Chờ duyệt</span>'
-                : '<span class="badge bg-success">Đã xác nhận</span>');
+                : '<span class="badge bg-success">Đã hoàn thành</span>');
+            
+            const apiUrl = isPos ? `../ajax/ajax_get_pos_detail.php?id=${id}` : `../ajax/ajax_get_booking_detail.php?id=${id}`;
+
             // Lấy chi tiết bằng AJAX
-            $.getJSON(`../ajax/ajax_get_booking_detail.php?id=${id}`, function (data) {
+            $.getJSON(apiUrl, function (data) {
                 if (data) {
                     $('#m-phone').text(data.customer_phone);
                     $('#m-type').text(data.service_type.toUpperCase());
@@ -1091,7 +1128,13 @@ include '../../public/admin_layout_header.php';
                     }
 
                     $('#m-total').text(formatter.format(data.total_amount || 0));
-                    $('#m-deposit').text(formatter.format(data.deposit_amount || 0));
+                    
+                    if (isPos) {
+                        $('#row-deposit').hide();
+                    } else {
+                        $('#row-deposit').show();
+                        $('#m-deposit').text(formatter.format(data.deposit_amount || 0));
+                    }
 
                     $('#btn-export-pdf').attr('href', '../export_pdf.php?id=' + id);
 

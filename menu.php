@@ -557,12 +557,13 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                                             'price' => number_format($f['price'],0,',','.'),
                                             'img' => 'public/assets/img/menu/' . ($f['image'] ?: 'default.jpg'),
                                             'cat' => "Món tự chọn",
+                                            'chef_note' => $f['chef_note'] ?? '',
                                             'toppings' => $f['list_toppings'] ?? ''
                                         ]));
                                     ?>
                                     <div class="menu-item menu-hover-trigger <?= $has_al ? 'allergy-item' : '' ?>" 
                                          data-img="public/assets/img/menu/<?= htmlspecialchars($f['image'] ?: 'default-food.jpg') ?>"
-                                         onclick="openEdModal(<?= $modalData ?>)" style="cursor:pointer; transition: background 0.3s ease;">
+                                         onclick="window.location.href='dish.php?id=<?= $f['id'] ?>'" style="cursor:pointer; transition: background 0.3s ease;">
                                         <div class="menu-item-header">
                                             <span class="menu-item-name"><?= htmlspecialchars($f['name']) ?></span>
                                             <span class="menu-item-dots"></span>
@@ -656,13 +657,14 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                             'price' => number_format($f['price'],0,',','.'),
                             'img' => 'public/assets/img/menu/' . ($f['image'] ?: 'default.jpg'),
                             'cat' => "Chef's Choice",
+                            'chef_note' => $f['chef_note'] ?? '',
                             'toppings' => $f['list_toppings'] ?? ''
                         ]));
                     ?>
                     <div class="menu-item menu-hover-trigger <?= $has_al ? 'allergy-item' : '' ?>" 
                          data-img="public/assets/img/menu/<?= htmlspecialchars($f['image'] ?: 'default-food.jpg') ?>"
                          onmouseenter="changeFeaturedImage('cat-img-chef', 'public/assets/img/menu/<?= htmlspecialchars($f['image'] ?: 'default.jpg') ?>')"
-                         onclick="openEdModal(<?= $modalData ?>)" style="cursor:pointer; transition: background 0.3s ease;">
+                         onclick="window.location.href='dish.php?id=<?= $f['id'] ?>'" style="cursor:pointer; transition: background 0.3s ease;">
                         <div class="menu-item-header">
                             <span class="menu-item-name"><?= htmlspecialchars($f['name']) ?></span>
                             <span class="menu-item-dots"></span>
@@ -724,12 +726,13 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
                             'price' => number_format($f['price'],0,',','.'),
                             'img' => 'public/assets/img/menu/' . ($f['image'] ?: 'default.jpg'),
                             'cat' => $cat['name'],
+                            'chef_note' => $f['chef_note'] ?? '',
                             'toppings' => $f['list_toppings'] ?? ''
                         ]));
                     ?>
                     <div class="menu-item <?= $has_al ? 'allergy-item' : '' ?>" 
                          onmouseenter="changeFeaturedImage('cat-img-<?= $cat['id'] ?>', 'public/assets/img/menu/<?= htmlspecialchars($f['image'] ?: 'default.jpg') ?>')"
-                         onclick="openEdModal(<?= $modalData ?>)">
+                         onclick="window.location.href='dish.php?id=<?= $f['id'] ?>'">
                         <div class="menu-item-header">
                             <span class="menu-item-name"><?= htmlspecialchars($f['name']) ?></span>
                             <span class="menu-item-dots"></span>
@@ -786,6 +789,22 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
       <div class="ed-m-cat" id="ed-m-cat"></div>
       <h2 class="ed-m-name" id="ed-m-name"></h2>
       <p class="ed-m-desc" id="ed-m-desc"></p>
+      
+      <!-- Chef Note Block - Premium Redesign -->
+      <div id="ed-m-chef-note-wrap" style="display:none; margin: 25px 0 20px; position: relative; background: #fffcf8; border: 1px solid #efe3c8; padding: 25px 25px 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+        <div style="position: absolute; top: -12px; left: 20px; background: #fffcf8; padding: 0 10px; color: var(--accent-gold, #c9a66b); font-size: 20px;">
+            <i class="fas fa-quote-left"></i>
+        </div>
+        <div style="font-family:'Cormorant Garamond', serif; font-size:14px; font-weight:700; color:var(--accent-burgundy, #800020); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; text-align: center;">
+            Câu chuyện của Bếp trưởng
+        </div>
+        <div id="ed-m-chef-note" style="font-family:'Cormorant Garamond', serif; font-size:16px; color:#555; line-height:1.7; font-style:italic; text-align: center; margin-bottom: 15px;"></div>
+        <div style="text-align: center;">
+            <hr style="width: 50px; margin: 0 auto 10px; border-color: var(--accent-gold, #c9a66b); opacity: 0.5;">
+            <span style="font-family:'Cormorant Garamond', serif; font-size: 14px; color: var(--accent-gold, #c9a66b); font-weight: 600; font-style: italic;">— Executive Chef —</span>
+        </div>
+      </div>
+      
       <div class="ed-m-price" id="ed-m-price"></div>
       <div class="ed-m-toppings" id="ed-m-toppings" style="font-size:12px; color:var(--text-muted); margin-bottom:15px; font-style:italic;"></div>
       <a href="booking_service.php" class="btn-reserve-solid" style="width: fit-content;">ĐẶT BÀN NGAY</a>
@@ -869,6 +888,15 @@ function openEdModal(data) {
     document.getElementById('ed-m-cat').textContent = data.cat;
     document.getElementById('ed-m-name').textContent = data.name;
     document.getElementById('ed-m-desc').textContent = data.desc;
+    
+    var chefNoteWrap = document.getElementById('ed-m-chef-note-wrap');
+    if (data.chef_note && data.chef_note.trim() !== '') {
+        chefNoteWrap.style.display = 'block';
+        document.getElementById('ed-m-chef-note').textContent = data.chef_note;
+    } else {
+        chefNoteWrap.style.display = 'none';
+    }
+
     document.getElementById('ed-m-price').textContent = data.price + ' VND';
     
     var topEl = document.getElementById('ed-m-toppings');
