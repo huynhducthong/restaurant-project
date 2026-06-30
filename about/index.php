@@ -1,5 +1,5 @@
 <?php
-$path_prefix = $path_prefix ?? '';
+$path_prefix = '../';
 require_once __DIR__ . '/config/database.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
 $database = new Database(); 
