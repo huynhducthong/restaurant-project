@@ -7,12 +7,24 @@ if (!isset($_SESSION['user_id'])) {
 }
 $db  = (new Database())->getConnection();
 
-require_once 'app/models/UserVip.php';
-$is_vip = false;
+// Lấy phần thưởng Cột Mốc (Milestone) giảm giá tự động
+$ms_discount_percent = 0;
+$ms_reward_title = '';
 if (isset($_SESSION['user_id'])) {
-    $userVipModel = new UserVip($db);
-    $current_vip = $userVipModel->getActiveVipStatus($_SESSION['user_id']);
-    $is_vip = $current_vip ? true : false;
+    $stmt_ms = $db->prepare("
+        SELECT m.discount_percent, m.reward_title
+        FROM user_milestones um
+        JOIN milestones m ON um.milestone_id = m.id
+        WHERE um.user_id = ? AND um.is_redeemed = 0 AND m.discount_percent > 0
+        ORDER BY m.discount_percent DESC
+        LIMIT 1
+    ");
+    $stmt_ms->execute([$_SESSION['user_id']]);
+    $unredeemed = $stmt_ms->fetch(PDO::FETCH_ASSOC);
+    if ($unredeemed) {
+        $ms_discount_percent = $unredeemed['discount_percent'];
+        $ms_reward_title = $unredeemed['reward_title'];
+    }
 }
 
 // Lấy Giờ mở cửa từ Cài đặt chung
@@ -27,6 +39,7 @@ if (stripos($end_str, '12:00 PM') !== false || stripos($end_str, '12:00 AM') !==
 }
 
 $type = $_GET['type'] ?? 'table';
+if ($type === 'birthday') $type = 'table';
 $chef_id = isset($_GET['chef_id']) ? (int)$_GET['chef_id'] : 0;
 $autofill_chef_msg = '';
 $autofilled_chef_name = '';
@@ -106,6 +119,7 @@ $decor_pkgs = $db->query("SELECT * FROM decor_packages ORDER BY price ASC")->fet
 
 $bespoke_budgets = $db->query("SELECT * FROM bespoke_budgets ORDER BY sort_order ASC")->fetchAll(PDO::FETCH_ASSOC);
 $bespoke_styles = $db->query("SELECT * FROM bespoke_styles ORDER BY sort_order ASC")->fetchAll(PDO::FETCH_ASSOC);
+$bespoke_occasions = $db->query("SELECT * FROM bespoke_occasions ORDER BY sort_order ASC")->fetchAll(PDO::FETCH_ASSOC);
 
 $chefs = $db->query("SELECT id, name FROM chefs WHERE is_active = 1 ORDER BY sort_order ASC, id DESC")->fetchAll(PDO::FETCH_ASSOC);
 
@@ -519,22 +533,11 @@ select.input-lux {
                 </h2>
                 <div class="service-selector-inline">
                     <a href="?type=table#booking-form-area" class="svc-card-inline <?= $type==='table'?'active':'' ?>"><i class="fas fa-utensils me-1"></i> Đặt Bàn Tiêu Chuẩn</a>
-                    <a href="?type=birthday#booking-form-area" class="svc-card-inline <?= $type==='birthday'?'active':'' ?>"><i class="fas fa-glass-cheers me-1"></i> Tiệc Kỷ Niệm</a>
-                    <a href="?type=chef#booking-form-area" class="svc-card-inline <?= $type==='chef'?'active':'' ?>"><i class="fas <?= $is_vip ? 'fa-fire-burner' : 'fa-lock' ?> me-1"></i> Đầu Bếp Tại Gia</a>
-                    <a href="?type=bespoke#booking-form-area" class="svc-card-inline <?= $type==='bespoke'?'active':'' ?>"><i class="fas <?= $is_vip ? 'fa-gem' : 'fa-lock' ?> me-1"></i> Thiết Kế Riêng</a>
+                    <a href="?type=chef#booking-form-area" class="svc-card-inline <?= $type==='chef'?'active':'' ?>"><i class="fas fa-fire-burner me-1"></i> Đầu Bếp Tại Gia</a>
                 </div>
             </div>
 
-            <?php if (!$is_vip && in_array($type, ['chef', 'bespoke'])): ?>
-                <div style="position: relative;">
-                    <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; border-radius: 10px;">
-                        <i class="fas fa-lock" style="font-size: 3rem; color: var(--gold); margin-bottom: 20px;"></i>
-                        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--forest); margin-bottom: 15px;">Chỉ Dành Cho Hội Viên VIP</h3>
-                        <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 30px;">Dịch vụ <strong><?= $cfg['title'] ?></strong> là đặc quyền đẳng cấp thiết kế riêng cho khách hàng VIP.</p>
-                        <a href="profile.php?tab=vip" class="btn-hero-primary" style="pointer-events: auto;"><i class="fas fa-award" style="margin-right:8px;"></i> Trở thành Hội viên VIP ngay</a>
-                    </div>
-                    <div style="pointer-events: none; user-select: none;">
-            <?php endif; ?>
+
 
             <!-- STEP INDICATORS -->
             <div class="panel-section pt-0 pb-0" style="border-bottom: none;">
@@ -557,6 +560,16 @@ select.input-lux {
             <!-- BƯỚC 1 -->
             <div id="step-1" class="booking-step active">
             <div class="panel-section pt-0">
+                <div class="menu-type-toggle mb-4" style="display: flex; gap: 10px; background: rgba(0,0,0,0.03); padding: 5px; border-radius: 8px;">
+                    <button type="button" id="btn-menu-std" class="btn-menu-toggle active" style="flex: 1; padding: 10px; border: none; background: #fff; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-weight: 600; color: var(--accent-burgundy); transition: all 0.3s;" onclick="toggleMenuType(0)">
+                        <i class="fas fa-book-open me-2"></i>Chọn Món Tiêu Chuẩn
+                    </button>
+                    <button type="button" id="btn-menu-bespoke" class="btn-menu-toggle" style="flex: 1; padding: 10px; border: none; background: transparent; border-radius: 6px; font-weight: 600; color: var(--text-muted); transition: all 0.3s;" onclick="toggleMenuType(1)">
+                        <i class="fas fa-scroll me-2"></i>Thiết Kế Riêng (Bespoke)
+                    </button>
+                </div>
+                <input type="hidden" name="is_bespoke_menu" id="is_bespoke_menu" value="0">
+
                 <div class="row-lux mt-3">
                     <div class="input-group-lux">
                         <input type="text" name="customer_name" class="input-lux" placeholder=" " value="<?= htmlspecialchars($_SESSION['user_name']??'') ?>" required oninput="us()">
@@ -591,10 +604,14 @@ select.input-lux {
                     </div>
                 </div>
 
-                <?php if ($type === 'birthday'): ?>
-                <!-- PHẦN DÀNH RIÊNG CHO TIỆC KỶ NIỆM -->
+                <?php if ($type === 'table'): ?>
+                <!-- PHẦN TÙY CHỌN TIỆC KỶ NIỆM -->
                 <div class="mt-4 pt-4 border-top border-secondary">
-                    <h3 class="section-title-lux" style="font-size: 1.2rem; color: var(--accent-burgundy); margin-bottom:15px;"><i class="fas fa-gift me-2"></i> Thông Tin Tiệc Kỷ Niệm</h3>
+                    <label class="d-flex align-items-center gap-2 mb-3" style="cursor:pointer;">
+                        <input type="checkbox" id="add_anniversary_service" name="add_anniversary_service" value="1" onchange="toggleAnniversary(); us(); if(typeof validateStep1 === 'function') validateStep1();">
+                        <span style="font-size: 1.1rem; color: var(--accent-burgundy); font-weight: 600;"><i class="fas fa-gift me-2"></i> Thêm Dịch Vụ Kỷ Niệm / Trang Trí</span>
+                    </label>
+                    <div id="anniversary-fields" style="display: none;">
                     <div class="row-lux">
                         <div class="input-group-lux">
                             <select name="event_type" id="event_type" class="input-lux" onchange="selEvent(); us();">
@@ -627,6 +644,7 @@ select.input-lux {
                             <input type="checkbox" name="has_flower" value="1" class="menu-checkbox" onchange="us()">
                             <span class="small">Đặt hoa tươi thiết kế</span>
                         </label>
+                    </div>
                     </div>
                 </div>
                 <?php endif; ?>
@@ -742,7 +760,7 @@ select.input-lux {
             <div class="panel-section" style="border-bottom: none;">
                 <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--accent-burgundy);">Thực Đơn</h3>
                 
-                <?php if ($type !== 'bespoke'): ?>
+                <div id="standard-menu-fields">
                 <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">Bộ Sưu Tập Hương Vị</p>
                 <div style="display:grid; grid-template-columns: 1fr; max-width: 350px; gap:15px; margin-bottom: 25px;">
                     <div class="card-select cc active" data-price="0" onclick="selCombo(0,this)">
@@ -779,10 +797,20 @@ select.input-lux {
                 <?php endforeach; ?>
 
 
-                <?php endif; ?>
+                </div> <!-- end standard-menu-fields -->
 
-                <div id="bespoke-menu-fields" style="display:<?= $type === 'bespoke' ? 'block' : 'none' ?>; margin-top:20px; border: 1px solid var(--glass-border); padding:20px; background: #FFFFFF;">
+                <div id="bespoke-menu-fields" style="display:none; margin-top:20px; border: 1px solid var(--glass-border); padding:20px; background: #FFFFFF;">
                     <h4 style="font-family:'Cormorant Garamond', serif; color:var(--accent-burgundy); font-size:1.2rem; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px;"><i class="fas fa-scroll me-2"></i> Yêu cầu Thiết kế Thực đơn riêng</h4>
+                    <div class="row-lux mb-3">
+                        <div class="input-group-lux" style="flex:100%;">
+                            <select name="chef_occasion" id="chef_occasion" class="input-lux" onchange="updateChefReq(); us();">
+                                <?php foreach($bespoke_occasions as $bo): ?>
+                                    <option value="<?= htmlspecialchars($bo['name']) ?>"><?= htmlspecialchars($bo['name']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <label class="label-lux" >Dịp tổ chức</label>
+                        </div>
+                    </div>
                     <div class="row-lux mb-3">
                         <div class="input-group-lux">
                             <select name="chef_budget" id="chef_budget" class="input-lux" onchange="updateChefReq(); us(); calcTotal();">
@@ -805,10 +833,42 @@ select.input-lux {
                         <textarea name="chef_requirements_detail" id="creq_detail" class="input-lux" rows="3" placeholder=" " oninput="updateChefReq(); us();"></textarea>
                         <label class="label-lux"><i class="fas fa-utensils me-1"></i> Yêu cầu chi tiết cho Thực đơn (Chủ đề, nguyên liệu đặc biệt...)</label>
                     </div>
+                    
+                    <div class="bespoke-process mt-4 pt-3 border-top">
+                        <h5 style="color:var(--accent-burgundy); font-size:13px; text-transform:uppercase; margin-bottom:15px; font-weight:600;"><i class="fas fa-project-diagram me-2"></i>Quy trình Bespoke Dining</h5>
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                            <!-- BƯỚC 1: ACTIVE -->
+                            <div style="display:flex; align-items:center; gap:15px;">
+                                <div style="width:30px; height:30px; border-radius:50%; background:#d4b06a; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0; box-shadow: 0 0 10px rgba(212,176,106,0.5);">1</div>
+                                <div style="font-size:14px; color:var(--text-dark); font-weight:600;">Gửi yêu cầu thiết kế <span style="font-size:11px; color:#d4b06a; font-style:italic; font-weight:normal;">(Bạn đang ở bước này)</span></div>
+                            </div>
+                            <div style="width:2px; height:15px; background:rgba(212,176,106,0.3); margin-left:14px;"></div>
+                            
+                            <!-- BƯỚC 2: UPCOMING -->
+                            <div style="display:flex; align-items:center; gap:15px; opacity:0.6;">
+                                <div style="width:30px; height:30px; border-radius:50%; border: 2px solid #d4b06a; background:transparent; color:#d4b06a; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">2</div>
+                                <div style="font-size:13px; color:var(--text-muted);">Bếp trưởng tư vấn & Lên menu <span style="font-size:11px; font-style:italic;">(Nhà hàng sẽ liên hệ sau)</span></div>
+                            </div>
+                            <div style="width:2px; height:15px; background:rgba(212,176,106,0.2); margin-left:14px;"></div>
+                            
+                            <!-- BƯỚC 3: UPCOMING -->
+                            <div style="display:flex; align-items:center; gap:15px; opacity:0.6;">
+                                <div style="width:30px; height:30px; border-radius:50%; border: 2px solid #d4b06a; background:transparent; color:#d4b06a; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">3</div>
+                                <div style="font-size:13px; color:var(--text-muted);">Xác nhận thực đơn & Báo giá</div>
+                            </div>
+                            <div style="width:2px; height:15px; background:rgba(212,176,106,0.2); margin-left:14px;"></div>
+                            
+                            <!-- BƯỚC 4: UPCOMING -->
+                            <div style="display:flex; align-items:center; gap:15px; opacity:0.6;">
+                                <div style="width:30px; height:30px; border-radius:50%; border: 2px solid #d4b06a; background:transparent; color:#d4b06a; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">4</div>
+                                <div style="font-size:13px; color:var(--text-muted);">Thanh toán cọc & Chuẩn bị</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <textarea name="chef_requirements" id="creq" style="display:none;"></textarea>
 
-                <?php if ($type !== 'bespoke'): ?>
+
                 <div id="addon-foods-section">
                     <?php if(!empty($grouped_foods)): ?>
                         <p id="addon-foods-label" style="font-size:12px; color:var(--text-muted); margin-bottom:10px; letter-spacing:1px; text-transform:uppercase;">Thực Đơn Chọn Trước (Add-on)</p>
@@ -875,7 +935,7 @@ select.input-lux {
                         </div>
                     <?php endif; ?>
                 </div>
-                <?php endif; // end if type !== bespoke ?>
+
             </div>
                 <div class="panel-section" style="border-bottom: none; padding-top:0;">
                     <div class="wizard-nav">
@@ -1022,10 +1082,7 @@ select.input-lux {
                         <div style="font-size:12px; color:var(--text-muted); align-self:center; font-style:italic;">Hoàn tất tại bảng tóm tắt bên phải <i class="fas fa-arrow-right ms-1"></i></div>
                     </div>
                 </div>
-            <?php if (!$is_vip && in_array($type, ['chef', 'bespoke'])): ?>
-                    </div> <!-- End blur wrap -->
-                </div> <!-- End relative wrap -->
-            <?php endif; ?>
+
             </div> <!-- End Step 3 -->
         </form>
     </div>
@@ -1056,10 +1113,17 @@ select.input-lux {
             <div class="sum-row"><span>Bespoke Dịch vụ</span> <span class="sum-val highlight" id="s-bespoke">0 đ</span></div>
             <div class="sum-row"><span>Bộ Sưu Tập Hương Vị / Món</span> <span class="sum-val" id="sm">0 đ</span></div>
             
-            <?php if ($is_vip && isset($current_vip['discount_percent']) && $current_vip['discount_percent'] > 0): ?>
+            <?php if ($ms_discount_percent > 0): ?>
                 <div class="sum-row" style="color: #000000; font-weight: 700; border-top: 1px dashed rgba(0,0,0,0.1); padding-top: 12px; margin-top: 12px;">
-                    <span><i class="fas fa-crown"></i> Ưu đãi VIP (-<?= floatval($current_vip['discount_percent']) ?>%)</span> 
-                    <span class="sum-val" id="s-vip-discount" style="color: #000000;">0 đ</span>
+                    <span><i class="fas fa-gift text-danger"></i> <?= htmlspecialchars($ms_reward_title) ?> (-<?= floatval($ms_discount_percent) ?>%)</span> 
+                    <span class="sum-val" id="s-ms-discount" style="color: #000000;">0 đ</span>
+                </div>
+            <?php endif; ?>
+
+            <?php if (isset($is_birthday) && $is_birthday): ?>
+                <div class="sum-row" style="color: #000000; font-weight: 700; border-top: 1px dashed rgba(0,0,0,0.1); padding-top: 12px; margin-top: 12px;">
+                    <span><i class="fas fa-birthday-cake text-danger"></i> Tặng Sinh Nhật (-10%)</span> 
+                    <span class="sum-val" id="s-bd-discount" style="color: #000000;">0 đ</span>
                 </div>
             <?php endif; ?>
             
@@ -1075,16 +1139,10 @@ select.input-lux {
                 <div class="deposit-amount" id="sdep">0<span style="font-size:1.2rem; color:#fff;"> đ</span></div>
                 <p style="font-size:11px; color:var(--text-muted); margin-top:5px; font-style:italic;">Thanh toán phần còn lại tại nhà hàng.</p>
                 
-                <?php if (!$is_vip && in_array($type, ['chef', 'bespoke'])): ?>
-                <button type="button" class="btn-gold-grad mt-4" disabled style="opacity: 0.5; cursor: not-allowed;">
-                    <span>Chưa đủ điều kiện</span>
-                </button>
-                <?php else: ?>
                 <button type="submit" form="bk-form" class="btn-gold-grad mt-4" id="btn-go">
                     <span id="btn-txt">Gửi Yêu Cầu Đặt Chỗ</span>
                     <span id="btn-spin" style="display:none"><i class="fas fa-spinner fa-spin"></i> Đang xử lý...</span>
                 </button>
-                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -1146,18 +1204,20 @@ select.input-lux {
             let bookingDate = new Date(dateVal);
             let now = new Date();
             let bookingType = '<?= $type ?>';
+            let isBespoke = document.getElementById('is_bespoke_menu') && document.getElementById('is_bespoke_menu').value === '1';
+            let isAnniversary = document.getElementById('add_anniversary_service') && document.getElementById('add_anniversary_service').checked;
             let minHours = 1;
             let errorMsgText = 'Quý khách vui lòng chọn giờ đến sau thời điểm hiện tại ít nhất 1 tiếng.';
 
-            if (bookingType === 'event') {
+            if (isBespoke) {
+                minHours = 48;
+                errorMsgText = 'Dịch vụ Thiết kế riêng đòi hỏi sự chuẩn bị hoàn mỹ nhất, quý khách vui lòng đặt trước ít nhất 48 tiếng.';
+            } else if (isAnniversary) {
                 minHours = 3;
                 errorMsgText = 'Dịch vụ Tiệc kỷ niệm yêu cầu chuẩn bị chu đáo, quý khách vui lòng đặt trước ít nhất 3 tiếng.';
             } else if (bookingType === 'home') {
                 minHours = 24;
                 errorMsgText = 'Dịch vụ Đầu bếp tại gia cần chọn lọc nguyên liệu riêng, quý khách vui lòng đặt trước ít nhất 24 tiếng.';
-            } else if (bookingType === 'bespoke') {
-                minHours = 48;
-                errorMsgText = 'Dịch vụ Thiết kế riêng đòi hỏi sự chuẩn bị hoàn mỹ nhất, quý khách vui lòng đặt trước ít nhất 48 tiếng.';
             }
 
             let minAllowedTime = new Date(now.getTime() + minHours * 60 * 60000); 
@@ -1529,6 +1589,7 @@ function updateChefReq() {
     var customInput = document.getElementById('custom_saddr');
     var budget = document.getElementById('chef_budget') ? document.getElementById('chef_budget').value : '';
     var style = document.getElementById('chef_style') ? document.getElementById('chef_style').value : '';
+    var occasion = document.getElementById('chef_occasion') ? document.getElementById('chef_occasion').value : '';
     var detail = document.getElementById('creq_detail') ? document.getElementById('creq_detail').value : '';
     var chef = document.getElementById('selected_chef') ? document.getElementById('selected_chef').value : '';
 
@@ -1541,8 +1602,10 @@ function updateChefReq() {
     if (address) parts.push("Địa điểm phục vụ: " + address);
     if (chef) parts.push("Bếp trưởng chỉ định: " + chef);
 
+    var isBespokeMenu = document.getElementById('is_bespoke_menu') ? document.getElementById('is_bespoke_menu').value : '0';
     var sid = document.getElementById('sid') ? parseInt(document.getElementById('sid').value) : 0;
-    if (sid === -1) {
+    if (sid === -1 || isBespokeMenu === '1') {
+        if (occasion) parts.push("Dịp: " + occasion);
         if (budget) parts.push("Ngân sách: " + budget);
         if (style) parts.push("Phong cách: " + style);
         if (detail) parts.push("Chi tiết: " + detail);
@@ -2104,7 +2167,11 @@ document.addEventListener('DOMContentLoaded', function() {
             var tsel = document.getElementById('tsel');
             if (tsel) {
                 tsel.value = lastBookingData.tableId;
-                fromDrop(tsel);
+                if (tsel.selectedIndex !== -1) {
+                    fromDrop(tsel);
+                } else {
+                    tsel.value = '';
+                }
             }
         }
 
@@ -2210,6 +2277,57 @@ function selectComboProgrammatically(comboId) {
     }
 }
 
+function toggleMenuType(isBespoke) {
+    document.getElementById('is_bespoke_menu').value = isBespoke;
+    if (isBespoke == 1) {
+        document.getElementById('btn-menu-bespoke').style.background = '#fff';
+        document.getElementById('btn-menu-bespoke').style.color = 'var(--accent-burgundy)';
+        document.getElementById('btn-menu-bespoke').style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
+        
+        document.getElementById('btn-menu-std').style.background = 'transparent';
+        document.getElementById('btn-menu-std').style.color = 'var(--text-muted)';
+        document.getElementById('btn-menu-std').style.boxShadow = 'none';
+        
+        document.getElementById('standard-menu-fields').style.display = 'none';
+        var addonSec = document.getElementById('addon-foods-section');
+        if(addonSec) addonSec.style.display = 'none';
+        document.getElementById('bespoke-menu-fields').style.display = 'block';
+    } else {
+        document.getElementById('btn-menu-std').style.background = '#fff';
+        document.getElementById('btn-menu-std').style.color = 'var(--accent-burgundy)';
+        document.getElementById('btn-menu-std').style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
+        
+        document.getElementById('btn-menu-bespoke').style.background = 'transparent';
+        document.getElementById('btn-menu-bespoke').style.color = 'var(--text-muted)';
+        document.getElementById('btn-menu-bespoke').style.boxShadow = 'none';
+        
+        document.getElementById('standard-menu-fields').style.display = 'block';
+        var addonSec = document.getElementById('addon-foods-section');
+        if(addonSec) addonSec.style.display = 'block';
+        document.getElementById('bespoke-menu-fields').style.display = 'none';
+    }
+    us();
+    if (typeof validateStep1 === 'function') validateStep1();
+}
+
+function toggleAnniversary() {
+    let chk = document.getElementById('add_anniversary_service');
+    let flds = document.getElementById('anniversary-fields');
+    if (chk && flds) {
+        flds.style.display = chk.checked ? 'block' : 'none';
+        if (!chk.checked) {
+            document.getElementById('event_type').value = '';
+            document.getElementById('decor_package').value = '';
+            document.querySelectorAll('input[name="has_cake"]').forEach(e=>e.checked=false);
+            document.querySelectorAll('input[name="has_flower"]').forEach(e=>e.checked=false);
+            let imgWrap1 = document.getElementById('event_img_wrap');
+            if (imgWrap1) imgWrap1.style.display = 'none';
+            let imgWrap2 = document.getElementById('decor_img_wrap');
+            if (imgWrap2) imgWrap2.style.display = 'none';
+        }
+    }
+}
+
 function us(){
     try {
         // Check table availability remotely
@@ -2220,11 +2338,21 @@ function us(){
     var n=document.querySelector('[name="customer_name"]');
     document.getElementById('sn').textContent=n&&n.value?n.value:'—';
 
+    var typeStr = "<?= $type ?>";
     var d=document.getElementById('bd');
     if(d&&d.value){
         var dt=new Date(d.value);
-        document.getElementById('sd').textContent = dt.toLocaleDateString('vi-VN') + ' ' + dt.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
-    } else document.getElementById('sd').textContent='—';
+        var timeStr = dt.toLocaleDateString('vi-VN') + ' ' + dt.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+        if (typeStr === 'chef') {
+            var arriveDt = new Date(dt.getTime() - 90 * 60000); // 1.5 hours before
+            var arriveStr = arriveDt.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+            document.getElementById('sd').innerHTML = timeStr + '<br><span style="color:var(--accent-burgundy); font-size:11px; font-style:italic;">(Bếp trưởng có mặt lúc ' + arriveStr + ' để setup)</span>';
+        } else {
+            document.getElementById('sd').textContent = timeStr;
+        }
+    } else {
+        document.getElementById('sd').textContent='—';
+    }
 
     document.getElementById('sg').textContent=document.getElementById('gi').value+' Người';
   
@@ -2242,7 +2370,6 @@ function us(){
     }
 
     // Tính phí Đầu bếp tại gia dựa trên số khách
-    var typeStr = "<?= $type ?>";
     var guestsNum = parseInt(document.getElementById('gi').value) || 2;
     var chefServiceFee = 0;
     if (typeStr === 'chef') {
@@ -2255,10 +2382,11 @@ function us(){
         if (schef) schef.textContent = chefServiceFee.toLocaleString('vi-VN') + ' đ';
     }
 
+    var isBespokeMenu = document.getElementById('is_bespoke_menu') ? document.getElementById('is_bespoke_menu').value : '0';
     var sid = document.getElementById('sid') ? parseInt(document.getElementById('sid').value) : 0;
     var food = 0;
-    if (sid === -1) {
-        document.getElementById('sm').textContent = "Thiết kế riêng (Liên hệ báo giá)";
+    if (sid === -1 || isBespokeMenu === '1') {
+        document.getElementById('sm').textContent = "Thiết kế riêng (Dựa theo NS)";
         food = 0;
         var listWrap = document.getElementById('selected-foods-list');
         if (listWrap) listWrap.style.display = 'none';
@@ -2388,7 +2516,8 @@ function us(){
     
     // Tính ngân sách thiết kế riêng (nếu có)
     var budgetSel = document.getElementById('chef_budget');
-    if (budgetSel && typeStr === 'bespoke' && budgetSel.options && budgetSel.selectedIndex >= 0) {
+    var isBespokeMenu = document.getElementById('is_bespoke_menu') ? document.getElementById('is_bespoke_menu').value : '0';
+    if (budgetSel && isBespokeMenu === '1' && budgetSel.options && budgetSel.selectedIndex >= 0) {
         var opt = budgetSel.options[budgetSel.selectedIndex];
         var bPrice = parseInt(opt.getAttribute('data-price')) || 0;
         bespokePrice += bPrice * guestsNum;
@@ -2406,14 +2535,25 @@ function us(){
 
     var total = food + (typeof selPrice !== 'undefined' ? selPrice : 0) + decorPrice + bespokePrice + chefServiceFee;
     
-    var discountPercent = <?= ($is_vip && isset($current_vip['discount_percent'])) ? floatval($current_vip['discount_percent']) : 0 ?>;
+    var discountPercent = <?= $ms_discount_percent > 0 ? floatval($ms_discount_percent) : 0 ?>;
     var discountAmount = 0;
     if (discountPercent > 0) {
         discountAmount = total * (discountPercent / 100);
         total = total - discountAmount;
-        var sVipDiscount = document.getElementById('s-vip-discount');
-        if (sVipDiscount) {
-            sVipDiscount.textContent = '-' + discountAmount.toLocaleString('vi-VN') + ' đ';
+        var sMsDiscount = document.getElementById('s-ms-discount');
+        if (sMsDiscount) {
+            sMsDiscount.textContent = '-' + discountAmount.toLocaleString('vi-VN') + ' đ';
+        }
+    }
+    
+    // Giảm 10% nếu là Sinh Nhật (sau khi trừ Milestone)
+    var isBirthday = <?= (isset($is_birthday) && $is_birthday) ? 'true' : 'false' ?>;
+    if (isBirthday && total > 0) {
+        var bdDiscountAmount = total * 0.10;
+        total = total - bdDiscountAmount;
+        var sBdDiscount = document.getElementById('s-bd-discount');
+        if (sBdDiscount) {
+            sBdDiscount.textContent = '-' + bdDiscountAmount.toLocaleString('vi-VN') + ' đ';
         }
     }
     

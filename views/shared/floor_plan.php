@@ -8,26 +8,26 @@ $all_tables = array_merge($t_open, $t_room);
 .fp-container {
     width: 1150px; 
     height: 800px;
-    background-color: #FDFBF7;
+    background-color: #ffffff;
     /* Lưới CAD Background */
     background-image: 
-        linear-gradient(rgba(168, 135, 70, 0.1) 1px, transparent 1px), 
-        linear-gradient(90deg, rgba(168, 135, 70, 0.1) 1px, transparent 1px);
+        linear-gradient(rgba(17, 63, 54, 0.05) 1px, transparent 1px), 
+        linear-gradient(90deg, rgba(17, 63, 54, 0.05) 1px, transparent 1px);
     background-size: 20px 20px;
     background-position: center center;
     position: relative;
     margin: 0 auto;
     font-family: 'Source Sans 3', sans-serif;
     color: var(--text-main, #333333);
-    border: 3px solid #333; /* Outer building wall */
+    border: 3px solid #113f36; /* Outer building wall */
     box-shadow: 0 20px 50px rgba(0,0,0,0.1);
 }
 
 /* CAD Static Areas (Solid walls) */
 .fp-cad-room {
     position: absolute;
-    border: 2px solid #555;
-    background: rgba(240, 238, 230, 0.9);
+    border: 2px solid #113f36;
+    background: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -36,14 +36,14 @@ $all_tables = array_merge($t_open, $t_room);
     font-size: 11px;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: #555;
+    color: #A88746;
     z-index: 1;
 }
 .fp-cad-room::after {
     content: attr(data-title);
     position: absolute;
     top: 8px; left: 10px;
-    font-size: 10px; color: #888;
+    font-size: 10px; color: #A88746;
 }
 
 /* Specific Rooms */
@@ -275,7 +275,7 @@ $all_tables = array_merge($t_open, $t_room);
 .fp-table {
     position: absolute;
     background: #FFFFFF; 
-    border: 2px solid var(--forest, #A88746);
+    border: 2px solid #113f36;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -293,11 +293,11 @@ $all_tables = array_merge($t_open, $t_room);
     width: 14px;
     height: 14px;
     background: #fff;
-    border: 2px solid #A88746;
+    border: 2px solid #113f36;
     border-radius: 50%;
     transition: all 0.3s;
 }
-.fp-table.available:hover .fp-chair { background: rgba(168, 135, 70, 0.2); }
+.fp-table.available:hover .fp-chair { background: rgba(17, 63, 54, 0.1); }
 
 .fp-chair.top { top: -20px; left: 50%; transform: translateX(-50%); }
 .fp-chair.bottom { bottom: -20px; left: 50%; transform: translateX(-50%); }
@@ -318,15 +318,15 @@ $all_tables = array_merge($t_open, $t_room);
 .fp-chair.rect-bottom-left { bottom: -20px; left: 25%; transform: translateX(-50%); }
 .fp-chair.rect-bottom-right { bottom: -20px; left: 75%; transform: translateX(-50%); }
 
-.fp-t-code { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: #333; }
-.fp-table.available:hover { background: rgba(168, 135, 70, 0.05); }
+.fp-t-code { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: #A88746; }
+.fp-table.available:hover { background: rgba(17, 63, 54, 0.03); }
 .fp-table.booked { background: #f5f5f5; border-color: #aaa; cursor: not-allowed; }
 .fp-table.booked .fp-t-code { color: #888; }
 .fp-table.booked .fp-chair { border-color: #aaa; }
-.fp-table.selected { background: #A88746 !important; border-color: #A88746 !important; z-index: 15; box-shadow: 0 10px 20px rgba(168,135,70,0.5); }
-.fp-table.selected .fp-t-code { color: #fff; }
+.fp-table.selected { background: #113f36 !important; border-color: #113f36 !important; z-index: 15; box-shadow: 0 10px 20px rgba(17, 63, 54, 0.3); }
+.fp-table.selected .fp-t-code { color: #A88746; }
 
-.fp-legend { margin-top: 20px; font-size: 11px; text-transform: uppercase; font-weight: bold; color: #333; background: #fff; padding: 12px 20px; border: 2px solid #555; border-radius: 4px; display: flex; gap: 20px; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.fp-legend { margin-top: 20px; font-size: 11px; text-transform: uppercase; font-weight: bold; color: #113f36; background: #fff; padding: 12px 20px; border: 2px solid #113f36; border-radius: 4px; display: flex; gap: 20px; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 .fp-legend-item { display: flex; align-items: center; }
 .fp-legend-box { width: 14px; height: 14px; margin-right: 8px; border-radius: 50%; }
 </style>
@@ -337,12 +337,8 @@ $all_tables = array_merge($t_open, $t_room);
         <!-- Connected CAD Rooms -->
                 <div class="fp-cad-room cad-v3" data-title="PHÒNG VIP 3">
             <div class="fp-window-h" style="top: -4px; left: 50px; width: 100px;"></div>
-            <div class="vip-curtain-h" style="top: -6px; left: 45px;"></div>
-            <div class="vip-curtain-h" style="top: -6px; left: 130px;"></div>
             
             <div class="fp-window-v" style="left: -4px; top: 40px; height: 80px;"></div>
-            <div class="vip-curtain-v" style="left: -6px; top: 35px;"></div>
-            <div class="vip-curtain-v" style="left: -6px; top: 100px;"></div>
             
             <!-- Painting on the right wall -->
             <div class="vip-painting-v" style="top: 60px; right: 0;"></div>
@@ -352,19 +348,7 @@ $all_tables = array_merge($t_open, $t_room);
         <div class="fp-cad-room cad-hot">BẾP NÓNG</div>
         <div class="fp-cad-room cad-cold">BẾP LẠNH</div>
         <div class="fp-cad-room cad-pass">TRẠM PHỤC VỤ (THE PASS)</div>
-                <div class="fp-cad-room cad-v2" data-title="PHÒNG VIP 2">
-            <div class="fp-window-h" style="top: -4px; right: 50px; width: 120px;"></div>
-            <div class="vip-curtain-h" style="top: -6px; right: 45px;"></div>
-            <div class="vip-curtain-h" style="top: -6px; right: 150px;"></div>
-            
-            <div class="fp-window-v" style="right: -4px; top: 40px; height: 80px;"></div>
-            <div class="vip-curtain-v" style="right: -6px; top: 35px;"></div>
-            <div class="vip-curtain-v" style="right: -6px; top: 100px;"></div>
-            
-            <!-- Painting on the left wall -->
-            <div class="vip-painting-v" style="top: 60px; left: 0;"></div>
-            <div class="vip-painting-h" style="bottom: 0; left: 60px;"></div>
-        </div>
+        
         
                 <div class="fp-cad-room cad-bar" data-title="QUẦY BAR MỞ">
             <!-- I-shape Kitchen (Back Wall) -->
@@ -394,30 +378,14 @@ $all_tables = array_merge($t_open, $t_room);
         
                 <div class="fp-cad-room cad-v4" data-title="PHÒNG VIP 4">
             <div class="fp-window-h" style="bottom: -4px; right: 50px; width: 120px;"></div>
-            <div class="vip-curtain-h" style="bottom: -6px; right: 45px;"></div>
-            <div class="vip-curtain-h" style="bottom: -6px; right: 150px;"></div>
             
             <div class="fp-window-v" style="right: -4px; top: 60px; height: 100px;"></div>
-            <div class="vip-curtain-v" style="right: -6px; top: 55px;"></div>
-            <div class="vip-curtain-v" style="right: -6px; top: 140px;"></div>
             
             <!-- Painting on the left wall -->
             <div class="vip-painting-v" style="top: 80px; left: 0;"></div>
             <div class="vip-painting-h" style="top: 0; left: 60px;"></div>
         </div>
-                <div class="fp-cad-room cad-v1" data-title="PHÒNG VIP 1">
-            <div class="fp-window-h" style="bottom: -4px; left: 50px; width: 100px;"></div>
-            <div class="vip-curtain-h" style="bottom: -6px; left: 45px;"></div>
-            <div class="vip-curtain-h" style="bottom: -6px; left: 130px;"></div>
-            
-            <div class="fp-window-v" style="left: -4px; top: 60px; height: 100px;"></div>
-            <div class="vip-curtain-v" style="left: -6px; top: 55px;"></div>
-            <div class="vip-curtain-v" style="left: -6px; top: 140px;"></div>
-            
-            <!-- Painting on the right wall -->
-            <div class="vip-painting-v" style="top: 80px; right: 0;"></div>
-            <div class="vip-painting-h" style="top: 0; right: 60px;"></div>
-        </div>
+        
         
         <div class="fp-cad-room cad-lounge" style="border: 2px solid #555; background: transparent;">
             <div class="lounge-floor"></div>
@@ -485,22 +453,28 @@ $all_tables = array_merge($t_open, $t_room);
                 $x = $t['pos_x'] ?? 0;
                 $y = $t['pos_y'] ?? 0;
 
+                $cap = (int)($t['capacity'] ?? 2);
                 $w = 60; $h = 60; $borderRadius = '4px';
-                $shapeType = 'square_small';
-
+                $shapeType = 'square_med';
                 $rotate = '';
-                if (in_array($tCode, ['W1', 'W2', 'W3', 'W4'])) {
+
+                if ($cap == 2) {
+                    $w = 60; $h = 60; $borderRadius = '4px';
+                    $shapeType = 'square_small';
+                } elseif ($cap == 4) {
+                    $w = 70; $h = 70; $borderRadius = '4px';
+                    $shapeType = 'square_med';
+                    if (in_array($tCode, ['W5', 'W6'])) {
+                        $rotate = 'rotate(45deg)';
+                    }
+                } elseif ($cap == 6) {
                     $w = 90; $h = 90; $borderRadius = '50%';
                     $shapeType = 'round_large';
-                } elseif (in_array($tCode, ['W5', 'W6'])) {
-                    $w = 60; $h = 60; $borderRadius = '4px';
-                    $shapeType = 'diamond_med';
-                    $rotate = 'rotate(45deg)';
-                } elseif (in_array($tCode, ['R1', 'R2', 'R3', 'R4', 'R5', 'R6'])) {
-                    $w = 70; $h = 60; $borderRadius = '4px';
-                    $shapeType = 'rect_med';
-                } elseif ($cat === 'room') {
-                    $w = 120; $h = 70; $borderRadius = '8px';
+                } elseif ($cap == 8) {
+                    $w = 120; $h = 70; $borderRadius = '6px';
+                    $shapeType = 'rect_large';
+                } elseif ($cap >= 16) {
+                    $w = 140; $h = 80; $borderRadius = '8px';
                     $shapeType = 'vip';
                 }
             ?>
@@ -509,31 +483,42 @@ $all_tables = array_merge($t_open, $t_room);
                  data-id="<?= $t['id'] ?>" data-price="<?= $t['price'] ?>" data-code="<?= htmlspecialchars($tCode) ?>" data-cat="<?= $cat ?>"
                  title="<?= htmlspecialchars($tCode) ?> - <?= $st === 'available' ? 'Trống' : 'Đã đặt' ?>">
                 
-                <?php if ($shapeType === 'diamond_med'): ?>
-                    <!-- Ghế xoay theo 4 cạnh vì bàn xoay 45 độ -->
-                    <div class="fp-chair top"></div><div class="fp-chair right"></div>
-                    <div class="fp-chair bottom"></div><div class="fp-chair left"></div>
-                    <div style="transform: rotate(-45deg);">
-                        <span class="fp-t-code" style="display:block; margin-top:20px;"><?= htmlspecialchars(str_replace('VIP', 'V', $tCode)) ?></span>
-                    </div>
+                <?php if ($shapeType === 'square_small'): ?>
+                    <div class="fp-chair left"></div><div class="fp-chair right"></div>
+                <?php elseif ($shapeType === 'square_med'): ?>
+                    <div class="fp-chair top"></div><div class="fp-chair bottom"></div>
+                    <div class="fp-chair left"></div><div class="fp-chair right"></div>
                 <?php elseif ($shapeType === 'round_large'): ?>
                     <div class="fp-chair r-top-left"></div><div class="fp-chair r-top-right"></div>
                     <div class="fp-chair r-bottom-left"></div><div class="fp-chair r-bottom-right"></div>
                     <div class="fp-chair r-mid-left"></div><div class="fp-chair r-mid-right"></div>
-                <?php elseif ($shapeType === 'square_small'): ?>
+                <?php elseif ($shapeType === 'rect_large'): ?>
+                    <!-- 8 chairs -->
+                    <div class="fp-chair" style="top:-20px; left:15%; transform:translateX(-50%);"></div>
+                    <div class="fp-chair" style="top:-20px; left:50%; transform:translateX(-50%);"></div>
+                    <div class="fp-chair" style="top:-20px; left:85%; transform:translateX(-50%);"></div>
+                    <div class="fp-chair" style="bottom:-20px; left:15%; transform:translateX(-50%);"></div>
+                    <div class="fp-chair" style="bottom:-20px; left:50%; transform:translateX(-50%);"></div>
+                    <div class="fp-chair" style="bottom:-20px; left:85%; transform:translateX(-50%);"></div>
                     <div class="fp-chair left"></div><div class="fp-chair right"></div>
-                <?php elseif ($shapeType === 'rect_med'): ?>
-                    <div class="fp-chair rect-top-left"></div><div class="fp-chair rect-top-right"></div>
-                    <div class="fp-chair rect-bottom-left"></div><div class="fp-chair rect-bottom-right"></div>
                 <?php elseif ($shapeType === 'vip'): ?>
-                    <div class="fp-chair v-top-left"></div><div class="fp-chair v-top-right"></div>
-                    <div class="fp-chair v-bottom-left"></div><div class="fp-chair v-bottom-right"></div>
+                    <!-- 10+ chairs representation -->
+                    <div class="fp-chair" style="top:-20px; left:10%; transform:translateX(-50%);"></div>
+                    <div class="fp-chair" style="top:-20px; left:30%; transform:translateX(-50%);"></div>
+                    <div class="fp-chair" style="top:-20px; left:50%; transform:translateX(-50%);"></div>
+                    <div class="fp-chair" style="top:-20px; left:70%; transform:translateX(-50%);"></div>
+                    <div class="fp-chair" style="top:-20px; left:90%; transform:translateX(-50%);"></div>
+                    <div class="fp-chair" style="bottom:-20px; left:10%; transform:translateX(-50%);"></div>
+                    <div class="fp-chair" style="bottom:-20px; left:30%; transform:translateX(-50%);"></div>
+                    <div class="fp-chair" style="bottom:-20px; left:50%; transform:translateX(-50%);"></div>
+                    <div class="fp-chair" style="bottom:-20px; left:70%; transform:translateX(-50%);"></div>
+                    <div class="fp-chair" style="bottom:-20px; left:90%; transform:translateX(-50%);"></div>
                     <div class="fp-chair left"></div><div class="fp-chair right"></div>
                 <?php endif; ?>
 
-                                <?php if ($shapeType !== 'diamond_med'): ?>
-                <span class="fp-t-code"><?= htmlspecialchars(str_replace('VIP', 'V', $tCode)) ?></span>
-                <?php endif; ?>
+                                <div style="<?= !empty($rotate) ? 'transform: rotate(-45deg); margin-top:20px;' : '' ?>">
+                    <span class="fp-t-code"><?= htmlspecialchars(str_replace('VIP', 'V', $tCode)) ?></span>
+                </div>
                 <?php if (in_array($tCode, ['W1', 'W2', 'W3', 'W4']) || $cat === 'room'): ?>
                     <i class="fas fa-gem" style="position: absolute; top: -8px; right: -8px; font-size: 12px; color: #A88746; background: #fff; border-radius: 50%; padding: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);"></i>
                 <?php endif; ?>
@@ -542,8 +527,8 @@ $all_tables = array_merge($t_open, $t_room);
     </div>
     
     <div class="fp-legend">
-        <div class="fp-legend-item"><div class="fp-legend-box" style="background: #ffffff; border: 2px solid var(--forest, #A88746);"></div> TRỐNG</div>
-        <div class="fp-legend-item"><div class="fp-legend-box" style="background: var(--accent-burgundy, #A88746); border: 2px solid var(--accent-burgundy, #A88746);"></div> ĐANG CHỌN</div>
+        <div class="fp-legend-item"><div class="fp-legend-box" style="background: #ffffff; border: 2px solid #113f36;"></div> TRỐNG</div>
+        <div class="fp-legend-item"><div class="fp-legend-box" style="background: #113f36; border: 2px solid #113f36;"></div> ĐANG CHỌN</div>
         <div class="fp-legend-item"><div class="fp-legend-box" style="background: #f5f5f5; border: 2px solid #aaa;"></div> ĐÃ ĐẶT</div>
     </div>
 </div>

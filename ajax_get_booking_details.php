@@ -119,6 +119,60 @@ $total = 0;
         </table>
     <?php endif; ?>
 
+    <?php if ($booking['combo_id'] == -1): 
+        $s_status = $booking['status'];
+        $step2 = in_array($s_status, ['Confirmed', 'Completed']);
+        $step3 = in_array($s_status, ['Confirmed', 'Completed']);
+        $step4 = in_array($s_status, ['Completed']);
+    ?>
+    <div style="margin-top:20px; padding:15px; background:#fffbf5; border:1px solid #e8e2d9; border-radius:8px;">
+        <h6 style="color:var(--accent-burgundy); font-weight:bold; font-size:13px; text-transform:uppercase; margin-bottom:10px;"><i class="fas fa-magic me-1"></i> Trải Nghiệm Thiết Kế Riêng</h6>
+        <?php if (!empty($booking['chef_requirements'])): ?>
+            <div style="font-size:12px; color:#555; margin-bottom:15px; font-style:italic;">
+                <?= nl2br(htmlspecialchars($booking['chef_requirements'])) ?>
+            </div>
+        <?php endif; ?>
+        
+        <h6 style="font-size:12px; font-weight:bold; color:#888; margin-bottom:10px; letter-spacing:1px;">TRẠNG THÁI QUY TRÌNH</h6>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            <!-- Step 1 -->
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:24px; height:24px; border-radius:50%; background:#d4b06a; color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:bold;">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div style="font-size:12px; color:#333; font-weight:bold;">1. Gửi yêu cầu thiết kế <span style="color:#28a745; font-size:10px; margin-left:5px;">(Hoàn thành)</span></div>
+            </div>
+            <div style="width:2px; height:10px; background:#d4b06a; margin-left:11px;"></div>
+            
+            <!-- Step 2 -->
+            <div style="display:flex; align-items:center; gap:10px; opacity: <?= $step2 ? '1' : '0.8' ?>">
+                <div style="width:24px; height:24px; border-radius:50%; border:2px solid #d4b06a; background:<?= $step2 ? '#d4b06a' : 'transparent' ?>; color:<?= $step2 ? '#fff' : '#d4b06a' ?>; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:bold;">
+                    <?= $step2 ? '<i class="fas fa-check"></i>' : '2' ?>
+                </div>
+                <div style="font-size:12px; color:<?= $step2 ? '#333' : '#888' ?>; font-weight:<?= $step2 ? 'bold' : 'normal' ?>;">2. Bếp trưởng tư vấn & Lên menu <?= $step2 ? '<span style="color:#28a745; font-size:10px; margin-left:5px;">(Hoàn thành)</span>' : '<span style="color:#f39c12; font-size:10px; margin-left:5px; font-style:italic;">(Nhà hàng đang xử lý)</span>' ?></div>
+            </div>
+            <div style="width:2px; height:10px; background:<?= $step2 ? '#d4b06a' : 'rgba(212,176,106,0.3)' ?>; margin-left:11px;"></div>
+            
+            <!-- Step 3 -->
+            <div style="display:flex; align-items:center; gap:10px; opacity: <?= $step3 ? '1' : '0.5' ?>">
+                <div style="width:24px; height:24px; border-radius:50%; border:2px solid #d4b06a; background:<?= $step3 ? '#d4b06a' : 'transparent' ?>; color:<?= $step3 ? '#fff' : '#d4b06a' ?>; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:bold;">
+                    <?= $step3 ? '<i class="fas fa-check"></i>' : '3' ?>
+                </div>
+                <div style="font-size:12px; color:<?= $step3 ? '#333' : '#888' ?>; font-weight:<?= $step3 ? 'bold' : 'normal' ?>;">3. Xác nhận thực đơn & Báo giá <?= $step3 ? '<span style="color:#28a745; font-size:10px; margin-left:5px;">(Hoàn thành)</span>' : '' ?></div>
+            </div>
+            <div style="width:2px; height:10px; background:<?= $step3 ? '#d4b06a' : 'rgba(212,176,106,0.3)' ?>; margin-left:11px;"></div>
+            
+            <!-- Step 4 -->
+            <div style="display:flex; align-items:center; gap:10px; opacity: <?= $step4 ? '1' : '0.5' ?>">
+                <div style="width:24px; height:24px; border-radius:50%; border:2px solid #d4b06a; background:<?= $step4 ? '#d4b06a' : 'transparent' ?>; color:<?= $step4 ? '#fff' : '#d4b06a' ?>; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:bold;">
+                    <?= $step4 ? '<i class="fas fa-check"></i>' : '4' ?>
+                </div>
+                <div style="font-size:12px; color:<?= $step4 ? '#333' : '#888' ?>; font-weight:<?= $step4 ? 'bold' : 'normal' ?>;">4. Thanh toán cọc & Chuẩn bị <?= $step4 ? '<span style="color:#28a745; font-size:10px; margin-left:5px;">(Hoàn thành)</span>' : '' ?></div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <?php if(!empty($booking['message'])): ?>
     <div style="background:#fdfcf9; border-left:3px solid var(--accent-burgundy); padding:10px; font-size:12px; font-style:italic;">
         <strong>Ghi chú:</strong> <?= nl2br(htmlspecialchars($booking['message'])) ?>

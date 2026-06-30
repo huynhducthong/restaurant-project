@@ -611,8 +611,8 @@ if (!empty($logo_path)) {
                       </li>
 
                     <li>
-                        <a class="<?= ($current_page == 'index.php' && strpos($_SERVER['REQUEST_URI'], '/about') !== false || $current_page == 'Aboutus.php') ? 'active' : '' ?>"
-                            href="<?= safe_url('about/index.php', $path_prefix ?? '') ?>">
+                        <a class="<?= ($current_page == 'index.php' && strpos($_SERVER['REQUEST_URI'], '/about') !== false || $current_page == 'about.php') ? 'active' : '' ?>"
+                            href="<?= safe_url('about.php', $path_prefix ?? '') ?>">
                             <?= __('news') ?>
                         </a>
                     </li>
@@ -624,7 +624,7 @@ if (!empty($logo_path)) {
                     </li>
 
                     <li>
-                        <a class="<?= ($current_page == 'chefs.php' || (($current_page == 'index.php' && strpos($_SERVER['REQUEST_URI'], '/about') !== false || $current_page == 'Aboutus.php') && strpos($_SERVER['REQUEST_URI'], 'chef') !== false)) ? 'active' : '' ?>"
+                        <a class="<?= ($current_page == 'chefs.php' || ($current_page == 'about.php' && isset($_GET['cat_id']) && $_GET['cat_id'] == 3)) ? 'active' : '' ?>"
                             href="<?= safe_url('chefs.php', $path_prefix ?? '') ?>">
                             <?= __('team_chefs') ?>
                         </a>
