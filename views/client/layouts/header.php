@@ -142,6 +142,8 @@ if (!empty($logo_path)) {
             margin: 0;
             padding: 0 !important;
             font-family: 'Source Sans 3', sans-serif;
+            background-color: #0c0b09;
+            color: #fff;
         }
 
         /* =======================
@@ -577,13 +579,13 @@ if (!empty($logo_path)) {
 
             <h1 class="logo">
 
-                <a href="index.php"
+                <a href="<?= safe_url('index.php', $path_prefix ?? '') ?>"
                     class="<?= ($settings['logo_position'] == 'right') ? 'logo-container-right' : '' ?>">
 
                     <?php if (!empty($final_logo_src)): ?>
 
                         <img
-                            src="<?= htmlspecialchars($final_logo_src) ?>?v=<?= htmlspecialchars($settings['logo_ver']) ?>"
+                            src="<?= ($path_prefix ?? '') ?><?= htmlspecialchars($final_logo_src) ?>?v=<?= htmlspecialchars($settings['logo_ver']) ?>"
                             alt="Logo">
 
                     <?php endif; ?>
@@ -602,34 +604,34 @@ if (!empty($logo_path)) {
                 class="navbar order-last order-lg-0">
 
                 <ul>
-                    <li>
-                        <a class="<?= ($current_page == 'index.php') ? 'active' : '' ?>" href="index.php">
-                            <?= __('home') ?>
-                        </a>
-                    </li>
+                      <li>
+                          <a class="<?= ($current_page == 'index.php' && strpos($_SERVER['REQUEST_URI'], '/about') === false) ? 'active' : '' ?>" href="<?= safe_url('index.php', $path_prefix ?? '') ?>">
+                              <?= __('home') ?>
+                          </a>
+                      </li>
 
                     <li>
-                        <a class="<?= ($current_page == 'Aboutus.php') ? 'active' : '' ?>"
-                            href="Aboutus.php">
+                        <a class="<?= ($current_page == 'index.php' && strpos($_SERVER['REQUEST_URI'], '/about') !== false || $current_page == 'Aboutus.php') ? 'active' : '' ?>"
+                            href="<?= safe_url('about/index.php', $path_prefix ?? '') ?>">
                             <?= __('news') ?>
                         </a>
                     </li>
 
                     <li>
-                        <a class="<?= ($current_page == 'menu.php') ? 'active' : '' ?>" href="menu.php">
+                        <a class="<?= ($current_page == 'menu.php') ? 'active' : '' ?>" href="<?= safe_url('menu.php', $path_prefix ?? '') ?>">
                             <?= __('menu') ?>
                         </a>
                     </li>
 
                     <li>
-                        <a class="<?= ($current_page == 'chefs.php' || ($current_page == 'Aboutus.php' && strpos($_SERVER['REQUEST_URI'], 'chef') !== false)) ? 'active' : '' ?>"
+                        <a class="<?= ($current_page == 'chefs.php' || (($current_page == 'index.php' && strpos($_SERVER['REQUEST_URI'], '/about') !== false || $current_page == 'Aboutus.php') && strpos($_SERVER['REQUEST_URI'], 'chef') !== false)) ? 'active' : '' ?>"
                             href="<?= safe_url('chefs.php', $path_prefix ?? '') ?>">
                             <?= __('team_chefs') ?>
                         </a>
                     </li>
 
                     <li>
-                        <a class="<?= ($current_page == 'contact.php') ? 'active' : '' ?>" href="contact.php">
+                        <a class="<?= ($current_page == 'contact.php') ? 'active' : '' ?>" href="<?= safe_url('contact.php', $path_prefix ?? '') ?>">
                             <?= __('contact') ?>
                         </a>
                     </li>
@@ -646,8 +648,8 @@ if (!empty($logo_path)) {
 
                     <!-- ORIENTAL MEGA MENU & OUTSIDE BOOKING BUTTON -->
                     <div class="oriental-nav-wrapper" style="display:flex; align-items:center; gap:15px;">
-                        <a href="booking_service.php?type=bespoke" class="btn-book-outside" style="background-color: #1a1814; color: #A88746; border-color: #A88746; margin-right: 10px;">BESPOKE DINING</a>
-                        <a href="booking_service.php?type=table" class="btn-book-outside"><?= __('book_table') ?></a>
+                        <a href="<?= safe_url('booking_service.php?type=bespoke', $path_prefix ?? '') ?>" class="btn-book-outside" style="background-color: #1a1814; color: #A88746; border-color: #A88746; margin-right: 10px;">BESPOKE DINING</a>
+                        <a href="<?= safe_url('booking_service.php?type=table', $path_prefix ?? '') ?>" class="btn-book-outside"><?= __('book_table') ?></a>
 
                         <!-- Divider line -->
                         <div style="width: 1px; height: 35px; background-color: rgba(168, 135, 70, 0.4); margin: 0 10px;"></div>
@@ -661,18 +663,18 @@ if (!empty($logo_path)) {
                             <?php if (isset($_SESSION['user_id'])): ?>
                                 <!-- TRANG QUẢN TRỊ / BẢNG CÔNG -->
                                 <?php if (in_array($user_role, ['admin', 'staff', 'waiter', 'chef', 'cashier', 1, 2])): ?>
-                                    <a href="admin/admin_dashboard.php" class="oriental-item" style="color: var(--primary-color);">
+                                    <a href="<?= safe_url('admin/admin_dashboard.php', $path_prefix ?? '') ?>" class="oriental-item" style="color: var(--primary-color);">
                                         Trang quản trị
                                     </a>
                                 <?php endif; ?>
 
                                 <!-- THÔNG TIN CÁ NHÂN -->
-                                <a href="profile.php" class="oriental-item">
+                                <a href="<?= safe_url('profile.php', $path_prefix ?? '') ?>" class="oriental-item">
                                         Thông tin cá nhân
                                 </a>
 
                                 <!-- ĐĂNG XUẤT -->
-                                <a href="public/logout.php" class="oriental-item text-danger-custom fw-bold">
+                                <a href="<?= safe_url('public/logout.php', $path_prefix ?? '') ?>" class="oriental-item text-danger-custom fw-bold">
                                         <i class="fas fa-sign-out-alt"></i>
                                         <?= __('logout') ?>
                                 </a>
@@ -683,7 +685,7 @@ if (!empty($logo_path)) {
                                 </a>
 
                                 <!-- ĐĂNG NHẬP -->
-                                <a href="public/login.php" class="oriental-item">
+                                <a href="<?= safe_url('public/login.php', $path_prefix ?? '') ?>" class="oriental-item">
                                         Đăng nhập
                                 </a>
                             <?php endif; ?>

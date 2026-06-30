@@ -1,6 +1,6 @@
 <?php
-$path_prefix = $path_prefix ?? '';
-require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/../config/database.php';
+$path_prefix = '../';
 if (session_status() === PHP_SESSION_NONE) session_start();
 $database = new Database(); 
 $db = $database->getConnection();
@@ -183,7 +183,7 @@ $categories = $cat_stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $recent_posts = array_slice($all_posts, 0, 5);
 
-include __DIR__ . '/views/client/layouts/header.php';
+include __DIR__ . '/../views/client/layouts/header.php';
 ?>
 
 <style>
@@ -1642,508 +1642,182 @@ include __DIR__ . '/views/client/layouts/header.php';
 
 <div class="news-page-wrap">
     <div class="container">
-        
         <?php if ($article): 
             $publish_time = $article['created_at'] ? date('H:i, d/m/Y', strtotime($article['created_at'])) : '';
         ?>
+            <style>
+                .article-headline {
+                    color: #ffffff !important;
+                }
+                .article-meta-bar, .article-meta-bar span {
+                    color: #cccccc !important;
+                }
+                .article-body-content, .article-body-content p, .article-body-content span, .article-body-content div {
+                    color: #e5e5e5 !important;
+                }
+                .article-author-tag {
+                    color: #cda45e !important;
+                }
+            </style>
             <!-- ==========================================
                  ARTICLE READING VIEW (DETAILS)
                  ========================================== -->
-            <div class="news-breadcrumbs">
-                <a href="index.php">Trang chủ</a>
+            <div class="news-breadcrumbs" style="max-width: 900px; margin: 0 auto 25px;">
+                <a href="../index.php">Trang chủ</a>
                 <span>&gt;</span>
-                <a href="Aboutus.php">Về chúng tôi</a>
+                <a href="index.php">Về chúng tôi</a>
                 <span>&gt;</span>
-                <a href="Aboutus.php?cat_id=<?= $article['category_id'] ?>"><?= htmlspecialchars($article['cat_name']) ?></a>
+                <a href="index.php?cat_id=<?= $article['category_id'] ?>"><?= htmlspecialchars($article['cat_name']) ?></a>
                 <span>&gt;</span>
-                <span style="color: #666; font-size: 12px; font-weight: 400;"><?= htmlspecialchars($article['title']) ?></span>
+                <span style="color: #bbb; font-size: 12px; font-weight: 400;"><?= htmlspecialchars($article['title']) ?></span>
             </div>
 
-            <div class="row g-4">
+            <div class="row justify-content-center">
                 <!-- Main Reading Column -->
-                <div class="col-lg-8">
-                    <div class="article-read-card reveal-fade">
-                        <span class="article-category-label"><?= htmlspecialchars($article['cat_name']) ?></span>
-                    <h1 class="article-headline font-playfair"><?= htmlspecialchars($article['title']) ?></h1>
+                <div class="col-lg-10 col-xl-8">
+                    <div class="article-read-card reveal-fade" style="background: #1a1814; border: 1px solid rgba(205, 164, 94, 0.25); padding: 40px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                        <span class="article-category-label" style="background: #cda45e; color: #000; padding: 4px 10px; font-size: 11px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; border-radius: 2px; display: inline-block; margin-bottom: 15px;"><?= htmlspecialchars($article['cat_name']) ?></span>
+                        <h1 class="article-headline font-playfair" style="color: #fff; font-size: 32px; font-weight: 700; margin-bottom: 15px; line-height: 1.3;"><?= htmlspecialchars($article['title']) ?></h1>
                     
-                    <div class="article-meta-bar">
-                        <div class="article-meta-left">
+                        <div class="article-meta-bar" style="display: flex; gap: 15px; color: #aaa; font-size: 13px; margin-bottom: 25px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 15px;">
                             <span>📅 <?= $publish_time ?></span>
                             <span>👁️ <?= $article['view_count'] ?> lượt xem</span>
                         </div>
-                    </div>
 
-                    <!-- Social Toolbar (Top) -->
-                    <div class="article-action-bar">
-                        <div class="article-actions-left">
-                            <button class="article-action-btn <?= $article['user_liked'] ? 'liked' : '' ?>" id="vne-like-btn" onclick="articleLike(<?= $article['id'] ?>)">
-                                <i class="bi <?= $article['user_liked'] ? 'bi-heart-fill' : 'bi-heart' ?>"></i> 
-                                <span id="vne-like-text"><?= $article['user_liked'] ? 'Đã thích' : 'Thích' ?></span> 
-                                (<span id="vne-like-count" onclick="event.stopPropagation(); showLikers(<?= $article['id'] ?>)"><?= $article['like_count'] ?></span>)
-                            </button>
-                            
-                            <button class="article-action-btn" onclick="articleShare(<?= $article['id'] ?>)">
-                                <i class="bi bi-share"></i> Chia sẻ
-                            </button>
+                        <!-- Featured Thumbnail -->
+                        <?php if ($article['thumbnail']): ?>
+                            <div class="article-featured-img" style="margin-bottom: 25px; border-radius: 6px; overflow: hidden; border: 1px solid rgba(205, 164, 94, 0.2);">
+                                <img src="../public/assets/img/about/<?= htmlspecialchars($article['thumbnail']) ?>" alt="<?= htmlspecialchars($article['title']) ?>" style="width: 100%; height: auto; display: block; object-fit: cover;">
+                            </div>
+                            <div class="article-caption" style="font-size: 13px; color: #888; text-align: center; margin-top: -15px; margin-bottom: 25px; font-style: italic;">Hình ảnh bài viết: <?= htmlspecialchars($article['title']) ?></div>
+                        <?php endif; ?>
+
+                        <!-- Body Content -->
+                        <div class="article-body-content" style="color: #e5e5e5; font-size: 16px; line-height: 1.8; font-family: 'Poppins', sans-serif;">
+                            <?= safe_html_render($article['content']) ?>
                         </div>
-                        
-                        <a href="#vne-cmt-anchor" class="article-comment-anchor">
-                            <i class="bi bi-chat-left-text-fill"></i> <strong>Ý kiến (<span id="vne-header-cmt-count"><?= $article['comment_count'] ?></span>)</strong>
-                        </a>
-                    </div>
 
+                        <div class="article-author-tag" style="text-align: right; font-style: italic; color: #cda45e; margin-top: 30px; font-weight: 500; font-family: 'Cormorant Garamond', serif; font-size: 18px;">— Restaurantly Editor</div>
 
-
-                    <!-- Featured Thumbnail -->
-                    <?php if ($article['thumbnail']): ?>
-                        <div class="article-featured-img">
-                            <img src="public/assets/img/about/<?= htmlspecialchars($article['thumbnail']) ?>" alt="<?= htmlspecialchars($article['title']) ?>">
+                        <!-- Return Button -->
+                        <div class="article-action-bar" style="margin-top: 40px; display: flex; justify-content: flex-end; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 20px;">
+                            <a href="index.php" class="article-action-btn" style="text-decoration: none; background: transparent; border: 1px solid #cda45e; color: #cda45e; padding: 8px 24px; border-radius: 30px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s;" onmouseover="this.style.background='#cda45e'; this.style.color='#000';" onmouseout="this.style.background='transparent'; this.style.color='#cda45e';">
+                                <i class="bi bi-arrow-left me-1"></i> Trở về danh sách
+                            </a>
                         </div>
-                        <div class="article-caption">Hình ảnh bài viết: <?= htmlspecialchars($article['title']) ?></div>
-                    <?php endif; ?>
-
-                    <!-- Body Content -->
-                    <div class="article-body-content">
-                        <?= safe_html_render($article['content']) ?>
-                    </div>
-
-                    <div class="article-author-tag">Restaurantly Editor</div>
-
-                    <!-- Social Toolbar (Bottom) -->
-                    <div class="article-action-bar" style="margin-top: 30px;">
-                        <div class="article-actions-left">
-                            <button class="article-action-btn <?= $article['user_liked'] ? 'liked' : '' ?>" id="vne-like-btn-bottom" onclick="articleLike(<?= $article['id'] ?>)">
-                                <i class="bi <?= $article['user_liked'] ? 'bi-heart-fill' : 'bi-heart' ?>"></i> Thích
-                            </button>
-                            <button class="article-action-btn" onclick="articleShare(<?= $article['id'] ?>)">
-                                <i class="bi bi-share"></i> Chia sẻ
-                            </button>
-                        </div>
-                        
-                        <a href="Aboutus.php" class="article-action-btn" style="text-decoration: none;">
-                            <i class="bi bi-arrow-left"></i> Trở về danh sách
-                        </a>
                     </div>
 
                     <!-- Pinned Related Articles -->
-                    <div class="related-articles-section reveal-fade">
-                        <h3 class="related-title font-playfair">Bài viết liên quan</h3>
+                    <div class="related-articles-section reveal-fade" style="margin-top: 50px;">
+                        <h3 class="related-title font-playfair" style="color: #cda45e; font-size: 22px; margin-bottom: 25px; border-bottom: 1px solid rgba(205,164,94,0.2); padding-bottom: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Bài viết liên quan</h3>
                         <div class="row g-3">
                             <?php foreach ($related_posts as $rp): ?>
                                 <div class="col-sm-4">
-                                    <a href="Aboutus.php?id=<?= $rp['id'] ?>" class="related-card">
-                                        <div class="related-img">
+                                    <a href="index.php?id=<?= $rp['id'] ?>" class="related-card" style="display: block; text-decoration: none; border: 1px solid rgba(205, 164, 94, 0.15); border-radius: 8px; overflow: hidden; background: #1a1814; transition: all 0.3s;" onmouseover="this.style.borderColor='rgba(205, 164, 94, 0.6)'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 10px 20px rgba(0,0,0,0.3)';" onmouseout="this.style.borderColor='rgba(205, 164, 94, 0.15)'; this.style.transform='none'; this.style.boxShadow='none';">
+                                        <div class="related-img" style="height: 140px; overflow: hidden; background: #121109; position: relative;">
                                             <?php if ($rp['thumbnail']): ?>
-                                                <img src="public/assets/img/about/<?= htmlspecialchars($rp['thumbnail']) ?>" alt="">
+                                                <img src="../public/assets/img/about/<?= htmlspecialchars($rp['thumbnail']) ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
                                             <?php else: ?>
-                                                <div style="background: #2a2824; width:100%; height:100%;"></div>
+                                                <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; color: rgba(255,255,255,0.15);"><i class="bi bi-journal-text" style="font-size: 28px;"></i></div>
                                             <?php endif; ?>
                                         </div>
-                                        <div class="related-body">
-                                            <h4 class="related-card-title"><?= htmlspecialchars($rp['title']) ?></h4>
+                                        <div class="related-body" style="padding: 15px;">
+                                            <h4 class="related-card-title" style="font-size: 14px; margin: 0; color: #fff; line-height: 1.5; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 42px; transition: color 0.2s;" onmouseover="this.style.color='#cda45e'" onmouseout="this.style.color='#fff'"><?= htmlspecialchars($rp['title']) ?></h4>
                                         </div>
                                     </a>
                                 </div>
                             <?php endforeach; ?>
                         </div>
                     </div>
-
-                    <!-- VnExpress Comment System -->
-                    <div class="vne-comments-section reveal-fade" id="vne-cmt-anchor">
-                        <div class="vne-comments-header">
-                            <h3 class="vne-comments-title font-playfair">Ý kiến (<span id="vne-cmt-count"><?= $article['comment_count'] ?></span>)</h3>
-                            <div class="vne-comments-tabs">
-                                <a href="javascript:void(0)" class="vne-comments-tab active">Mới nhất</a>
-                            </div>
-                        </div>
-
-                        <!-- Top Level Comment Form -->
-                        <div class="vne-comment-form">
-                            <textarea id="main-comment-text" class="vne-comment-textarea" placeholder="Chia sẻ ý kiến của bạn..."></textarea>
-                            <div class="vne-comment-form-footer">
-                                <div class="vne-comment-user-box">
-                                    <label>
-                                        <input type="checkbox" id="main-comment-anon" onchange="toggleAnonInput('main-comment')">
-                                        Ẩn danh
-                                    </label>
-                                    <input type="text" id="main-comment-author" class="vne-comment-inp-name" placeholder="Tên hiển thị" value="<?= htmlspecialchars($_SESSION['user_name'] ?? '') ?>">
-                                </div>
-                                <button class="vne-comment-btn" onclick="submitComment(0)">Gửi ý kiến</button>
-                            </div>
-                        </div>
-
-                        <!-- Comments List -->
-                        <div class="vne-comments-list" id="comments-container">
-                            <?php if (empty($article_comments)): ?>
-                                <div id="no-comments-placeholder" style="text-align:center; color:#666; padding:30px; font-size:14px;">Chưa có ý kiến nào. Hãy là người đầu tiên chia sẻ!</div>
-                            <?php else: 
-                                // Parse comments into hierarchical structure
-                                $roots = array_filter($article_comments, fn($c) => !$c['parent_id'] || $c['parent_id'] == 0);
-                                $replies = array_filter($article_comments, fn($c) => $c['parent_id'] > 0);
-                                
-                                foreach ($roots as $c):
-                                    $initial = mb_strtoupper(mb_substr($c['author_name'] ?: 'A', 0, 1));
-                                    $c_time = $c['created_at'] ? date('d/m/Y H:i', strtotime($c['created_at'])) : '';
-                                    $avatar_url = '';
-                                    if ($c['user_id'] && !$c['is_anonymous']) {
-                                        $avatar_url = '/restaurant-project/ajax/get_avatar.php?user_id=' . $c['user_id'];
-                                    }
-                            ?>
-                                <div class="vne-comment-block" id="comment-block-<?= $c['id'] ?>">
-                                    <div class="vne-comment-item">
-                                        <div class="vne-comment-avatar">
-                                            <?php if ($avatar_url): ?>
-                                                <img src="<?= $avatar_url ?>" alt="">
-                                            <?php else: ?>
-                                                <?= $initial ?>
-                                            <?php endif; ?>
-                                        </div>
-                                        <div class="vne-comment-bubble">
-                                            <div class="vne-comment-meta-top">
-                                                <span class="vne-comment-author"><?= htmlspecialchars($c['author_name'] ?: 'Ẩn danh') ?></span>
-                                                <span style="font-size:11px; color:#555;">⏰ <?= $c_time ?></span>
-                                            </div>
-                                            <div class="vne-comment-text">
-                                                 <?php if ($c['comment'] === 'Bình luận này đã vi phạm và bị quản trị viên xóa'): ?>
-                                                     <span class="text-danger" style="font-style: italic; opacity: 0.8;"><i class="bi bi-exclamation-triangle-fill me-1"></i> Bình luận này đã vi phạm và bị quản trị viên xóa.</span>
-                                                 <?php else: ?>
-                                                     <?= htmlspecialchars($c['comment']) ?>
-                                                 <?php endif; ?>
-                                             </div>
-                                            
-                                            <?php if ($c['comment'] !== 'Bình luận này đã vi phạm và bị quản trị viên xóa'): ?><div class="vne-comment-actions">
-                                                <span class="vne-comment-action-link" onclick="showReplyForm(<?= $c['id'] ?>, '<?= htmlspecialchars($c['author_name'] ?: 'Ẩn danh') ?>')">
-                                                    <i class="bi bi-reply"></i> Trả lời
-                                                </span>
-                                                <span class="vne-comment-action-sep">•</span>
-                                                <span class="vne-comment-action-link" onclick="commentReact(<?= $c['id'] ?>, 'like')">
-                                                    <i class="bi bi-hand-thumbs-up"></i> Thích (<span id="cmt-likes-<?= $c['id'] ?>"><?= (int)$c['likes'] ?></span>)
-                                                </span>
-                                                <span class="vne-comment-action-sep">•</span>
-                                                <span class="vne-comment-action-link" onclick="commentReact(<?= $c['id'] ?>, 'dislike')">
-                                                    <i class="bi bi-hand-thumbs-down"></i> Không thích (<span id="cmt-dislikes-<?= $c['id'] ?>"><?= (int)$c['dislikes'] ?></span>)
-                                                </span>
-                                                <span class="vne-comment-action-sep">•</span>
-                                                <span class="vne-comment-action-link text-danger" onclick="openReportModal(<?= $c['id'] ?>)">
-                                                    <i class="bi bi-flag"></i> Báo cáo
-                                                </span>
-                                            </div><?php endif; ?>
-
-                                            <!-- Nested replies will be loaded inside this div -->
-                                            <div class="vne-replies-list" id="replies-list-<?= $c['id'] ?>">
-                                                <?php 
-                                                    $child_cmts = array_filter($replies, fn($r) => $r['parent_id'] == $c['id']);
-                                                    foreach ($child_cmts as $cc):
-                                                        $cc_initial = mb_strtoupper(mb_substr($cc['author_name'] ?: 'A', 0, 1));
-                                                        $cc_time = $cc['created_at'] ? date('d/m/Y H:i', strtotime($cc['created_at'])) : '';
-                                                        $cc_avatar = '';
-                                                        if ($cc['user_id'] && !$cc['is_anonymous']) {
-                                                            $cc_avatar = '/restaurant-project/ajax/get_avatar.php?user_id=' . $cc['user_id'];
-                                                        }
-                                                ?>
-                                                    <div class="vne-comment-item">
-                                                        <div class="vne-comment-avatar" style="width: 28px; height: 28px; font-size: 11px;">
-                                                            <?php if ($cc_avatar): ?>
-                                                                <img src="<?= $cc_avatar ?>" alt="">
-                                                            <?php else: ?>
-                                                                <?= $cc_initial ?>
-                                                            <?php endif; ?>
-                                                        </div>
-                                                        <div class="vne-comment-bubble">
-                                                            <div class="vne-comment-meta-top">
-                                                                <span class="vne-comment-author"><?= htmlspecialchars($cc['author_name'] ?: 'Ẩn danh') ?></span>
-                                                                <span style="font-size:11px; color:#555;">⏰ <?= $cc_time ?></span>
-                                                            </div>
-                                                            <div class="vne-comment-text">
-                                                                 <?php if ($cc['comment'] === 'Bình luận này đã vi phạm và bị quản trị viên xóa'): ?>
-                                                                     <span class="text-danger" style="font-style: italic; opacity: 0.8;"><i class="bi bi-exclamation-triangle-fill me-1"></i> Bình luận này đã vi phạm và bị quản trị viên xóa.</span>
-                                                                 <?php else: ?>
-                                                                     <?= htmlspecialchars($cc['comment']) ?>
-                                                                 <?php endif; ?>
-                                                             </div>
-                                                            <?php if ($cc['comment'] !== 'Bình luận này đã vi phạm và bị quản trị viên xóa'): ?><div class="vne-comment-actions" style="margin-top: 4px;">
-                                                                <span class="vne-comment-action-link" onclick="showReplyForm(<?= $c['id'] ?>, '<?= htmlspecialchars($cc['author_name'] ?: 'Ẩn danh') ?>', '<?= htmlspecialchars($cc['author_name'] ?: 'Ẩn danh') ?>')">
-                                                                    <i class="bi bi-reply"></i> Trả lời
-                                                                </span>
-                                                                <span class="vne-comment-action-sep">•</span>
-                                                                <span class="vne-comment-action-link" onclick="commentReact(<?= $cc['id'] ?>, 'like')">
-                                                                    <i class="bi bi-hand-thumbs-up"></i> Thích (<span id="cmt-likes-<?= $cc['id'] ?>"><?= (int)$cc['likes'] ?></span>)
-                                                                </span>
-                                                                <span class="vne-comment-action-sep">•</span>
-                                                                <span class="vne-comment-action-link" onclick="commentReact(<?= $cc['id'] ?>, 'dislike')">
-                                                                    <i class="bi bi-hand-thumbs-down"></i> Không thích (<span id="cmt-dislikes-<?= $cc['id'] ?>"><?= (int)$cc['dislikes'] ?></span>)
-                                                                </span>
-                                                                <span class="vne-comment-action-sep">•</span>
-                                                                <span class="vne-comment-action-link text-danger" onclick="openReportModal(<?= $cc['id'] ?>)">
-                                                                    <i class="bi bi-flag"></i> Báo cáo
-                                                                </span>
-                                                            </div><?php endif; ?>
-                                                        </div>
-                                                    </div>
-                                                <?php endforeach; ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                        </div>
-                    </div>
-                    </div>
                 </div>
-
-                <!-- Report Comment Modal (VnExpress styled) -->
-                <div class="vne-report-modal-overlay" id="report-modal-overlay" onclick="closeReportModalOutside(event)">
-                    <div class="vne-report-modal-box animate__animated animate__zoomIn">
-                        <div class="vne-report-modal-header">
-                            <h4 class="font-playfair text-dark mb-0" style="font-size: 16px;"><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i> Báo cáo bình luận vi phạm</h4>
-                            <button class="vne-report-modal-close-btn" onclick="closeReportModal()">&times;</button>
-                        </div>
-                        <div class="vne-report-modal-body">
-                            <p style="font-size: 12px; color: #888; line-height: 1.5; margin-bottom: 12px;">
-                                Vui lòng điền lý do chi tiết (ví dụ: ngôn từ thô tục, quảng cáo trái phép, spam, xúc phạm người khác) để ban quản trị tiến hành xem xét và xử lý.
-                            </p>
-                            <input type="hidden" id="report-comment-id" value="0">
-                            <textarea id="report-reason-text" class="vne-report-textarea" placeholder="Nhập lý do báo cáo của bạn tại đây... (tối thiểu 5 ký tự)"></textarea>
-                        </div>
-                        <div class="vne-report-modal-footer">
-                            <button class="vne-comment-btn" style="padding: 6px 20px; font-size: 13px;" onclick="submitReport()">Gửi báo cáo</button>
-                            <button class="article-action-btn" style="padding: 6px 15px; font-size: 13px; display: inline-block;" onclick="closeReportModal()">Hủy bỏ</button>
-                        </div>
-                    </div>
-                </div>
+            </div>
 
         <?php else: ?>
-            <!-- ==========================================
-                 NEWS LIST VIEW (MAIN PORTAL)
-                 ========================================== -->
-            <div class="news-breadcrumbs reveal-fade">
-                <a href="index.php">Trang chủ</a>
-                <span>&gt;</span>
-                <span style="color: #666;">Về chúng tôi</span>
-                <?php if ($cat_id > 0): ?>
-                    <span>&gt;</span>
-                    <?php 
-                        $selected_cat = '';
-                        foreach ($categories as $cat) {
-                            if ($cat['id'] == $cat_id) {
-                                $selected_cat = $cat['name'];
-                                break;
-                            }
+            <!-- Milestone Timeline View -->
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-xl-8">
+                    <?php if (empty($all_posts)): ?>
+                        <div class="no-posts-card text-center reveal-fade">
+                            <i class="bi bi-journal-x" style="font-size: 3rem; color: var(--news-gold);"></i>
+                            <h3 class="font-cormorant mt-3 text-light">Chưa có bài viết nào</h3>
+                            <p class="mb-0 text-muted">Vui lòng quay lại sau để cập nhật thông tin mới nhất.</p>
+                        </div>
+                    <?php else: ?>
+                        <style>
+                        .about { 
+                            background: url('../public/assets/img/bg_timeline.png') no-repeat center center fixed; 
+                            background-size: cover; 
+                            position: relative; 
+                        } 
+                        .about::before { 
+                            content: ''; 
+                            position: absolute; 
+                            inset: 0; 
+                            background: rgba(12, 11, 9, 0.85); 
+                            z-index: 0; 
+                        } 
+                        .about > .container { 
+                            position: relative; 
+                            z-index: 1; 
+                        } 
+                        /* Timeline Styles cho danh sách */
+                        .gia-timeline-list { position: relative; max-width: 900px; margin: 40px auto; padding: 20px 0; }
+                        .gia-timeline-list::after { content: ''; position: absolute; width: 2px; background-color: #cda45e; top: 0; bottom: 0; left: 50%; margin-left: -1px; }
+                        .gia-timeline-list .timeline-item { padding: 10px 40px; position: relative; background-color: inherit; width: 50%; }
+                        .gia-timeline-list .timeline-item::after { content: ''; position: absolute; width: 16px; height: 16px; right: -8px; background-color: #0c0b09; border: 3px solid #cda45e; top: 24px; border-radius: 50%; z-index: 1; }
+                        .gia-timeline-list .left-item { left: 0; }
+                        .gia-timeline-list .right-item { left: 50%; }
+                        .gia-timeline-list .right-item::after { left: -8px; }
+                        .gia-timeline-list .timeline-content { padding: 25px 30px; position: relative; border-radius: 8px; border: 1px solid rgba(205, 164, 94, 0.3); box-shadow: 0 4px 15px rgba(0,0,0,0.25); transition: transform 0.3s; }
+                        .gia-timeline-list .timeline-content:hover { transform: translateY(-5px); border-color: rgba(205, 164, 94, 0.5); }
+                        .gia-timeline-list .timeline-year { color: #cda45e; font-family: 'Cormorant Garamond', serif; font-size: 28px; margin-bottom: 12px; font-weight: bold; }
+                        .gia-timeline-list .timeline-text { color: #ccc; font-size: 15px; line-height: 1.6; }
+                        
+                        /* Hiệu ứng Nửa Sáng Nửa Tối (Half Light / Half Dark UI) */
+                        .gia-timeline-list .left-item .timeline-content { background: #ffffff !important; color: #1a1814 !important; border: 1px solid rgba(201, 166, 107, 0.4) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important; }
+                        .gia-timeline-list .left-item .timeline-content h4 { color: #1a1814 !important; }
+                        .gia-timeline-list .right-item .timeline-content h4 { color: #ffffff !important; }
+                        .gia-timeline-list .left-item .timeline-text { color: #333333 !important; }
+                        .gia-timeline-list .left-item .timeline-year { color: #9C742D !important; }
+                        .gia-timeline-list .right-item .timeline-content { background: #1a1814 !important; color: #E5E5E5 !important; border: 1px solid rgba(205, 164, 94, 0.4) !important; }
+                        .gia-timeline-list .right-item .timeline-text { color: #cccccc !important; }
+                        .gia-timeline-list .right-item .timeline-year { color: #cda45e !important; }
+                        
+                        @media screen and (max-width: 768px) {
+                            .gia-timeline-list::after { left: 31px; }
+                            .gia-timeline-list .timeline-item { width: 100%; padding-left: 70px; padding-right: 25px; }
+                            .gia-timeline-list .timeline-item::after { left: 23px; }
+                            .gia-timeline-list .right-item { left: 0%; }
                         }
-                    ?>
-                    <span style="color: #C9A66B;"><?= htmlspecialchars($selected_cat) ?></span>
-                <?php endif; ?>
-            </div>
-
-            <!-- Hero Featured Article -->
-            <?php if ($hero_post): 
-                $hero_excerpt = strip_tags(html_entity_decode($hero_post['content'] ?? '', ENT_QUOTES, 'UTF-8'));
-                $hero_time = $hero_post['created_at'] ? date('d/m/Y', strtotime($hero_post['created_at'])) : '';
-            ?>
-                <div class="luxury-hero reveal-fade" onclick="window.location.href='Aboutus.php?id=<?= $hero_post['id'] ?>'">
-                    <div class="luxury-hero-img-wrap">
-                        <?php if ($hero_post['thumbnail']): ?>
-                            <img src="public/assets/img/about/<?= htmlspecialchars($hero_post['thumbnail']) ?>" alt="<?= htmlspecialchars($hero_post['title']) ?>">
-                        <?php else: ?>
-                            <div class="hero-no-img"></div>
-                        <?php endif; ?>
-                        <div class="luxury-hero-overlay"></div>
-                    </div>
-                    <div class="luxury-hero-content">
-                        <span class="luxury-hero-badge"><?= htmlspecialchars($hero_post['cat_name']) ?></span>
-                        <h1 class="luxury-hero-title font-playfair"><?= htmlspecialchars($hero_post['title']) ?></h1>
-                        <p class="luxury-hero-desc"><?= mb_strimwidth($hero_excerpt, 0, 220, "...") ?></p>
-                        <div class="luxury-hero-meta">
-                            <span>📅 <?= $hero_time ?></span>
-                            <span class="mx-2">•</span>
-                            <span>👁️ <?= $hero_post['view_count'] ?> lượt xem</span>
-                        </div>
-                        <a href="Aboutus.php?id=<?= $hero_post['id'] ?>" class="luxury-hero-btn">
-                            ĐỌC CÂU CHUYỆN <i class="bi bi-arrow-right ms-2"></i>
-                        </a>
-                    </div>
-                </div>
-            <?php endif; ?>
-
-            <!-- Explore Topics Bar -->
-            <div class="explore-topics-bar reveal-fade">
-                <span class="explore-title font-playfair">Khám Phá Chủ Đề</span>
-                <div class="luxury-tags">
-                    <a href="Aboutus.php" class="luxury-tag <?= ($cat_id == 0) ? 'active' : '' ?>">Tất cả</a>
-                    <?php foreach ($categories as $cat): ?>
-                        <a href="Aboutus.php?cat_id=<?= $cat['id'] ?>" class="luxury-tag <?= ($cat_id == $cat['id']) ? 'active' : '' ?>">
-                            <?= htmlspecialchars($cat['name']) ?>
-                        </a>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-
-            <!-- Main Layout Grid -->
-            <div class="row g-4">
-                <!-- Main News List Column -->
-                <div class="col-lg-8">
-                    <div class="news-list-left-col">
-                        <?php if (empty($all_posts)): ?>
-                            <div class="no-posts-card text-center reveal-fade">
-                                <i class="bi bi-journal-x" style="font-size: 3rem; color: var(--news-gold);"></i>
-                                <h3 class="font-playfair mt-3 text-dark">Chưa có bài viết nào</h3>
-                                <p class="mb-0">Vui lòng quay lại sau để cập nhật thông tin mới nhất.</p>
-                            </div>
-                        <?php else: ?>
-                            
-                            <!-- Secondary Featured Articles -->
-                            <?php if (!empty($secondary_posts)): ?>
-                                <div class="row secondary-grid g-4 reveal-fade">
-                                    <?php foreach ($secondary_posts as $s_post): 
-                                        $s_excerpt = strip_tags(html_entity_decode($s_post['content'] ?? '', ENT_QUOTES, 'UTF-8'));
-                                        $s_time = $s_post['created_at'] ? date('d/m/Y', strtotime($s_post['created_at'])) : '';
-                                    ?>
-                                        <div class="col-md-6">
-                                            <div class="secondary-card" onclick="window.location.href='Aboutus.php?id=<?= $s_post['id'] ?>'">
-                                                <div class="secondary-card-img-wrap">
-                                                    <?php if ($s_post['thumbnail']): ?>
-                                                        <img src="public/assets/img/about/<?= htmlspecialchars($s_post['thumbnail']) ?>" alt="<?= htmlspecialchars($s_post['title']) ?>">
-                                                    <?php else: ?>
-                                                        <div class="no-img-placeholder"><i class="bi bi-image" style="font-size: 1.5rem;"></i></div>
-                                                    <?php endif; ?>
-                                                    <span class="secondary-card-badge"><?= htmlspecialchars($s_post['cat_name']) ?></span>
-                                                </div>
-                                                <div class="secondary-card-body">
-                                                    <h3 class="secondary-card-title font-playfair"><?= htmlspecialchars($s_post['title']) ?></h3>
-                                                    <p class="secondary-card-excerpt"><?= mb_strimwidth($s_excerpt, 0, 110, "...") ?></p>
-                                                    <div class="secondary-card-meta">
-                                                        <span>📅 <?= $s_time ?></span>
-                                                        <span>👁️ <?= $s_post['view_count'] ?></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php endif; ?>
-
-                            <!-- Standard Horizontal Feed -->
-                            <?php if (!empty($standard_posts)): ?>
-                                <div class="news-horizontal-list mt-5 reveal-fade">
-                                    <?php foreach ($standard_posts as $post): 
-                                        $excerpt = strip_tags(html_entity_decode($post['content'] ?? '', ENT_QUOTES, 'UTF-8'));
-                                        $post_time = $post['created_at'] ? date('d/m/Y', strtotime($post['created_at'])) : '';
-                                    ?>
-                                        <div class="news-row-card" onclick="window.location.href='Aboutus.php?id=<?= $post['id'] ?>'">
-                                            <div class="news-row-img">
-                                                <?php if ($post['thumbnail']): ?>
-                                                    <img src="public/assets/img/about/<?= htmlspecialchars($post['thumbnail']) ?>" alt="<?= htmlspecialchars($post['title']) ?>">
-                                                <?php else: ?>
-                                                    <div class="no-img-placeholder"><i class="bi bi-image" style="font-size: 1.5rem;"></i></div>
-                                                <?php endif; ?>
-                                                <div class="news-row-badge"><?= htmlspecialchars($post['cat_name']) ?></div>
-                                            </div>
-                                            <div class="news-row-body">
-                                                <div>
-                                                    <h3 class="news-row-title font-playfair"><?= htmlspecialchars($post['title']) ?></h3>
-                                                    <p class="news-row-excerpt"><?= mb_strimwidth($excerpt, 0, 150, "...") ?></p>
-                                                </div>
-                                                <div class="news-row-meta">
-                                                    <div class="news-row-meta-left">
-                                                        <span>📅 <?= $post_time ?></span>
-                                                        <span class="mx-2">•</span>
-                                                        <span>👁️ <?= $post['view_count'] ?> lượt xem</span>
-                                                    </div>
-                                                    <div class="news-row-meta-right">
-                                                        <span>❤️ <?= $post['like_count'] ?></span>
-                                                        <span class="mx-2">•</span>
-                                                        <span>💬 <?= $post['comment_count'] ?></span>
-                                                        <span class="ms-3 text-gold-btn">Đọc tiếp <i class="bi bi-arrow-right"></i></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php endif; ?>
-                        <?php endif; ?>
-                    </div>
-                </div>
-        <?php endif; ?>
-
-                <!-- ==========================================
-                     SIDEBAR COLUMN (SHARED FOR BOTH VIEWS)
-                     ========================================== -->
-                <div class="col-lg-4">
-                    
-                    <!-- Popular / Most Viewed widget (VnExpress Style Numbered List) -->
-                    <div class="sidebar-widget reveal-fade">
-                        <h4 class="widget-title">Đọc nhiều nhất</h4>
-                        <div class="popular-sidebar-list">
+                        </style>
+                        <div class="gia-timeline-list">
                             <?php 
-                                foreach ($popular_posts as $pop): 
-                                    $pop_time = $pop['created_at'] ? date('d/m/Y', strtotime($pop['created_at'])) : '';
+                                $isLeft = true;
+                                foreach ($all_posts as $post): 
+                                    $excerpt = strip_tags(html_entity_decode($post['content'] ?? '', ENT_QUOTES, 'UTF-8'));
+                                    $year = htmlspecialchars($post['milestone_text'] ?: date('Y', strtotime($post['created_at'])));
+                                    $itemClass = $isLeft ? 'left-item' : 'right-item';
+                                    $isLeft = !$isLeft;
                             ?>
-                                <a href="Aboutus.php?id=<?= $pop['id'] ?>" class="popular-sidebar-item">
-                                    <div class="popular-thumb-wrap">
-                                        <?php if ($pop['thumbnail']): ?>
-                                            <img src="public/assets/img/about/<?= htmlspecialchars($pop['thumbnail']) ?>" alt="">
-                                        <?php else: ?>
-                                            <div class="popular-thumb-placeholder"><i class="bi bi-journal-text"></i></div>
+                                <div class="timeline-item <?= $itemClass ?>">
+                                    <div class="timeline-content">
+                                        <div class="timeline-year"><?= $year ?></div>
+                                        <?php if ($post['thumbnail']): ?>
+                                            <img src="../public/assets/img/about/<?= htmlspecialchars($post['thumbnail']) ?>" alt="" style="max-width: 100%; border-radius: 4px; margin-bottom: 15px;">
                                         <?php endif; ?>
+                                        <h4 class="font-cormorant mb-3" style="font-size: 1.3rem;"><?= htmlspecialchars($post['title']) ?></h4>
+                                        <a href="index.php?id=<?= $post['id'] ?>" class="btn btn-sm rounded-pill" style="background: transparent; border: 1px solid #cda45e; color: #cda45e; padding: 8px 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; transition: all 0.3s;" onmouseover="this.style.background='#cda45e'; this.style.color='#000';" onmouseout="this.style.background='transparent'; this.style.color='#cda45e';">Xem chi tiết</a>
                                     </div>
-                                    <div class="popular-text">
-                                        <h5 class="popular-title font-playfair"><?= htmlspecialchars($pop['title']) ?></h5>
-                                        <div class="popular-meta">
-                                            <span class="pop-cat"><?= htmlspecialchars($pop['cat_name']) ?></span> • <?= $pop_time ?> • 👁️ <?= number_format($pop['view_count']) ?>
-                                        </div>
-                                    </div>
-                                </a>
+                                </div>
                             <?php endforeach; ?>
                         </div>
-                    </div>
-
-                    <!-- Category Widget -->
-                    <div class="sidebar-widget reveal-fade">
-                        <h4 class="widget-title">Chuyên mục</h4>
-                        <ul class="cat-sidebar-list">
-                            <li class="cat-sidebar-item <?= ($cat_id == 0) ? 'active' : '' ?>">
-                                <a href="Aboutus.php">
-                                    <span class="cat-name-wrap">
-                                        <span class="cat-icon">🍽️</span> 
-                                        <span class="cat-label">Tất cả bài viết</span>
-                                    </span>
-                                    <span class="cat-count badge bg-dark">★</span>
-                                </a>
-                            </li>
-                            <?php foreach ($categories as $cat): ?>
-                                <li class="cat-sidebar-item <?= ($cat_id == $cat['id']) ? 'active' : '' ?>">
-                                    <a href="Aboutus.php?cat_id=<?= $cat['id'] ?>">
-                                        <span class="cat-name-wrap">
-                                            <span class="cat-icon"><?= get_category_icon($cat['slug']) ?></span>
-                                            <span class="cat-label"><?= htmlspecialchars($cat['name']) ?></span>
-                                        </span>
-                                        <span class="cat-count"><?= (int)$cat['post_count'] ?> bài viết</span>
-                                    </a>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </div>
-
-                    <!-- Newsletter subscription widget -->
-                    <div class="newsletter-sidebar reveal-fade">
-                        <h4 class="newsletter-sidebar-title font-playfair">Nhận câu chuyện ẩm thực mỗi tuần</h4>
-                        <p class="newsletter-sidebar-desc">Nhận tin tức mới nhất, ưu đãi độc quyền và sự kiện đặc biệt về ẩm thực từ chúng tôi.</p>
-                        <form id="newsletter-widget-form" onsubmit="submitSidebarNewsletter(event)">
-                            <div class="mb-3">
-                                <input type="email" id="widget-email-inp" class="form-control newsletter-input" placeholder="Địa chỉ email của bạn..." required>
-                            </div>
-                            <button type="submit" class="btn-subscribe-gold">ĐĂNG KÝ NGAY</button>
-                        </form>
-                    </div>
-
+                    <?php endif; ?>
                 </div>
             </div> <!-- End row -->
+        <?php endif; ?>
     </div> <!-- End container -->
 </div> <!-- End page-wrap -->
 
-<!-- Toast Element -->
 <div id="news-toast"></div>
 
 <!-- Likers Modal -->
@@ -2209,7 +1883,7 @@ function submitComment(parentId = 0) {
         parent_id: parentId
     });
 
-    fetch(BASE + '/ajax/ajax_about_comment.php', {
+    fetch(BASE + '/../ajax/ajax_about_comment.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: body.toString()
@@ -2222,7 +1896,7 @@ function submitComment(parentId = 0) {
             // Build new comment HTML dynamically
             const newC = d.comment;
             const initial = (newC.author_name || 'A').charAt(0).toUpperCase();
-            const avatarUrl = newC.user_avatar ? ('/restaurant-project/ajax/get_avatar.php?user_id=' + newC.user_id) : '';
+            const avatarUrl = newC.user_avatar ? ('/restaurant-project/../ajax/get_avatar.php?user_id=' + newC.user_id) : '';
             
             let avatarHtml = `<div class="vne-comment-avatar">${initial}</div>`;
             if (newC.is_anonymous == 1) {
@@ -2353,7 +2027,7 @@ function showReplyForm(commentId, authorName, replyToName = '') {
 
 // Like article action
 function articleLike(id) {
-    fetch(BASE + '/ajax/ajax_about_like.php', {
+    fetch(BASE + '/../ajax/ajax_about_like.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'content_id=' + id
@@ -2388,7 +2062,7 @@ function articleLike(id) {
 
 // Save/Bookmark article action
 function articleSave(id) {
-    fetch(BASE + '/ajax/ajax_about_action.php', {
+    fetch(BASE + '/../ajax/ajax_about_action.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'content_id=' + id + '&action=save'
@@ -2420,7 +2094,7 @@ function articleShare(id) {
             showToast('🔗 Đã sao chép liên kết vào khay nhớ tạm!');
             
             // Record a share action
-            fetch(BASE + '/ajax/ajax_about_share.php', {
+            fetch(BASE + '/../ajax/ajax_about_share.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'content_id=' + id + '&platform=link'
@@ -2468,7 +2142,7 @@ function showLikers(id) {
     body.innerHTML = '<div style="padding:30px; text-align:center; color:#666; font-size:13px;">Đang tải danh sách...</div>';
     overlay.classList.add('active');
     
-    fetch(BASE + '/ajax/ajax_about_like.php?get_users=1&content_id=' + id)
+    fetch(BASE + '/../ajax/ajax_about_like.php?get_users=1&content_id=' + id)
     .then(r => r.json())
     .then(users => {
         if (!users || users.length === 0) {
@@ -2512,7 +2186,7 @@ function escapeHtml(str) {
 
 // Comment reactions (likes/dislikes)
 function commentReact(commentId, type) {
-    fetch(BASE + '/ajax/ajax_about_comment_reaction.php', {
+    fetch(BASE + '/../ajax/ajax_about_comment_reaction.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'comment_id=' + commentId + '&type=' + type
@@ -2573,7 +2247,7 @@ function submitReport() {
         return;
     }
     
-    fetch(BASE + '/ajax/ajax_about_comment_report.php', {
+    fetch(BASE + '/../ajax/ajax_about_comment_report.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'comment_id=' + commentId + '&reason=' + encodeURIComponent(reason)
@@ -2629,4 +2303,4 @@ document.addEventListener('keydown', e => {
 });
 </script>
 
-<?php include __DIR__ . '/views/client/layouts/footer.php'; ?>
+<?php include __DIR__ . '/../views/client/layouts/footer.php'; ?>

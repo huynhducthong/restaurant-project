@@ -113,6 +113,13 @@ $chefs = $db->query("SELECT id, name FROM chefs WHERE is_active = 1 ORDER BY sor
 $user_info = null;
 $user_addresses = [];
 $user_history_counts = [];
+$last_booking = null;
+$last_booking_date = '';
+$last_booking_guests = 2;
+$last_booking_table_id = '';
+$last_booking_service_type = '';
+$last_booking_combo_id = 0;
+$last_booking_items = [];
 
 if (isset($_SESSION['user_id'])) {
     $u_stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
@@ -122,6 +129,39 @@ if (isset($_SESSION['user_id'])) {
     $a_stmt = $db->prepare("SELECT * FROM user_addresses WHERE user_id = ? ORDER BY is_default DESC");
     $a_stmt->execute([$_SESSION['user_id']]);
     $user_addresses = $a_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Truy vấn thông tin đặt bàn gần nhất của khách hàng
+    $stmt_last = $db->prepare("SELECT * FROM service_bookings WHERE user_id = ? ORDER BY id DESC LIMIT 1");
+    $stmt_last->execute([$_SESSION['user_id']]);
+    $last_booking = $stmt_last->fetch(PDO::FETCH_ASSOC);
+
+    if ($last_booking) {
+        $b_time = strtotime($last_booking['booking_date']);
+        if ($b_time < time()) {
+            $time_part = date('H:i', $b_time);
+            $tomorrow_date = date('Y-m-d', strtotime('+1 day'));
+            $last_booking_date = $tomorrow_date . 'T' . $time_part;
+        } else {
+            $last_booking_date = date('Y-m-d\TH:i', $b_time);
+        }
+        $last_booking_guests = (int)$last_booking['guests'];
+        $last_booking_table_id = $last_booking['table_id'];
+        $last_booking_service_type = $last_booking['service_type'];
+        $last_booking_combo_id = (int)$last_booking['combo_id'];
+
+        // Truy vấn các món ăn đã chọn trong đơn đặt bàn gần nhất này
+        $stmt_details = $db->prepare("SELECT * FROM booking_details WHERE booking_id = ? AND item_type = 'food'");
+        $stmt_details->execute([$last_booking['id']]);
+        $details = $stmt_details->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($details as $d) {
+            $last_booking_items[] = [
+                'food_id' => (int)$d['menu_id'],
+                'quantity' => (int)$d['quantity'],
+                'notes' => $d['notes'],
+                'toppings_info' => $d['toppings_info']
+            ];
+        }
+    }
 
     $h_stmt = $db->prepare("
         SELECT bd.menu_id, SUM(bd.quantity) as total_qty
@@ -2035,10 +2075,140 @@ function selEvent() {
     }
 }
 
-// Gọi us() ngay khi trang vừa tải
+// Gọi us() và tự động điền thông tin lần đặt gần nhất ngay khi trang vừa tải
 document.addEventListener('DOMContentLoaded', function() {
+    var lastBookingData = <?php echo json_encode([
+        'date' => $last_booking_date,
+        'guests' => $last_booking_guests,
+        'tableId' => $last_booking_table_id,
+        'serviceType' => $last_booking_service_type,
+        'comboId' => $last_booking_combo_id,
+        'items' => $last_booking_items
+    ]); ?>;
+
+    if (lastBookingData && lastBookingData.serviceType === <?= json_encode($type) ?>) {
+        // Tự động điền ngày giờ (sử dụng cùng giờ đặt của lần trước, nhưng dời ngày lên ngày mai nếu đã qua thời gian đó)
+        var dateInput = document.getElementById('bd');
+        if (dateInput && lastBookingData.date) {
+            dateInput.value = lastBookingData.date;
+        }
+        
+        // Tự động điền số lượng khách
+        var guestsInput = document.getElementById('gi');
+        if (guestsInput && lastBookingData.guests) {
+            guestsInput.value = lastBookingData.guests;
+        }
+        
+        // Tự động chọn bàn gần nhất
+        if (lastBookingData.tableId) {
+            var tsel = document.getElementById('tsel');
+            if (tsel) {
+                tsel.value = lastBookingData.tableId;
+                fromDrop(tsel);
+            }
+        }
+
+        // Tự động chọn Combo gần nhất
+        if (typeof lastBookingData.comboId !== 'undefined') {
+            selectComboProgrammatically(lastBookingData.comboId);
+        }
+
+        // Tự động chọn danh sách món ăn gần nhất
+        if (lastBookingData.items && lastBookingData.items.length > 0) {
+            lastBookingData.items.forEach(function(item) {
+                var toppingIds = item.toppings_info ? item.toppings_info.split(',').map(Number) : [];
+                selectFoodProgrammatically(item.food_id, item.quantity, toppingIds, item.notes);
+            });
+        }
+    }
     us();
 });
+
+// Helper chọn món lập trình từ lịch sử
+function selectFoodProgrammatically(foodId, qty, toppingIds, finalNote) {
+    var row = document.getElementById('mr' + foodId);
+    if (!row) return;
+    
+    var cb = row.querySelector('.menu-checkbox');
+    if (!cb || cb.disabled) return; // Bỏ qua nếu món hết hàng hoặc không tìm thấy checkbox
+    
+    var basePrice = parseFloat(row.getAttribute('data-price') || 0);
+    var toppingsRaw = row.getAttribute('data-toppings-raw') || '';
+    
+    // Đặt số lượng
+    var qtyInput = document.getElementById('q' + foodId);
+    if (qtyInput) qtyInput.value = qty;
+    
+    // Xóa toppings cũ
+    row.querySelectorAll('input[name="food_toppings['+foodId+'][]"]').forEach(function(el){el.remove();});
+    
+    // Duyệt và thêm hidden inputs cho topping, tính giá thêm
+    var addedPrice = 0;
+    var tpNotes = [];
+    
+    if (toppingIds && toppingIds.length > 0 && toppingsRaw) {
+        var tops = toppingsRaw.split('|');
+        tops.forEach(function(tp) {
+            var parts = tp.split('::');
+            if (parts.length >= 3) {
+                var tpId = parts[0];
+                var tpName = parts[1];
+                var tpPrice = parseFloat(parts[2]);
+                
+                if (toppingIds.indexOf(parseInt(tpId)) !== -1 || toppingIds.indexOf(tpId.toString()) !== -1) {
+                    tpNotes.push(tpName);
+                    addedPrice += tpPrice;
+                    
+                    var hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = 'food_toppings['+foodId+'][]';
+                    hidden.value = tpId;
+                    row.appendChild(hidden);
+                }
+            }
+        });
+    }
+    
+    // Ghi chú
+    var noteInput = document.getElementById('fn' + foodId);
+    if (noteInput) noteInput.value = finalNote || '';
+    
+    var disp = row.querySelector('.opt-note-display');
+    if (disp) {
+        if (finalNote && finalNote.trim() !== '') {
+            disp.style.display = 'block';
+            disp.innerHTML = '<strong>📝 Ghi chú:</strong> ' + finalNote.trim();
+        } else {
+            disp.style.display = 'none';
+        }
+    }
+    
+    cb.checked = true;
+    row.classList.add('checked');
+    
+    menuPr[foodId] = basePrice + addedPrice;
+}
+
+// Helper chọn combo lập trình từ lịch sử
+function selectComboProgrammatically(comboId) {
+    var cards = document.querySelectorAll('.card-select.cc');
+    var found = false;
+    for (var i = 0; i < cards.length; i++) {
+        var card = cards[i];
+        var attr = card.getAttribute('onclick') || '';
+        if (attr.includes('selCombo(' + comboId + ',')) {
+            selCombo(comboId, card);
+            found = true;
+            break;
+        }
+    }
+    if (!found && comboId === 0) {
+        var freeCard = document.querySelector('.card-select.cc[onclick*="selCombo(0,"]');
+        if (freeCard) {
+            selCombo(0, freeCard);
+        }
+    }
+}
 
 function us(){
     try {
