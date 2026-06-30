@@ -214,7 +214,6 @@ include __DIR__ . '/views/client/layouts/header.php';
     min-height: 85vh;
     padding: 180px 0 60px 0; /* Clear header space */
     font-family: 'Poppins', 'Inter', sans-serif;
-    z-index: 1;
 }
 
 .news-page-wrap::before {
@@ -223,12 +222,12 @@ include __DIR__ . '/views/client/layouts/header.php';
     inset: 0;
     /* Lớp phủ trung hòa làm mờ nhẹ và dịu nền, giúp thông tin rõ nét */
     background: rgba(12, 11, 9, 0.75) !important; 
-    z-index: -1;
+    z-index: 0;
 }
 
 .news-page-wrap > .container {
     position: relative;
-    z-index: 2;
+    z-index: 1;
 }
 
 /* Typography elements */
@@ -369,6 +368,18 @@ include __DIR__ . '/views/client/layouts/header.php';
     border-radius: 0;
     margin-bottom: 25px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+}
+/* Single Article Reading Mode */
+.article-read-card {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 12px;
+    padding: 20px 0;
+    box-shadow: none !important;
+}
+
+.article-read-card * {
+    color: #fff !important;
 }
 .newsletter-sidebar-title {
     font-family: 'Montserrat', sans-serif;
@@ -1481,13 +1492,14 @@ include __DIR__ . '/views/client/layouts/header.php';
 .article-headline {
     font-size: 42px !important;
     line-height: 1.25 !important;
-    color: var(--news-text-dark) !important;
+    color: #fff !important;
     margin-bottom: 20px !important;
 }
 .article-read-card {
-    padding: 50px !important;
-    border-color: var(--news-border-light) !important;
-    box-shadow: 0 15px 35px rgba(79, 91, 58, 0.04) !important;
+    padding: 0px !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
 }
 .article-sapo {
     font-family: 'Playfair Display', Georgia, serif;
@@ -1671,30 +1683,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                             <span>📅 <?= $publish_time ?></span>
                             <span>👁️ <?= $article['view_count'] ?> lượt xem</span>
                         </div>
-                    </div>
-
-                    <!-- Social Toolbar (Top) -->
-                    <div class="article-action-bar">
-                        <div class="article-actions-left">
-                            <button class="article-action-btn <?= $article['user_liked'] ? 'liked' : '' ?>" id="vne-like-btn" onclick="articleLike(<?= $article['id'] ?>)">
-                                <i class="bi <?= $article['user_liked'] ? 'bi-heart-fill' : 'bi-heart' ?>"></i> 
-                                <span id="vne-like-text"><?= $article['user_liked'] ? 'Đã thích' : 'Thích' ?></span> 
-                                (<span id="vne-like-count" onclick="event.stopPropagation(); showLikers(<?= $article['id'] ?>)"><?= $article['like_count'] ?></span>)
-                            </button>
-                            
-                            <button class="article-action-btn" onclick="articleShare(<?= $article['id'] ?>)">
-                                <i class="bi bi-share"></i> Chia sẻ
-                            </button>
-                        </div>
-                        
-                        <a href="#vne-cmt-anchor" class="article-comment-anchor">
-                            <i class="bi bi-chat-left-text-fill"></i> <strong>Ý kiến (<span id="vne-header-cmt-count"><?= $article['comment_count'] ?></span>)</strong>
-                        </a>
-                    </div>
-
-
-
-                    <!-- Featured Thumbnail -->
+                    </div>                    <!-- Featured Thumbnail -->
                     <?php if ($article['thumbnail']): ?>
                         <div class="article-featured-img">
                             <img src="public/assets/img/about/<?= htmlspecialchars($article['thumbnail']) ?>" alt="<?= htmlspecialchars($article['title']) ?>">
@@ -1707,23 +1696,11 @@ include __DIR__ . '/views/client/layouts/header.php';
                         <?= safe_html_render($article['content']) ?>
                     </div>
 
-                    <div class="article-author-tag">Restaurantly Editor</div>
-
-                    <!-- Social Toolbar (Bottom) -->
-                    <div class="article-action-bar" style="margin-top: 30px;">
-                        <div class="article-actions-left">
-                            <button class="article-action-btn <?= $article['user_liked'] ? 'liked' : '' ?>" id="vne-like-btn-bottom" onclick="articleLike(<?= $article['id'] ?>)">
-                                <i class="bi <?= $article['user_liked'] ? 'bi-heart-fill' : 'bi-heart' ?>"></i> Thích
-                            </button>
-                            <button class="article-action-btn" onclick="articleShare(<?= $article['id'] ?>)">
-                                <i class="bi bi-share"></i> Chia sẻ
-                            </button>
-                        </div>
-                        
-                        <a href="Aboutus.php" class="article-action-btn" style="text-decoration: none;">
-                            <i class="bi bi-arrow-left"></i> Trở về danh sách
-                        </a>
-                    </div>
+                    <div class="article-author-tag" style="margin-bottom: 30px;">Restaurantly Editor</div>
+                    
+                    <a href="Aboutus.php" class="btn btn-outline-light mb-5" style="border-radius: 30px; padding: 10px 25px;">
+                        <i class="bi bi-arrow-left"></i> Trở về danh sách
+                    </a>
 
                     <!-- Pinned Related Articles -->
                     <div class="related-articles-section reveal-fade">
@@ -1746,149 +1723,6 @@ include __DIR__ . '/views/client/layouts/header.php';
                                 </div>
                             <?php endforeach; ?>
                         </div>
-                    </div>
-
-                    <!-- VnExpress Comment System -->
-                    <div class="vne-comments-section reveal-fade" id="vne-cmt-anchor">
-                        <div class="vne-comments-header">
-                            <h3 class="vne-comments-title font-playfair">Ý kiến (<span id="vne-cmt-count"><?= $article['comment_count'] ?></span>)</h3>
-                            <div class="vne-comments-tabs">
-                                <a href="javascript:void(0)" class="vne-comments-tab active">Mới nhất</a>
-                            </div>
-                        </div>
-
-                        <!-- Top Level Comment Form -->
-                        <div class="vne-comment-form">
-                            <textarea id="main-comment-text" class="vne-comment-textarea" placeholder="Chia sẻ ý kiến của bạn..."></textarea>
-                            <div class="vne-comment-form-footer">
-                                <div class="vne-comment-user-box">
-                                    <label>
-                                        <input type="checkbox" id="main-comment-anon" onchange="toggleAnonInput('main-comment')">
-                                        Ẩn danh
-                                    </label>
-                                    <input type="text" id="main-comment-author" class="vne-comment-inp-name" placeholder="Tên hiển thị" value="<?= htmlspecialchars($_SESSION['user_name'] ?? '') ?>">
-                                </div>
-                                <button class="vne-comment-btn" onclick="submitComment(0)">Gửi ý kiến</button>
-                            </div>
-                        </div>
-
-                        <!-- Comments List -->
-                        <div class="vne-comments-list" id="comments-container">
-                            <?php if (empty($article_comments)): ?>
-                                <div id="no-comments-placeholder" style="text-align:center; color:#666; padding:30px; font-size:14px;">Chưa có ý kiến nào. Hãy là người đầu tiên chia sẻ!</div>
-                            <?php else: 
-                                // Parse comments into hierarchical structure
-                                $roots = array_filter($article_comments, fn($c) => !$c['parent_id'] || $c['parent_id'] == 0);
-                                $replies = array_filter($article_comments, fn($c) => $c['parent_id'] > 0);
-                                
-                                foreach ($roots as $c):
-                                    $initial = mb_strtoupper(mb_substr($c['author_name'] ?: 'A', 0, 1));
-                                    $c_time = $c['created_at'] ? date('d/m/Y H:i', strtotime($c['created_at'])) : '';
-                                    $avatar_url = '';
-                                    if ($c['user_id'] && !$c['is_anonymous']) {
-                                        $avatar_url = '/restaurant-project/ajax/get_avatar.php?user_id=' . $c['user_id'];
-                                    }
-                            ?>
-                                <div class="vne-comment-block" id="comment-block-<?= $c['id'] ?>">
-                                    <div class="vne-comment-item">
-                                        <div class="vne-comment-avatar">
-                                            <?php if ($avatar_url): ?>
-                                                <img src="<?= $avatar_url ?>" alt="">
-                                            <?php else: ?>
-                                                <?= $initial ?>
-                                            <?php endif; ?>
-                                        </div>
-                                        <div class="vne-comment-bubble">
-                                            <div class="vne-comment-meta-top">
-                                                <span class="vne-comment-author"><?= htmlspecialchars($c['author_name'] ?: 'Ẩn danh') ?></span>
-                                                <span style="font-size:11px; color:#555;">⏰ <?= $c_time ?></span>
-                                            </div>
-                                            <div class="vne-comment-text">
-                                                 <?php if ($c['comment'] === 'Bình luận này đã vi phạm và bị quản trị viên xóa'): ?>
-                                                     <span class="text-danger" style="font-style: italic; opacity: 0.8;"><i class="bi bi-exclamation-triangle-fill me-1"></i> Bình luận này đã vi phạm và bị quản trị viên xóa.</span>
-                                                 <?php else: ?>
-                                                     <?= htmlspecialchars($c['comment']) ?>
-                                                 <?php endif; ?>
-                                             </div>
-                                            
-                                            <?php if ($c['comment'] !== 'Bình luận này đã vi phạm và bị quản trị viên xóa'): ?><div class="vne-comment-actions">
-                                                <span class="vne-comment-action-link" onclick="showReplyForm(<?= $c['id'] ?>, '<?= htmlspecialchars($c['author_name'] ?: 'Ẩn danh') ?>')">
-                                                    <i class="bi bi-reply"></i> Trả lời
-                                                </span>
-                                                <span class="vne-comment-action-sep">•</span>
-                                                <span class="vne-comment-action-link" onclick="commentReact(<?= $c['id'] ?>, 'like')">
-                                                    <i class="bi bi-hand-thumbs-up"></i> Thích (<span id="cmt-likes-<?= $c['id'] ?>"><?= (int)$c['likes'] ?></span>)
-                                                </span>
-                                                <span class="vne-comment-action-sep">•</span>
-                                                <span class="vne-comment-action-link" onclick="commentReact(<?= $c['id'] ?>, 'dislike')">
-                                                    <i class="bi bi-hand-thumbs-down"></i> Không thích (<span id="cmt-dislikes-<?= $c['id'] ?>"><?= (int)$c['dislikes'] ?></span>)
-                                                </span>
-                                                <span class="vne-comment-action-sep">•</span>
-                                                <span class="vne-comment-action-link text-danger" onclick="openReportModal(<?= $c['id'] ?>)">
-                                                    <i class="bi bi-flag"></i> Báo cáo
-                                                </span>
-                                            </div><?php endif; ?>
-
-                                            <!-- Nested replies will be loaded inside this div -->
-                                            <div class="vne-replies-list" id="replies-list-<?= $c['id'] ?>">
-                                                <?php 
-                                                    $child_cmts = array_filter($replies, fn($r) => $r['parent_id'] == $c['id']);
-                                                    foreach ($child_cmts as $cc):
-                                                        $cc_initial = mb_strtoupper(mb_substr($cc['author_name'] ?: 'A', 0, 1));
-                                                        $cc_time = $cc['created_at'] ? date('d/m/Y H:i', strtotime($cc['created_at'])) : '';
-                                                        $cc_avatar = '';
-                                                        if ($cc['user_id'] && !$cc['is_anonymous']) {
-                                                            $cc_avatar = '/restaurant-project/ajax/get_avatar.php?user_id=' . $cc['user_id'];
-                                                        }
-                                                ?>
-                                                    <div class="vne-comment-item">
-                                                        <div class="vne-comment-avatar" style="width: 28px; height: 28px; font-size: 11px;">
-                                                            <?php if ($cc_avatar): ?>
-                                                                <img src="<?= $cc_avatar ?>" alt="">
-                                                            <?php else: ?>
-                                                                <?= $cc_initial ?>
-                                                            <?php endif; ?>
-                                                        </div>
-                                                        <div class="vne-comment-bubble">
-                                                            <div class="vne-comment-meta-top">
-                                                                <span class="vne-comment-author"><?= htmlspecialchars($cc['author_name'] ?: 'Ẩn danh') ?></span>
-                                                                <span style="font-size:11px; color:#555;">⏰ <?= $cc_time ?></span>
-                                                            </div>
-                                                            <div class="vne-comment-text">
-                                                                 <?php if ($cc['comment'] === 'Bình luận này đã vi phạm và bị quản trị viên xóa'): ?>
-                                                                     <span class="text-danger" style="font-style: italic; opacity: 0.8;"><i class="bi bi-exclamation-triangle-fill me-1"></i> Bình luận này đã vi phạm và bị quản trị viên xóa.</span>
-                                                                 <?php else: ?>
-                                                                     <?= htmlspecialchars($cc['comment']) ?>
-                                                                 <?php endif; ?>
-                                                             </div>
-                                                            <?php if ($cc['comment'] !== 'Bình luận này đã vi phạm và bị quản trị viên xóa'): ?><div class="vne-comment-actions" style="margin-top: 4px;">
-                                                                <span class="vne-comment-action-link" onclick="showReplyForm(<?= $c['id'] ?>, '<?= htmlspecialchars($cc['author_name'] ?: 'Ẩn danh') ?>', '<?= htmlspecialchars($cc['author_name'] ?: 'Ẩn danh') ?>')">
-                                                                    <i class="bi bi-reply"></i> Trả lời
-                                                                </span>
-                                                                <span class="vne-comment-action-sep">•</span>
-                                                                <span class="vne-comment-action-link" onclick="commentReact(<?= $cc['id'] ?>, 'like')">
-                                                                    <i class="bi bi-hand-thumbs-up"></i> Thích (<span id="cmt-likes-<?= $cc['id'] ?>"><?= (int)$cc['likes'] ?></span>)
-                                                                </span>
-                                                                <span class="vne-comment-action-sep">•</span>
-                                                                <span class="vne-comment-action-link" onclick="commentReact(<?= $cc['id'] ?>, 'dislike')">
-                                                                    <i class="bi bi-hand-thumbs-down"></i> Không thích (<span id="cmt-dislikes-<?= $cc['id'] ?>"><?= (int)$cc['dislikes'] ?></span>)
-                                                                </span>
-                                                                <span class="vne-comment-action-sep">•</span>
-                                                                <span class="vne-comment-action-link text-danger" onclick="openReportModal(<?= $cc['id'] ?>)">
-                                                                    <i class="bi bi-flag"></i> Báo cáo
-                                                                </span>
-                                                            </div><?php endif; ?>
-                                                        </div>
-                                                    </div>
-                                                <?php endforeach; ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                        </div>
-                    </div>
                     </div>
                 </div>
 
