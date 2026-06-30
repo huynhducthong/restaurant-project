@@ -68,6 +68,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // 1.5 Cập nhật Cover
+    if (isset($_POST['update_cover'])) {
+        if (isset($_FILES['cover_photo']) && $_FILES['cover_photo']['error'] === UPLOAD_ERR_OK) {
+            $ext = strtolower(pathinfo($_FILES['cover_photo']['name'], PATHINFO_EXTENSION));
+            if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                $cover_dir = 'uploads/covers/';
+                if (!is_dir($cover_dir)) mkdir($cover_dir, 0777, true);
+                
+                $old_covers = glob($cover_dir . 'cover_' . $user_id . '.*');
+                foreach($old_covers as $old) {
+                    @unlink($old);
+                }
+                
+                $new_name = 'cover_' . $user_id . '.' . $ext;
+                move_uploaded_file($_FILES['cover_photo']['tmp_name'], $cover_dir . $new_name);
+                $message = "Đã cập nhật ảnh nền thành công!";
+            } else {
+                $message = "Định dạng ảnh không hợp lệ.";
+                $msg_type = "danger";
+            }
+        }
+    }
+
     // 2. Đổi mật khẩu
     if (isset($_POST['change_password'])) {
         $old_pass = $_POST['old_password'];
@@ -526,493 +549,293 @@ body{
 }
 </style>
 
-<div class="profile-wrap">
+<style>
+:root {
+  --accent-burgundy: #A88746;
+}
+.htab {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 14px;
+
+  font-weight: 600;
+  color: var(--muted);
+  padding: 10px 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+.htab:hover { color: var(--accent-burgundy); }
+.htab.active { color: var(--accent-burgundy); border-bottom-color: var(--accent-burgundy); }
+.floating-input {
+  border: none;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  padding-left: 0;
+  background: transparent;
+  box-shadow: none !important;
+}
+.floating-input:focus {
+  border-bottom-color: var(--accent-burgundy);
+}
+.hero-account { animation: fadeInDown 0.6s ease; }
+@keyframes fadeInDown { from{opacity:0; transform:translateY(-20px);} to{opacity:1; transform:translateY(0);} }
+
+/* Override Topbar for light background */
+#topbar { color: var(--ink) !important; }
+#topbar i { color: var(--accent-burgundy) !important; }
+#topbar .lang-switcher a { color: var(--ink) !important; }
+#topbar .lang-switcher span { color: var(--muted) !important; }
+</style>
+
+<div class="profile-wrap" style="background-color: #faf9f6;">
 <div class="container">
-<div class="row g-4">
 
-  <!-- ══ SIDEBAR ══ -->
-  <div class="col-lg-3 col-md-4">
-    <div class="prof-sidebar">
+  <!-- ══ HERO ACCOUNT ══ -->
+  <div class="hero-account text-center mb-5 mt-2">
+    <?php 
+      $my_cover = '';
+      $covers = glob('uploads/covers/cover_' . $user_id . '.*');
+      if (!empty($covers)) {
+          $my_cover = $covers[0] . '?v=' . time();
+      } else {
+          $my_cover = 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80';
+      }
+      
+      $default_name = urlencode($current_user['full_name'] ?: $current_user['username'] ?: 'U');
+      $my_av = 'https://ui-avatars.com/api/?name=' . $default_name . '&background=143B36&color=fff&size=128';
+      if ($current_user['avatar_blob']) {
+          $my_av = 'ajax/get_avatar.php?user_id=' . $current_user['id'];
+      } elseif (!empty($current_user['avatar'])) {
+          $my_av = (strpos($current_user['avatar'], 'http') === 0) ? $current_user['avatar'] : $current_user['avatar'];
+      }
+    ?>
+    <div class="hero-cover mb-4" style="height:220px; background: url('<?= $my_cover ?>') center/cover no-repeat; border-radius: 16px; position:relative; box-shadow: inset 0 -50px 100px -20px rgba(0,0,0,0.5);">
+        <form method="POST" enctype="multipart/form-data" id="cover_form">
+           <input type="hidden" name="update_cover" value="1">
+           <label for="cover_upload" class="btn btn-sm btn-light shadow" style="position:absolute; bottom:15px; right:15px; font-weight:600; opacity:0.85; transition:0.3s; cursor:pointer;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.85">
+               <i class="bi bi-camera me-1"></i>Thay ảnh nền
+           </label>
+           <input type="file" name="cover_photo" id="cover_upload" class="d-none" accept="image/*" onchange="document.getElementById('cover_form').submit()">
+        </form>
+    </div>
 
-      <!-- Avatar + tên -->
-      <div class="prof-top">
-        <div class="av-ring">
-          <?php 
-            $default_name = urlencode($current_user['full_name'] ?: $current_user['username'] ?: 'U');
-            $my_av = 'https://ui-avatars.com/api/?name=' . $default_name . '&background=143B36&color=fff&size=128';
-            if ($current_user['avatar_blob']) {
-                $my_av = 'ajax/get_avatar.php?user_id=' . $current_user['id'];
-            } elseif (!empty($current_user['avatar'])) {
-                $my_av = (strpos($current_user['avatar'], 'http') === 0) ? $current_user['avatar'] : $current_user['avatar'];
-            }
-          ?>
-          <img src="<?= $my_av ?>" alt="Avatar">
+    <div style="position:relative; margin-top:-90px; z-index:2;">
+        <div class="mx-auto mb-3 shadow" style="width:140px; height:140px; border-radius:50%; overflow:hidden; border:4px solid #fff; background:#fff;">
+           <img src="<?= $my_av ?>" style="width:100%; height:100%; object-fit:cover;">
         </div>
-        <h5 class="prof-name">
-            <?= htmlspecialchars($current_user['full_name'] ?: $current_user['username']) ?>
-            <?php if($current_vip): ?>
-                <span class="vip-crown-badge" title="Thành viên VIP">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
-                    </svg>
-                    VIP CROWN
-                </span>
-            <?php endif; ?>
-        </h5>
-        <p class="prof-email"><?= htmlspecialchars($current_user['email']) ?></p>
-      </div>
-
-      <!-- Nav -->
-      <nav class="prof-nav">
-        <a href="?tab=profile"   class="<?= $tab=='profile'   ? 'on':'' ?>">
-          <i class="bi bi-person-badge"></i> Thông tin Đặc quyền
-        </a>
-        <a href="?tab=vip" class="<?= $tab=='vip' ? 'on':'' ?>">
-          <i class="bi bi-gem"></i> Đặc quyền Hội viên
-        </a>
-        <a href="?tab=gastronomy" class="<?= $tab=='gastronomy' ? 'on':'' ?>">
-          <i class="bi bi-magic"></i> DNA Ẩm thực
-        </a>
-        <a href="?tab=bookings"  class="<?= $tab=='bookings'  ? 'on':'' ?>">
-          <i class="bi bi-journal-richtext"></i> Hành trình Dùng bữa
-        </a>
-
-        <a href="?tab=security"  class="<?= $tab=='security'  ? 'on':'' ?>">
-          <i class="bi bi-shield-lock"></i> Thiết lập Bảo mật
-        </a>
-        <div class="prof-nav-sep"></div>
-        <a href="public/logout.php" class="logout">
-          <i class="bi bi-box-arrow-left"></i> Đăng xuất
-        </a>
-      </nav>
-
-      <!-- Quick stats -->
-      <?php
-        $s1 = $db->prepare("SELECT COUNT(*) FROM service_bookings WHERE user_id=?"); $s1->execute([$user_id]);
-        $s2 = $db->prepare("SELECT COUNT(*) FROM user_addresses WHERE user_id=?"); $s2->execute([$user_id]);
-        $total_bookings = (int)$s1->fetchColumn();
-        $total_addr     = (int)$s2->fetchColumn();
-      ?>
-      <div class="prof-stats">
-        <div class="stat-cell">
-          <div class="stat-val"><?= $total_bookings ?></div>
-          <div class="stat-lbl">Lần đặt bàn</div>
+        <h2 class="prof-name mb-2" style="font-family:'Cormorant Garamond', serif; font-size:3rem; color:var(--ink); font-weight:700;">
+          <?= htmlspecialchars($current_user['full_name'] ?: $current_user['username']) ?>
+        </h2>
+        <?php
+          $s3 = $db->prepare("SELECT SUM(total_amount) FROM service_bookings WHERE user_id=? AND status='Completed'"); $s3->execute([$user_id]);
+          $total_spent = (float)$s3->fetchColumn();
+        ?>
+        <div class="total-spent mb-4" style="font-size:1.1rem; color:var(--muted);">
+          Tổng chi tiêu: <span style="font-weight:700; color:var(--accent-burgundy); font-size:1.4rem;"><?= number_format($total_spent, 0, ',', '.') ?> VNĐ</span>
         </div>
-        <div class="stat-cell">
-          <div class="stat-val"><?= $total_addr ?></div>
-          <div class="stat-lbl">Địa chỉ</div>
-        </div>
-      </div>
-
+        <a href="?tab=profile" class="btn btn-outline-dark px-4 py-2 rounded-pill" style="font-size:13px; text-transform:uppercase; letter-spacing:1px; border-color:var(--accent-burgundy); color:var(--accent-burgundy); font-weight:600;"><i class="bi bi-pencil me-2"></i>Chỉnh sửa thông tin</a>
     </div>
   </div>
 
+  <div class="horizontal-tabs d-flex justify-content-center flex-wrap gap-2 gap-md-4 mb-5 border-bottom pb-2">
+    <a href="?tab=profile" class="htab <?= $tab=='profile'?'active':'' ?>">Thông tin</a>
+    <a href="?tab=bookings" class="htab <?= $tab=='bookings'?'active':'' ?>">Lịch sử Đặt Bàn</a>
+    <a href="?tab=vip" class="htab <?= $tab=='vip'?'active':'' ?>">Cột Mốc Đáng Nhớ</a>
+    <a href="?tab=gastronomy" class="htab <?= $tab=='gastronomy'?'active':'' ?>">DNA Ẩm thực</a>
+    <a href="?tab=security" class="htab <?= $tab=='security'?'active':'' ?>">Bảo mật</a>
+    <a href="public/logout.php" class="htab text-danger"><i class="bi bi-box-arrow-right me-1"></i>Đăng xuất</a>
+  </div>
+
   <!-- ══ MAIN CONTENT ══ -->
-  <div class="col-lg-9 col-md-8">
-    <div class="prof-card">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+      <div class="prof-card" style="border:none; box-shadow: 0 10px 40px rgba(0,0,0,0.03); background: #fff;">
+        <div class="prof-card-body p-4 p-md-5">
 
-      <!-- Head -->
-      <div class="prof-card-head">
-        <?php
-          $icons = ['profile'=>'bi-person-badge','vip'=>'bi-gem','gastronomy'=>'bi-magic','bookings'=>'bi-journal-richtext','addresses'=>'bi-geo-alt','security'=>'bi-shield-lock'];
-          $titles = ['profile'=>'Thông tin Đặc quyền','vip'=>'Đặc quyền Hội viên','gastronomy'=>'DNA Ẩm thực Khách hàng','bookings'=>'Hành trình Dùng bữa','security'=>'Thiết lập Bảo mật'];
-        ?>
-        <div class="pc-icon"><i class="bi <?= $icons[$tab]??'bi-person-badge' ?>"></i></div>
-        <h4 class="pc-title" style="text-transform: uppercase; letter-spacing: 0.1em; font-size: 1.05rem; padding-bottom: 12px; margin-top: 6px;"><?= $titles[$tab]??'Thông tin' ?></h4>
-      </div>
+          <!-- Alert -->
+          <?php if($message): ?>
+          <div class="prof-alert <?= $msg_type ?>">
+            <i class="bi bi-<?= $msg_type==='success'?'check-circle':'exclamation-circle' ?>"></i>
+            <?= htmlspecialchars($message) ?>
+          </div>
+          <?php endif; ?>
 
-      <div class="prof-card-body">
-
-        <!-- Alert -->
-        <?php if($message): ?>
-        <div class="prof-alert <?= $msg_type ?>">
-          <i class="bi bi-<?= $msg_type==='success'?'check-circle':'exclamation-circle' ?>"></i>
-          <?= htmlspecialchars($message) ?>
-        </div>
-        <?php endif; ?>
-
-        <!-- ── TAB: HỒ SƠ ── -->
+          <!-- ── TAB: HỒ SƠ & ĐỊA CHỈ ── -->
         <?php if($tab=='profile'): ?>
         <form method="POST" enctype="multipart/form-data">
-          <div class="text-center mb-32" style="margin-bottom:28px">
-            <label for="avatar_input" class="av-upload">
-              <div class="av-upload-ring">
-                <?php 
-                  $default_name = urlencode($current_user['full_name'] ?: $current_user['username'] ?: 'U');
-                  $my_av_form = 'https://ui-avatars.com/api/?name=' . $default_name . '&background=143B36&color=fff&size=128';
-                  if ($current_user['avatar_blob']) {
-                      $my_av_form = 'ajax/get_avatar.php?user_id=' . $current_user['id'];
-                  } elseif (!empty($current_user['avatar'])) {
-                      $my_av_form = (strpos($current_user['avatar'], 'http') === 0) ? $current_user['avatar'] : $current_user['avatar'];
-                  }
-                ?>
-                <img src="<?= $my_av_form ?>" id="avatar_preview">
-              </div>
-              <span class="av-upload-lbl"><i class="bi bi-camera me-1"></i>Đổi ảnh đại diện</span>
-            </label>
-            <input type="file" name="avatar" id="avatar_input" class="d-none" accept="image/*" onchange="previewImg(this)">
-          </div>
-
-          <div class="row g-3">
+          <div class="row g-3 mb-4">
             <div class="col-md-6">
-              <label class="fl">Họ và tên <span style="color:#d64545">*</span></label>
-              <input type="text" name="full_name" class="fi"
-                     value="<?= htmlspecialchars($current_user['full_name']) ?>" required
-                     placeholder="Nguyễn Văn A">
+              <label class="form-label text-muted small text-uppercase mb-1" style="letter-spacing:1px; font-size:11px;">Họ và tên *</label>
+              <input type="text" class="form-control floating-input py-1" name="full_name" value="<?= htmlspecialchars($current_user['full_name']) ?>" required>
             </div>
             <div class="col-md-6">
-              <label class="fl">Số điện thoại</label>
-              <input type="tel" name="phone" class="fi"
-                     value="<?= htmlspecialchars($current_user['phone']) ?>"
-                     placeholder="09xx xxx xxx">
+              <label class="form-label text-muted small text-uppercase mb-1" style="letter-spacing:1px; font-size:11px;">Số điện thoại</label>
+              <input type="text" class="form-control floating-input py-1" name="phone" value="<?= htmlspecialchars($current_user['phone']) ?>">
             </div>
-            <div class="col-md-6">
-              <label class="fl">Email <span style="color:#d64545">*</span></label>
-              <input type="email" name="email" class="fi"
-                     value="<?= htmlspecialchars($current_user['email']) ?>" required>
+            <div class="col-md-6 mt-3">
+              <label class="form-label text-muted small text-uppercase mb-1" style="letter-spacing:1px; font-size:11px;">Email *</label>
+              <input type="email" class="form-control floating-input py-1" name="email" value="<?= htmlspecialchars($current_user['email']) ?>" required>
             </div>
-            <div class="col-md-6">
-              <label class="fl">Ngày sinh</label>
-              <input type="date" name="birthday" class="fi"
-                     value="<?= htmlspecialchars($current_user['birthday'] ?? '') ?>">
+            <div class="col-md-6 mt-3">
+              <label class="form-label text-muted small text-uppercase mb-1" style="letter-spacing:1px; font-size:11px;">Ngày sinh</label>
+              <input type="date" class="form-control floating-input py-1" name="birthday" value="<?= $current_user['birthday'] ?>">
             </div>
-            <div class="col-12 pt-2">
-              <button type="submit" name="update_profile" class="btn-prim">
-                <i class="bi bi-check2 me-1"></i>Lưu thay đổi
+            <div class="col-12 mt-4 text-center">
+              <button type="submit" name="update_profile" class="btn btn-dark rounded-pill px-4 py-2" style="background-color: var(--accent-burgundy); border-color: var(--accent-burgundy); font-weight: 600; font-size:13px; letter-spacing: 1px;">
+                <i class="bi bi-check2-circle me-1"></i>Lưu thông tin
               </button>
             </div>
           </div>
         </form>
-        </form>
 
-        <!-- Quản lý địa chỉ giao hàng và nhận sách -->
-        <hr class="my-5" style="opacity: 0.1;">
-        <h6 class="mb-4" style="color:var(--F); font-family:var(--font-serif); font-size:1.1rem;">Đầu bếp tại gia / Địa điểm phục vụ</h6>
+        <hr style="opacity:0.1; margin: 25px 0;">
+
+        <!-- ── TAB: ĐỊA CHỈ (Đã gộp) ── -->
+        <h6 class="mb-4" style="color:var(--F); font-family:var(--font-serif); font-size:1.4rem;">Đầu bếp tại gia / Địa điểm phục vụ</h6>
         <div class="d-flex justify-content-between align-items-center mb-4">
           <p class="text-muted small m-0">Quản lý địa chỉ phục vụ tại gia của bạn</p>
-          <button class="btn-prim" style="padding:9px 18px;font-size:12px"
+          <button class="btn btn-outline-dark rounded-pill px-4 py-2" style="border-color:var(--accent-burgundy); color:var(--accent-burgundy); font-weight:600; font-size:13px;"
                   data-bs-toggle="modal" data-bs-target="#addAddressModal">
             <i class="bi bi-plus me-1"></i>Thêm địa chỉ
           </button>
         </div>
 
         <?php if(empty($user_addresses)): ?>
-        <div class="empty-state">
-          <i class="bi bi-geo"></i>
-          <p>Bạn chưa lưu địa chỉ nào.</p>
+        <div class="empty-state text-center py-5">
+          <i class="bi bi-geo" style="font-size: 3rem; color: #ddd;"></i>
+          <p class="mt-3 text-muted">Bạn chưa lưu địa chỉ nào.</p>
         </div>
         <?php else: ?>
         <?php foreach($user_addresses as $addr): ?>
-        <div class="addr-card">
-          <div class="d-flex align-items-center gap-14" style="gap:14px">
-            <div class="addr-icon">
-              <i class="bi <?= $addr['address_type']=='Home'?'bi-house':'bi-briefcase' ?>"></i>
-            </div>
-            <div>
-              <div class="d-flex align-items-center" style="font-weight:600;font-size:14px;color:var(--ink);">
-                <?= htmlspecialchars($addr['address_type']) ?>
-                <?php if($addr['is_default']): ?>
-                <span class="addr-default">Mặc định</span>
-                <?php endif; ?>
+        <div class="addr-card shadow-sm p-3 mb-3 bg-white rounded" style="border: 1px solid var(--border);">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+              <div class="addr-icon d-flex align-items-center justify-content-center" style="width:45px; height:45px; background: rgba(168,135,70,0.1); color: var(--accent-burgundy); border-radius: 50%;">
+                <i class="bi <?= $addr['address_type']=='Home'?'bi-house':'bi-briefcase' ?> fs-5"></i>
               </div>
-              <div style="font-size:13px;color:var(--ink2);margin-top:3px"><?= htmlspecialchars($addr['address_detail']) ?></div>
+              <div>
+                <div class="d-flex align-items-center" style="font-weight:600;font-size:15px;color:var(--ink);">
+                  <?= htmlspecialchars($addr['address_type']) ?>
+                  <?php if($addr['is_default']): ?>
+                  <span class="badge bg-warning text-dark ms-2" style="font-size:10px;">Mặc định</span>
+                  <?php endif; ?>
+                </div>
+                <div class="text-muted" style="font-size:13px;margin-top:2px; max-width: 400px;"><?= htmlspecialchars($addr['address_detail']) ?></div>
+              </div>
             </div>
-          </div>
-          <div class="d-flex gap-2">
-            <button type="button" class="btn-out" style="padding:7px 14px;font-size:12px" 
-                    onclick="openEditAddress(<?= $addr['id'] ?>, '<?= htmlspecialchars($addr['address_type'], ENT_QUOTES) ?>', '<?= htmlspecialchars(str_replace(["\\r", "\\n"], ["\\\\r", "\\\\n"], $addr['address_detail']), ENT_QUOTES) ?>', <?= $addr['is_default'] ?>)">
-              <i class="bi bi-pencil"></i>
-            </button>
-            <form method="POST" style="margin:0">
-              <input type="hidden" name="address_id" value="<?= $addr['id'] ?>">
-              <button type="submit" name="delete_address"
-                      class="btn-danger-out" style="padding:7px 14px;font-size:12px"
-                      onclick="return confirm('Xóa địa chỉ này?')">
-                <i class="bi bi-trash"></i>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-light rounded-circle" style="width:35px; height:35px; padding:0;" 
+                      onclick="openEditAddress(<?= $addr['id'] ?>, '<?= htmlspecialchars($addr['address_type'], ENT_QUOTES) ?>', '<?= htmlspecialchars(str_replace(["\\r", "\\n"], ["\\\\r", "\\\\n"], $addr['address_detail']), ENT_QUOTES) ?>', <?= $addr['is_default'] ?>)">
+                <i class="bi bi-pencil" style="color:var(--accent-burgundy);"></i>
               </button>
-            </form>
+              <form method="POST" style="margin:0">
+                <input type="hidden" name="address_id" value="<?= $addr['id'] ?>">
+                <button type="submit" name="delete_address" class="btn btn-light rounded-circle" style="width:35px; height:35px; padding:0;"
+                        onclick="return confirm('Xóa địa chỉ này?')">
+                  <i class="bi bi-trash text-danger"></i>
+                </button>
+              </form>
+            </div>
           </div>
         </div>
         <?php endforeach; ?>
         <?php endif; ?>
 
-        <!-- ── TAB: THẺ VIP ── -->
+        <!-- ── TAB: HÀNH TRÌNH ĐẶC QUYỀN ── -->
         <?php elseif($tab=='vip'): ?>
+        <?php
+            // Lấy thông tin user
+            $stmt = $db->prepare("SELECT visit_count, total_spent FROM users WHERE id = ?");
+            $stmt->execute([$user_id]);
+            $u_stats = $stmt->fetch(PDO::FETCH_ASSOC);
+            $visits = $u_stats['visit_count'] ?? 0;
+            
+            // Lấy danh sách milestones (dạng visit và spend)
+            $stmt = $db->prepare("
+                SELECT m.*, um.achieved_at, um.is_redeemed
+                FROM milestones m
+                LEFT JOIN user_milestones um ON m.id = um.milestone_id AND um.user_id = ?
+                ORDER BY m.type DESC, m.threshold ASC
+            ");
+            $stmt->execute([$user_id]);
+            $milestones = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        ?>
         <style>
-            .checkout-container {
-                background: #FFFFFF;
-                border-radius: 12px;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-                overflow: hidden;
-                display: flex;
-                margin-top: 20px;
-                border: 1px solid rgba(168, 135, 70, 0.2);
+            .journey-container { padding: 20px 0; }
+            .journey-timeline { position: relative; max-width: 600px; margin: 0 auto; }
+            .journey-timeline::after {
+                content: ''; position: absolute; width: 2px; background: rgba(168, 135, 70, 0.2);
+                top: 0; bottom: 0; left: 30px; margin-left: -1px;
             }
-            .plan-summary {
-                background: #F5F2ED;
-                color: #222222;
-                padding: 40px;
-                width: 45%;
-                position: relative;
+            .journey-node { padding: 20px 0 20px 70px; position: relative; }
+            .node-icon {
+                position: absolute; width: 40px; height: 40px; left: 10px; top: 20px;
+                background: #F5F2ED; border: 2px solid #A88746; border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; z-index: 1;
+                color: #A88746; font-size: 1.2rem;
             }
-            .plan-summary::after {
-                content: '';
-                position: absolute;
-                top: 0; left: 0; right: 0; bottom: 0;
-                background: linear-gradient(135deg, rgba(168, 135, 70, 0.15) 0%, rgba(0,0,0,0) 100%);
-                pointer-events: none;
+            .journey-node.locked .node-icon { background: #fff; border-color: #ddd; color: #aaa; }
+            .journey-node.locked::after {
+                content: '\F43E'; font-family: 'bootstrap-icons'; position: absolute;
+                font-size: 14px; top: 30px; left: 24px; z-index: 2; color: #aaa;
             }
-            .plan-summary h2 {
-                font-family: 'Cormorant Garamond', serif;
-                color: #A88746;
-                font-size: 1.8rem;
-                margin-bottom: 20px;
-                font-weight: 600;
-            }
-            .price-tag {
-                font-size: 2.8rem;
-                font-weight: 700;
-                font-family: 'Cormorant Garamond', serif;
-                color: #222222;
-                margin-bottom: 5px;
-                line-height: 1;
-            }
-            .duration-tag {
-                font-size: 0.95rem;
-                color: rgba(0,0,0,0.7);
-                margin-bottom: 25px;
-                padding-bottom: 20px;
-                border-bottom: 1px dashed rgba(0,0,0,0.15);
-            }
-            .benefits-list {
-                list-style: none;
-                padding: 0; margin: 0;
-            }
-            .benefits-list li {
-                position: relative;
-                padding-left: 30px;
-                margin-bottom: 15px;
-                font-size: 0.95rem;
-                line-height: 1.5;
-                color: rgba(0,0,0,0.8);
-            }
-            .benefits-list li i {
-                position: absolute; left: 0; top: 3px;
-                color: #A88746; font-size: 1.1rem;
-            }
-            .payment-form {
-                width: 55%;
-                padding: 40px;
-                background: #FFFFFF;
-                display: none; /* Ẩn form lúc đầu */
-            }
-            .payment-form.active {
-                display: block;
-                animation: fadeInRight 0.4s ease forwards;
-            }
-            @keyframes fadeInRight {
-                from { opacity: 0; transform: translateX(20px); }
-                to { opacity: 1; transform: translateX(0); }
-            }
-            .payment-form h3 {
-                font-family: 'Cormorant Garamond', serif;
-                font-size: 1.4rem;
-                color: #222222;
-                margin-bottom: 20px;
-            }
-            .payment-methods {
-                display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;
-            }
-            .payment-method-card {
-                border: 1px solid rgba(168, 135, 70, 0.2); border-radius: 8px; padding: 15px;
-                cursor: pointer; transition: all 0.2s; position: relative;
-            }
-            .payment-method-card:hover { border-color: #A88746; background: rgba(168, 135, 70, 0.05); }
-            .payment-method-card input[type="radio"] { display: none; }
-            .payment-method-card input[type="radio"]:checked + .method-content::before {
-                content: '\f058'; font-family: 'FontAwesome'; position: absolute;
-                top: -10px; right: -10px; color: #A88746; background: #FFFFFF;
-                border-radius: 50%; font-size: 1.4rem; line-height: 1;
-            }
-            .payment-method-card input[type="radio"]:checked + .method-content { color: #A88746; }
-            .payment-method-card:has(input[type="radio"]:checked) {
-                border-color: #A88746; background: rgba(168, 135, 70, 0.05); box-shadow: 0 4px 10px rgba(168, 135, 70, 0.2);
-            }
-            .method-content {
-                display: flex; flex-direction: column; align-items: center; gap: 8px;
-                color: #222222; font-weight: 500; font-size: 0.9rem; text-align: center;
-            }
-            .method-content i { font-size: 1.8rem; color: #A88746; }
-            .card-details {
-                background: #F5F2ED; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(168, 135, 70, 0.2);
-            }
-            .form-control-lux {
-                width: 100%; padding: 10px 15px; border: 1px solid rgba(168, 135, 70, 0.3); border-radius: 6px; font-size: 0.95rem; transition: 0.3s;
-            }
-            .form-control-lux:focus { outline: none; border-color: #A88746; box-shadow: 0 0 0 3px rgba(168, 135, 70, 0.2); background: #ffffff; color: #222222; }
-            .btn-pay {
-                background: linear-gradient(135deg, #A88746, #d4b06a); color: #fff; border: none; width: 100%; padding: 14px;
-                font-size: 1.05rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.3s;
-            }
-            .btn-pay:hover { background: linear-gradient(135deg, #d4b06a, #A88746); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(168, 135, 70, 0.4); }
+            .node-content { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid rgba(168, 135, 70, 0.2); position: relative; }
+            .journey-node.locked .node-content { opacity: 0.6; filter: grayscale(1); }
+            .node-content h5 { font-family: 'Cormorant Garamond', serif; color: #222; font-size: 1.3rem; margin-bottom: 5px; }
+            .node-content p { font-size: 0.95rem; color: #555; margin-bottom: 0; line-height: 1.5; }
+            .node-badge { position: absolute; top: 15px; right: 15px; font-size: 0.8rem; background: rgba(168,135,70,0.1); color: #A88746; padding: 4px 8px; border-radius: 4px; font-weight: 600; }
+            .locked .node-badge { background: #eee; color: #888; }
             
-            .btn-open-pay {
-                background: linear-gradient(135deg, #A88746, #d4b06a); color: #fff; border: none; width: 100%; padding: 15px;
-                font-size: 1.1rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.3s;
-            }
-            .btn-open-pay:hover { background: linear-gradient(135deg, #d4b06a, #A88746); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(168, 135, 70, 0.4); }
-            
-            .current-vip-alert {
-                background: rgba(168, 135, 70, 0.1); border: 1px solid #A88746; color: #A88746;
-                padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px;
-            }
-            .current-vip-alert i { font-size: 24px; color: #A88746; }
-            
-            @media (max-width: 768px) {
-                .checkout-container { flex-wrap: wrap; }
-                .plan-summary { width: 100% !important; }
-                .payment-form { width: 100%; }
-            }
+            .journey-header { text-align: center; margin-bottom: 40px; }
+            .journey-header h3 { font-family: 'Cormorant Garamond', serif; color: #A88746; font-size: 2rem; margin-bottom: 10px; font-weight: 600; }
+            .journey-header p { font-size: 1.05rem; color: #555; }
+            .visit-count-badge { display: inline-block; background: #A88746; color: #fff; padding: 6px 18px; border-radius: 30px; font-weight: 600; margin-top: 10px; font-size: 14px; letter-spacing: 0.5px; }
         </style>
 
-        <?php if($current_vip): ?>
-            <div class="current-vip-alert" style="background: linear-gradient(135deg, #2b1f0c 0%, #0a1f1c 100%); border: 1px solid #c8933a; color: #f0e0c0; display: flex; align-items: center; justify-content: space-between;">
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="#c8933a" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
-                        <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
-                    </svg>
-                    <div>
-                        <h5 class="mb-1 fw-bold" style="color: #c8933a;">Đặc quyền VIP CROWN đang được kích hoạt!</h5>
-                        <p class="mb-0 small" style="color: #d1c8b4;">Chiết khấu <?= $current_vip['discount_percent'] ?>% toàn hệ thống. Đặc quyền sẽ kết thúc vào: <strong style="color:#fff;"><?= date('d/m/Y', strtotime($current_vip['end_date'])) ?></strong></p>
+        <div class="journey-container">
+            <div class="journey-header">
+                <h3>Cột Mốc Đáng Nhớ</h3>
+                <p>Khám phá những đặc quyền bí mật đang chờ đón bạn tại Restaurantly.</p>
+                <div class="d-flex justify-content-center gap-2 mt-3">
+                    <div class="visit-count-badge">Đã dùng bữa: <?= $visits ?> lần</div>
+                    <div class="visit-count-badge" style="background-color: var(--accent-burgundy);">Chi tiêu: <?= number_format($total_spent, 0, ',', '.') ?> đ</div>
+                </div>
+            </div>
+
+            <div class="journey-timeline mt-4">
+                <?php foreach($milestones as $m): 
+                    $is_achieved = false;
+                    $badge_text = '';
+                    if ($m['type'] === 'visit') {
+                        $is_achieved = ($visits >= $m['threshold']);
+                        $badge_text = 'Lần thứ ' . $m['threshold'];
+                    } elseif ($m['type'] === 'spend') {
+                        $is_achieved = ($total_spent >= $m['threshold']);
+                        $badge_text = 'Mức ' . number_format($m['threshold'], 0, ',', '.') . 'đ';
+                    }
+                    $status_class = $is_achieved ? 'achieved' : 'locked';
+                    $icon = $is_achieved ? 'bi-award-fill' : 'bi-lock-fill';
+                ?>
+                <div class="journey-node <?= $status_class ?>">
+                    <div class="node-icon"><i class="bi <?= $icon ?>"></i></div>
+                    <div class="node-content">
+                        <div class="node-badge"><?= $badge_text ?></div>
+                        <h5><?= htmlspecialchars($m['reward_title']) ?></h5>
+                        <p><?= htmlspecialchars($m['reward_desc']) ?></p>
+                        <?php if($is_achieved && !empty($m['achieved_at'])): ?>
+                            <small class="text-muted mt-3 d-block"><i class="bi bi-calendar-check"></i> Đạt được vào: <?= date('d/m/Y', strtotime($m['achieved_at'])) ?></small>
+                        <?php endif; ?>
                     </div>
                 </div>
-                <form action="config/process_vip_cancel.php" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn hủy gia hạn gói VIP này? Mọi đặc quyền của gói sẽ kết thúc ngay lập tức.');">
-                    <button type="submit" name="cancel_vip" class="btn btn-outline-danger btn-sm px-4 py-2" style="border-radius: 8px; font-weight: 600; white-space: nowrap;">
-                        <i class="fas fa-times-circle me-1"></i> Hủy Gia Hạn
-                    </button>
-                </form>
+                <?php endforeach; ?>
+                
+                <?php if(empty($milestones)): ?>
+                <p class="text-center text-muted">Chưa có cột mốc nào được thiết lập.</p>
+                <?php endif; ?>
             </div>
-        <?php endif; ?>
-
-        <?php 
-            // Do hệ thống chỉ có 1 gói VIP, ta lấy gói đầu tiên
-            $plan = $plans[0] ?? null;
-            if ($plan): 
-        ?>
-            <div class="checkout-container" id="vipCheckoutFrame">
-                
-                <!-- Cột trái: Tóm tắt gói -->
-                <div class="plan-summary" id="planSummaryCol" style="width: 100%; transition: width 0.4s ease;">
-                    <h2>Gói <?= htmlspecialchars($plan['name']) ?></h2>
-                    <div class="price-tag"><?= number_format($plan['price'], 0, ',', '.') ?>đ</div>
-                    <div class="duration-tag">Thời hạn sử dụng: <strong><?= $plan['duration_days'] ?> ngày</strong></div>
-                    
-                    <ul class="benefits-list">
-                        <li><i class="fas fa-check-circle"></i> Giảm giá trực tiếp <strong><?= floatval($plan['discount_percent']) ?>%</strong> cho mọi hóa đơn.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Ưu tiên đặt bàn, chọn không gian đẹp nhất</strong> <br><span style="font-size: 0.85rem; color: #aaa;">(Đảm bảo có bàn trong các dịp lễ, tuỳ chọn các vị trí VIP cạnh cửa sổ/không gian riêng tư).</span></li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Huy hiệu VIP Đặc Quyền</strong></li>
-                        <li><i class="fas fa-check-circle"></i> Mở khóa dịch vụ cao cấp: <strong>Đầu Bếp Tại Gia</strong> và <strong>Thiết Kế Riêng</strong>.</li>
-                    </ul>
-                    
-                    <button type="button" class="btn-open-pay" id="btnOpenPay" onclick="openPaymentForm()">
-                        <?= $current_vip ? 'Gia hạn Gói này' : 'Đăng Ký & Thanh Toán Ngay' ?>
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
-                
-                <!-- Cột phải: Form thanh toán -->
-                <div class="payment-form" id="paymentFormCol">
-                    <h3>Xác nhận thanh toán</h3>
-                    
-                    <form id="paymentForm" method="POST" action="config/process_vip_payment.php">
-                        <input type="hidden" name="plan_id" value="<?= $plan['id'] ?>">
-                        
-                        <div class="payment-methods">
-                            <label class="payment-method-card">
-                                <input type="radio" name="payment_method" value="credit_card" checked onchange="toggleCardDetails(true)">
-                                <div class="method-content">
-                                    <i class="fas fa-credit-card"></i>
-                                    <span>Thẻ Tín Dụng</span>
-                                </div>
-                            </label>
-                            <label class="payment-method-card">
-                                <input type="radio" name="payment_method" value="bank_transfer" onchange="toggleCardDetails(false)">
-                                <div class="method-content">
-                                    <i class="fas fa-university"></i>
-                                    <span>Chuyển Khoản</span>
-                                </div>
-                            </label>
-                        </div>
-                        
-                        <div id="cardDetails" class="card-details">
-                            <div class="mb-3">
-                                <input type="text" class="form-control-lux" placeholder="Tên in trên thẻ (VD: NGUYEN VAN A)" required id="cardName">
-                            </div>
-                            <div class="mb-3">
-                                <input type="text" class="form-control-lux" placeholder="Số thẻ (XXXX XXXX XXXX XXXX)" required id="cardNumber">
-                            </div>
-                            <div class="row g-2">
-                                <div class="col-6">
-                                    <input type="text" class="form-control-lux" placeholder="MM/YY" required id="cardExp">
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" class="form-control-lux" placeholder="CVV" required id="cardCvv">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="bankTransferDetails" class="card-details" style="display: none; text-align: center;">
-                            <i class="fas fa-qrcode mb-3" style="font-size: 3rem; color: #c8933a;"></i>
-                            <p class="mb-0 text-muted" style="font-size: 0.9rem;">Hệ thống sẽ chuyển hướng bạn đến cổng thanh toán VNPay/Momo để quét mã QR.</p>
-                        </div>
-
-                        <div class="d-flex justify-content-between mb-3 fw-bold" style="font-size: 1.1rem; color: #143B36; border-top: 1px solid #eee; padding-top: 15px;">
-                            <span>Tổng thanh toán:</span>
-                            <span style="color: #c8933a;"><?= number_format($plan['price'], 0, ',', '.') ?>đ</span>
-                        </div>
-                        
-                        <button type="submit" class="btn-pay" id="btnSubmit">
-                            <span id="btnText">Hoàn Tất Thanh Toán</span>
-                            <i class="fas fa-check-circle ms-1" id="btnIcon"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-            
-            <script>
-                function openPaymentForm() {
-                    // Thu gọn cột trái, hiện cột phải
-                    if (window.innerWidth > 768) {
-                        document.getElementById('planSummaryCol').style.width = '45%';
-                    }
-                    document.getElementById('btnOpenPay').style.display = 'none';
-                    document.getElementById('paymentFormCol').classList.add('active');
-                }
-                
-                function toggleCardDetails(isCard) {
-                    document.getElementById('cardDetails').style.display = isCard ? 'block' : 'none';
-                    document.getElementById('bankTransferDetails').style.display = isCard ? 'none' : 'block';
-                    
-                    // Bật tắt required cho các trường thẻ
-                    const cardInputs = ['cardName', 'cardNumber', 'cardExp', 'cardCvv'];
-                    cardInputs.forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el) el.required = isCard;
-                    });
-                }
-                
-                document.getElementById('paymentForm').addEventListener('submit', function(e) {
-                    const btn = document.getElementById('btnSubmit');
-                    const text = document.getElementById('btnText');
-                    const icon = document.getElementById('btnIcon');
-                    
-                    btn.style.pointerEvents = 'none';
-                    btn.style.opacity = '0.8';
-                    text.innerHTML = 'Đang xử lý giao dịch...';
-                    icon.className = 'fas fa-spinner fa-spin ms-1';
-                });
-            </script>
-        <?php endif; ?>
+        </div>
 
         <!-- ── TAB: GASTRONOMY PROFILE ── -->
         <?php elseif($tab=='gastronomy'): 
@@ -1214,6 +1037,16 @@ body{
 
       </div><!-- prof-card-body -->
     </div><!-- prof-card -->
+
+    <!-- ══ CTA SECTION ══ -->
+    <div class="cta-section text-center mt-5 mb-5 pb-4">
+      <p class="mb-4 text-muted" style="font-family:'Cormorant Garamond', serif; font-size:1.4rem; font-style:italic;">Tiếp tục trải nghiệm tinh hoa ẩm thực cùng Restaurantly</p>
+      <div class="d-flex justify-content-center flex-wrap gap-3">
+        <a href="booking_service.php?type=table" class="btn btn-dark rounded-pill px-5 py-3" style="background-color: var(--accent-burgundy); border-color: var(--accent-burgundy); font-weight: 600; letter-spacing: 1px;"><i class="bi bi-calendar-check me-2"></i>ĐẶT BÀN NGAY</a>
+        <a href="menu.php" class="btn btn-outline-dark rounded-pill px-5 py-3" style="font-weight: 600; letter-spacing: 1px; border-color:var(--accent-burgundy); color:var(--accent-burgundy);"><i class="bi bi-book me-2"></i>KHÁM PHÁ MENU</a>
+      </div>
+    </div>
+
   </div>
 
 </div><!-- row -->

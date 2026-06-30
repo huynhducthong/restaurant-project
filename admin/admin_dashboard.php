@@ -115,12 +115,21 @@ try {
            AND IFNULL((SELECT SUM(s.quantity) FROM inventory_stocks s WHERE s.ingredient_id = i.id), 0) <= i.min_stock"
     )->fetchColumn();
 
-    // Cảnh báo hàng sắp hết hạn (trong vòng 7 ngày)
+    // Lấy cài đặt cảnh báo HSD từ bảng settings
+    $inv_expiry_days = 7; // Mặc định
+    try {
+        $stmt_set = $db->query("SELECT key_value FROM settings WHERE key_name = 'inv_expiry_days'");
+        if ($row = $stmt_set->fetch(PDO::FETCH_ASSOC)) {
+            $inv_expiry_days = (int) $row['key_value'];
+        }
+    } catch(Exception $e) {}
+
+    // Cảnh báo hàng sắp hết hạn
     $expiry_warn_count = (int)$db->query(
         "SELECT COUNT(*) FROM inventory
          WHERE is_active = 1
            AND expiry_date IS NOT NULL
-           AND expiry_date <= DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+           AND expiry_date <= DATE_ADD(CURDATE(), INTERVAL {$inv_expiry_days} DAY)
            AND expiry_date >= CURDATE()"
     )->fetchColumn();
 
@@ -240,7 +249,8 @@ try {
     <div class="warn-banner" style="background:linear-gradient(135deg,#fde8e8,#ffc5c5);border-left-color:#dc3545;">
         <i class="fas fa-calendar-times fa-lg text-danger"></i>
         <div class="flex-grow-1">
-            <strong><?= $expiry_warn_count ?> mặt hàng</strong> sẽ hết hạn sử dụng trong vòng <strong>7 ngày</strong> tới.
+            <i class="bi bi-calendar2-x fs-4"></i>
+            <strong><?= $expiry_warn_count ?> mặt hàng</strong> sẽ hết hạn sử dụng trong vòng <strong><?= $inv_expiry_days ?> ngày</strong> tới.
         </div>
         <a href="controllers/InventoryController.php?tab=all" class="btn btn-sm btn-danger fw-bold shadow-sm" style="white-space:nowrap">
             <i class="fas fa-arrow-right me-1" style="pointer-events:none"></i>Kiểm tra ngay

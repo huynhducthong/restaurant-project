@@ -617,11 +617,6 @@ try {
                 </li>
                 <?php endif; ?>
 
-                <li class="<?= ($current_page == 'manage_videos.php') ? 'active' : '' ?>">
-                    <a href="/restaurant-project/admin/controllers/manage_videos.php">
-                        <i class="fas fa-video"></i> Quản lý Video
-                    </a>
-                </li>
 
                 <?php if (checkMenuAccess($user_role, ['chef'])): ?>
                 <?php 
@@ -696,6 +691,8 @@ try {
                     </a>
                 </li>
 
+
+
                 <li class="<?= isActive('manage_users.php') ?>">
                     <a href="/restaurant-project/admin/manage_users.php">
                         <i class="fas fa-users-cog"></i> Quản lý Nhân sự
@@ -715,7 +712,7 @@ try {
                         <i class="fas fa-newspaper"></i> Quản lý Tin tức                    </a>
                 </li>
 
-                <li class="<?= isActive('settings.php') ?>">
+                                <li class="<?= isActive('settings.php') ?>">
                     <a href="/restaurant-project/admin/controllers/settings.php">
                         <i class="fas fa-cog"></i> Cài Đặt Chung
                     </a>
@@ -724,10 +721,28 @@ try {
 
 
 
-                <li class="<?= isActive('UserController.php') ?>">
-                    <a href="/restaurant-project/admin/controllers/UserController.php">
-                        <i class="fas fa-users-cog"></i> Quản lý Người dùng
+                <?php $isCustomerMenu = isActive('UserController.php') || isActive('manage_milestones.php'); ?>
+                <li class="<?= $isCustomerMenu ? 'active' : '' ?> customer-menu-toggle">
+                    <a href="javascript:void(0)" data-bs-target="#customerSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isCustomerMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <i class="fas fa-users-cog"></i> Quản lý Khách hàng
+                        </div>
+                        <div>
+                            <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: auto;"></i>
+                        </div>
                     </a>
+                    <ul class="collapse list-unstyled <?= $isCustomerMenu ? 'show' : '' ?>" id="customerSubmenu" style="background: rgba(0,0,0,0.03);">
+                        <li class="<?= isActive('UserController.php') ?>">
+                            <a href="/restaurant-project/admin/controllers/UserController.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-users" style="font-size: 12px; margin-right: 6px;"></i> Danh sách Khách hàng
+                            </a>
+                        </li>
+                        <li class="<?= isActive('manage_milestones.php') ?>">
+                            <a href="/restaurant-project/admin/manage_milestones.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-award" style="font-size: 12px; margin-right: 6px;"></i> Đặc quyền / Cột mốc
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <?php endif; ?>
 
@@ -768,6 +783,7 @@ try {
                     'settings.php'            => 'Cài Đặt Hệ Thống Chung',
                     'footer_settings.php'     => 'Cấu Hình Giao Diện Footer',
                     'manage_users.php'        => 'Quản Lý Nhân Sự',
+                    'manage_milestones.php'   => 'Quản Lý Cột Mốc Đặc Quyền',
                     'manage_about.php'        => 'Quản Lý Tin Tức',
                     'manage_contacts.php'     => 'Quản Lý Liên Hệ',
 
