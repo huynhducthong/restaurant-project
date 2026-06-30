@@ -669,7 +669,7 @@ include __DIR__ . '/../views/client/layouts/header.php';
 .article-body-content {
     font-size: 17px;
     line-height: 1.8;
-    color: var(--news-text-dark);
+    color: #ffffff;
 }
 .article-body-content p {
     margin-bottom: 20px;
@@ -1501,7 +1501,7 @@ include __DIR__ . '/../views/client/layouts/header.php';
 .article-body-content {
     font-size: 17.5px !important;
     line-height: 1.85 !important;
-    color: var(--news-text-dark) !important;
+    color: #ffffff !important;
 }
 .article-body-content p {
     margin-bottom: 25px !important;
