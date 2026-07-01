@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sơ Đồ Luồng Hệ Thống Nhà Hàng</title>
+    <!-- Thư viện Mermaid JS -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: false,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 1200px;
+            overflow-x: auto;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🚀 Sơ Đồ Luồng Vận Hành Nhà Hàng</h1>
+        <p style="text-align:center; color:#7f8c8d; margin-bottom: 20px;">
+            (Bạn có thể <b>Ctrl + Cuộn chuột</b> để phóng to/thu nhỏ sơ đồ cho dễ nhìn nhé!)
+        </p>
+        <div class="mermaid">
+                flowchart TD
+                    %% Định nghĩa Client
+                    subgraph Client [🧑 Phía Khách Hàng]
+                        direction TB
+                        A(Khách hàng truy cập Web) --> B{Hành động}
+                        B -->|Xem Thông tin| C(Xem Menu, Giới thiệu)
+                        B -->|Tạo Đặt Bàn| D(Chọn ngày, giờ, số người)
+                        D --> E(Thanh toán Cọc)
+                    end
+
+                    %% Định nghĩa Thu ngân & Lễ tân
+                    subgraph Reception [💻 Thu Ngân & Lễ Tân]
+                        direction TB
+                        E -->|Gửi yêu cầu| F(Màn hình Quản lý Đặt Bàn)
+                        F -->|Xác nhận| G(Xếp bàn cho khách)
+                        H(Khách vãng lai đến quán) --> I(Màn hình Thu Ngân - POS)
+                        G --> I
+                        I -->|Nhập Order món ăn| J(Gửi Order xuống Bếp)
+                    end
+
+                    %% Định nghĩa Bếp & Kho
+                    subgraph Kitchen_Inventory [🍳 Bếp & Kho Hàng]
+                        direction TB
+                        J --> K(Màn hình KDS - Bếp)
+                        K -->|Đầu bếp nấu xong| L(Xác nhận Hoàn thành)
+                        L --> M{Hệ thống Tự Động}
+                        M -->|Theo công thức| N(Trừ nguyên liệu trong Kho)
+                        N --> O{Kiểm tra Tồn kho}
+                        O -->|Dưới mức Min| P(Báo động Tồn kho thấp)
+                        O -->|Gần Hết HSD| Q(Báo động Sắp hết HSD)
+                    end
+
+                    %% Định nghĩa Quản lý
+                    subgraph Admin [📊 Ban Quản Trị & Thống Kê]
+                        direction TB
+                        L -->|Trạng thái Món Xong| R(Báo cho Thu Ngân mang ra)
+                        R --> S(Tính tiền & In Hóa đơn)
+                        S --> T(Ghi nhận + DOANH THU)
+                        
+                        P -.->|Gợi ý nhập hàng| U(Quản lý Kho)
+                        Q -.-> U
+                        U -->|Tạo đơn nhập mới| V(Nhập hàng vào kho)
+                        V --> W(Ghi nhận - CHI PHÍ)
+
+                        T --> X((Bảng Điều Khiển Dashboard))
+                        W --> X
+                        X --> Y[Thống kê Lợi nhuận]
+                        Y --> Z[Xuất File Excel/PDF]
+                    end
+
+                    %% Style cho các node
+                    classDef client fill:#e3f2fd,stroke:#2196f3,stroke-width:2px,color:#000;
+                    classDef pos fill:#fff3e0,stroke:#ff9800,stroke-width:2px,color:#000;
+                    classDef kitchen fill:#e8f5e9,stroke:#4caf50,stroke-width:2px,color:#000;
+                    classDef admin fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px,color:#000;
+                    classDef auto fill:#ffebee,stroke:#f44336,stroke-width:2px,stroke-dasharray: 5 5,color:#000;
+
+                    class A,B,C,D,E client;
+                    class F,G,H,I,R,S pos;
+                    class J,K,L,U,V kitchen;
+                    class T,W,X,Y,Z admin;
+                    class M,N,O,P,Q auto;
+            </div>
+    </div>
+
+</body>
+</html>

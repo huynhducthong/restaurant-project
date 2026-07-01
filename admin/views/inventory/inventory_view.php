@@ -300,6 +300,9 @@ include '../../public/admin_layout_header.php';
                         <i class="fas fa-times-circle me-1" style="pointer-events:none"></i>Đã hết HSD
                         <?php if ($expired_count > 0) echo "<span class='badge badge-ghost-danger ms-1' style='pointer-events:none'>$expired_count</span>"; ?>
                     </button>
+                    <button class="btn btn-sm btn-outline-secondary px-3 fw-bold" onclick="filterWarning('hidden', this)">
+                        <i class="fas fa-eye-slash me-1" style="pointer-events:none"></i>Đã ẩn
+                    </button>
                 </div>
 
                 <!-- BỘ LỌC THEO KHO -->
@@ -371,6 +374,7 @@ include '../../public/admin_layout_header.php';
                                     data-low="<?= $isLow ?>"
                                     data-expiry="<?= $isExpiring ?>"
                                     data-expired="<?= $isExpired ?>"
+                                    data-hidden="<?= $i['is_active'] == 0 ? '1' : '0' ?>"
                                     data-category="<?= htmlspecialchars($i['category'] ?? '') ?>"
                                     data-wh-stock='<?= json_encode($wh_with_stock) ?>'
                                     data-stocks='<?= json_encode($i['stocks']) ?>'
@@ -1925,9 +1929,10 @@ include '../../public/admin_layout_header.php';
             const nameMatch   = (r.dataset.name || '').includes(q);
             const rCat = r.dataset.category ? r.dataset.category.toLowerCase() : '';
             const catMatch    = catFilter === '' || rCat === catFilter;
-            const filterMatch = (activeFilter === 'all') ? true
+            const filterMatch = (activeFilter === 'all') ? r.dataset.hidden !== '1'
+                              : (activeFilter === 'hidden' ? r.dataset.hidden === '1'
                               : (activeFilter === 'low' ? r.dataset.low === '1' 
-                               : (activeFilter === 'expired' ? r.dataset.expired === '1' : r.dataset.expiry === '1'));
+                               : (activeFilter === 'expired' ? r.dataset.expired === '1' : r.dataset.expiry === '1')));
 
             // Filter theo kho: kiểm tra data-wh-stock có chứa ID kho đang chọn không
             let whMatch = true;
