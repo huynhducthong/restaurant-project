@@ -667,6 +667,7 @@ include '../../public/admin_layout_header.php';
                             <th>Kho</th>
                             <th>Loại</th>
                             <th>Số lượng</th>
+                            <th class="text-end">Thành tiền</th>
                             <th>Người tạo</th>
                         </tr>
                     </thead>
@@ -689,6 +690,9 @@ include '../../public/admin_layout_header.php';
                                     echo "<span class=\"badge $bg\"><i class=\"$icon me-1\" style=\"pointer-events:none\"></i>$label</span>";
                                 ?></td>
                                 <td><?= (float)$h['quantity'] ?> <?= $h['unit_name'] ?></td>
+                                <td class="text-end fw-bold <?= in_array($h['type'], ['loss', 'export', 'audit_adjust_down']) ? 'text-danger' : 'text-success' ?>">
+                                    <?= number_format(abs($h['quantity'] * ($h['cost_price'] ?? 0))) ?> đ
+                                </td>
                                 <td><small><?= htmlspecialchars($h['performed_by']) ?></small></td>
                             </tr>
                         <?php endforeach; ?>
@@ -708,7 +712,10 @@ include '../../public/admin_layout_header.php';
                     <?php
                     $grand_total_value = 0;
                     foreach ($warehouse_values as $wv):
-                        $grand_total_value += $wv['total_value'];
+                        // Không tính Kho Xuất (6) và Kho Hủy (7) vào Tổng Tài Sản Kho
+                        if (!in_array($wv['id'], [6, 7])) {
+                            $grand_total_value += $wv['total_value'];
+                        }
                     ?>
                         <div class="col-md-3">
                             <div class="card border-0 shadow-sm bg-white p-3 h-100">
@@ -963,6 +970,20 @@ include '../../public/admin_layout_header.php';
                 </button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Modal Preview Image -->
+<div class="modal fade" id="modalPreviewImage" tabindex="-1" style="z-index: 1060;">
+    <div class="modal-dialog modal-xl modal-dialog-centered position-relative">
+        <button type="button" class="btn btn-dark text-white rounded-circle position-absolute" style="top: -15px; right: -15px; width: 45px; height: 45px; z-index: 1070; box-shadow: 0 4px 10px rgba(0,0,0,0.5);" data-bs-dismiss="modal" aria-label="Close">
+            <i class="fas fa-times fs-4" style="line-height: 1;"></i>
+        </button>
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body text-center p-0">
+                <img id="preview-image-src" src="" class="img-fluid rounded shadow-lg" style="max-height: 85vh; border: 3px solid #fff; max-width: 100%;" alt="Preview">
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1245,7 +1266,7 @@ include '../../public/admin_layout_header.php';
             <div class="modal-header bg-dark ">
                 <h5>Nhà Cung Cấp</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body p-4">
+            <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto;">
                 <div class="mb-3"><label class="small fw-bold">Tên NCC/Công ty <span class="text-danger">*</span></label><input type="text" name="s_name" id="s-name" class="form-control" required></div>
                 <div class="mb-3"><label class="small fw-bold">Người đại diện</label><input type="text" name="s_contact" id="s-contact" class="form-control"></div>
                 <div class="row g-2 mb-3">
@@ -1253,19 +1274,64 @@ include '../../public/admin_layout_header.php';
                     <div class="col-6"><label class="small fw-bold">Email</label><input type="email" name="s_email" id="s-email" class="form-control"></div>
                 </div>
                 <div class="mb-3"><label class="small fw-bold">Địa chỉ</label><textarea name="s_address" id="s-address" class="form-control" rows="2"></textarea></div>
-                <hr>
-                <div class="mb-3">
-                    <label class="small fw-bold text-danger"><i class="fas fa-file-certificate me-1"></i>Giấy Phép ATVSTP (Ảnh/PDF)</label>
-                    <input type="file" name="s_atvstp_file" id="s-atvstp-file" class="form-control form-control-sm" accept=".jpg,.jpeg,.png,.pdf">
-                    <div id="s-atvstp-link" class="mt-1 small"></div>
+                
+                <div class="row g-2 mb-3">
+                    <div class="col-6"><label class="small fw-bold">Quốc gia xuất xứ</label><input type="text" name="origin_country" id="s-origin" class="form-control" placeholder="VD: Nhật Bản, Việt Nam"></div>
+                    <div class="col-6"><label class="small fw-bold">Điều kiện vận chuyển</label><input type="text" name="transport_conditions" id="s-transport" class="form-control" placeholder="VD: Xe đông lạnh -18°C"></div>
                 </div>
-                <div class="mb-0">
-                    <label class="small fw-bold text-danger">Ngày hết hạn ATVSTP</label>
-                    <input type="date" name="s_atvstp_expiry" id="s-atvstp-expiry" class="form-control form-control-sm">
+                
+                <hr>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label class="small fw-bold text-danger"><i class="fas fa-file-certificate me-1"></i>Chứng nhận chất lượng</label>
+                    <button type="button" class="btn btn-sm btn-outline-danger" id="btnAddCert"><i class="fas fa-plus"></i> Thêm</button>
+                </div>
+                <div id="certContainer">
+                    <!-- Dynamic certificates will be appended here -->
                 </div>
             </div>
             <div class="modal-footer"><button type="submit" class="btn btn-dark fw-bold text-white shadow-sm w-100 fw-bold">LƯU NCC</button></div>
         </form>
+        
+        <!-- Template for a certificate row -->
+        <template id="certRowTemplate">
+            <div class="card mb-2 cert-row border-danger">
+                <div class="card-body p-2 position-relative">
+                    <button type="button" class="btn-close btn-sm position-absolute top-0 end-0 m-2 remove-cert" aria-label="Close"></button>
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <label class="small">Loại chứng nhận</label>
+                            <select name="cert_type[]" class="form-select form-select-sm" required>
+                                <option value="ATVSTP">ATVSTP</option>
+                                <option value="HACCP">HACCP</option>
+                                <option value="ISO 22000">ISO 22000</option>
+                                <option value="GlobalG.A.P">GlobalG.A.P</option>
+                                <option value="ASC">ASC</option>
+                                <option value="MSC">MSC</option>
+                                <option value="Organic">Organic</option>
+                                <option value="Other">Khác</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small">Số chứng nhận</label>
+                            <input type="text" name="cert_number[]" class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small">File đính kèm</label>
+                            <input type="file" name="cert_file[]" class="form-control form-control-sm" accept=".jpg,.jpeg,.png,.pdf">
+                            <input type="hidden" name="cert_file_old[]" value="">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="small">Ngày cấp</label>
+                            <input type="date" name="cert_issue_date[]" class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="small text-danger">Ngày hết hạn</label>
+                            <input type="date" name="cert_expiry_date[]" class="form-control form-control-sm">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
     </div>
 </div>
 
@@ -1479,9 +1545,8 @@ include '../../public/admin_layout_header.php';
     }
 
     function openSupplierModal() {
-        $('#s-id, #s-name, #s-contact, #s-phone, #s-email, #s-address, #s-atvstp-expiry').val('');
-        $('#s-atvstp-file').val('');
-        $('#s-atvstp-link').html('');
+        $('#s-id, #s-name, #s-contact, #s-phone, #s-email, #s-address, #s-origin, #s-transport').val('');
+        $('#certContainer').empty();
         new bootstrap.Modal(document.getElementById('modalSupplier')).show();
     }
 
@@ -1492,15 +1557,41 @@ include '../../public/admin_layout_header.php';
         $('#s-phone').val(data.phone);
         $('#s-email').val(data.email);
         $('#s-address').val(data.address);
-        $('#s-atvstp-expiry').val(data.atvstp_expiry || '');
-        $('#s-atvstp-file').val('');
-        if (data.atvstp_file) {
-            $('#s-atvstp-link').html('<a href="../../uploads/suppliers/' + data.atvstp_file + '" target="_blank" class="text-decoration-none"><i class="fas fa-file-pdf me-1"></i>Xem file hiện tại</a>');
-        } else {
-            $('#s-atvstp-link').html('');
+        $('#s-origin').val(data.origin_country || '');
+        $('#s-transport').val(data.transport_conditions || '');
+        
+        $('#certContainer').empty();
+        if (data.certs && data.certs.length > 0) {
+            data.certs.forEach(c => addCertRow(c));
         }
+        
         new bootstrap.Modal(document.getElementById('modalSupplier')).show();
     }
+
+    function addCertRow(data = null) {
+        let tpl = document.getElementById('certRowTemplate').content.cloneNode(true);
+        let row = $(tpl).find('.cert-row');
+        
+        if (data) {
+            row.find('[name="cert_type[]"]').val(data.cert_type);
+            row.find('[name="cert_number[]"]').val(data.cert_number);
+            row.find('[name="cert_issue_date[]"]').val(data.issue_date);
+            row.find('[name="cert_expiry_date[]"]').val(data.expiry_date);
+            row.find('[name="cert_file_old[]"]').val(data.file_path);
+            if (data.file_path) {
+                let link = `<a href="../../uploads/certificates/${data.file_path}" target="_blank" class="d-block mt-1 small"><i class="fas fa-link"></i> Xem file cũ</a>`;
+                row.find('input[type="file"]').after(link);
+            }
+        }
+        
+        row.find('.remove-cert').on('click', function() {
+            $(this).closest('.cert-row').remove();
+        });
+        
+        $('#certContainer').append(row);
+    }
+    
+    $('#btnAddCert').on('click', () => addCertRow());
 
     function openImport(id, name, unit) {
         $('#form-import')[0].reset();
@@ -2218,15 +2309,20 @@ $(document).ready(function() {
 
                 // Nếu có file giấy kiểm dịch, thêm nút vào header
                 if (res.batch_cert_file) {
-                    const btn = `<a href="../../uploads/po_certs/${res.batch_cert_file}" target="_blank" id="view-po-cert-btn" class="btn btn-sm btn-outline-danger ms-3 fw-bold shadow-sm"><i class="fas fa-file-pdf me-1"></i>Xem Chứng Từ Lô Hàng</a>`;
+                    const btn = `<a href="#" onclick="showImagePreview('../../uploads/po_certs/${res.batch_cert_file}'); return false;" id="view-po-cert-btn" class="btn btn-sm btn-outline-danger ms-3 fw-bold shadow-sm"><i class="fas fa-file-image me-1"></i>Xem Chứng Từ Lô Hàng</a>`;
                     $('#view-po-code').after(btn);
                 }
-                
-                // Nếu có giấy ATVSTP của nhà cung cấp
-                if (res.supplier_atvstp) {
-                    const atvstpBtn = `<a href="../../uploads/suppliers/${res.supplier_atvstp}" target="_blank" id="view-po-supplier-atvstp" class="btn btn-sm btn-outline-warning ms-2"><i class="fas fa-file-certificate me-1"></i>Xem ATVSTP Nhà Cung Cấp</a>`;
-                    $('#view-po-code').after(atvstpBtn);
+                $('.view-po-supplier-cert').remove(); // Xóa các chứng nhận cũ
+                if (res.supplier_certs && res.supplier_certs.length > 0) {
+                    res.supplier_certs.forEach(cert => {
+                        if (cert.file_path) {
+                            const btn = `<a href="#" onclick="showImagePreview('../../uploads/certificates/${cert.file_path}'); return false;" class="btn btn-sm btn-outline-warning ms-2 view-po-supplier-cert"><i class="fas fa-file-certificate me-1"></i>Xem ${cert.cert_type}</a>`;
+                            $('#view-po-code').after(btn);
+                        }
+                    });
                 }
+            } else {
+                alert('Lỗi tải dữ liệu: ' + (res.msg || 'Không rõ nguyên nhân.'));
             }
         }, 'json');
     };
@@ -2256,14 +2352,45 @@ $(document).ready(function() {
                     let qty = parseFloat(item.expected_qty || 0);
                     let price = parseFloat(item.expected_price || 0);
                     html += `<tr><td class="ps-4"><div class="fw-bold">${item.item_name}</div><input type="hidden" name="ingredient_id[]" value="${item.ingredient_id}"></td><td class="text-center text-muted">${qty} ${item.unit_name}</td><td><div class="input-group input-group-sm"><input type="number" name="received_qty[]" class="form-control text-center fw-bold" step="0.01" value="${qty}" required><span class="input-group-text">${item.unit_name}</span></div></td><td><input type="text" name="received_price[]" class="form-control form-control-sm text-end money-input" value="${price.toLocaleString('en-US')}" required></td><td><input type="text" name="receiving_temperature[]" class="form-control form-control-sm text-center" placeholder="VD: -18, 4" required></td><td class="pe-4"><input type="date" name="expiry_date[]" class="form-control form-control-sm" required></td></tr>`;
+                    
+                    // Add Inspection Row
+                    html += `<tr class="bg-light border-bottom border-secondary"><td colspan="6" class="p-3">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="small fw-bold text-primary">Mã lô NSX (Lot Number)</label>
+                                <input type="text" name="supplier_batch_number[]" class="form-control form-control-sm border-primary" placeholder="Nhập Lot Number...">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small fw-bold">Ảnh thực tế nhận hàng</label>
+                                <input type="file" name="inspection_image_${item.ingredient_id}" class="form-control form-control-sm" accept="image/*">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small fw-bold mb-2">Checklist Chất Lượng (Tích nếu đạt):</label>
+                                <div class="d-flex flex-wrap gap-3">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="chk_packaging[${item.ingredient_id}]" value="1" checked><label class="form-check-label small">Bao bì</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="chk_color[${item.ingredient_id}]" value="1" checked><label class="form-check-label small">Màu sắc</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="chk_odor[${item.ingredient_id}]" value="1" checked><label class="form-check-label small">Mùi</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="chk_freshness[${item.ingredient_id}]" value="1" checked><label class="form-check-label small">Độ tươi</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="chk_size[${item.ingredient_id}]" value="1" checked><label class="form-check-label small">Kích thước</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="chk_weight[${item.ingredient_id}]" value="1" checked><label class="form-check-label small">Trọng lượng</label></div>
+                                </div>
+                            </div>
+                        </div>
+                    </td></tr>`;
                 });
                 $('#receive-po-body').html(html);
 
-                $('#receive-po-supplier-atvstp').remove(); // Xóa link cũ nếu có
-                if (res.supplier_atvstp) {
-                    const atvstpLink = `<a href="../../uploads/suppliers/${res.supplier_atvstp}" target="_blank" id="receive-po-supplier-atvstp" class="btn btn-sm btn-outline-light ms-3"><i class="fas fa-file-certificate me-1"></i>Xem Giấy ATVSTP Nhà Cung Cấp</a>`;
-                    $('#receive-po-code').after(atvstpLink);
+                $('.receive-po-supplier-cert').remove(); // Xóa link cũ
+                if (res.supplier_certs && res.supplier_certs.length > 0) {
+                    res.supplier_certs.forEach(cert => {
+                        if (cert.file_path) {
+                            const btn = `<a href="#" onclick="showImagePreview('../../uploads/certificates/${cert.file_path}'); return false;" class="btn btn-sm btn-outline-light ms-3 receive-po-supplier-cert"><i class="fas fa-file-certificate me-1"></i>Xem ${cert.cert_type}</a>`;
+                            $('#receive-po-code').after(btn);
+                        }
+                    });
                 }
+            } else {
+                alert('Lỗi tải dữ liệu: ' + (res.msg || 'Không rõ nguyên nhân.'));
             }
         }, 'json');
     };
@@ -2343,6 +2470,11 @@ $(document).ready(function() {
         });
     };
 });
+
+    window.showImagePreview = function(url) {
+        $('#preview-image-src').attr('src', url);
+        new bootstrap.Modal(document.getElementById('modalPreviewImage')).show();
+    };
 
     // ================= KHỞI CHẠY =================
     $(function() {

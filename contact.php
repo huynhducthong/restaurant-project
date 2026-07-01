@@ -6,11 +6,11 @@ require_once 'config/database.php';
 
 $db = (new Database())->getConnection();
 
-// --- Lấy cấu hình Footer (sử dụng lại cho phần liên hệ) ---
-$stmt = $db->query("SELECT * FROM footer_settings");
-$ft = [];
+// --- Lấy cấu hình chung (Settings) ---
+$stmt = $db->query("SELECT * FROM settings");
+$settings = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $ft[$row['setting_key']] = $row['setting_value'];
+    $settings[$row['key_name']] = $row['key_value'];
 }
 
 // --- Xử lý gửi form ---
@@ -272,27 +272,27 @@ include 'views/client/layouts/header.php';
                     <div class="info-item">
                         <i class="bi bi-geo-alt-fill"></i>
                         <h5>Địa chỉ</h5>
-                        <p><?= htmlspecialchars($ft['address'] ?? 'Đang cập nhật...') ?></p>
+                        <p><?= htmlspecialchars($settings['address'] ?? '123 Đường ABC, Quận 1, TP. HCM') ?></p>
                     </div>
                     <div class="info-item">
                         <i class="bi bi-envelope-fill"></i>
                         <h5>Email</h5>
-                        <p><?= htmlspecialchars($ft['email'] ?? 'Đang cập nhật...') ?></p>
+                        <p>contact@restaurantly.com</p>
                     </div>
                     <div class="info-item">
                         <i class="bi bi-telephone-fill"></i>
                         <h5>Điện thoại</h5>
-                        <p><?= htmlspecialchars($ft['phone'] ?? 'Đang cập nhật...') ?></p>
+                        <p><?= htmlspecialchars($settings['hotline'] ?? '0901 234 567') ?></p>
                     </div>
                     <div class="info-item">
                         <i class="bi bi-clock-fill"></i>
                         <h5>Giờ mở cửa</h5>
-                        <p><?= htmlspecialchars($ft['opening_hours'] ?? 'Đang cập nhật...') ?></p>
+                        <p><?= htmlspecialchars($settings['open_time'] ?? '09:00 AM - 11:00 PM') ?></p>
                     </div>
 
-                    <?php if (($ft['show_map'] ?? '0') == '1' && !empty($ft['google_map_iframe'])): ?>
+                    <?php if (!empty($settings['google_map_iframe'])): ?>
                         <div class="map-mini">
-                            <?= $ft['google_map_iframe'] ?>
+                            <?= $settings['google_map_iframe'] ?>
                         </div>
                     <?php endif; ?>
                 </div>

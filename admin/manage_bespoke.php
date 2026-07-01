@@ -54,9 +54,32 @@ if (isset($_GET['delete_style'])) {
     $message = '<div class="alert alert-success">Xóa Phong cách thành công.</div>';
 }
 
+// Handling Occasions CRUD
+if (isset($_POST['add_occasion']) || isset($_POST['edit_occasion'])) {
+    $id = $_POST['id'] ?? '';
+    $name = $_POST['name'] ?? '';
+    $sort_order = (int)($_POST['sort_order'] ?? 0);
+    
+    if ($id) {
+        $stmt = $db->prepare("UPDATE bespoke_occasions SET name=?, sort_order=? WHERE id=?");
+        $stmt->execute([$name, $sort_order, $id]);
+        $message = '<div class="alert alert-success">Cập nhật Dịp tổ chức thành công.</div>';
+    } else {
+        $stmt = $db->prepare("INSERT INTO bespoke_occasions (name, sort_order) VALUES (?, ?)");
+        $stmt->execute([$name, $sort_order]);
+        $message = '<div class="alert alert-success">Thêm Dịp tổ chức thành công.</div>';
+    }
+}
+
+if (isset($_GET['delete_occasion'])) {
+    $db->prepare("DELETE FROM bespoke_occasions WHERE id=?")->execute([(int)$_GET['delete_occasion']]);
+    $message = '<div class="alert alert-success">Xóa Dịp tổ chức thành công.</div>';
+}
+
 // Fetching lists
 $budgets = $db->query("SELECT * FROM bespoke_budgets ORDER BY sort_order ASC")->fetchAll(PDO::FETCH_ASSOC);
 $styles = $db->query("SELECT * FROM bespoke_styles ORDER BY sort_order ASC")->fetchAll(PDO::FETCH_ASSOC);
+$occasions = $db->query("SELECT * FROM bespoke_occasions ORDER BY sort_order ASC")->fetchAll(PDO::FETCH_ASSOC);
 
 // Handle Edit States
 $edit_budget = null;
@@ -72,6 +95,13 @@ if (isset($_GET['edit_style'])) {
     $stmt->execute([(int)$_GET['edit_style']]);
     $edit_style = $stmt->fetch(PDO::FETCH_ASSOC);
 }
+
+$edit_occasion = null;
+if (isset($_GET['edit_occasion'])) {
+    $stmt = $db->prepare("SELECT * FROM bespoke_occasions WHERE id=?");
+    $stmt->execute([(int)$_GET['edit_occasion']]);
+    $edit_occasion = $stmt->fetch(PDO::FETCH_ASSOC);
+}
 ?>
     <div class="container-fluid py-4">
 
@@ -81,7 +111,7 @@ if (isset($_GET['edit_style'])) {
 
         <div class="row">
             <!-- SECTION: BUDGETS -->
-            <div class="col-md-6 mb-5">
+            <div class="col-md-4 mb-5">
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">Quản Lý Ngân Sách Dự Kiến</h5>
@@ -142,7 +172,7 @@ if (isset($_GET['edit_style'])) {
             </div>
 
             <!-- SECTION: STYLES -->
-            <div class="col-md-6 mb-5">
+            <div class="col-md-4 mb-5">
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">Quản Lý Phong Cách Ẩm Thực</h5>
@@ -186,6 +216,61 @@ if (isset($_GET['edit_style'])) {
                                     <td>
                                         <a href="?edit_style=<?= $s['id'] ?>" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
                                         <a href="?delete_style=<?= $s['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa phong cách này?');"><i class="fas fa-trash"></i></a>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- SECTION: OCCASIONS -->
+            <div class="col-md-4 mb-5">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Quản Lý Dịp Tổ Chức</h5>
+                        <?php if($edit_occasion): ?>
+                            <a href="manage_bespoke.php" class="btn btn-sm btn-outline-light">Thêm mới</a>
+                        <?php endif; ?>
+                    </div>
+                    <div class="card-body">
+                        <form action="manage_bespoke.php" method="POST">
+                            <input type="hidden" name="id" value="<?= $edit_occasion['id'] ?? '' ?>">
+                            <div class="mb-3">
+                                <label class="form-label">Tên Dịp (VD: Sinh nhật, Kỷ niệm)</label>
+                                <input type="text" class="form-control" name="name" value="<?= htmlspecialchars($edit_occasion['name'] ?? '') ?>" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Thứ tự sắp xếp</label>
+                                <input type="number" class="form-control" name="sort_order" value="<?= $edit_occasion['sort_order'] ?? 0 ?>" required>
+                            </div>
+                            <button type="submit" name="<?= $edit_occasion ? 'edit_occasion' : 'add_occasion' ?>" class="btn btn-info w-100 text-white">
+                                <?= $edit_occasion ? 'Cập nhật Dịp' : 'Thêm Dịp tổ chức' ?>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-body p-0">
+                        <table class="table table-hover table-bordered mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Thứ tự</th>
+                                    <th>Tên Dịp</th>
+                                    <th width="120">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($occasions as $o): ?>
+                                <tr>
+                                    <td><?= $o['sort_order'] ?></td>
+                                    <td><?= htmlspecialchars($o['name']) ?></td>
+                                    <td>
+                                        <a href="?edit_occasion=<?= $o['id'] ?>" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
+                                        <a href="?delete_occasion=<?= $o['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa dịp này?');"><i class="fas fa-trash"></i></a>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>

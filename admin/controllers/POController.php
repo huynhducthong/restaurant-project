@@ -132,15 +132,22 @@ if (isset($_POST['action']) && $_POST['action'] === 'get_details') {
         $stmt->execute([$po_id]);
         $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $po_info = $db->prepare("SELECT p.batch_cert_file, s.atvstp_file AS supplier_atvstp FROM purchase_orders p LEFT JOIN suppliers s ON p.supplier_id = s.id WHERE p.id = ?");
+        $po_info = $db->prepare("SELECT p.batch_cert_file, p.supplier_id FROM purchase_orders p WHERE p.id = ?");
         $po_info->execute([$po_id]);
-        $po_data = $po_info->fetch(PDO::FETCH_ASSOC) ?: ['batch_cert_file' => null, 'supplier_atvstp' => null];
+        $po_data = $po_info->fetch(PDO::FETCH_ASSOC) ?: ['batch_cert_file' => null, 'supplier_id' => null];
+
+        $supplier_certs = [];
+        if (!empty($po_data['supplier_id'])) {
+            $stmt_certs = $db->prepare("SELECT * FROM supplier_certificates WHERE supplier_id = ?");
+            $stmt_certs->execute([$po_data['supplier_id']]);
+            $supplier_certs = $stmt_certs->fetchAll(PDO::FETCH_ASSOC);
+        }
 
         echo json_encode([
             'status' => 'success', 
             'data' => $details, 
             'batch_cert_file' => $po_data['batch_cert_file'],
-            'supplier_atvstp' => $po_data['supplier_atvstp']
+            'supplier_certs' => $supplier_certs
         ]);
     } catch (Exception $e) {
         echo json_encode(['status' => 'error', 'msg' => $e->getMessage()]);
@@ -217,7 +224,8 @@ if (isset($_POST['receive_po_final'])) {
         $upd_stock   = $db->prepare("INSERT INTO inventory_stocks (warehouse_id, ingredient_id, quantity) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE quantity = quantity + ?");
         $ins_history = $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, 'import', ?, ?)");
         $upd_inv     = $db->prepare("UPDATE inventory SET cost_price = ?, expiry_date = ? WHERE id = ?");
-        $ins_batch   = $db->prepare("INSERT INTO inventory_batches (ingredient_id, warehouse_id, batch_code, quantity, expiry_date, cost_price, receiving_temperature) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $ins_batch   = $db->prepare("INSERT INTO inventory_batches (ingredient_id, warehouse_id, batch_code, quantity, expiry_date, cost_price, receiving_temperature, supplier_batch_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $ins_inspection = $db->prepare("INSERT INTO po_receipt_inspections (po_id, ingredient_id, check_packaging, check_color, check_odor, check_freshness, check_size, check_weight, image_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         foreach ($_POST['ingredient_id'] as $key => $ing_id) {
             $ing_id    = (int)$ing_id;
@@ -225,6 +233,8 @@ if (isset($_POST['receive_po_final'])) {
             $new_price = (float)str_replace(',', '', $_POST['received_price'][$key]);
             $hsd       = !empty($_POST['expiry_date'][$key]) ? $_POST['expiry_date'][$key] : null;
             $temp      = !empty($_POST['receiving_temperature'][$key]) ? trim($_POST['receiving_temperature'][$key]) : null;
+
+            $supplier_batch_number = !empty($_POST['supplier_batch_number'][$key]) ? trim($_POST['supplier_batch_number'][$key]) : null;
 
             if ($new_qty <= 0) continue;
 
@@ -244,7 +254,7 @@ if (isset($_POST['receive_po_final'])) {
 
             // 2. Cập nhật lô hàng (Batch)
             $po_code_res = $db->query("SELECT po_code FROM purchase_orders WHERE id = $po_id")->fetchColumn();
-            $ins_batch->execute([$ing_id, $main_warehouse_id, $po_code_res, $new_qty, $hsd, $new_price, $temp]);
+            $ins_batch->execute([$ing_id, $main_warehouse_id, $po_code_res, $new_qty, $hsd, $new_price, $temp, $supplier_batch_number]);
 
             // 3. Cập nhật HSD tổng (Lấy ngày sớm nhất của các lô còn hàng)
             $stmt_min_hsd = $db->prepare("SELECT MIN(expiry_date) FROM inventory_batches WHERE ingredient_id = ? AND quantity > 0 AND expiry_date IS NOT NULL AND warehouse_id NOT IN (6, 7)");
@@ -259,6 +269,27 @@ if (isset($_POST['receive_po_final'])) {
 
             // 6. Ghi lịch sử giao dịch
             $ins_history->execute([$ing_id, $main_warehouse_id, $new_qty, $current_user . " (Nhận hàng PO #" . $po_id . ")"]);
+            
+            // 7. Lưu Inspection Checklist & Ảnh
+            $chk_packaging = isset($_POST['chk_packaging'][$ing_id]) ? 1 : 0;
+            $chk_color     = isset($_POST['chk_color'][$ing_id]) ? 1 : 0;
+            $chk_odor      = isset($_POST['chk_odor'][$ing_id]) ? 1 : 0;
+            $chk_freshness = isset($_POST['chk_freshness'][$ing_id]) ? 1 : 0;
+            $chk_size      = isset($_POST['chk_size'][$ing_id]) ? 1 : 0;
+            $chk_weight    = isset($_POST['chk_weight'][$ing_id]) ? 1 : 0;
+            
+            $image_path = null;
+            $file_input_name = "inspection_image_" . $ing_id;
+            if (isset($_FILES[$file_input_name]) && $_FILES[$file_input_name]['error'] == UPLOAD_ERR_OK) {
+                $ext = pathinfo($_FILES[$file_input_name]['name'], PATHINFO_EXTENSION);
+                $image_path = 'insp_' . $po_id . '_' . $ing_id . '_' . time() . '.' . $ext;
+                if (!is_dir(__DIR__ . '/../../uploads/inspections/')) {
+                    mkdir(__DIR__ . '/../../uploads/inspections/', 0777, true);
+                }
+                move_uploaded_file($_FILES[$file_input_name]['tmp_name'], __DIR__ . '/../../uploads/inspections/' . $image_path);
+            }
+            
+            $ins_inspection->execute([$po_id, $ing_id, $chk_packaging, $chk_color, $chk_odor, $chk_freshness, $chk_size, $chk_weight, $image_path]);
         }
 
         // Xử lý upload Giấy kiểm dịch (Batch Certificate)

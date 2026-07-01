@@ -102,7 +102,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // BẢO MẬT: BẮT BUỘC ĐẶT TRƯỚC THEO TỪNG LOẠI DỊCH VỤ
     $min_hours = 1;
-    if ($type === 'event') $min_hours = 3;
+    $is_anniversary = isset($_POST['add_anniversary_service']) && $_POST['add_anniversary_service'] == '1';
+    
+    if ($type === 'event' || $is_anniversary) $min_hours = 3;
     if ($type === 'home') $min_hours = 24;
     if ($type === 'bespoke') $min_hours = 48;
     
@@ -114,7 +116,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $open_time_setting = $setting_stmt->fetchColumn() ?: '09:00 AM - 11:00 PM';
         
         $error_msg = "Quý khách vui lòng chọn giờ đến sau thời điểm hiện tại ít nhất {$min_hours} tiếng.";
-        if ($type === 'event') $error_msg = "Dịch vụ Tiệc kỷ niệm yêu cầu chuẩn bị chu đáo, quý khách vui lòng đặt trước ít nhất 3 tiếng.";
+        if ($type === 'event' || $is_anniversary) $error_msg = "Dịch vụ Tiệc kỷ niệm yêu cầu chuẩn bị chu đáo, quý khách vui lòng đặt trước ít nhất 3 tiếng.";
         if ($type === 'home') $error_msg = "Dịch vụ Đầu bếp tại gia cần chọn lọc nguyên liệu riêng, quý khách vui lòng đặt trước ít nhất 24 tiếng.";
         if ($type === 'bespoke') $error_msg = "Dịch vụ Thiết kế riêng đòi hỏi sự chuẩn bị hoàn mỹ nhất, quý khách vui lòng đặt trước ít nhất 48 tiếng.";
 
@@ -185,7 +187,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // TÍNH NĂNG ĐỒNG BỘ: CHỐNG TRÙNG LỊCH ĐẦU BẾP TẠI GIA (Luồng 3)
-    if ($type === 'home' && $chef_id_val) {
+    if ($type === 'chef' && $chef_id_val) {
         $four_hours = 4 * 3600;
         $check_chef_stmt = $db->prepare("
             SELECT id FROM service_bookings 
@@ -286,8 +288,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $total_amount += $t_stmt->fetchColumn() ?: 0;
         }
 
+        $is_bespoke_menu = isset($_POST['is_bespoke_menu']) ? $_POST['is_bespoke_menu'] === '1' : false;
+        
+        // Đánh dấu cho Admin Panel nhận diện đơn Bespoke
+        if ($is_bespoke_menu) {
+            $combo_id = -1;
+        }
+
         // Tính tiền món ăn khách chọn lẻ
-        if (!empty($validated_menu_items)) {
+        if (!$is_bespoke_menu && !empty($validated_menu_items)) {
             foreach ($validated_menu_items as $item) {
                 $item_price = $item['base_price'];
                 foreach ($item['toppings'] as $tp) {
@@ -298,7 +307,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         
         // Tính tiền Combo
-        if ($combo_id > 0) {
+        if (!$is_bespoke_menu && $combo_id > 0) {
             $c_stmt = $db->prepare("SELECT price FROM combos WHERE id = ?");
             $c_stmt->execute([$combo_id]);
             $total_amount += $c_stmt->fetchColumn() ?: 0;
@@ -325,7 +334,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         
         // Tính tiền dịch vụ Bespoke
-        if ($type === 'bespoke') {
+        if ($is_bespoke_menu) {
             $budget_str = $_POST['chef_budget'] ?? '';
             $per_guest = 0;
             if (strpos($budget_str, 'Dưới 1.500.000') !== false) $per_guest = 1500000;
@@ -347,19 +356,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             else $total_amount += 1200000;
         }
 
-        // --- TÍNH GIẢM GIÁ VIP ---
+        // --- TÍNH GIẢM GIÁ TỪ CỘT MỐC (MILESTONES) ---
+        $milestone_id_to_redeem = null;
         if (isset($_SESSION['user_id'])) {
-            require_once __DIR__ . '/../app/models/UserVip.php';
-            $userVipModel = new UserVip($db);
-            $vipStatus = $userVipModel->getActiveVipStatus($_SESSION['user_id']);
-            if ($vipStatus) {
-                $discount_percent = $vipStatus['discount_percent'];
-                $discount_amount = ($total_amount * $discount_percent) / 100;
-                $total_amount -= $discount_amount;
-                $msg .= "\n[Hệ thống: Đã giảm {$discount_percent}% cho khách hàng VIP {$vipStatus['plan_name']}]";
+            $stmt_ms = $db->prepare("
+                SELECT um.id as user_milestone_id, m.discount_percent, m.reward_title
+                FROM user_milestones um
+                JOIN milestones m ON um.milestone_id = m.id
+                WHERE um.user_id = ? AND um.is_redeemed = 0 AND m.discount_percent > 0
+                ORDER BY m.discount_percent DESC
+                LIMIT 1
+            ");
+            $stmt_ms->execute([$_SESSION['user_id']]);
+            $unredeemed = $stmt_ms->fetch(PDO::FETCH_ASSOC);
+            if ($unredeemed) {
+                $ms_discount_percent = $unredeemed['discount_percent'];
+                $ms_discount_amount = ($total_amount * $ms_discount_percent) / 100;
+                $total_amount -= $ms_discount_amount;
+                $msg .= "\n[Hệ thống: Đã tự động giảm {$ms_discount_percent}% nhờ đặc quyền cột mốc: {$unredeemed['reward_title']}]";
+                $milestone_id_to_redeem = $unredeemed['user_milestone_id'];
             }
         }
-        // -------------------------
+        // ---------------------------------------------
+
+        // --- TÍNH GIẢM GIÁ SINH NHẬT (10%) ---
+        if (isset($_SESSION['user_id'])) {
+            $stmt_bd = $db->prepare("SELECT birthday FROM users WHERE id = ?");
+            $stmt_bd->execute([$_SESSION['user_id']]);
+            $u_bd = $stmt_bd->fetchColumn();
+            if ($u_bd) {
+                $bd_parts = explode('-', (string)$u_bd);
+                if (count($bd_parts) == 3 && date('m') == $bd_parts[1] && date('d') == $bd_parts[2]) {
+                    $bd_discount = $total_amount * 0.10;
+                    $total_amount -= $bd_discount;
+                    $msg .= "\n[Hệ thống: Đã tự động giảm 10% - Tặng Sinh nhật Quý khách]";
+                }
+            }
+        }
+        // ---------------------------------------------
 
         // Tính 30% cọc
         $deposit_amount = $total_amount * 0.3;
@@ -418,6 +452,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // 5. Cập nhật trạng thái bàn thành "Đã đặt"
         // Không khóa cứng bàn nữa, trạng thái bàn sẽ được tính toán động (Dynamic Availability) dựa vào thời gian đặt (booking_date)
 
+        // Đánh dấu phần thưởng cột mốc đã được sử dụng (nếu có)
+        if ($milestone_id_to_redeem) {
+            $stmt_redeem = $db->prepare("UPDATE user_milestones SET is_redeemed = 1, redeemed_at = NOW() WHERE id = ?");
+            $stmt_redeem->execute([$milestone_id_to_redeem]);
+        }
+
         // Xác nhận thành công toàn bộ quá trình
         $db->commit();
 
@@ -447,8 +487,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         $booking_msg .= "⏰ Lúc: $time_str\n";
+        if ($type === 'chef') {
+            $arrive_time = date('H:i d/m', strtotime($date) - 90 * 60);
+            $booking_msg .= "👨‍🍳 Bếp có mặt lúc: $arrive_time (setup)\n";
+        }
         $booking_msg .= "👥 Khách: $guests người\n";
         $booking_msg .= "🏷 Loại: " . ucfirst($type) . $event_str . "\n";
+        if (isset($is_bespoke_menu) && $is_bespoke_menu) {
+            $b_style = $_POST['chef_style'] ?? 'Tự do';
+            $b_budget = $_POST['chef_budget'] ?? 'Chưa rõ';
+            $b_occasion = $_POST['chef_occasion'] ?? 'Khác';
+            $booking_msg .= "📜 Thực Đơn: Thiết Kế Riêng ($b_style - $b_budget)\n";
+            $booking_msg .= "🎉 Dịp tổ chức: $b_occasion\n";
+        }
         if ($has_candle) $booking_msg .= "🕯 Bespoke: Nến thơm\n";
         if ($has_handwritten_card) $booking_msg .= "✉️ Bespoke: Thiệp viết tay ($card_message)\n";
         if (isset($_POST['has_bespoke_flower'])) $booking_msg .= "💐 Bespoke: Hoa ($flower_preference)\n";

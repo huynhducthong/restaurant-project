@@ -482,54 +482,12 @@ include __DIR__ . '/views/client/layouts/header.php';
         <div class="st-header text-center mb-5">
             <h2 class="st-title">TUYỆT KỸ CHẾ BIẾN</h2>
             <div class="st-divider"></div>
-            <?php if (!empty($chef['signature_technique_quote'])): ?>
-                <div class="st-quote-wrap text-center">
-                    <p class="st-quote-text">
-                        <i class="bi bi-quote st-quote-icon-inline me-2"></i>
-                        <?= nl2br(htmlspecialchars($chef['signature_technique_quote'])) ?>
-                        <i class="bi bi-quote st-quote-icon-inline ms-2" style="transform: rotate(180deg); display: inline-block;"></i>
-                    </p>
-                </div>
-            <?php endif; ?>
         </div>
 
         <div class="st-story-body">
-            <!-- Intro -->
-            <?php if (!empty($chef['signature_technique'])): ?>
-            <div class="st-intro-box mb-5">
-                <p><?= nl2br(htmlspecialchars($chef['signature_technique'])) ?></p>
-            </div>
-            <?php endif; ?>
 
-            <!-- Difficulty & Specs -->
-            <?php if (!empty($chef['signature_technique_specs']) || !empty($chef['signature_technique_difficulty'])): ?>
-            <div class="st-specs-box mb-5">
-                <div class="row align-items-center justify-content-center">
-                    <?php if (!empty($chef['signature_technique_difficulty'])): ?>
-                    <div class="col-md-5 text-center text-md-end border-md-end pe-md-4 mb-3 mb-md-0">
-                        <span class="st-difficulty-label d-block text-uppercase mb-2">Độ khó</span>
-                        <div class="st-difficulty-badge">
-                            <i class="bi bi-star-fill text-warning me-2"></i><?= htmlspecialchars($chef['signature_technique_difficulty']) ?>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                    <?php if (!empty($chef['signature_technique_specs'])): ?>
-                    <div class="col-md-7 ps-md-4">
-                        <ul class="st-specs-list list-unstyled mb-0">
-                            <?php 
-                            $specs = explode("\n", $chef['signature_technique_specs']);
-                            foreach ($specs as $spec) {
-                                if (trim($spec)) {
-                                    echo '<li><i class="bi bi-check2-circle text-gold me-2"></i>' . htmlspecialchars(trim($spec)) . '</li>';
-                                }
-                            }
-                            ?>
-                        </ul>
-                    </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-            <?php endif; ?>
+
+
 
             <!-- Timeline -->
             <?php if (!empty($chef['signature_technique_process'])): ?>

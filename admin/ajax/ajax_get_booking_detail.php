@@ -178,6 +178,20 @@ try {
 
     $booking['foods'] = $items;
     $booking['inventory_check'] = array_values($required_ingredients);
+    
+    // 5. Fetch unredeemed milestones for the user
+    $unredeemed = [];
+    if (!empty($booking['user_id'])) {
+        $stmt_um = $db->prepare("
+            SELECT m.reward_title, m.reward_desc, um.id as user_milestone_id 
+            FROM user_milestones um 
+            JOIN milestones m ON um.milestone_id = m.id 
+            WHERE um.user_id = ? AND um.is_redeemed = 0
+        ");
+        $stmt_um->execute([$booking['user_id']]);
+        $unredeemed = $stmt_um->fetchAll(PDO::FETCH_ASSOC);
+    }
+    $booking['unredeemed_milestones'] = $unredeemed;
     echo json_encode($booking);
 
 } catch (Exception $e) {

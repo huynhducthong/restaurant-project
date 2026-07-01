@@ -149,6 +149,16 @@ if ($filter_role !== '') {
     $params[] = $filter_role;
 }
 
+$filter_birthday = $_GET['filter_birthday'] ?? '';
+if ($filter_birthday == '1') {
+    $where[] = "MONTH(u.birthday) = MONTH(CURRENT_DATE())";
+}
+
+$filter_loyal = $_GET['filter_loyal'] ?? '';
+if ($filter_loyal == '1') {
+    $where[] = "u.visit_count >= 5";
+}
+
 // 4.5 XỬ LÝ XUẤT EXCEL TẤT CẢ DỮ LIỆU ĐÃ LỌC (KHÔNG PHÂN TRANG)
 if (isset($_GET['export_excel'])) {
     $sql_export = "SELECT u.* 

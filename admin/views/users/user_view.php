@@ -17,7 +17,7 @@
     <!-- Thanh tìm kiếm & Lọc -->
     <div class="card shadow-sm border-0 mb-4 p-3 bg-white">
         <form method="GET" action="UserController.php" class="row g-3 align-items-center">
-            <div class="col-md-5">
+            <div class="col-md-4">
                 <div class="input-group">
                     <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
                     <input type="text" name="search" class="form-control border-start-0" placeholder="Tìm theo tên, SĐT, Username..." value="<?= htmlspecialchars($search) ?>">
@@ -39,6 +39,18 @@
                 <button type="button" class="btn btn-success fw-bold ms-2 shadow-sm" onclick="exportExcel()">
                     <i class="fas fa-file-excel me-2"></i>Xuất Excel
                 </button>
+            </div>
+            
+            <!-- Smart Filters -->
+            <div class="col-12 mt-2">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="filter_birthday" id="filter_birthday" value="1" <?= isset($_GET['filter_birthday']) && $_GET['filter_birthday'] == '1' ? 'checked' : '' ?>>
+                    <label class="form-check-label text-danger fw-bold" for="filter_birthday"><i class="fas fa-birthday-cake me-1"></i> Sinh nhật tháng này</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="filter_loyal" id="filter_loyal" value="1" <?= isset($_GET['filter_loyal']) && $_GET['filter_loyal'] == '1' ? 'checked' : '' ?>>
+                    <label class="form-check-label text-warning fw-bold" for="filter_loyal"><i class="fas fa-crown me-1"></i> Khách hàng thân thiết (>5 lần)</label>
+                </div>
             </div>
         </form>
         <script>
@@ -224,7 +236,7 @@
                 
                 <!-- Business Metrics Row -->
                 <div class="row mb-4 text-center">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body">
                                 <h6 class="text-muted text-uppercase small">Tổng số lần đến</h6>
@@ -232,7 +244,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body">
                                 <h6 class="text-muted text-uppercase small">Tổng chi tiêu</h6>
@@ -240,13 +252,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
-                                <h6 class="text-muted text-uppercase small">Phân hạng</h6>
-                                <h3 class="fw-bold" id="crm-tier">-</h3>
-                            </div>
-                        </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-header bg-white fw-bold"><i class="fas fa-award text-warning me-2"></i>ĐẶC QUYỀN & THÀNH TỰU</div>
+                    <div class="card-body p-0" id="crm-milestones-content">
+                        <div class="text-center p-3 text-muted"><i class="fas fa-spinner fa-spin me-2"></i>Đang tải dữ liệu...</div>
                     </div>
                 </div>
 
@@ -333,28 +344,6 @@
         $('#crm-bookings').text(bookings + ' Lần');
         $('#crm-spent').text(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(spent));
         
-        // Tính toán Phân hạng (Tier)
-        let tier = 'Khách Mới';
-        let tierColor = 'text-secondary';
-        
-        // Ưu tiên hiển thị thẻ Hội viên VIP nếu có đăng ký
-        if (data.vip_plan) {
-            tier = 'HỘI VIÊN VIP <i class="fas fa-gem ms-1"></i><br><small class="text-muted" style="font-size: 0.75rem;">' + data.vip_plan + '</small>';
-            tierColor = 'text-danger';
-        } else {
-            if (spent >= 10000000) {
-                tier = 'VIP DIAMOND <i class="fas fa-crown"></i>';
-                tierColor = 'text-warning';
-            } else if (spent >= 5000000) {
-                tier = 'GOLD MEMBER';
-                tierColor = 'text-warning';
-            } else if (bookings > 0) {
-                tier = 'SILVER MEMBER';
-                tierColor = 'text-info';
-            }
-        }
-        $('#crm-tier').html(tier).removeClass().addClass('fw-bold ' + tierColor);
-
         // Cập nhật DNA
         $('#crm-doneness').text(data.doneness || 'Chưa thiết lập');
         $('#crm-flavor').text(data.flavor || 'Chưa thiết lập');
@@ -366,6 +355,12 @@
         $('#crm-history-content').html('<div class="text-center p-3 text-muted"><i class="fas fa-spinner fa-spin me-2"></i>Đang tải dữ liệu...</div>');
         $.get('ajax_get_user_history.php', { user_id: data.id }, function(res) {
             $('#crm-history-content').html(res);
+        });
+        
+        // Gọi AJAX lấy Dữ liệu Milestone
+        $('#crm-milestones-content').html('<div class="text-center p-3 text-muted"><i class="fas fa-spinner fa-spin me-2"></i>Đang tải dữ liệu...</div>');
+        $.get('../ajax/ajax_get_user_milestones_crm.php', { user_id: data.id }, function(res) {
+            $('#crm-milestones-content').html(res);
         });
         
         new bootstrap.Modal(document.getElementById('modalCrm')).show();
@@ -405,5 +400,29 @@
                 checkbox.prop('checked', !isChecked);
             }
         }, 'json');
+    });
+
+    // --- XỬ LÝ TRAO QUÀ MILESTONE CRM ---
+    $(document).on('click', '.btn-redeem-ms', function() {
+        const btn = $(this);
+        const umId = btn.data('um-id');
+        if (confirm('Xác nhận đã trao phần quà này cho khách hàng?')) {
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+            $.post('../ajax/ajax_redeem_milestone.php', { um_id: umId }, function(res) {
+                if (res.status === 'success') {
+                    btn.closest('li').remove();
+                    // Nếu không còn quà nào thì thay bằng dòng thông báo "Không có quà"
+                    if ($('#crm-milestones-content ul').children().length === 0) {
+                        $('#crm-milestones-content .alert-warning').replaceWith('<div class="text-muted small text-center"><i class="fas fa-check-circle text-success me-1"></i> Không có quà tặng đặc quyền nào đang chờ.</div>');
+                    }
+                } else {
+                    alert('Lỗi: ' + res.message);
+                    btn.prop('disabled', false).html('<i class="fas fa-check"></i> Đã trao quà');
+                }
+            }, 'json').fail(function() {
+                alert('Lỗi kết nối!');
+                btn.prop('disabled', false).html('<i class="fas fa-check"></i> Đã trao quà');
+            });
+        }
     });
 </script>

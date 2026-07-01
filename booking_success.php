@@ -1078,7 +1078,6 @@ if ($is_success) {
             <p class="bk-hero-sub"><?= htmlspecialchars($cfg['sub']) ?></p>
             <div class="svc-tabs">
                 <a href="?type=table" class="svc-tab <?= $type === 'table' ? 'active' : '' ?>">🍽 Đặt Bàn</a>
-                <a href="?type=birthday" class="svc-tab <?= $type === 'birthday' ? 'active' : '' ?>">🎂 Kỷ Niệm</a>
                 <a href="?type=chef" class="svc-tab <?= $type === 'chef' ? 'active' : '' ?>">👨‍🍳 Đầu Bếp</a>
             </div>
         </div>

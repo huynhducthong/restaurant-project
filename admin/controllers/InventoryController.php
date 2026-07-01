@@ -48,7 +48,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'clear_scrap_warehouse') {
             throw new Exception("Kho Hủy đang trống, không có gì để dọn dẹp.");
         }
         
-        $ins_history = $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, 'destroy', ?, ?)");
+        $ins_history = $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, 'loss', ?, ?)");
         
         foreach ($stocks as $st) {
             $ins_history->execute([$st['ingredient_id'], $scrap_warehouse_id, -$st['quantity'], $current_user]);
@@ -130,33 +130,71 @@ if (isset($_GET['export_csv'])) {
 
 // --- Quản lý NCC & Tags ---
 if (isset($_POST['save_supplier'])) {
-    $expiry = !empty($_POST['s_atvstp_expiry']) ? $_POST['s_atvstp_expiry'] : null;
-    $data = [
-        trim($_POST['s_name']), 
-        trim($_POST['s_phone']), 
-        trim($_POST['s_address']), 
-        trim($_POST['s_email']), 
-        trim($_POST['s_contact']),
-        $expiry
-    ];
+    $s_name = trim($_POST['s_name']);
+    $s_phone = trim($_POST['s_phone']);
+    $s_address = trim($_POST['s_address']);
+    $s_email = trim($_POST['s_email']);
+    $s_contact = trim($_POST['s_contact']);
+    $origin_country = trim($_POST['origin_country'] ?? '');
+    $transport_conditions = trim($_POST['transport_conditions'] ?? '');
     
-    $file_name = null;
-    if (isset($_FILES['s_atvstp_file']) && $_FILES['s_atvstp_file']['error'] == UPLOAD_ERR_OK) {
-        $ext = pathinfo($_FILES['s_atvstp_file']['name'], PATHINFO_EXTENSION);
-        $file_name = 'atvstp_' . time() . '_' . rand(100,999) . '.' . $ext;
-        move_uploaded_file($_FILES['s_atvstp_file']['tmp_name'], __DIR__ . '/../../uploads/suppliers/' . $file_name);
+    $supplier_id = !empty($_POST['supplier_id']) ? (int)$_POST['supplier_id'] : null;
+
+    $db->beginTransaction();
+    try {
+        if ($supplier_id) {
+            $db->prepare("UPDATE suppliers SET name=?, phone=?, address=?, email=?, contact_person=?, origin_country=?, transport_conditions=? WHERE id=?")
+               ->execute([$s_name, $s_phone, $s_address, $s_email, $s_contact, $origin_country, $transport_conditions, $supplier_id]);
+        } else {
+            $db->prepare("INSERT INTO suppliers (name, phone, address, email, contact_person, origin_country, transport_conditions) VALUES (?, ?, ?, ?, ?, ?, ?)")
+               ->execute([$s_name, $s_phone, $s_address, $s_email, $s_contact, $origin_country, $transport_conditions]);
+            $supplier_id = $db->lastInsertId();
+        }
+
+        // Process certificates
+        // Xóa các chứng chỉ cũ bị người dùng bấm xóa (chỉ xóa những cái không có trong list post lên, hoặc đơn giản nhất là xóa hết rồi thêm lại, giữ lại file cũ)
+        // Để an toàn và đơn giản, nếu form submit mảng cert_type, ta sẽ xóa hết của supplier này rồi thêm lại
+        // Tuy nhiên xóa hết sẽ mất ID. Ở đây, cách tốt nhất: xóa tất cả, insert lại, nhưng với file_path cũ nếu không upload mới.
+        
+        $db->prepare("DELETE FROM supplier_certificates WHERE supplier_id = ?")->execute([$supplier_id]);
+        
+        if (!empty($_POST['cert_type'])) {
+            $insertCert = $db->prepare("INSERT INTO supplier_certificates (supplier_id, cert_type, cert_number, issue_date, expiry_date, file_path) VALUES (?, ?, ?, ?, ?, ?)");
+            
+            $cert_types = $_POST['cert_type'];
+            $cert_numbers = $_POST['cert_number'] ?? [];
+            $cert_issue_dates = $_POST['cert_issue_date'] ?? [];
+            $cert_expiry_dates = $_POST['cert_expiry_date'] ?? [];
+            $cert_file_olds = $_POST['cert_file_old'] ?? [];
+            
+            for ($i = 0; $i < count($cert_types); $i++) {
+                $c_type = $cert_types[$i];
+                $c_number = $cert_numbers[$i] ?? null;
+                $c_issue = !empty($cert_issue_dates[$i]) ? $cert_issue_dates[$i] : null;
+                $c_expiry = !empty($cert_expiry_dates[$i]) ? $cert_expiry_dates[$i] : null;
+                $file_path = $cert_file_olds[$i] ?? null;
+                
+                // Xử lý upload file mới cho chứng chỉ này
+                if (isset($_FILES['cert_file']['name'][$i]) && $_FILES['cert_file']['error'][$i] == UPLOAD_ERR_OK) {
+                    $ext = pathinfo($_FILES['cert_file']['name'][$i], PATHINFO_EXTENSION);
+                    $new_file_name = 'cert_' . time() . '_' . rand(100,999) . '.' . $ext;
+                    if (!is_dir(__DIR__ . '/../../uploads/certificates/')) {
+                        mkdir(__DIR__ . '/../../uploads/certificates/', 0777, true);
+                    }
+                    move_uploaded_file($_FILES['cert_file']['tmp_name'][$i], __DIR__ . '/../../uploads/certificates/' . $new_file_name);
+                    $file_path = $new_file_name;
+                }
+                
+                $insertCert->execute([$supplier_id, $c_type, $c_number, $c_issue, $c_expiry, $file_path]);
+            }
+        }
+        
+        $db->commit();
+    } catch (Exception $e) {
+        $db->rollBack();
+        // Xử lý lỗi nếu cần
     }
 
-    if (!empty($_POST['supplier_id'])) {
-        $supplier_id = (int)$_POST['supplier_id'];
-        if ($file_name) {
-            $db->prepare("UPDATE suppliers SET name=?, phone=?, address=?, email=?, contact_person=?, atvstp_expiry=?, atvstp_file=? WHERE id=?")->execute([...$data, $file_name, $supplier_id]);
-        } else {
-            $db->prepare("UPDATE suppliers SET name=?, phone=?, address=?, email=?, contact_person=?, atvstp_expiry=? WHERE id=?")->execute([...$data, $supplier_id]);
-        }
-    } else {
-        $db->prepare("INSERT INTO suppliers (name, phone, address, email, contact_person, atvstp_expiry, atvstp_file) VALUES (?, ?, ?, ?, ?, ?, ?)")->execute([...$data, $file_name]);
-    }
     header("Location: InventoryController.php?tab=suppliers");
     exit;
 }
@@ -595,8 +633,16 @@ usort($reorder_list, fn($a, $b) => ($b['min_stock'] - $b['total_stock']) <=> ($a
 $top_used = $db->query("SELECT i.item_name, SUM(h.quantity) as total, i.unit_name FROM inventory_history h JOIN inventory i ON h.ingredient_id = i.id WHERE h.type = 'export' GROUP BY i.id ORDER BY total DESC LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
 $cats = $db->query("SELECT * FROM inventory_categories ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 $units = $db->query("SELECT * FROM inventory_units ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
-$suppliers = $db->query("SELECT * FROM suppliers ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
-$history = $db->query("SELECT h.*, i.item_name, i.unit_name, w.name as warehouse_name FROM inventory_history h JOIN inventory i ON h.ingredient_id = i.id LEFT JOIN warehouses w ON h.warehouse_id = w.id ORDER BY h.created_at DESC LIMIT 100")->fetchAll(PDO::FETCH_ASSOC);
+$suppliers_raw = $db->query("SELECT * FROM suppliers ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+$certs_raw = $db->query("SELECT * FROM supplier_certificates")->fetchAll(PDO::FETCH_ASSOC);
+$suppliers = [];
+foreach ($suppliers_raw as $s) {
+    $s['certs'] = array_filter($certs_raw, fn($c) => $c['supplier_id'] == $s['id']);
+    // Reset keys to make it a clean array for JSON
+    $s['certs'] = array_values($s['certs']);
+    $suppliers[] = $s;
+}
+$history = $db->query("SELECT h.*, i.item_name, i.unit_name, i.cost_price, w.name as warehouse_name FROM inventory_history h JOIN inventory i ON h.ingredient_id = i.id LEFT JOIN warehouses w ON h.warehouse_id = w.id ORDER BY h.created_at DESC LIMIT 100")->fetchAll(PDO::FETCH_ASSOC);
 $transfers = $db->query("
     SELECT t.*, 
            w1.name as from_warehouse_name, 
@@ -617,7 +663,7 @@ $chart_raw = $db->query("SELECT DATE_FORMAT(created_at, '%Y-%m') as mo, SUM(CASE
 $warehouse_values = $db->query("
     SELECT w.id, w.name, 
            SUM(s.quantity * i.cost_price) as total_value,
-           COUNT(s.ingredient_id) as item_count
+           SUM(CASE WHEN s.quantity > 0 THEN 1 ELSE 0 END) as item_count
     FROM warehouses w
     LEFT JOIN inventory_stocks s ON w.id = s.warehouse_id
     LEFT JOIN inventory i ON s.ingredient_id = i.id

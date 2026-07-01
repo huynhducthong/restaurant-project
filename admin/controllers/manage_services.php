@@ -553,7 +553,7 @@ include '../../public/admin_layout_header.php';
             <h4 class="fw-bold m-0"><i class="fas fa-clipboard-list me-2" style="color: var(--gold);"></i>Danh sách yêu cầu dịch vụ</h4>
             <div class="d-flex gap-2">
                 <div class="btn-group">
-                    <?php foreach (['all' => 'Tất cả', 'table' => 'Đặt bàn', 'birthday' => 'Tiệc', 'chef' => 'Đầu bếp', 'pos' => 'Khách Vãng Lai (POS)', 'bespoke' => '✨ Thiết kế riêng'] as $k => $v): ?>
+                    <?php foreach (['all' => 'Tất cả', 'table' => 'Đặt bàn', 'chef' => 'Đầu bếp', 'pos' => 'Khách Vãng Lai (POS)', 'bespoke' => '✨ Thiết kế riêng'] as $k => $v): ?>
                         <a href="?filter=<?= $k ?>"
                             class="btn filter-btn <?= $filter == $k ? 'btn-dark' : 'btn-outline-gold' ?>"><?= $v ?></a>
                     <?php endforeach; ?>
@@ -692,7 +692,8 @@ include '../../public/admin_layout_header.php';
                 </div>
                 <h4 class="fw-bold mb-1" id="m-name"></h4>
                 <p class="text-muted mb-3"><i class="fas fa-phone-alt me-2"></i><span id="m-phone"></span></p>
-                <div id="m-status" class="mb-4"></div>
+                <div id="m-status" class="mb-3"></div>
+                <div id="m-milestone-alert"></div>
 
                 <div class="bg-light rounded p-3 text-start mb-4" style="border: 1px solid var(--border);">
                     <div class="row mb-2">
@@ -1174,9 +1175,48 @@ include '../../public/admin_layout_header.php';
                     } else {
                         $('#m-inventory-section').hide();
                     }
+
+                    // Milestone Alert Logic
+                    if (data.unredeemed_milestones && data.unredeemed_milestones.length > 0) {
+                        let msHtml = `<div class="alert alert-warning mb-4 text-start shadow-sm" style="border-left: 4px solid #c8933a;">
+                            <h6 class="fw-bold mb-1"><i class="fas fa-gift me-2" style="color: #c8933a;"></i>Khách có Quà Tặng Đặc Quyền chưa nhận!</h6>
+                            <ul class="mb-2 ps-3 small text-dark">`;
+                        data.unredeemed_milestones.forEach(function(m) {
+                            msHtml += `<li><strong>${m.reward_title}</strong>: ${m.reward_desc} 
+                            <button type="button" class="btn btn-sm btn-outline-success ms-2 py-0 px-2 btn-redeem-ms" data-um-id="${m.user_milestone_id}"><i class="fas fa-check"></i> Đã trao quà</button></li>`;
+                        });
+                        msHtml += `</ul></div>`;
+                        $('#m-milestone-alert').html(msHtml);
+                    } else {
+                        $('#m-milestone-alert').empty();
+                    }
                 }
             });
             new bootstrap.Modal(document.getElementById('modalDetail')).show();
+        });
+
+        // --- XỬ LÝ TRAO QUÀ MILESTONE ---
+        $(document).on('click', '.btn-redeem-ms', function() {
+            const btn = $(this);
+            const umId = btn.data('um-id');
+            if (confirm('Xác nhận đã trao phần quà này cho khách hàng?')) {
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+                $.post('../ajax/ajax_redeem_milestone.php', { um_id: umId }, function(res) {
+                    if (res.status === 'success') {
+                        btn.parent().remove(); // Remove the list item
+                        // If no more items, hide the alert
+                        if ($('#m-milestone-alert ul').children().length === 0) {
+                            $('#m-milestone-alert').empty();
+                        }
+                    } else {
+                        alert('Lỗi: ' + res.message);
+                        btn.prop('disabled', false).html('<i class="fas fa-check"></i> Đã trao quà');
+                    }
+                }, 'json').fail(function() {
+                    alert('Lỗi kết nối!');
+                    btn.prop('disabled', false).html('<i class="fas fa-check"></i> Đã trao quà');
+                });
+            }
         });
 
         // --- XỬ LÝ CHUYỂN KHO NHANH ---

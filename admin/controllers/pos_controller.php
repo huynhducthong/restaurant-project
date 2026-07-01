@@ -304,6 +304,13 @@ try {
                 $db->prepare("UPDATE service_bookings SET status = 'Completed' WHERE id = ?")->execute([$order['booking_id']]);
             }
 
+            if (!empty($order['user_id'])) {
+                require_once __DIR__ . '/../../app/models/MilestoneManager.php';
+                $milestoneManager = new MilestoneManager($db);
+                $milestoneManager->recordVisit($order['user_id'], $order['total_amount']);
+            }
+
+
 
             // Lấy thông tin chi tiết order để trả về cho màn hình In hóa đơn
             $items = $db->query("

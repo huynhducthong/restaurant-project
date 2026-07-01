@@ -464,22 +464,7 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
 <div class="col-12 mt-4">
                             <h6 class="fw-bold text-primary border-bottom pb-2"><i class="fas fa-fire me-2"></i>Tuyệt Kỹ Chế Biến (Signature Technique)</h6>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold text-dark">Câu Quote Tuyệt Kỹ</label>
-                            <input type="text" class="form-control" name="signature_technique_quote" id="chefSigQuote" placeholder="VD: Sự hoàn hảo không đến từ những nguyên liệu đắt tiền nhất...">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold text-dark">Độ khó (Badge)</label>
-                            <input type="text" class="form-control" name="signature_technique_difficulty" id="chefSigDifficulty" placeholder="VD: Nghệ Nhân (Master)">
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-bold text-dark">Mô tả giới thiệu (Intro)</label>
-                            <textarea class="form-control" name="signature_technique" id="chefSigIntro" rows="3" placeholder="Giới thiệu chung về kỹ thuật..."></textarea>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-bold text-dark">Thông số kỹ thuật (Mỗi dòng 1 thông số)</label>
-                            <textarea class="form-control" name="signature_technique_specs" id="chefSigSpecs" rows="3" placeholder="Nhiệt độ ủ: 1°C - 3°C&#10;Độ ẩm: 75% - 80%"></textarea>
-                        </div>
+
                         <div class="col-12">
                             <label class="form-label fw-bold text-dark">Timeline Quy trình (Mỗi bước 1 dòng hoặc bắt đầu bằng số)</label>
                             <textarea class="form-control" name="signature_technique_process" id="chefSigProcess" rows="4" placeholder="1. Xử lý ikejime ngay khi cá còn sống...&#10;2. Làm sạch hoàn toàn máu và nội tạng..."></textarea>
@@ -591,10 +576,7 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
             document.getElementById('chefIsFeatured').checked = data.is_featured == 1;
             
             document.getElementById('chefAwards').value = data.awards || '';
-            document.getElementById('chefSigQuote').value = data.signature_technique_quote || '';
-            document.getElementById('chefSigDifficulty').value = data.signature_technique_difficulty || '';
-            document.getElementById('chefSigIntro').value = data.signature_technique || '';
-            document.getElementById('chefSigSpecs').value = data.signature_technique_specs || '';
+
             document.getElementById('chefSigProcess').value = data.signature_technique_process || '';
             document.getElementById('chefSigFinal').value = data.signature_technique_final_result || '';
             document.querySelectorAll('.signature-dish-cb').forEach(cb => cb.checked = false);

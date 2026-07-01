@@ -30,6 +30,7 @@ if(isset($_POST['btn_save'])){
         $id=$_POST['id']??null;
         $title=$_POST['title']; $slug=create_slug($_POST['slug']?:$title);
         $content=$_POST['content']; $cat=$_POST['category_id'];
+        $milestone_text=$_POST['milestone_text']??null;
         $ord=(int)($_POST['display_order']??0); $pin=isset($_POST['is_pinned'])?1:0; $st=isset($_POST['status'])?1:0;
         $thumb=$_POST['old_thumbnail']??'';
         if(!empty($_FILES['thumbnail']['name'])){
@@ -82,7 +83,7 @@ if(isset($_POST['btn_save'])){
                         }
                     }
                 }
-                $db->prepare("UPDATE about_content SET title=?,slug=?,content=?,category_id=?,thumbnail=?,display_order=?,is_pinned=?,status=? WHERE id=?")->execute([$title,$slug,$content,$cat,$thumb,$ord,$pin,$st,$id]); 
+                $db->prepare("UPDATE about_content SET title=?,slug=?,content=?,category_id=?,thumbnail=?,display_order=?,is_pinned=?,status=?,milestone_text=? WHERE id=?")->execute([$title,$slug,$content,$cat,$thumb,$ord,$pin,$st,$milestone_text,$id]); 
                 $message="<div class='alert alert-success'>Cập nhật thành công!</div>";
             }
             else {
@@ -100,7 +101,7 @@ if(isset($_POST['btn_save'])){
                 } else {
                     $db->prepare("UPDATE about_content SET display_order = display_order + 1 WHERE is_pinned = 0 AND display_order >= ?")->execute([$ord]);
                 }
-                $db->prepare("INSERT INTO about_content(title,slug,content,category_id,thumbnail,display_order,is_pinned,status) VALUES(?,?,?,?,?,?,?,?)")->execute([$title,$slug,$content,$cat,$thumb,$ord,$pin,$st]); 
+                $db->prepare("INSERT INTO about_content(title,slug,content,category_id,thumbnail,display_order,is_pinned,status,milestone_text) VALUES(?,?,?,?,?,?,?,?,?)")->execute([$title,$slug,$content,$cat,$thumb,$ord,$pin,$st,$milestone_text]); 
                 $message="<div class='alert alert-success'>Thêm thành công!</div>";
             }
 
@@ -159,6 +160,7 @@ $bans=$db->query("SELECT b.*, u.username as banned_username
 // Auto-migration for comment reports status
 try {
     $db->exec("ALTER TABLE about_comment_reports ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'pending'");
+    $db->exec("ALTER TABLE about_content ADD COLUMN IF NOT EXISTS milestone_text VARCHAR(255) NULL AFTER status");
 } catch(Exception $e){}
 
 // Pending reports (grouped by comment_id, with report counts and aggregated reasons)
@@ -246,6 +248,7 @@ $processed_reports = $db->query("
                 <select name="category_id" class="form-select"><?php foreach($categories as $cat): ?><option value="<?= $cat['id'] ?>" <?= (isset($edit_data['category_id'])&&$edit_data['category_id']==$cat['id'])?'selected':'' ?>><?= $cat['name'] ?></option><?php endforeach; ?></select>
               </div>
               <div class="mb-3"><label class="form-label fw-bold">Slug</label><input type="text" name="slug" class="form-control" value="<?= $edit_data['slug']??'' ?>"></div>
+              <div class="mb-3"><label class="form-label fw-bold">Mốc năm (VD: 2024)</label><input type="text" name="milestone_text" class="form-control" value="<?= htmlspecialchars($edit_data['milestone_text']??'') ?>" placeholder="Nếu trống sẽ lấy năm của bài viết"></div>
               <div class="mb-3"><label class="form-label fw-bold">Ảnh</label><input type="file" name="thumbnail" class="form-control">
                 <?php if(!empty($edit_data['thumbnail'])): ?><img src="../public/assets/img/about/<?= $edit_data['thumbnail'] ?>" class="mt-2 img-thumbnail" width="120"><?php endif; ?>
               </div>
