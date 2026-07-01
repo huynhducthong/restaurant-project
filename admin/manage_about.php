@@ -211,19 +211,6 @@ $processed_reports = $db->query("
 <?= $message ?>
 <ul class="nav nav-tabs mb-4" id="manageTab">
   <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-posts">📝 Bài Viết</a></li>
-  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-stats">📊 Tương Tác</a></li>
-  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-comments">💬 Bình Luận</a></li>
-  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-bans">🚫 Danh sách Cấm</a></li>
-  <li class="nav-item">
-    <a class="nav-link position-relative" data-bs-toggle="tab" href="#tab-reports">
-      🚨 Báo cáo Bình luận
-      <?php if (count($pending_reports) > 0): ?>
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem;">
-          <?= count($pending_reports) ?>
-        </span>
-      <?php endif; ?>
-    </a>
-  </li>
 </ul>
 <div class="tab-content">
 

@@ -224,7 +224,6 @@ if (isset($_GET['edit_occasion'])) {
                     </div>
                 </div>
             </div>
-            </div>
 
             <!-- SECTION: OCCASIONS -->
             <div class="col-md-4 mb-5">

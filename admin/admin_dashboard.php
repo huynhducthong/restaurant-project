@@ -293,6 +293,11 @@ try {
             <div class="col-md-2">
                 <a href="admin_dashboard.php" class="btn btn-outline-secondary btn-sm w-100">Tháng này</a>
             </div>
+            <div class="col-md-2">
+                <a href="export_revenue_excel.php?start_date=<?= urlencode($start_date) ?>&end_date=<?= urlencode($end_date) ?>" class="btn btn-success btn-sm w-100 fw-bold">
+                    <i class="fas fa-file-excel me-1"></i>Xuất Excel
+                </a>
+            </div>
         </form>
     </div>
 
