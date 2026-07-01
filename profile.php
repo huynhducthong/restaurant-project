@@ -11,11 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 require_once __DIR__ . '/config/database.php';
 $db = (new Database())->getConnection();
 
-require_once __DIR__ . '/app/models/UserVip.php';
-$userVipModel = new UserVip($db);
-
 $user_id = $_SESSION['user_id'];
-$current_vip = $userVipModel->getActiveVipStatus($user_id);
 $tab = $_GET['tab'] ?? 'profile';
 $status_filter = $_GET['status'] ?? 'upcoming';
 
@@ -178,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($allergies) $msg_tele .= "- <b>DỊ ỨNG: $allergies</b>\n";
         @sendTelegramNotification($msg_tele);
     }
-    // 6. Tính năng Nâng cấp VIP được chuyển sang vip_checkout.php
+
 }
 // --- LẤY DỮ LIỆU ---
 $user = $db->prepare("SELECT * FROM users WHERE id = ?");
@@ -209,10 +205,6 @@ $bookings_stmt = $db->prepare($booking_sql);
 $bookings_stmt->execute([$user_id]);
 $user_bookings = $bookings_stmt->fetchAll();
 
-// Lấy danh sách VIP plans
-require_once __DIR__ . '/app/models/VipPlan.php';
-$vipPlanModel = new VipPlan($db);
-$plans = $vipPlanModel->getAllPlans();
 
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
@@ -244,23 +236,6 @@ body{
   letter-spacing: 0.01em;
 }
 
-.vip-crown-badge {
-    background: linear-gradient(135deg, #FFD700 0%, #D4AF37 50%, #B8860B 100%);
-    color: #1a1a1a;
-    font-size: 0.65rem;
-    padding: 3px 8px;
-    border-radius: 20px;
-    margin-left: 6px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    box-shadow: 0 2px 8px rgba(212,175,55,0.4);
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    vertical-align: middle;
-}
-.vip-crown-badge svg { margin-bottom: 2px; }
 
 /* ══ WRAPPER ══ */
 .profile-wrap{
@@ -550,14 +525,6 @@ body{
         </div>
         <h5 class="prof-name">
             <?= htmlspecialchars($current_user['full_name'] ?: $current_user['username']) ?>
-            <?php if($current_vip): ?>
-                <span class="vip-crown-badge" title="Thành viên VIP">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
-                    </svg>
-                    VIP CROWN
-                </span>
-            <?php endif; ?>
         </h5>
         <p class="prof-email"><?= htmlspecialchars($current_user['email']) ?></p>
       </div>
@@ -566,9 +533,6 @@ body{
       <nav class="prof-nav">
         <a href="?tab=profile"   class="<?= $tab=='profile'   ? 'on':'' ?>">
           <i class="bi bi-person-badge"></i> Thông tin Đặc quyền
-        </a>
-        <a href="?tab=vip" class="<?= $tab=='vip' ? 'on':'' ?>">
-          <i class="bi bi-gem"></i> Đặc quyền Hội viên
         </a>
         <a href="?tab=gastronomy" class="<?= $tab=='gastronomy' ? 'on':'' ?>">
           <i class="bi bi-magic"></i> DNA Ẩm thực
@@ -614,8 +578,8 @@ body{
       <!-- Head -->
       <div class="prof-card-head">
         <?php
-          $icons = ['profile'=>'bi-person-badge','vip'=>'bi-gem','gastronomy'=>'bi-magic','bookings'=>'bi-journal-richtext','addresses'=>'bi-geo-alt','security'=>'bi-shield-lock'];
-          $titles = ['profile'=>'Thông tin Đặc quyền','vip'=>'Đặc quyền Hội viên','gastronomy'=>'DNA Ẩm thực Khách hàng','bookings'=>'Hành trình Dùng bữa','security'=>'Thiết lập Bảo mật'];
+          $icons = ['profile'=>'bi-person-badge','gastronomy'=>'bi-magic','bookings'=>'bi-journal-richtext','addresses'=>'bi-geo-alt','security'=>'bi-shield-lock'];
+          $titles = ['profile'=>'Thông tin Đặc quyền','gastronomy'=>'DNA Ẩm thực Khách hàng','bookings'=>'Hành trình Dùng bữa','security'=>'Thiết lập Bảo mật'];
         ?>
         <div class="pc-icon"><i class="bi <?= $icons[$tab]??'bi-person-badge' ?>"></i></div>
         <h4 class="pc-title" style="text-transform: uppercase; letter-spacing: 0.1em; font-size: 1.05rem; padding-bottom: 12px; margin-top: 6px;"><?= $titles[$tab]??'Thông tin' ?></h4>
@@ -734,284 +698,6 @@ body{
           </div>
         </div>
         <?php endforeach; ?>
-        <?php endif; ?>
-
-        <!-- ── TAB: THẺ VIP ── -->
-        <?php elseif($tab=='vip'): ?>
-        <style>
-            .checkout-container {
-                background: #FFFFFF;
-                border-radius: 12px;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-                overflow: hidden;
-                display: flex;
-                margin-top: 20px;
-                border: 1px solid rgba(168, 135, 70, 0.2);
-            }
-            .plan-summary {
-                background: #F5F2ED;
-                color: #222222;
-                padding: 40px;
-                width: 45%;
-                position: relative;
-            }
-            .plan-summary::after {
-                content: '';
-                position: absolute;
-                top: 0; left: 0; right: 0; bottom: 0;
-                background: linear-gradient(135deg, rgba(168, 135, 70, 0.15) 0%, rgba(0,0,0,0) 100%);
-                pointer-events: none;
-            }
-            .plan-summary h2 {
-                font-family: 'Cormorant Garamond', serif;
-                color: #A88746;
-                font-size: 1.8rem;
-                margin-bottom: 20px;
-                font-weight: 600;
-            }
-            .price-tag {
-                font-size: 2.8rem;
-                font-weight: 700;
-                font-family: 'Cormorant Garamond', serif;
-                color: #222222;
-                margin-bottom: 5px;
-                line-height: 1;
-            }
-            .duration-tag {
-                font-size: 0.95rem;
-                color: rgba(0,0,0,0.7);
-                margin-bottom: 25px;
-                padding-bottom: 20px;
-                border-bottom: 1px dashed rgba(0,0,0,0.15);
-            }
-            .benefits-list {
-                list-style: none;
-                padding: 0; margin: 0;
-            }
-            .benefits-list li {
-                position: relative;
-                padding-left: 30px;
-                margin-bottom: 15px;
-                font-size: 0.95rem;
-                line-height: 1.5;
-                color: rgba(0,0,0,0.8);
-            }
-            .benefits-list li i {
-                position: absolute; left: 0; top: 3px;
-                color: #A88746; font-size: 1.1rem;
-            }
-            .payment-form {
-                width: 55%;
-                padding: 40px;
-                background: #FFFFFF;
-                display: none; /* Ẩn form lúc đầu */
-            }
-            .payment-form.active {
-                display: block;
-                animation: fadeInRight 0.4s ease forwards;
-            }
-            @keyframes fadeInRight {
-                from { opacity: 0; transform: translateX(20px); }
-                to { opacity: 1; transform: translateX(0); }
-            }
-            .payment-form h3 {
-                font-family: 'Cormorant Garamond', serif;
-                font-size: 1.4rem;
-                color: #222222;
-                margin-bottom: 20px;
-            }
-            .payment-methods {
-                display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;
-            }
-            .payment-method-card {
-                border: 1px solid rgba(168, 135, 70, 0.2); border-radius: 8px; padding: 15px;
-                cursor: pointer; transition: all 0.2s; position: relative;
-            }
-            .payment-method-card:hover { border-color: #A88746; background: rgba(168, 135, 70, 0.05); }
-            .payment-method-card input[type="radio"] { display: none; }
-            .payment-method-card input[type="radio"]:checked + .method-content::before {
-                content: '\f058'; font-family: 'FontAwesome'; position: absolute;
-                top: -10px; right: -10px; color: #A88746; background: #FFFFFF;
-                border-radius: 50%; font-size: 1.4rem; line-height: 1;
-            }
-            .payment-method-card input[type="radio"]:checked + .method-content { color: #A88746; }
-            .payment-method-card:has(input[type="radio"]:checked) {
-                border-color: #A88746; background: rgba(168, 135, 70, 0.05); box-shadow: 0 4px 10px rgba(168, 135, 70, 0.2);
-            }
-            .method-content {
-                display: flex; flex-direction: column; align-items: center; gap: 8px;
-                color: #222222; font-weight: 500; font-size: 0.9rem; text-align: center;
-            }
-            .method-content i { font-size: 1.8rem; color: #A88746; }
-            .card-details {
-                background: #F5F2ED; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(168, 135, 70, 0.2);
-            }
-            .form-control-lux {
-                width: 100%; padding: 10px 15px; border: 1px solid rgba(168, 135, 70, 0.3); border-radius: 6px; font-size: 0.95rem; transition: 0.3s;
-            }
-            .form-control-lux:focus { outline: none; border-color: #A88746; box-shadow: 0 0 0 3px rgba(168, 135, 70, 0.2); background: #ffffff; color: #222222; }
-            .btn-pay {
-                background: linear-gradient(135deg, #A88746, #d4b06a); color: #fff; border: none; width: 100%; padding: 14px;
-                font-size: 1.05rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.3s;
-            }
-            .btn-pay:hover { background: linear-gradient(135deg, #d4b06a, #A88746); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(168, 135, 70, 0.4); }
-            
-            .btn-open-pay {
-                background: linear-gradient(135deg, #A88746, #d4b06a); color: #fff; border: none; width: 100%; padding: 15px;
-                font-size: 1.1rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.3s;
-            }
-            .btn-open-pay:hover { background: linear-gradient(135deg, #d4b06a, #A88746); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(168, 135, 70, 0.4); }
-            
-            .current-vip-alert {
-                background: rgba(168, 135, 70, 0.1); border: 1px solid #A88746; color: #A88746;
-                padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px;
-            }
-            .current-vip-alert i { font-size: 24px; color: #A88746; }
-            
-            @media (max-width: 768px) {
-                .checkout-container { flex-wrap: wrap; }
-                .plan-summary { width: 100% !important; }
-                .payment-form { width: 100%; }
-            }
-        </style>
-
-        <?php if($current_vip): ?>
-            <div class="current-vip-alert" style="background: linear-gradient(135deg, #2b1f0c 0%, #0a1f1c 100%); border: 1px solid #c8933a; color: #f0e0c0; display: flex; align-items: center; justify-content: space-between;">
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="#c8933a" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
-                        <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
-                    </svg>
-                    <div>
-                        <h5 class="mb-1 fw-bold" style="color: #c8933a;">Đặc quyền VIP CROWN đang được kích hoạt!</h5>
-                        <p class="mb-0 small" style="color: #d1c8b4;">Chiết khấu <?= $current_vip['discount_percent'] ?>% toàn hệ thống. Đặc quyền sẽ kết thúc vào: <strong style="color:#fff;"><?= date('d/m/Y', strtotime($current_vip['end_date'])) ?></strong></p>
-                    </div>
-                </div>
-                <form action="config/process_vip_cancel.php" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn hủy gia hạn gói VIP này? Mọi đặc quyền của gói sẽ kết thúc ngay lập tức.');">
-                    <button type="submit" name="cancel_vip" class="btn btn-outline-danger btn-sm px-4 py-2" style="border-radius: 8px; font-weight: 600; white-space: nowrap;">
-                        <i class="fas fa-times-circle me-1"></i> Hủy Gia Hạn
-                    </button>
-                </form>
-            </div>
-        <?php endif; ?>
-
-        <?php 
-            // Do hệ thống chỉ có 1 gói VIP, ta lấy gói đầu tiên
-            $plan = $plans[0] ?? null;
-            if ($plan): 
-        ?>
-            <div class="checkout-container" id="vipCheckoutFrame">
-                
-                <!-- Cột trái: Tóm tắt gói -->
-                <div class="plan-summary" id="planSummaryCol" style="width: 100%; transition: width 0.4s ease;">
-                    <h2>Gói <?= htmlspecialchars($plan['name']) ?></h2>
-                    <div class="price-tag"><?= number_format($plan['price'], 0, ',', '.') ?>đ</div>
-                    <div class="duration-tag">Thời hạn sử dụng: <strong><?= $plan['duration_days'] ?> ngày</strong></div>
-                    
-                    <ul class="benefits-list">
-                        <li><i class="fas fa-check-circle"></i> Giảm giá trực tiếp <strong><?= floatval($plan['discount_percent']) ?>%</strong> cho mọi hóa đơn.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Ưu tiên đặt bàn, chọn không gian đẹp nhất</strong> <br><span style="font-size: 0.85rem; color: #aaa;">(Đảm bảo có bàn trong các dịp lễ, tuỳ chọn các vị trí VIP cạnh cửa sổ/không gian riêng tư).</span></li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Huy hiệu VIP Đặc Quyền</strong></li>
-                        <li><i class="fas fa-check-circle"></i> Mở khóa dịch vụ cao cấp: <strong>Đầu Bếp Tại Gia</strong> và <strong>Thiết Kế Riêng</strong>.</li>
-                    </ul>
-                    
-                    <button type="button" class="btn-open-pay" id="btnOpenPay" onclick="openPaymentForm()">
-                        <?= $current_vip ? 'Gia hạn Gói này' : 'Đăng Ký & Thanh Toán Ngay' ?>
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
-                
-                <!-- Cột phải: Form thanh toán -->
-                <div class="payment-form" id="paymentFormCol">
-                    <h3>Xác nhận thanh toán</h3>
-                    
-                    <form id="paymentForm" method="POST" action="config/process_vip_payment.php">
-                        <input type="hidden" name="plan_id" value="<?= $plan['id'] ?>">
-                        
-                        <div class="payment-methods">
-                            <label class="payment-method-card">
-                                <input type="radio" name="payment_method" value="credit_card" checked onchange="toggleCardDetails(true)">
-                                <div class="method-content">
-                                    <i class="fas fa-credit-card"></i>
-                                    <span>Thẻ Tín Dụng</span>
-                                </div>
-                            </label>
-                            <label class="payment-method-card">
-                                <input type="radio" name="payment_method" value="bank_transfer" onchange="toggleCardDetails(false)">
-                                <div class="method-content">
-                                    <i class="fas fa-university"></i>
-                                    <span>Chuyển Khoản</span>
-                                </div>
-                            </label>
-                        </div>
-                        
-                        <div id="cardDetails" class="card-details">
-                            <div class="mb-3">
-                                <input type="text" class="form-control-lux" placeholder="Tên in trên thẻ (VD: NGUYEN VAN A)" required id="cardName">
-                            </div>
-                            <div class="mb-3">
-                                <input type="text" class="form-control-lux" placeholder="Số thẻ (XXXX XXXX XXXX XXXX)" required id="cardNumber">
-                            </div>
-                            <div class="row g-2">
-                                <div class="col-6">
-                                    <input type="text" class="form-control-lux" placeholder="MM/YY" required id="cardExp">
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" class="form-control-lux" placeholder="CVV" required id="cardCvv">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="bankTransferDetails" class="card-details" style="display: none; text-align: center;">
-                            <i class="fas fa-qrcode mb-3" style="font-size: 3rem; color: #c8933a;"></i>
-                            <p class="mb-0 text-muted" style="font-size: 0.9rem;">Hệ thống sẽ chuyển hướng bạn đến cổng thanh toán VNPay/Momo để quét mã QR.</p>
-                        </div>
-
-                        <div class="d-flex justify-content-between mb-3 fw-bold" style="font-size: 1.1rem; color: #143B36; border-top: 1px solid #eee; padding-top: 15px;">
-                            <span>Tổng thanh toán:</span>
-                            <span style="color: #c8933a;"><?= number_format($plan['price'], 0, ',', '.') ?>đ</span>
-                        </div>
-                        
-                        <button type="submit" class="btn-pay" id="btnSubmit">
-                            <span id="btnText">Hoàn Tất Thanh Toán</span>
-                            <i class="fas fa-check-circle ms-1" id="btnIcon"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-            
-            <script>
-                function openPaymentForm() {
-                    // Thu gọn cột trái, hiện cột phải
-                    if (window.innerWidth > 768) {
-                        document.getElementById('planSummaryCol').style.width = '45%';
-                    }
-                    document.getElementById('btnOpenPay').style.display = 'none';
-                    document.getElementById('paymentFormCol').classList.add('active');
-                }
-                
-                function toggleCardDetails(isCard) {
-                    document.getElementById('cardDetails').style.display = isCard ? 'block' : 'none';
-                    document.getElementById('bankTransferDetails').style.display = isCard ? 'none' : 'block';
-                    
-                    // Bật tắt required cho các trường thẻ
-                    const cardInputs = ['cardName', 'cardNumber', 'cardExp', 'cardCvv'];
-                    cardInputs.forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el) el.required = isCard;
-                    });
-                }
-                
-                document.getElementById('paymentForm').addEventListener('submit', function(e) {
-                    const btn = document.getElementById('btnSubmit');
-                    const text = document.getElementById('btnText');
-                    const icon = document.getElementById('btnIcon');
-                    
-                    btn.style.pointerEvents = 'none';
-                    btn.style.opacity = '0.8';
-                    text.innerHTML = 'Đang xử lý giao dịch...';
-                    icon.className = 'fas fa-spinner fa-spin ms-1';
-                });
-            </script>
         <?php endif; ?>
 
         <!-- ── TAB: GASTRONOMY PROFILE ── -->
