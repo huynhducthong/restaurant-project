@@ -1390,6 +1390,46 @@ include '../../public/admin_layout_header.php';
         updateMapAvailabilityAdmin();
         // Refresh every 30 seconds
         setInterval(updateMapAvailabilityAdmin, 30000);
+
+        // Hiển thị thông báo (toast) từ tham số URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const msg = urlParams.get('msg');
+        if (msg) {
+            let title = '';
+            let text = '';
+            let icon = 'success';
+            
+            if (msg === 'price_updated') {
+                title = 'Báo giá thành công!';
+                text = 'Đã cập nhật Tổng tiền và Tiền cọc. Khách hàng sẽ nhìn thấy khi xem chi tiết.';
+            } else if (msg === 'confirmed') {
+                title = 'Xác nhận thành công!';
+            } else if (msg === 'completed') {
+                title = 'Hoàn thành dịch vụ!';
+            } else if (msg === 'noshow') {
+                title = 'Đã đánh dấu Khách không đến!';
+                icon = 'info';
+            } else if (msg === 'deleted') {
+                title = 'Đã xóa đơn đặt bàn!';
+                icon = 'info';
+            }
+            
+            if (title) {
+                Swal.fire({
+                    icon: icon,
+                    title: title,
+                    text: text,
+                    timer: 3500,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+                
+                // Xóa msg khỏi URL để không hiện lại khi reload
+                const newUrl = window.location.pathname + window.location.search.replace(/[\?&]msg=[^&]+/, '').replace(/^&/, '?');
+                window.history.replaceState({}, document.title, newUrl || window.location.pathname);
+            }
+        }
     });
 </script>
 </body>

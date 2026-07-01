@@ -62,7 +62,8 @@ body { background-color: var(--cd-bg); }
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin-top: 55px; /* Offset for header */
+  margin-top: 0;
+  padding-top: 55px; /* Offset for header */
 }
 .cd-hero-bg {
   position: absolute;
