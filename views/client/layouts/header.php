@@ -648,7 +648,6 @@ if (!empty($logo_path)) {
 
                     <!-- ORIENTAL MEGA MENU & OUTSIDE BOOKING BUTTON -->
                     <div class="oriental-nav-wrapper" style="display:flex; align-items:center; gap:15px;">
-                        <a href="<?= safe_url('booking_service.php?type=bespoke', $path_prefix ?? '') ?>" class="btn-book-outside" style="background-color: #1a1814; color: #A88746; border-color: #A88746; margin-right: 10px;">BESPOKE DINING</a>
                         <a href="<?= safe_url('booking_service.php?type=table', $path_prefix ?? '') ?>" class="btn-book-outside"><?= __('book_table') ?></a>
 
                         <!-- Divider line -->

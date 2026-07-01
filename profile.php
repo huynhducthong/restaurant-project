@@ -601,6 +601,23 @@ body{
 <div class="profile-wrap" style="background-color: #faf9f6;">
 <div class="container">
 
+  <?php
+  // Kiểm tra xem có đơn nào đang chờ cọc không (Chỉ hiển thị khi đơn đang Pending - tức là Admin chưa Xác nhận)
+  $stmt_pending = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 ORDER BY id DESC LIMIT 1");
+  $stmt_pending->execute([$user_id]);
+  $pending_deposit = $stmt_pending->fetch(PDO::FETCH_ASSOC);
+
+  if ($pending_deposit):
+  ?>
+  <div class="alert alert-warning d-flex align-items-center mt-4 mb-0 mx-auto" style="max-width: 900px; border: 1px solid #d4b06a; background-color: #fff9eb; color: #856404; border-radius: 8px; box-shadow: 0 4px 15px rgba(212, 176, 106, 0.15);">
+      <i class="fas fa-exclamation-circle me-3" style="font-size: 1.5rem; color: #d4b06a;"></i>
+      <div>
+          <strong>Nhắc nhở:</strong> Bạn có đơn đặt bàn đang chờ thanh toán tiền cọc. 
+          <a href="booking_payment.php?id=<?= $pending_deposit['id'] ?>" class="alert-link" style="color: var(--accent-burgundy); text-decoration: underline;">Bấm vào đây để Thanh toán ngay</a>!
+      </div>
+  </div>
+  <?php endif; ?>
+
   <!-- ══ HERO ACCOUNT ══ -->
   <div class="hero-account text-center mb-5 mt-2">
     <?php 
