@@ -49,6 +49,13 @@ if (!empty($chef['awards'])) {
     }
 }
 
+// Fetch Gallery images from chef_gallery table
+$gallery_stmt = $db->prepare("SELECT * FROM chef_gallery WHERE chef_id = ? ORDER BY sort_order ASC, id ASC LIMIT 4");
+$gallery_stmt->execute([$id]);
+$gallery_images = $gallery_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+
 $page_title = htmlspecialchars($chef['name']) . " - Bếp Trưởng";
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
@@ -598,25 +605,25 @@ include __DIR__ . '/views/client/layouts/header.php';
 <?php endif; ?>
 
 
+
+
+
 <!-- CHEF GALLERY -->
-<?php 
-$gallery_images = [];
-if (!empty($chef['gallery_images'])) {
-    $gallery_images = json_decode($chef['gallery_images'], true) ?: [];
-}
-if (!empty($gallery_images)): 
-?>
-<div class="cd-section st-gallery-section">
+<?php if (!empty($gallery_images)): ?>
+<div class="cd-section st-gallery-section" style="background-color: #fff; padding: 80px 0 0 0;">
+    <div class="st-gallery-header text-center mb-5">
+        <h2 style="font-family: 'Playfair Display', serif; color: #111; font-size: 2.5rem; letter-spacing: 2px;">Thư Viện Ảnh Hoạt Động</h2>
+        <div style="width: 50px; height: 2px; background: #cda45e; margin: 20px auto;"></div>
+    </div>
+    
     <div class="container-fluid px-0">
-        <div class="st-gallery-header text-center mb-5">
-            <h2 style="font-family: 'Playfair Display', serif; color: #111; font-size: 2.5rem; letter-spacing: 2px;">Thư Viện Ảnh</h2>
-            <div style="width: 50px; height: 2px; background: #cda45e; margin: 20px auto;"></div>
-        </div>
-        
         <div class="st-gallery-grid">
             <?php foreach ($gallery_images as $g_img): ?>
-                <div class="st-gallery-item">
-                    <img src="/restaurant-project/public/assets/img/chefs/gallery/<?= htmlspecialchars($g_img) ?>" alt="Gallery">
+                <div class="st-gallery-item" onclick="openLightbox('/restaurant-project/public/assets/img/chefs/gallery/<?= htmlspecialchars($g_img['image']) ?>')">
+                    <img src="/restaurant-project/public/assets/img/chefs/gallery/<?= htmlspecialchars($g_img['image']) ?>" alt="Gallery Activity Image" loading="lazy">
+                    <div class="st-gallery-hover">
+                        <i class="bi bi-zoom-in"></i>
+                    </div>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -625,8 +632,6 @@ if (!empty($gallery_images)):
 
 <style>
 .st-gallery-section {
-    padding: 40px 0;
-    background-color: #fff;
     overflow: hidden;
 }
 .st-gallery-grid {
@@ -639,34 +644,46 @@ if (!empty($gallery_images)):
 }
 @media (min-width: 768px) {
     .st-gallery-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-@media (min-width: 1024px) {
-    .st-gallery-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
     }
 }
 .st-gallery-item {
     overflow: hidden;
     position: relative;
     background: #000;
+    cursor: pointer;
 }
 .st-gallery-item img {
     width: 100%;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 10;
     object-fit: cover;
     transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     opacity: 0.95;
     display: block;
 }
 .st-gallery-item:hover img {
-    transform: scale(1.05);
+    transform: scale(1.06);
     opacity: 1;
 }
+.st-gallery-hover {
+    position: absolute;
+    inset: 0;
+    background: rgba(205, 164, 94, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.st-gallery-item:hover .st-gallery-hover {
+    opacity: 1;
+}
+.st-gallery-hover i {
+    color: #fff;
+    font-size: 2rem;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
 </style>
-
-
 <?php endif; ?>
 
 <div class="cd-section" style="background: #fcfaf5;">
@@ -1723,4 +1740,87 @@ setTimeout(() => {
 }
 
 </style>
+
+<!-- LIGHTBOX MODAL -->
+<div id="chefLightbox" class="chef-lightbox" onclick="closeLightbox(event)">
+    <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
+    <img class="lightbox-content" id="lightboxImg" src="" alt="Zoom Image">
+</div>
+
+<style>
+/* Lightbox Styles */
+.chef-lightbox {
+    display: none;
+    position: fixed;
+    z-index: 99999;
+    padding-top: 50px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.chef-lightbox.active {
+    display: flex;
+    opacity: 1;
+}
+.lightbox-content {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    max-height: 85vh;
+    border: 3px solid #cda45e;
+    border-radius: 4px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+.chef-lightbox.active .lightbox-content {
+    transform: scale(1);
+}
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+    user-select: none;
+}
+.lightbox-close:hover {
+    color: #cda45e;
+}
+</style>
+
+<script>
+function openLightbox(src) {
+    const lightbox = document.getElementById('chefLightbox');
+    const img = document.getElementById('lightboxImg');
+    img.src = src;
+    lightbox.style.display = 'flex';
+    setTimeout(() => {
+        lightbox.classList.add('active');
+    }, 10);
+    document.body.style.overflow = 'hidden'; // prevent scroll
+}
+function closeLightbox(event) {
+    if (event.target.id === 'chefLightbox' || event.target.classList.contains('lightbox-close')) {
+        const lightbox = document.getElementById('chefLightbox');
+        lightbox.classList.remove('active');
+        setTimeout(() => {
+            lightbox.style.display = 'none';
+        }, 300);
+        document.body.style.overflow = ''; // restore scroll
+    }
+}
+</script>
+
 <?php include __DIR__ . '/views/client/layouts/footer.php'; ?>
