@@ -201,7 +201,7 @@ if ($action === 'add') {
             try {
                 $db->prepare(
                     "INSERT INTO foods (name, category_id, price, description, allergens, wine_pairing_id, chef_note, cooking_status, food_journey, cooking_technique, image, is_active, is_chef_recommended, theme_id, max_toppings)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?)"
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?)"
                 )->execute([
                             $old['name'],
                             (int) $old['category_id'],

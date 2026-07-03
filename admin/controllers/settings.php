@@ -35,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'telegram_chat_id'   => $_POST['telegram_chat_id']   ?? '',
         'telegram_eod_hour'    => (string) max(0, min(23, (int) ($_POST['telegram_eod_hour'] ?? 22))),
         'telegram_eod_enabled' => $_POST['telegram_eod_enabled'] ?? '1',
+        'google_map_iframe'    => $_POST['google_map_iframe'] ?? '',
     ];
 
     // Prepare 1 lần ngoài loop, execute nhiều lần
@@ -223,19 +224,13 @@ include '../../public/admin_layout_header.php';
                             </button>
                         </li>
                         
-                    
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link <?= $active_tab === 'footer' ? 'active' : '' ?>" id="footer-tab" data-bs-toggle="pill" data-bs-target="#footer" type="button" role="tab" aria-controls="footer" aria-selected="<?= $active_tab === 'footer' ? 'true' : 'false' ?>">
-                                <i class="bi bi-layout-text-window-reverse me-1"></i> Cấu hình Footer
-                            </button>
-                        </li>
                     </ul>
 
                     <!-- Tab Content -->
                     <div class="tab-content" id="settings-tabContent">
 
-                        <!-- FORM BAO TRÙM CHO 3 TAB CÀI ĐẶT CHUNG -->
-                        <div class="tab-pane <?= in_array($active_tab, ['general', 'inventory', 'telegram', 'footer']) ? 'show active' : '' ?>" id="settings-forms-wrapper">
+                        <!-- FORM BAO TRÙM CHO CÁC TAB CÀI ĐẶT CHUNG -->
+                        <div class="tab-pane <?= in_array($active_tab, ['general', 'inventory', 'telegram']) ? 'show active' : '' ?>" id="settings-forms-wrapper">
                             <form action="" method="POST" enctype="multipart/form-data">
 
                                 <!-- TAB GENERAL -->
@@ -300,6 +295,12 @@ include '../../public/admin_layout_header.php';
                                         </div>
                                         <input type="file" name="logo" class="form-control" accept=".jpg,.jpeg,.png,.webp">
                                         <small class="text-muted">Chỉ chấp nhận JPG, PNG, WEBP — tối đa 2MB. Để trống nếu không thay đổi.</small>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold">Bản đồ Google Maps (Footer)</label>
+                                        <textarea name="google_map_iframe" class="form-control" rows="3" placeholder="Nhập mã nhúng (iframe) Google Maps vào đây..."><?= htmlspecialchars($settings['google_map_iframe'] ?? '') ?></textarea>
+                                        <small class="text-muted">Nhập đoạn mã iframe lấy từ Google Maps để hiển thị ở chân trang.</small>
                                     </div>
                                 </div>
 
@@ -377,14 +378,6 @@ include '../../public/admin_layout_header.php';
                                     </div>
                                 </div>
 
-                                <!-- TAB FOOTER -->
-                                <div class="tab-pane <?= $active_tab === 'footer' ? 'show active' : '' ?> pt-2" id="footer" role="tabpanel" aria-labelledby="footer-tab" tabindex="0">
-                                    <div class="card p-4">
-                                        <h5 class="section-title mb-3"><i class="bi bi-map"></i> Bản đồ Google Maps</h5>
-                                        <p class="small text-muted mb-3">Chỉ cho phép thay đổi Bản đồ Google Maps hiển thị ở phần chân trang (Footer). Các thông tin khác được cố định trong mã nguồn.</p>
-                                        <textarea name="google_map_iframe" class="form-control mb-2" rows="5" placeholder="Nhập mã nhúng (iframe) Google Maps vào đây..."><?= htmlspecialchars($settings['google_map_iframe'] ?? '') ?></textarea>
-                                    </div>
-                                </div>
 
                                 <!-- Nút lưu cho các tab trên -->
                                 <div class="text-center mt-4 border-top pt-4">

@@ -9,6 +9,7 @@ $db = (new Database())->getConnection();
 try {
     $db->exec("ALTER TABLE chefs ADD COLUMN IF NOT EXISTS awards TEXT DEFAULT NULL");
     $db->exec("ALTER TABLE chefs ADD COLUMN IF NOT EXISTS signature_dishes VARCHAR(255) DEFAULT NULL");
+    $db->exec("ALTER TABLE chefs ADD COLUMN IF NOT EXISTS service_fee INT DEFAULT 250000");
     
     // Create chef_reviews table if it does not exist
     $db->exec("CREATE TABLE IF NOT EXISTS chef_reviews (
@@ -59,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $signature_technique_difficulty = trim($_POST['signature_technique_difficulty'] ?? '');
             $signature_technique_final_result = trim($_POST['signature_technique_final_result'] ?? '');
             $signature_dishes = !empty($sig_dishes_arr) ? implode(',', array_map('intval', $sig_dishes_arr)) : null;
+            $service_fee = (int)($_POST['service_fee'] ?? 0);
 
             if (empty($name)) {
                 $message_error = "Vui lòng nhập họ tên đầu bếp.";
@@ -79,8 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
 
                     if ($action === 'create') {
-                        $stmt = $db->prepare("INSERT INTO chefs (name, position, image, experience, specialty, description, quote, facebook, instagram, email, is_active, is_featured, sort_order, awards, signature_dishes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                        if ($stmt->execute([$name, $position, $image_name, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $awards, $signature_dishes])) {
+                        $stmt = $db->prepare("INSERT INTO chefs (name, position, image, experience, specialty, description, quote, facebook, instagram, email, is_active, is_featured, sort_order, awards, signature_dishes, service_fee) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        if ($stmt->execute([$name, $position, $image_name, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $awards, $signature_dishes, $service_fee])) {
                             // TỰ ĐỘNG ĐỒNG BỘ SANG BẢNG NHÂN SỰ
                             try {
                                 $sync_stmt = $db->prepare("INSERT INTO employees (full_name, email, position, salary, status) VALUES (?, ?, ?, 0, 'working')");
@@ -100,11 +102,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             if ($old_row && !empty($old_row['image']) && file_exists("../public/assets/img/chefs/" . $old_row['image'])) {
                                 @unlink("../public/assets/img/chefs/" . $old_row['image']);
                             }
-                            $stmt = $db->prepare("UPDATE chefs SET name=?, position=?, image=?, experience=?, specialty=?, description=?, quote=?, facebook=?, instagram=?, email=?, is_active=?, is_featured=?, sort_order=?, awards=?, signature_dishes=? WHERE id=?");
-                            $success = $stmt->execute([$name, $position, $image_name, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $awards, $signature_dishes, $id]);
+                            $stmt = $db->prepare("UPDATE chefs SET name=?, position=?, image=?, experience=?, specialty=?, description=?, quote=?, facebook=?, instagram=?, email=?, is_active=?, is_featured=?, sort_order=?, awards=?, signature_dishes=?, service_fee=? WHERE id=?");
+                            $success = $stmt->execute([$name, $position, $image_name, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $awards, $signature_dishes, $service_fee, $id]);
                         } else {
-                            $stmt = $db->prepare("UPDATE chefs SET name=?, position=?, experience=?, specialty=?, description=?, quote=?, facebook=?, instagram=?, email=?, is_active=?, is_featured=?, sort_order=?, awards=?, signature_dishes=? WHERE id=?");
-                            $success = $stmt->execute([$name, $position, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $awards, $signature_dishes, $id]);
+                            $stmt = $db->prepare("UPDATE chefs SET name=?, position=?, experience=?, specialty=?, description=?, quote=?, facebook=?, instagram=?, email=?, is_active=?, is_featured=?, sort_order=?, awards=?, signature_dishes=?, service_fee=? WHERE id=?");
+                            $success = $stmt->execute([$name, $position, $experience, $specialty, $description, $quote, $facebook, $instagram, $email, $is_active, $is_featured, $sort_order, $awards, $signature_dishes, $service_fee, $id]);
                         }
                         if ($success) {
                             $message_success = "Cập nhật thông tin đầu bếp thành công." . ($message_success_extra ? " " . $message_success_extra : "");
@@ -246,7 +248,7 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
                 <tbody>
                     <?php if (count($chefs) === 0): ?>
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-5">
+                            <td colspan="7" class="text-center text-muted py-5">
                                 <i class="fas fa-user-slash fa-3x mb-3 text-light"></i>
                                 <h5>Chưa có dữ liệu đầu bếp</h5>
                             </td>
@@ -272,6 +274,9 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
                                         <div class="text-muted small"><?= htmlspecialchars($chef['position']) ?></div>
                                     </div>
                                 </div>
+                            </td>
+                            <td class="text-danger fw-bold">
+                                <?= number_format($chef['service_fee'] ?? 0, 0, ',', '.') ?> đ
                             </td>
                             <td>
                                 <div class="small fw-medium text-dark"><?= htmlspecialchars($chef['specialty'] ?: 'Chưa cập nhật') ?></div>
@@ -431,7 +436,12 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
                                     <input type="number" class="form-control" name="sort_order" id="chefSortOrder" value="0">
                                 </div>
                                 
-                                <div class="col-md-8 d-flex align-items-center gap-4 mt-4">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold text-dark">Phí dịch vụ (VNĐ) <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control text-danger fw-bold" name="service_fee" id="chefServiceFee" value="250000" min="0" step="1000" required>
+                                </div>
+                                
+                                <div class="col-md-4 d-flex align-items-center gap-4 mt-4">
                                     <div class="form-check form-switch">
                                         <input class="form-check-input" type="checkbox" name="is_active" id="chefIsActive" checked value="1">
                                         <label class="form-check-label fw-bold text-dark" for="chefIsActive">Hiển thị trên web</label>
@@ -563,6 +573,7 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
             // Default switches
             document.getElementById('chefIsActive').checked = false;
             document.getElementById('chefIsFeatured').checked = false;
+            setVal('chefServiceFee', 250000);
         } else {
             currentChefId = data.id;
             document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-edit me-2"></i> Cập nhật Thông tin Đầu Bếp';
@@ -603,6 +614,7 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
             setVal('chefInstagram', data.instagram);
             setVal('chefEmail', data.email);
             setVal('chefSortOrder', data.sort_order);
+            setVal('chefServiceFee', data.service_fee || 0);
             
             document.getElementById('chefIsActive').checked = data.is_active == 1;
             document.getElementById('chefIsFeatured').checked = data.is_featured == 1;

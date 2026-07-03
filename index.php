@@ -80,7 +80,14 @@ try {
                                 WHERE c.theme_id = ? AND c.is_active = 1
                                 GROUP BY c.id ORDER BY c.id DESC");
       $t_combos->execute([$t['id']]);
-      $t['combos'] = $t_combos->fetchAll(PDO::FETCH_ASSOC);
+      $combos = $t_combos->fetchAll(PDO::FETCH_ASSOC);
+      foreach ($combos as &$combo) {
+          $stmt_items = $db->prepare("SELECT f.* FROM foods f JOIN combo_items ci ON f.id = ci.food_id WHERE ci.combo_id = ? AND f.is_active = 1");
+          $stmt_items->execute([$combo['id']]);
+          $combo['items'] = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
+      }
+      $t['combos'] = $combos;
+      
       
       $t_foods = $db->prepare("SELECT f.*, c.name as cat_name FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.theme_id = ? AND f.is_active = 1");
       $t_foods->execute([$t['id']]);
@@ -616,17 +623,39 @@ document.addEventListener('DOMContentLoaded', function() {
                       <h4 style="text-align: center; color: #C9A66B; font-family: 'Cormorant Garamond', serif; margin-bottom: 40px; font-size: 24px; font-weight: 500; letter-spacing: 6px; border-bottom: 1px solid rgba(201, 166, 107, 0.2); padding-bottom: 20px; text-transform: uppercase;">SET MENU THƯỢNG HẠNG</h4>
                       <div class="d-flex flex-column gap-4">
                         <?php foreach($t['combos'] as $row): ?>
-                          <div class="menu-list-item" style="cursor: pointer; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateX(10px)'" onmouseout="this.style.transform='translateX(0)'" onclick="window.location.href='combo_detail.php?id=<?= $row['id'] ?>'">
-                            <div class="d-flex justify-content-between align-items-baseline mb-2">
-                              <h5 class="menu-hover-trigger" data-img="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>" style="color: #ffffff; font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; margin: 0;">
-                                <?= htmlspecialchars($row['name']) ?>
-                              </h5>
-                              <div style="color: #C9A66B; font-weight: 400; font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; margin-left: 20px; white-space: nowrap;">
-                                <?= number_format($row['price'], 0, ',', '.') ?>đ
-                              </div>
+                          <div class="menu-list-item" style="transition: transform 0.3s ease;" onmouseover="this.style.transform='translateX(10px)'" onmouseout="this.style.transform='translateX(0)'">
+                            <div style="cursor: pointer;" onclick="const el = document.getElementById('combo-items-<?= $row['id'] ?>'); if(el.style.display === 'none') { el.style.display = 'block'; } else { el.style.display = 'none'; }">
+                                <div class="d-flex justify-content-between align-items-baseline mb-2">
+                                  <h5 class="menu-hover-trigger" data-img="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>" style="color: #ffffff; font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; margin: 0;">
+                                    <?= htmlspecialchars($row['name']) ?> <i class="bi bi-chevron-down ms-2" style="font-size: 0.9rem; color: #C9A66B;"></i>
+                                  </h5>
+                                  <div style="color: #C9A66B; font-weight: 400; font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; margin-left: 20px; white-space: nowrap;">
+                                    <?= number_format($row['price'], 0, ',', '.') ?>đ
+                                  </div>
+                                </div>
+                                <p style="color: #ffffff; font-size: 13px; margin: 0 0 8px 0; line-height: 1.6; max-width: 90%; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><?= __(htmlspecialchars($row['description'])) ?></p>
+                                <div style="font-size: 11px; color: #e6e6e6; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><i class="bi bi-star-fill me-1" style="color:#C9A66B; font-size:9px;"></i><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></div>
                             </div>
-                            <p style="color: #ffffff; font-size: 13px; margin: 0 0 8px 0; line-height: 1.6; max-width: 90%; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><?= __(htmlspecialchars($row['description'])) ?></p>
-                            <div style="font-size: 11px; color: #e6e6e6; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><i class="bi bi-star-fill me-1" style="color:#C9A66B; font-size:9px;"></i><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></div>
+                            
+                            <!-- Danh sách món ăn thả xuống -->
+                            <div id="combo-items-<?= $row['id'] ?>" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(201, 166, 107, 0.3);">
+                                <?php if (!empty($row['items'])): ?>
+                                    <div class="row g-2">
+                                    <?php foreach ($row['items'] as $item): ?>
+                                        <div class="col-12 d-flex align-items-center mb-2">
+                                            <img src="public/assets/img/menu/<?= htmlspecialchars($item['image'] ?: 'default-food.jpg') ?>" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; border: 1px solid rgba(201,166,107,0.5); margin-right: 15px;">
+                                            <div>
+                                                <h6 style="color: #fff; font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; margin: 0; font-weight: 300;"><?= htmlspecialchars($item['name']) ?></h6>
+                                                <div style="font-size: 11px; color: #aaa; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?= htmlspecialchars($item['description']) ?></div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                    </div>
+                                    <div class="mt-3 text-center">
+                                        <a href="combo_detail.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-outline-light" style="border-color: #C9A66B; color: #C9A66B; border-radius: 0; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; padding: 6px 15px;">Xem Chi Tiết & Đặt Bàn</a>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
                           </div>
                         <?php endforeach; ?>
                       </div>

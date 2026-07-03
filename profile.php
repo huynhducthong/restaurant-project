@@ -11,11 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 require_once __DIR__ . '/config/database.php';
 $db = (new Database())->getConnection();
 
-require_once __DIR__ . '/app/models/UserVip.php';
-$userVipModel = new UserVip($db);
-
 $user_id = $_SESSION['user_id'];
-$current_vip = $userVipModel->getActiveVipStatus($user_id);
 $tab = $_GET['tab'] ?? 'profile';
 $status_filter = $_GET['status'] ?? 'upcoming';
 
@@ -65,6 +61,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $message = "Có lỗi xảy ra khi cập nhật.";
             $msg_type = 'danger';
+        }
+    }
+    
+    // 1.5 Cập nhật Avatar
+    if (isset($_POST['update_avatar'])) {
+        if (isset($_FILES['avatar_photo']) && $_FILES['avatar_photo']['error'] === UPLOAD_ERR_OK) {
+            $blob = file_get_contents($_FILES['avatar_photo']['tmp_name']);
+            $mime = $_FILES['avatar_photo']['type'];
+            
+            $stmt = $db->prepare("UPDATE users SET avatar_blob = ?, avatar_mime = ? WHERE id = ?");
+            if ($stmt->execute([$blob, $mime, $user_id])) {
+                $message = "Đã cập nhật ảnh đại diện thành công!";
+                $current_user['avatar_blob'] = $blob;
+                $current_user['avatar_mime'] = $mime;
+            } else {
+                $message = "Lỗi khi cập nhật ảnh đại diện.";
+                $msg_type = "danger";
+            }
         }
     }
 
@@ -231,11 +245,6 @@ $booking_sql .= " ORDER BY sb.booking_date " . ($status_filter === 'upcoming' ? 
 $bookings_stmt = $db->prepare($booking_sql);
 $bookings_stmt->execute([$user_id]);
 $user_bookings = $bookings_stmt->fetchAll();
-
-// Lấy danh sách VIP plans
-require_once __DIR__ . '/app/models/VipPlan.php';
-$vipPlanModel = new VipPlan($db);
-$plans = $vipPlanModel->getAllPlans();
 
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
@@ -592,6 +601,23 @@ body{
 <div class="profile-wrap" style="background-color: #faf9f6;">
 <div class="container">
 
+  <?php
+  // Kiểm tra xem có đơn nào đang chờ cọc không (Chỉ hiển thị khi đơn đang Pending - tức là Admin chưa Xác nhận)
+  $stmt_pending = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 ORDER BY id DESC LIMIT 1");
+  $stmt_pending->execute([$user_id]);
+  $pending_deposit = $stmt_pending->fetch(PDO::FETCH_ASSOC);
+
+  if ($pending_deposit):
+  ?>
+  <div class="alert alert-warning d-flex align-items-center mt-4 mb-0 mx-auto" style="max-width: 900px; border: 1px solid #d4b06a; background-color: #fff9eb; color: #856404; border-radius: 8px; box-shadow: 0 4px 15px rgba(212, 176, 106, 0.15);">
+      <i class="fas fa-exclamation-circle me-3" style="font-size: 1.5rem; color: #d4b06a;"></i>
+      <div>
+          <strong>Nhắc nhở:</strong> Bạn có đơn đặt bàn đang chờ thanh toán tiền cọc. 
+          <a href="booking_payment.php?id=<?= $pending_deposit['id'] ?>" class="alert-link" style="color: var(--accent-burgundy); text-decoration: underline;">Bấm vào đây để Thanh toán ngay</a>!
+      </div>
+  </div>
+  <?php endif; ?>
+
   <!-- ══ HERO ACCOUNT ══ -->
   <div class="hero-account text-center mb-5 mt-2">
     <?php 
@@ -614,16 +640,25 @@ body{
     <div class="hero-cover mb-4" style="height:220px; background: url('<?= $my_cover ?>') center/cover no-repeat; border-radius: 16px; position:relative; box-shadow: inset 0 -50px 100px -20px rgba(0,0,0,0.5);">
         <form method="POST" enctype="multipart/form-data" id="cover_form">
            <input type="hidden" name="update_cover" value="1">
-           <label for="cover_upload" class="btn btn-sm btn-light shadow" style="position:absolute; bottom:15px; right:15px; font-weight:600; opacity:0.85; transition:0.3s; cursor:pointer;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.85">
+           <label for="cover_upload" class="btn btn-sm btn-light shadow" style="position:absolute; bottom:15px; right:15px; font-weight:600; opacity:0.85; transition:0.3s; cursor:pointer; z-index:10;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.85">
                <i class="bi bi-camera me-1"></i>Thay ảnh nền
            </label>
-           <input type="file" name="cover_photo" id="cover_upload" class="d-none" accept="image/*" onchange="document.getElementById('cover_form').submit()">
+           <input type="file" name="cover_photo" id="cover_upload" style="visibility:hidden; position:absolute; width:1px; height:1px;" accept="image/*" onchange="this.form.submit()">
         </form>
     </div>
 
     <div style="position:relative; margin-top:-90px; z-index:2;">
-        <div class="mx-auto mb-3 shadow" style="width:140px; height:140px; border-radius:50%; overflow:hidden; border:4px solid #fff; background:#fff;">
-           <img src="<?= $my_av ?>" style="width:100%; height:100%; object-fit:cover;">
+        <div class="mx-auto mb-3 shadow" style="width:140px; height:140px; border-radius:50%; position:relative; border:4px solid #fff; background:#fff;">
+           <img src="<?= $my_av ?>" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+           
+           <!-- Avatar Upload Form -->
+           <form method="POST" enctype="multipart/form-data" id="avatar_form">
+               <input type="hidden" name="update_avatar" value="1">
+               <label for="avatar_upload" style="position:absolute; bottom:5px; right:5px; background:rgba(20, 59, 54, 0.85); color:#fff; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:0.3s; z-index:10;" onmouseover="this.style.background='rgba(20, 59, 54, 1)'" onmouseout="this.style.background='rgba(20, 59, 54, 0.85)'">
+                   <i class="bi bi-camera"></i>
+               </label>
+               <input type="file" name="avatar_photo" id="avatar_upload" style="visibility:hidden; position:absolute; width:1px; height:1px;" accept="image/*" onchange="this.form.submit()">
+           </form>
         </div>
         <h2 class="prof-name mb-2" style="font-family:'Cormorant Garamond', serif; font-size:3rem; color:var(--ink); font-weight:700;">
           <?= htmlspecialchars($current_user['full_name'] ?: $current_user['username']) ?>
@@ -757,7 +792,7 @@ body{
                 SELECT m.*, um.achieved_at, um.is_redeemed
                 FROM milestones m
                 LEFT JOIN user_milestones um ON m.id = um.milestone_id AND um.user_id = ?
-                ORDER BY m.type DESC, m.threshold ASC
+                ORDER BY (um.achieved_at IS NOT NULL) DESC, m.type DESC, m.threshold ASC
             ");
             $stmt->execute([$user_id]);
             $milestones = $stmt->fetchAll(PDO::FETCH_ASSOC);

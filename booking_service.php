@@ -121,7 +121,7 @@ $bespoke_budgets = $db->query("SELECT * FROM bespoke_budgets ORDER BY sort_order
 $bespoke_styles = $db->query("SELECT * FROM bespoke_styles ORDER BY sort_order ASC")->fetchAll(PDO::FETCH_ASSOC);
 $bespoke_occasions = $db->query("SELECT * FROM bespoke_occasions ORDER BY sort_order ASC")->fetchAll(PDO::FETCH_ASSOC);
 
-$chefs = $db->query("SELECT id, name FROM chefs WHERE is_active = 1 ORDER BY sort_order ASC, id DESC")->fetchAll(PDO::FETCH_ASSOC);
+$chefs = $db->query("SELECT id, name, service_fee FROM chefs WHERE is_active = 1 AND position IN ('Bếp trưởng', 'Bếp chính') ORDER BY sort_order ASC, id DESC")->fetchAll(PDO::FETCH_ASSOC);
 
 // Lấy thông tin người dùng và sổ địa chỉ nếu đã đăng nhập
 $user_info = null;
@@ -592,15 +592,6 @@ select.input-lux {
                             <button type="button" class="btn-qty" onclick="cg(1)">+</button>
                         </div>
                         <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--accent-burgundy); background: #FFFFFF; padding: 0 5px; letter-spacing: 1px; text-transform: uppercase; z-index: 2; font-weight: 600;">Số lượng khách *</label>
-                        <?php if ($type === 'chef'): ?>
-                            <div class="mt-2 p-3" style="background: rgba(168, 135, 70, 0.08); border: 1px solid rgba(168, 135, 70, 0.3); font-size: 12px; color: var(--text-main); line-height: 1.6; border-radius: 4px;">
-                                <i class="fas fa-info-circle me-1" style="color: var(--forest);"></i> <strong style="color: var(--forest);">Phí phục vụ Bếp trưởng</strong> thay đổi theo số lượng khách:<br>
-                                • ≤ 2 khách: 250.000đ<br>
-                                • 3-6 khách: 500.000đ<br>
-                                • 7-12 khách: 1.000.000đ<br>
-                                • Trên 12 khách: 1.200.000đ
-                            </div>
-                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -677,7 +668,7 @@ select.input-lux {
                         <select id="selected_chef" class="input-lux" onchange="updateChefReq(); us();">
                             <option value="">-- Nhà hàng tự sắp xếp --</option>
                             <?php foreach ($chefs as $c): ?>
-                                <option value="<?= htmlspecialchars($c['name']) ?>" <?= ($autofilled_chef_name === $c['name']) ? 'selected' : '' ?>>Chef <?= htmlspecialchars($c['name']) ?></option>
+                                <option value="<?= htmlspecialchars($c['name']) ?>" data-fee="<?= (int)($c['service_fee'] ?? 0) ?>" <?= ($autofilled_chef_name === $c['name']) ? 'selected' : '' ?>>Chef <?= htmlspecialchars($c['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
                         <label class="label-lux" >Bếp trưởng chỉ định</label>
@@ -840,7 +831,7 @@ select.input-lux {
                             <!-- BƯỚC 1: ACTIVE -->
                             <div style="display:flex; align-items:center; gap:15px;">
                                 <div style="width:30px; height:30px; border-radius:50%; background:#d4b06a; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0; box-shadow: 0 0 10px rgba(212,176,106,0.5);">1</div>
-                                <div style="font-size:14px; color:var(--text-dark); font-weight:600;">Gửi yêu cầu thiết kế <span style="font-size:11px; color:#d4b06a; font-style:italic; font-weight:normal;">(Bạn đang ở bước này)</span></div>
+                                <div id="bespoke-step-1" style="font-size:14px; color:var(--text-dark); font-weight:600;">Gửi yêu cầu thiết kế <span style="font-size:11px; color:#d4b06a; font-style:italic; font-weight:normal;">(Bạn đang ở bước này)</span></div>
                             </div>
                             <div style="width:2px; height:15px; background:rgba(212,176,106,0.3); margin-left:14px;"></div>
                             
@@ -854,14 +845,14 @@ select.input-lux {
                             <!-- BƯỚC 3: UPCOMING -->
                             <div style="display:flex; align-items:center; gap:15px; opacity:0.6;">
                                 <div style="width:30px; height:30px; border-radius:50%; border: 2px solid #d4b06a; background:transparent; color:#d4b06a; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">3</div>
-                                <div style="font-size:13px; color:var(--text-muted);">Xác nhận thực đơn & Báo giá</div>
+                                <div id="bespoke-step-3" style="font-size:13px; color:var(--text-muted);">Xác nhận thực đơn & Báo giá</div>
                             </div>
                             <div style="width:2px; height:15px; background:rgba(212,176,106,0.2); margin-left:14px;"></div>
                             
                             <!-- BƯỚC 4: UPCOMING -->
                             <div style="display:flex; align-items:center; gap:15px; opacity:0.6;">
                                 <div style="width:30px; height:30px; border-radius:50%; border: 2px solid #d4b06a; background:transparent; color:#d4b06a; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">4</div>
-                                <div style="font-size:13px; color:var(--text-muted);">Thanh toán cọc & Chuẩn bị</div>
+                                <div id="bespoke-step-4" style="font-size:13px; color:var(--text-muted);">Thanh toán cọc & Chuẩn bị</div>
                             </div>
                         </div>
                     </div>
@@ -2338,7 +2329,8 @@ function us(){
     var n=document.querySelector('[name="customer_name"]');
     document.getElementById('sn').textContent=n&&n.value?n.value:'—';
 
-    var typeStr = "<?= $type ?>";
+    var typeStrEl = document.querySelector('input[name="service_type"]');
+    var typeStr = typeStrEl ? typeStrEl.value : "table";
     var d=document.getElementById('bd');
     if(d&&d.value){
         var dt=new Date(d.value);
@@ -2369,14 +2361,15 @@ function us(){
         document.getElementById('sp2').textContent = selPrice.toLocaleString('vi-VN')+' đ';
     }
 
-    // Tính phí Đầu bếp tại gia dựa trên số khách
+    // Tính phí Đầu bếp tại gia dựa trên phí tùy chỉnh của từng đầu bếp
     var guestsNum = parseInt(document.getElementById('gi').value) || 2;
     var chefServiceFee = 0;
     if (typeStr === 'chef') {
-        if (guestsNum <= 2) chefServiceFee = 250000;
-        else if (guestsNum <= 6) chefServiceFee = 500000;
-        else if (guestsNum <= 12) chefServiceFee = 1000000;
-        else chefServiceFee = 1200000;
+        var chefSelect = document.getElementById('selected_chef');
+        if (chefSelect && chefSelect.selectedIndex > 0) {
+            var selectedOption = chefSelect.options[chefSelect.selectedIndex];
+            chefServiceFee = parseFloat(selectedOption.getAttribute('data-fee')) || 0;
+        }
         
         var schef = document.getElementById('schef-fee');
         if (schef) schef.textContent = chefServiceFee.toLocaleString('vi-VN') + ' đ';
@@ -2386,8 +2379,33 @@ function us(){
     var sid = document.getElementById('sid') ? parseInt(document.getElementById('sid').value) : 0;
     var food = 0;
     if (sid === -1 || isBespokeMenu === '1') {
-        document.getElementById('sm').textContent = "Thiết kế riêng (Dựa theo NS)";
-        food = 0;
+        var budgetSelect = document.getElementById('chef_budget');
+        var budgetPrice = 0;
+        if (budgetSelect && budgetSelect.selectedIndex >= 0) {
+            budgetPrice = parseFloat(budgetSelect.options[budgetSelect.selectedIndex].getAttribute('data-price')) || 0;
+        }
+        
+        // Thay đổi text Quy trình Bespoke theo Ngân sách
+        var step1 = document.getElementById('bespoke-step-1');
+        var step3 = document.getElementById('bespoke-step-3');
+        var step4 = document.getElementById('bespoke-step-4');
+        if (budgetPrice > 0) {
+            if (step1) step1.innerHTML = 'Gửi yêu cầu & Thanh toán cọc <span style="font-size:11px; color:#d4b06a; font-style:italic; font-weight:normal;">(Bạn đang ở bước này)</span>';
+            if (step3) step3.innerHTML = 'Chốt thực đơn';
+            if (step4) step4.innerHTML = 'Chuẩn bị & Phục vụ';
+        } else {
+            if (step1) step1.innerHTML = 'Gửi yêu cầu thiết kế <span style="font-size:11px; color:#d4b06a; font-style:italic; font-weight:normal;">(Bạn đang ở bước này)</span>';
+            if (step3) step3.innerHTML = 'Báo giá & Chốt thực đơn';
+            if (step4) step4.innerHTML = 'Thanh toán cọc & Chuẩn bị';
+        }
+
+        food = budgetPrice * guestsNum;
+        if (food > 0) {
+            document.getElementById('sm').textContent = food.toLocaleString('vi-VN') + " đ (Dự kiến)";
+        } else {
+            document.getElementById('sm').textContent = "Thiết kế riêng (Dựa theo NS)";
+        }
+        
         var listWrap = document.getElementById('selected-foods-list');
         if (listWrap) listWrap.style.display = 'none';
     } else {
