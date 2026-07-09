@@ -37,7 +37,7 @@ $gallery_images = $gallery_stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 
-$page_title = htmlspecialchars($chef['name']) . " - Bếp Trưởng";
+$page_title = htmlspecialchars($chef['name']) . " - Đội bếp";
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
 

@@ -541,7 +541,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       
         
-        <div style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; overflow: hidden;">
+        <div style="width: 100%; position: relative; overflow: hidden;">
         
         <style>
           .cine-reveal { opacity: 0; transform: translateY(40px); transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1); }
@@ -1585,12 +1585,7 @@ document.addEventListener('DOMContentLoaded', function() {
     grid-template-columns: repeat(12, 1fr);
     grid-auto-rows: 250px;
     gap: 0px;
-    width: 100vw;
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
+    width: 100%;
   }
 
   .atmo-item {

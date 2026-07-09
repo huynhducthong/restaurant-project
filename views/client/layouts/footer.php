@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . "/../../../config/database.php";
 $db = (new Database())->getConnection();
 
@@ -175,6 +175,10 @@ $f_img_3 = !empty($settings["footer_img_3"]) ? safe_url("public/assets/img/" . $
         }
         .footer-top-left { padding: 40px 20px; text-align: center; justify-content: center; }
         .footer-top-left h2 { font-size: 2.5rem; }
+        .footer-top-left, .footer-top-right {
+            flex: 1 1 100% !important;
+            max-width: 100% !important;
+        }
     }
 </style>
 
@@ -904,3 +908,7 @@ if ($is_logged_in_chat) {
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+
+    </div><!-- /.main-wrapper -->
+</body>
+</html>
