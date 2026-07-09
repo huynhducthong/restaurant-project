@@ -119,11 +119,22 @@ $total = 0;
         </table>
     <?php endif; ?>
 
-    <?php if ($booking['combo_id'] == -1): 
+    <?php 
+    $is_negotiated = false;
+    $step4 = false;
+    if ($booking['combo_id'] == -1): 
         $s_status = $booking['status'];
         $step2 = in_array($s_status, ['Confirmed', 'Completed']);
         $step3 = in_array($s_status, ['Confirmed', 'Completed']);
         $step4 = in_array($s_status, ['Completed']);
+        
+        $is_negotiated = (strpos($booking['chef_requirements'] ?? '', 'Thỏa thuận') !== false);
+        $step1_text = $is_negotiated ? '1. Gửi yêu cầu thiết kế' : '1. Gửi yêu cầu & Thanh toán cọc';
+        $step3_text = $is_negotiated ? '3. Báo giá & Chốt thực đơn' : '3. Chốt thực đơn';
+        
+        // Nếu là Thỏa thuận và đang chờ duyệt (Pending) thì mới hiển thị chữ "Thanh toán cọc bổ sung"
+        // Nếu đã xác nhận (Confirmed) hoặc hoàn thành (Completed) thì chỉ hiển thị "Chuẩn bị & Phục vụ"
+        $step4_text = ($is_negotiated && $s_status == 'Pending') ? '4. Thanh toán cọc bổ sung & Chuẩn bị' : '4. Chuẩn bị & Phục vụ';
     ?>
     <div style="margin-top:20px; padding:15px; background:#fffbf5; border:1px solid #e8e2d9; border-radius:8px;">
         <h6 style="color:var(--accent-burgundy); font-weight:bold; font-size:13px; text-transform:uppercase; margin-bottom:10px;"><i class="fas fa-magic me-1"></i> Trải Nghiệm Thiết Kế Riêng</h6>
@@ -140,7 +151,7 @@ $total = 0;
                 <div style="width:24px; height:24px; border-radius:50%; background:#d4b06a; color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:bold;">
                     <i class="fas fa-check"></i>
                 </div>
-                <div style="font-size:12px; color:#333; font-weight:bold;">1. Gửi yêu cầu thiết kế <span style="color:#28a745; font-size:10px; margin-left:5px;">(Hoàn thành)</span></div>
+                <div style="font-size:12px; color:#333; font-weight:bold;"><?= $step1_text ?> <span style="color:#28a745; font-size:10px; margin-left:5px;">(Hoàn thành)</span></div>
             </div>
             <div style="width:2px; height:10px; background:#d4b06a; margin-left:11px;"></div>
             
@@ -158,7 +169,7 @@ $total = 0;
                 <div style="width:24px; height:24px; border-radius:50%; border:2px solid #d4b06a; background:<?= $step3 ? '#d4b06a' : 'transparent' ?>; color:<?= $step3 ? '#fff' : '#d4b06a' ?>; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:bold;">
                     <?= $step3 ? '<i class="fas fa-check"></i>' : '3' ?>
                 </div>
-                <div style="font-size:12px; color:<?= $step3 ? '#333' : '#888' ?>; font-weight:<?= $step3 ? 'bold' : 'normal' ?>;">3. Xác nhận thực đơn & Báo giá <?= $step3 ? '<span style="color:#28a745; font-size:10px; margin-left:5px;">(Hoàn thành)</span>' : '' ?></div>
+                <div style="font-size:12px; color:<?= $step3 ? '#333' : '#888' ?>; font-weight:<?= $step3 ? 'bold' : 'normal' ?>;"><?= $step3_text ?> <?= $step3 ? '<span style="color:#28a745; font-size:10px; margin-left:5px;">(Hoàn thành)</span>' : '' ?></div>
             </div>
             <div style="width:2px; height:10px; background:<?= $step3 ? '#d4b06a' : 'rgba(212,176,106,0.3)' ?>; margin-left:11px;"></div>
             
@@ -167,9 +178,21 @@ $total = 0;
                 <div style="width:24px; height:24px; border-radius:50%; border:2px solid #d4b06a; background:<?= $step4 ? '#d4b06a' : 'transparent' ?>; color:<?= $step4 ? '#fff' : '#d4b06a' ?>; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:bold;">
                     <?= $step4 ? '<i class="fas fa-check"></i>' : '4' ?>
                 </div>
-                <div style="font-size:12px; color:<?= $step4 ? '#333' : '#888' ?>; font-weight:<?= $step4 ? 'bold' : 'normal' ?>;">4. Thanh toán cọc & Chuẩn bị <?= $step4 ? '<span style="color:#28a745; font-size:10px; margin-left:5px;">(Hoàn thành)</span>' : '' ?></div>
+                <div style="font-size:12px; color:<?= $step4 ? '#333' : '#888' ?>; font-weight:<?= $step4 ? 'bold' : 'normal' ?>;"><?= $step4_text ?> <?= $step4 ? '<span style="color:#28a745; font-size:10px; margin-left:5px;">(Hoàn thành)</span>' : '' ?></div>
             </div>
         </div>
+    </div>
+    <?php endif; ?>
+
+    <?php 
+    // Nút thanh toán cọc bổ sung cho khách hàng
+    // Chỉ hiển thị khi đơn đang chờ duyệt (Pending), vì khi Admin bấm Xác nhận (Confirmed) tức là đã nhận được cọc
+    if ($is_negotiated && $booking['deposit_amount'] > 0 && !$step4 && $booking['status'] === 'Pending'): 
+    ?>
+    <div style="text-align:center; margin-top:15px; margin-bottom:5px;">
+        <a href="booking_payment.php?id=<?= $booking_id ?>" class="btn btn-sm" style="background-color: var(--accent-burgundy); border-color: var(--accent-burgundy); color: #fff; font-size: 13px; font-weight: 500; padding: 6px 15px; border-radius: 6px;">
+            <i class="fas fa-credit-card me-1"></i>Thanh toán cọc bổ sung
+        </a>
     </div>
     <?php endif; ?>
 

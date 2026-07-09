@@ -209,7 +209,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 /* Base Reset and Layout */
 .news-page-wrap {
     position: relative;
-    background: url('<?= $path_prefix ?>public/assets/img/about_bg_premium.png') center/cover no-repeat fixed !important;
+    background: url('<?= $path_prefix ?>public/assets/img/about_bg_premium.jpg') center/cover no-repeat fixed !important;
     color: var(--news-text);
     min-height: 85vh;
     padding: 180px 0 60px 0; /* Clear header space */
@@ -1638,6 +1638,23 @@ include __DIR__ . '/views/client/layouts/header.php';
         margin-bottom: 35px !important;
     }
 }
+@media (max-width: 768px) {
+    .news-page-wrap { padding: 120px 0 40px 0 !important; }
+    .article-read-card { padding: 20px !important; }
+    .article-headline { font-size: 24px !important; line-height: 1.4 !important; }
+    .article-meta-bar { flex-direction: column; align-items: flex-start !important; gap: 10px; }
+    .article-action-bar { flex-direction: column; gap: 15px; align-items: flex-start !important; }
+    .gia-timeline-list::after { left: 31px !important; }
+    .gia-timeline-list .timeline-item { width: 100% !important; padding-left: 70px !important; padding-right: 20px !important; }
+    .gia-timeline-list .timeline-item::after { left: 23px !important; }
+    .gia-timeline-list .timeline-item::before { width: 30px !important; left: 31px !important; right: auto !important; }
+    .gia-timeline-list .right-item, .gia-timeline-list .left-item { left: 0% !important; padding-left: 70px !important; padding-right: 20px !important; }
+    .gia-timeline-list .timeline-content { padding: 15px 20px !important; }
+    .gia-timeline-list .timeline-year { font-size: 22px !important; }
+    .gia-timeline-list .timeline-content h4 { font-size: 1.1rem !important; }
+    .vne-comment-bubble { padding: 10px 15px !important; }
+    .vne-comment-actions { flex-wrap: wrap; gap: 8px; }
+}
 </style>
 
 <div class="news-page-wrap">
@@ -1674,14 +1691,13 @@ include __DIR__ . '/views/client/layouts/header.php';
 
             <div class="row justify-content-center">
                 <!-- Main Reading Column -->
-                <div class="col-lg-10 col-xl-8">
+                <div class="col-12 col-xl-11">
                     <div class="article-read-card reveal-fade" style="background: #1a1814; border: 1px solid rgba(205, 164, 94, 0.25); padding: 40px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
                         <span class="article-category-label" style="background: #cda45e; color: #000; padding: 4px 10px; font-size: 11px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; border-radius: 2px; display: inline-block; margin-bottom: 15px;"><?= htmlspecialchars($article['cat_name']) ?></span>
                         <h1 class="article-headline font-playfair" style="color: #fff; font-size: 32px; font-weight: 700; margin-bottom: 15px; line-height: 1.3;"><?= htmlspecialchars($article['title']) ?></h1>
                     
                         <div class="article-meta-bar" style="display: flex; gap: 15px; color: #aaa; font-size: 13px; margin-bottom: 25px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 15px;">
                             <span>📅 <?= $publish_time ?></span>
-                            <span>👁️ <?= $article['view_count'] ?> lượt xem</span>
                         </div>
 
                         <!-- Featured Thumbnail -->

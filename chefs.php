@@ -122,6 +122,12 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
 @media(max-width: 576px){
   .ch-grid { grid-template-columns: 1fr; gap: 40px; }
 }
+@media(max-width: 768px){
+  .ch-strip { gap: 30px; padding: 30px 20px; }
+  .strip-num { font-size: 2rem; }
+  .ch-hero { padding: 120px 0 60px; }
+  .ch-wrap { padding: 60px 20px; }
+}
 
 /* PAGINATION */
 .ch-pagination-wrap {

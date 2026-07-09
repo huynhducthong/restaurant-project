@@ -53,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Tính toán quy mô ekip Đầu bếp tại gia
-    if ($type === 'home') {
+    if ($type === 'chef') {
         $crew_msg = "";
         if ($guests <= 4) {
             $crew_msg = "Quy mô ekip (1-4 khách): 1 Chef + 1 Phục vụ";
@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $is_anniversary = isset($_POST['add_anniversary_service']) && $_POST['add_anniversary_service'] == '1';
     
     if ($type === 'event' || $is_anniversary) $min_hours = 3;
-    if ($type === 'home') $min_hours = 24;
+    if ($type === 'chef') $min_hours = 24;
     if ($type === 'bespoke') $min_hours = 48;
     
     // Cho phép chênh lệch tối đa 5 phút (300 giây) để trừ hao độ trễ thao tác điền form
@@ -117,7 +117,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         $error_msg = "Quý khách vui lòng chọn giờ đến sau thời điểm hiện tại ít nhất {$min_hours} tiếng.";
         if ($type === 'event' || $is_anniversary) $error_msg = "Dịch vụ Tiệc kỷ niệm yêu cầu chuẩn bị chu đáo, quý khách vui lòng đặt trước ít nhất 3 tiếng.";
-        if ($type === 'home') $error_msg = "Dịch vụ Đầu bếp tại gia cần chọn lọc nguyên liệu riêng, quý khách vui lòng đặt trước ít nhất 24 tiếng.";
+        if ($type === 'chef') $error_msg = "Dịch vụ Đầu bếp tại gia cần chọn lọc nguyên liệu riêng, quý khách vui lòng đặt trước ít nhất 24 tiếng.";
         if ($type === 'bespoke') $error_msg = "Dịch vụ Thiết kế riêng đòi hỏi sự chuẩn bị hoàn mỹ nhất, quý khách vui lòng đặt trước ít nhất 48 tiếng.";
 
         echo "<script>alert('{$error_msg}'); window.history.back();</script>";

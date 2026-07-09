@@ -3,6 +3,53 @@ require_once __DIR__ . '/config/database.php';
 $database = new Database();
 $db = $database->getConnection();
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$user_allergies = [];
+$user_dislikes = [];
+
+if (isset($_SESSION["user_id"])) {
+    $stmt_u = $db->prepare("SELECT allergies, disliked_ingredients FROM users WHERE id = ?");
+    $stmt_u->execute([$_SESSION["user_id"]]);
+    $u = $stmt_u->fetch();
+    if ($u) {
+        if ($u["allergies"]) $user_allergies = array_map("trim", explode(",", mb_strtolower($u["allergies"], "UTF-8")));
+        if ($u["disliked_ingredients"]) $user_dislikes = array_map("trim", explode(",", mb_strtolower($u["disliked_ingredients"], "UTF-8")));
+    }
+}
+
+function hasAllergen($food, $user_allergies) {
+    if (empty($user_allergies)) return false;
+    $all_food_ingredients = ($food["allergens"] ?? "") . "," . ($food["recipe_ingredients"] ?? "") . "," . ($food["cat_name"] ?? "") . "," . ($food["name"] ?? "");
+    $food_allergens = array_map("trim", explode(",", mb_strtolower($all_food_ingredients, "UTF-8")));
+    
+    $aliases = [
+        "hải sản" => ["tôm", "cua", "ghẹ", "cá", "mực", "bạch tuộc", "ốc", "hàu", "sò", "nghêu", "tuna", "salmon", "scallop"],
+        "sữa" => ["bò", "phô mai", "cheese", "cream", "sữa tươi", "sữa đặc", "yoghurt", "sữa chua"],
+        "đậu phộng" => ["lạc", "peanut"],
+        "gluten" => ["lúa mì", "bột mì", "wheat", "bread", "bánh mì", "pasta", "pizza"],
+        "trứng" => ["egg", "trứng gà", "trứng vịt", "trứng cút"]
+    ];
+
+    foreach ($user_allergies as $ua) {
+        if (empty($ua)) continue;
+        
+        $check_terms = [$ua];
+        if (isset($aliases[$ua])) {
+            $check_terms = array_merge($check_terms, $aliases[$ua]);
+        }
+        
+        foreach($food_allergens as $fa) {
+            if (empty($fa)) continue;
+            foreach ($check_terms as $term) {
+                if (strpos($fa, $term) !== false) return true;
+            }
+        }
+    }
+    return false;
+}
+
 $combo_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 // Lấy thông tin Set
@@ -18,8 +65,7 @@ if (!$combo) {
 
 // Lấy danh sách món ăn trong Set
 // Sắp xếp theo Category để ra cấu trúc Khai vị -> Món chính -> Tráng miệng
-$stmt_foods = $db->prepare("SELECT f.*, c.name as cat_name 
-                            FROM foods f 
+$stmt_foods = $db->prepare("SELECT f.*, c.name as cat_name, (SELECT GROUP_CONCAT(CONCAT(i.item_name, ',', IFNULL(i.category, '')) SEPARATOR ',') FROM food_recipes fr JOIN inventory i ON fr.ingredient_id = i.id WHERE fr.food_id = f.id) as recipe_ingredients FROM foods f 
                             JOIN combo_items ci ON f.id = ci.food_id 
                             LEFT JOIN categories c ON f.category_id = c.id 
                             WHERE ci.combo_id = ? 
@@ -40,198 +86,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
-<style>
-:root {
-  --cd-bg: #F9F9F9;
-  --cd-text: #222222;
-  --cd-muted: #666666;
-  --cd-olive: #A88746;
-  --cd-gold: #A88746;
-  --cd-serif: 'Cormorant Garamond', serif;
-  --cd-sans: 'Source Sans 3', sans-serif;
-}
 
-body { background-color: var(--cd-bg); }
-
-/* HERO SECTION */
-.cd-hero {
-  position: relative;
-  height: 65vh;
-  min-height: 500px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  margin-top: 55px; /* Offset for header */
-}
-.cd-hero-bg {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  filter: brightness(0.7);
-  z-index: 0;
-}
-.cd-hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(26, 26, 29, 0) 40%, var(--cd-bg) 100%);
-  z-index: 1;
-}
-.cd-hero-content {
-  position: relative;
-  z-index: 2;
-  padding: 0 20px;
-  max-width: 800px;
-  margin-top: 100px;
-}
-.cd-eyebrow {
-  display: block;
-  font-family: var(--cd-sans);
-  font-size: 12px;
-  letter-spacing: 5px;
-  text-transform: uppercase;
-  color: var(--cd-gold);
-  margin-bottom: 20px;
-  font-weight: 500;
-}
-.cd-title {
-  font-family: var(--cd-serif);
-  font-size: clamp(3rem, 6vw, 5rem);
-  font-weight: 400;
-  color: #fff;
-  line-height: 1.1;
-  margin-bottom: 20px;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-
-/* DETAILS CONTAINER */
-.cd-container {
-  max-width: 900px;
-  margin: -80px auto 100px;
-  background: #FFFFFF;
-  position: relative;
-  z-index: 3;
-  padding: 80px 60px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.05);
-  border: 1px solid rgba(168, 135, 70, 0.2);
-  text-align: center;
-}
-.cd-desc {
-  font-family: var(--cd-sans);
-  font-size: 15px;
-  color: var(--cd-muted);
-  line-height: 1.8;
-  max-width: 700px;
-  margin: 0 auto 40px;
-  font-weight: 300;
-}
-.cd-price {
-  font-family: var(--cd-serif);
-  font-size: 2.5rem;
-  color: var(--cd-olive);
-  margin-bottom: 40px;
-}
-
-.cd-divider {
-  width: 60px;
-  height: 2px;
-  background: var(--cd-gold);
-  margin: 0 auto 60px;
-}
-
-/* COURSE MENU */
-.cd-course-block {
-  margin-bottom: 60px;
-}
-.cd-course-title {
-  font-family: var(--cd-serif);
-  font-size: 1.8rem;
-  color: var(--cd-gold);
-  margin-bottom: 30px;
-  font-style: italic;
-  position: relative;
-  display: inline-block;
-}
-.cd-course-title::before, .cd-course-title::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  width: 40px;
-  height: 1px;
-  background: rgba(168, 135, 70, 0.4);
-}
-.cd-course-title::before { right: 100%; margin-right: 20px; }
-.cd-course-title::after { left: 100%; margin-left: 20px; }
-
-.cd-food-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  text-align: left;
-  margin-bottom: 30px;
-  padding-bottom: 30px;
-  border-bottom: 1px dashed rgba(168, 135, 70, 0.1);
-}
-.cd-food-item:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-.cd-food-img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  margin-right: 30px;
-  border: 3px solid var(--cd-bg);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-.cd-food-info {
-  flex-grow: 1;
-}
-.cd-food-name {
-  font-family: var(--cd-serif);
-  font-size: 1.4rem;
-  color: var(--cd-text);
-  margin-bottom: 8px;
-  font-weight: 600;
-}
-.cd-food-desc {
-  font-family: var(--cd-sans);
-  font-size: 13px;
-  color: var(--cd-muted);
-  line-height: 1.6;
-}
-
-.cd-btn-book {
-  background: var(--cd-olive);
-  color: #fff;
-  border: none;
-  padding: 18px 50px;
-  font-family: var(--cd-sans);
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 20px;
-}
-.cd-btn-book:hover {
-  background: var(--cd-text);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
-
-@media (max-width: 768px) {
-  .cd-container { padding: 40px 20px; margin: -50px 15px 50px; }
-  .cd-food-item { flex-direction: column; text-align: center; }
-  .cd-food-img { margin: 0 0 20px 0; }
-  .cd-course-title::before, .cd-course-title::after { display: none; }
-}
-</style>
 
 <!-- HERO -->
 <div class="cd-hero">
@@ -247,6 +102,17 @@ body { background-color: var(--cd-bg); }
 <div class="cd-container">
   <p class="cd-desc"><?= nl2br(htmlspecialchars($combo['description'])) ?></p>
   <div class="cd-price"><?= number_format($combo['price'], 0, ',', '.') ?> VND</div>
+  <?php
+  $combo_has_allergy = false;
+  foreach ($foods as $f) {
+      if (hasAllergen($f, $user_allergies)) { $combo_has_allergy = true; break; }
+  }
+  if ($combo_has_allergy):
+  ?>
+  <div class="alert alert-danger" style="margin-bottom: 30px; font-family: var(--cd-sans); font-size: 14px; text-align: left;">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i> <strong>Cảnh báo Dị ứng:</strong> Set menu này chứa một số món ăn có nguyên liệu (hải sản, đậu phộng...) mà bạn bị dị ứng. Xin hãy báo với nhân viên để điều chỉnh khi đặt bàn.
+  </div>
+  <?php endif; ?>
   
   <button class="cd-btn-book" onclick="addToCart('combo', <?= $combo['id'] ?>)">ĐẶT BÀN VỚI SET NÀY</button>
   
@@ -262,14 +128,15 @@ body { background-color: var(--cd-bg); }
           <h3 class="cd-course-title"><?= htmlspecialchars($cat_name) ?></h3>
           
           <?php foreach ($items as $food): ?>
-            <div class="cd-food-item">
+            <?php $has_al = hasAllergen($food, $user_allergies); ?>
+            <div class="cd-food-item <?= $has_al ? 'cd-allergy-item' : '' ?>">
               <img src="public/assets/img/menu/<?= htmlspecialchars($food['image'] ?: 'default-food.jpg') ?>" 
                    alt="<?= htmlspecialchars($food['name']) ?>" 
                    class="cd-food-img"
                    onerror="this.src='public/assets/img/menu/default-food.jpg'">
               
               <div class="cd-food-info">
-                <h4 class="cd-food-name"><?= htmlspecialchars($food['name']) ?></h4>
+                <h4 class="cd-food-name"><?= htmlspecialchars($food['name']) ?> <?= $has_al ? '<span class="badge bg-danger ms-2" style="font-size:10px;">Dị ứng</span>' : '' ?></h4>
                 <?php if ($food['description']): ?>
                   <p class="cd-food-desc"><?= htmlspecialchars($food['description']) ?></p>
                 <?php endif; ?>

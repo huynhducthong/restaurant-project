@@ -748,6 +748,25 @@ include '../../public/admin_layout_header.php';
                             <div id="m-chef-req" style="font-size: 0.9em; line-height: 1.5; color: #333;"></div>
                         </div>
                     </div>
+                    
+                    <!-- AI CHEF ASSISTANT SECTION -->
+                    <div class="row border-bottom py-2" id="row-ai-chef" style="display:none; background: #fffcf5; border-radius: 8px; margin: 10px 0; border: 1px solid #c8933a;">
+                        <div class="col-12 text-start">
+                            <h6 class="fw-bold mb-2" style="color:var(--gold); font-size:13px;"><i class="fas fa-magic me-1"></i> AI Chef Assistant (Tạo thực đơn tự động)</h6>
+                            <p class="small text-muted mb-2">Sử dụng AI phân tích DNA Ẩm thực của khách hàng này để lên thực đơn Tasting Menu cá nhân hóa hoàn toàn.</p>
+                            <button type="button" id="btn-ai-suggest" class="btn btn-sm w-100 fw-bold mb-2" style="background-color: var(--gold); color: #fff; border: none;" data-booking-id="">
+                                <i class="fas fa-robot me-1"></i> Bắt đầu phân tích & Tạo thực đơn
+                            </button>
+                            <div id="ai-loading" style="display:none; text-align:center; padding: 10px;">
+                                <div class="spinner-border spinner-border-sm" style="color: var(--gold);" role="status"></div>
+                                <span class="small ms-2" style="color: var(--gold);">Đang phân tích DNA Ẩm thực...</span>
+                            </div>
+                            <div id="ai-response" style="display:none; font-size: 0.9em; background: #fff; padding: 15px; border: 1px solid #e8e2d9; border-radius: 5px; max-height: 350px; overflow-y: auto;">
+                                <!-- AI output will be here -->
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row mb-2">
                         <div class="col-5 text-muted">Ghi chú:</div>
                         <div class="col-7" id="m-msg"></div>
@@ -1112,6 +1131,19 @@ include '../../public/admin_layout_header.php';
                         $('#row-chef-req').hide();
                     }
 
+                    // --- AI CHEF ASSISTANT ---
+                    if (data.combo_id == -1) {
+                        $('#row-ai-chef').show();
+                        $('#btn-ai-suggest').data('booking-id', id);
+                        if (data.ai_suggested_menu && data.ai_suggested_menu.trim() !== '') {
+                            $('#ai-response').html(data.ai_suggested_menu).show();
+                        } else {
+                            $('#ai-response').hide().empty();
+                        }
+                    } else {
+                        $('#row-ai-chef').hide();
+                    }
+
                     let formatter = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
                     
                     if (data.service_type === 'chef') {
@@ -1217,6 +1249,45 @@ include '../../public/admin_layout_header.php';
                     btn.prop('disabled', false).html('<i class="fas fa-check"></i> Đã trao quà');
                 });
             }
+        });
+
+        // --- XỬ LÝ AI CHEF ASSISTANT ---
+        $(document).on('click', '#btn-ai-suggest', function() {
+            const btn = $(this);
+            const bookingId = btn.data('booking-id');
+            if (!bookingId) return;
+
+            btn.hide();
+            $('#ai-response').hide();
+            $('#ai-loading').show();
+
+            $.ajax({
+                url: '../ajax/ajax_ai_chef_assistant.php',
+                type: 'POST',
+                data: { booking_id: bookingId },
+                dataType: 'json',
+                success: function(res) {
+                    $('#ai-loading').hide();
+                    btn.show();
+                    if (res.status === 'success') {
+                        // Create a formatted HTML output from markdown
+                        let html = res.data;
+                        // Basic markdown to HTML conversion for bold and lists
+                        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                        html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                        html = html.replace(/\n/g, '<br>');
+                        
+                        $('#ai-response').html(html).slideDown();
+                    } else {
+                        alert('Lỗi AI: ' + res.message);
+                    }
+                },
+                error: function() {
+                    $('#ai-loading').hide();
+                    btn.show();
+                    alert('Lỗi kết nối khi gọi AI.');
+                }
+            });
         });
 
         // --- XỬ LÝ CHUYỂN KHO NHANH ---
@@ -1390,6 +1461,46 @@ include '../../public/admin_layout_header.php';
         updateMapAvailabilityAdmin();
         // Refresh every 30 seconds
         setInterval(updateMapAvailabilityAdmin, 30000);
+
+        // Hiển thị thông báo (toast) từ tham số URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const msg = urlParams.get('msg');
+        if (msg) {
+            let title = '';
+            let text = '';
+            let icon = 'success';
+            
+            if (msg === 'price_updated') {
+                title = 'Báo giá thành công!';
+                text = 'Đã cập nhật Tổng tiền và Tiền cọc. Khách hàng sẽ nhìn thấy khi xem chi tiết.';
+            } else if (msg === 'confirmed') {
+                title = 'Xác nhận thành công!';
+            } else if (msg === 'completed') {
+                title = 'Hoàn thành dịch vụ!';
+            } else if (msg === 'noshow') {
+                title = 'Đã đánh dấu Khách không đến!';
+                icon = 'info';
+            } else if (msg === 'deleted') {
+                title = 'Đã xóa đơn đặt bàn!';
+                icon = 'info';
+            }
+            
+            if (title) {
+                Swal.fire({
+                    icon: icon,
+                    title: title,
+                    text: text,
+                    timer: 3500,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+                
+                // Xóa msg khỏi URL để không hiện lại khi reload
+                const newUrl = window.location.pathname + window.location.search.replace(/[\?&]msg=[^&]+/, '').replace(/^&/, '?');
+                window.history.replaceState({}, document.title, newUrl || window.location.pathname);
+            }
+        }
     });
 </script>
 </body>

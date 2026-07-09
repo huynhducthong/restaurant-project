@@ -80,7 +80,14 @@ try {
                                 WHERE c.theme_id = ? AND c.is_active = 1
                                 GROUP BY c.id ORDER BY c.id DESC");
       $t_combos->execute([$t['id']]);
-      $t['combos'] = $t_combos->fetchAll(PDO::FETCH_ASSOC);
+      $combos = $t_combos->fetchAll(PDO::FETCH_ASSOC);
+      foreach ($combos as &$combo) {
+          $stmt_items = $db->prepare("SELECT f.* FROM foods f JOIN combo_items ci ON f.id = ci.food_id WHERE ci.combo_id = ? AND f.is_active = 1");
+          $stmt_items->execute([$combo['id']]);
+          $combo['items'] = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
+      }
+      $t['combos'] = $combos;
+      
       
       $t_foods = $db->prepare("SELECT f.*, c.name as cat_name FROM foods f LEFT JOIN categories c ON f.category_id = c.id WHERE f.theme_id = ? AND f.is_active = 1");
       $t_foods->execute([$t['id']]);
@@ -122,7 +129,7 @@ include __DIR__ . '/views/client/layouts/header.php';
         <div class="carousel-item <?= $first ? 'active' : '' ?>"
           style="background-image: url('public/assets/img/hero/<?= $row['image_url'] ?>'); background-size: cover; height: 100vh; background-position: center; position: relative;">
 
-          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 25%, rgba(0,0,0,0.2) 75%, #F9F9F9 100%);"></div>
+          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 25%, rgba(0,0,0,0.2) 75%, rgba(0,0,0,0.8) 100%);"></div>
 
           <div class="container position-relative d-flex flex-column justify-content-center h-100"
             style="text-align: <?= $row['text_align'] ?>; z-index: 2;">
@@ -132,22 +139,22 @@ include __DIR__ . '/views/client/layouts/header.php';
                 <h1 style="
                     color: <?= $row['text_color'] ?>; 
                     font-family: <?= $row['font_family'] ?>; 
-                    font-size: <?= $row['title_font_size'] ?? 48 ?>px; 
+                    font-size: clamp(2.5rem, 6vw, <?= $row['title_font_size'] ?? 48 ?>px); 
                     font-weight: <?= $title_weight ?>; 
                     font-style: <?= $title_style ?>;
                     text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
                     margin-bottom: 15px;">
-                  <?= __(htmlspecialchars($row['title'])) ?>
+                  <?= htmlspecialchars($row['title']) ?>
                 </h1>
 
                 <p style="
                     color: <?= $row['desc_color'] ?? '#eeeeee' ?>; 
                     font-family: <?= $row['desc_font_family'] ?? "'Source Sans 3', sans-serif" ?>; 
-                    font-size: <?= $row['desc_font_size'] ?? 24 ?>px; 
+                    font-size: clamp(1rem, 3vw, <?= $row['desc_font_size'] ?? 24 ?>px); 
                     font-weight: <?= $desc_weight ?>; 
                     font-style: <?= $desc_style ?>;
                     text-shadow: 1px 1px 4px rgba(0,0,0,0.7);">
-                  <?= __(htmlspecialchars($row['description'])) ?>
+                  <?= htmlspecialchars($row['description']) ?>
                 </p>
                 <?php if (!empty($row['button_text'])): ?>
                   <a href="<?= htmlspecialchars($row['button_link'] ?? '#') ?>" class="animate__animated animate__fadeInUp" style="
@@ -166,7 +173,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                     transition:0.3s;
                     margin-top:20px;
                 " onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
-                    <?= __(htmlspecialchars($row['button_text'])) ?>
+                    <?= htmlspecialchars($row['button_text']) ?>
                   </a>
                 <?php endif; ?>
               </div>
@@ -216,19 +223,19 @@ document.addEventListener('DOMContentLoaded', function() {
           <div class="video-wrapper" style="position: relative; width: 100%; border-radius: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #A88746; background: #FFFFFF;">
 
             <?php if ($video_type == 'youtube' && !empty($video_url)): ?>
-              <iframe width="100%" height="500"
+              <iframe width="100%"
                 src="https://www.youtube.com/embed/<?php echo htmlspecialchars($video_url); ?>"
-                frameborder="0" allowfullscreen style="display: block; border: none;">
+                frameborder="0" allowfullscreen style="display: block; border: none; height: clamp(250px, 50vw, 500px);">
               </iframe>
             <?php elseif ($video_type == 'vimeo' && !empty($video_url)): ?>
-              <iframe width="100%" height="500"
+              <iframe width="100%"
                 src="https://player.vimeo.com/video/<?php echo htmlspecialchars($video_url); ?>"
-                frameborder="0" allowfullscreen style="display: block; border: none;">
+                frameborder="0" allowfullscreen style="display: block; border: none; height: clamp(250px, 50vw, 500px);">
               </iframe>
             <?php elseif ($video_type == 'muse' && !empty($video_url)): ?>
-              <iframe width="100%" height="500"
+              <iframe width="100%"
                 src="https://muse.ai/embed/<?php echo htmlspecialchars($video_url); ?>?search=0&links=0"
-                frameborder="0" allowfullscreen style="display: block; border: none;">
+                frameborder="0" allowfullscreen style="display: block; border: none; height: clamp(250px, 50vw, 500px);">
               </iframe>
             <?php elseif ($video_type == 'local' && !empty($file_path)): ?>
               <?php
@@ -236,12 +243,12 @@ document.addEventListener('DOMContentLoaded', function() {
               $mime_map = ['mp4' => 'video/mp4', 'webm' => 'video/webm', 'mov' => 'video/quicktime'];
               $mime_v = $mime_map[$ext_v] ?? 'video/mp4';
               ?>
-              <video controls style="width: 100%; height: 500px; display: block; object-fit: cover;">
+              <video controls style="width: 100%; display: block; object-fit: cover; height: clamp(250px, 50vw, 500px);">
                 <source src="<?= htmlspecialchars($file_path) ?>" type="<?= $mime_v ?>">
                 Trình duyệt của bạn không hỗ trợ xem video.
               </video>
             <?php else: ?>
-              <img src="public/assets/img/about.jpg" class="img-fluid" alt="About Us" style="width: 100%; height: 500px; object-fit: cover;">
+              <img src="public/assets/img/about.jpg" class="img-fluid" alt="About Us" style="width: 100%; object-fit: cover; height: clamp(250px, 50vw, 500px);">
             <?php endif; ?>
 
           </div>
@@ -260,7 +267,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   $v_desc = "Nằm giữa lòng " . htmlspecialchars($settings['address'] ?? 'Biên Hòa') . ", chúng tôi mang đến một không gian ẩm thực tinh tế.";
               }
             ?>
-            <h2 style="font-family: 'Cormorant Garamond', serif; color: #A88746; font-size: 3rem; margin-bottom: 25px; font-weight: 700; line-height: 1.2;">
+            <h2 style="font-family: 'Cormorant Garamond', serif; color: #A88746; font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 25px; font-weight: 700; line-height: 1.2;">
               <?= $v_title ?>
             </h2>
             <p style="font-family: 'Source Sans 3', sans-serif; font-weight: 300; line-height: 2; color: #222222; font-size: 1.15rem; margin-bottom: 25px;">
@@ -534,7 +541,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       
         
-        <div style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; overflow: hidden;">
+        <div style="width: 100%; position: relative; overflow: hidden;">
         
         <style>
           .cine-reveal { opacity: 0; transform: translateY(40px); transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1); }
@@ -616,17 +623,39 @@ document.addEventListener('DOMContentLoaded', function() {
                       <h4 style="text-align: center; color: #C9A66B; font-family: 'Cormorant Garamond', serif; margin-bottom: 40px; font-size: 24px; font-weight: 500; letter-spacing: 6px; border-bottom: 1px solid rgba(201, 166, 107, 0.2); padding-bottom: 20px; text-transform: uppercase;">SET MENU THƯỢNG HẠNG</h4>
                       <div class="d-flex flex-column gap-4">
                         <?php foreach($t['combos'] as $row): ?>
-                          <div class="menu-list-item" style="cursor: pointer; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateX(10px)'" onmouseout="this.style.transform='translateX(0)'" onclick="window.location.href='combo_detail.php?id=<?= $row['id'] ?>'">
-                            <div class="d-flex justify-content-between align-items-baseline mb-2">
-                              <h5 class="menu-hover-trigger" data-img="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>" style="color: #ffffff; font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; margin: 0;">
-                                <?= htmlspecialchars($row['name']) ?>
-                              </h5>
-                              <div style="color: #C9A66B; font-weight: 400; font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; margin-left: 20px; white-space: nowrap;">
-                                <?= number_format($row['price'], 0, ',', '.') ?>đ
-                              </div>
+                          <div class="menu-list-item" style="transition: transform 0.3s ease;" onmouseover="this.style.transform='translateX(10px)'" onmouseout="this.style.transform='translateX(0)'">
+                            <div style="cursor: pointer;" onclick="const el = document.getElementById('combo-items-<?= $row['id'] ?>'); if(el.style.display === 'none') { el.style.display = 'block'; } else { el.style.display = 'none'; }">
+                                <div class="d-flex justify-content-between align-items-baseline mb-2">
+                                  <h5 class="menu-hover-trigger" data-img="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>" style="color: #ffffff; font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; margin: 0;">
+                                    <?= htmlspecialchars($row['name']) ?> <i class="bi bi-chevron-down ms-2" style="font-size: 0.9rem; color: #C9A66B;"></i>
+                                  </h5>
+                                  <div style="color: #C9A66B; font-weight: 400; font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; margin-left: 20px; white-space: nowrap;">
+                                    <?= number_format($row['price'], 0, ',', '.') ?>đ
+                                  </div>
+                                </div>
+                                <p style="color: #ffffff; font-size: 13px; margin: 0 0 8px 0; line-height: 1.6; max-width: 90%; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><?= htmlspecialchars($row['description']) ?></p>
+                                <div style="font-size: 11px; color: #e6e6e6; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><i class="bi bi-star-fill me-1" style="color:#C9A66B; font-size:9px;"></i><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></div>
                             </div>
-                            <p style="color: #ffffff; font-size: 13px; margin: 0 0 8px 0; line-height: 1.6; max-width: 90%; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><?= __(htmlspecialchars($row['description'])) ?></p>
-                            <div style="font-size: 11px; color: #e6e6e6; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><i class="bi bi-star-fill me-1" style="color:#C9A66B; font-size:9px;"></i><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></div>
+                            
+                            <!-- Danh sách món ăn thả xuống -->
+                            <div id="combo-items-<?= $row['id'] ?>" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(201, 166, 107, 0.3);">
+                                <?php if (!empty($row['items'])): ?>
+                                    <div class="row g-2">
+                                    <?php foreach ($row['items'] as $item): ?>
+                                        <div class="col-12 d-flex align-items-center mb-2">
+                                            <img src="public/assets/img/menu/<?= htmlspecialchars($item['image'] ?: 'default-food.jpg') ?>" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; border: 1px solid rgba(201,166,107,0.5); margin-right: 15px;">
+                                            <div>
+                                                <h6 style="color: #fff; font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; margin: 0; font-weight: 300;"><?= htmlspecialchars($item['name']) ?></h6>
+                                                <div style="font-size: 11px; color: #aaa; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?= htmlspecialchars($item['description']) ?></div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                    </div>
+                                    <div class="mt-3 text-center">
+                                        <a href="combo_detail.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-outline-light" style="border-color: #C9A66B; color: #C9A66B; border-radius: 0; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; padding: 6px 15px;">Xem Chi Tiết & Đặt Bàn</a>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
                           </div>
                         <?php endforeach; ?>
                       </div>
@@ -637,7 +666,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   <?php if(!empty($t['foods'])): ?>
                   <div class="col-lg-6 col-md-12 cine-reveal" style="transition-delay: 0.5s;">
                     <div class="cine-glass-card cine-card-right">
-                      <h4 style="text-align: center; color: #C9A66B; font-family: 'Cormorant Garamond', serif; margin-bottom: 40px; font-size: 24px; font-weight: 500; letter-spacing: 6px; border-bottom: 1px solid rgba(201, 166, 107, 0.2); padding-bottom: 20px; text-transform: uppercase;"><?= __('our_menu') ?></h4>
+                      <h4 style="text-align: center; color: #C9A66B; font-family: 'Cormorant Garamond', serif; margin-bottom: 40px; font-size: 24px; font-weight: 500; letter-spacing: 6px; border-bottom: 1px solid rgba(201, 166, 107, 0.2); padding-bottom: 20px; text-transform: uppercase;"><?= 'Thực Đơn Của Chúng Tôi' ?></h4>
                       <div class="d-flex flex-column gap-4">
                         <?php foreach($t['foods'] as $f): ?>
                           <div class="menu-list-item" style="transition: transform 0.3s ease;" onmouseover="this.style.transform='translateX(10px)'" onmouseout="this.style.transform='translateX(0)'">
@@ -1131,6 +1160,78 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </main>
 
+<?php if (($settings['promo_popup_enabled'] ?? '0') == '1' && !empty($settings['promo_popup_file'])): ?>
+<!-- Welcome Promo Popup -->
+<div class="modal fade" id="welcomePromoModal" tabindex="-1" aria-labelledby="welcomePromoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 550px;">
+    <div class="modal-content" style="background: transparent; border: none; align-items: center;">
+      <div style="position: relative; display: block; background: #fff; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); overflow: hidden; width: 100%;">
+        
+        <!-- Nút tắt (Nằm bên trong góc trên phải của thẻ trắng, màu trắng dễ nhìn) -->
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="position: absolute; right: 15px; top: 15px; z-index: 1060; background-color: #ffffff; opacity: 1; padding: 10px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.4);"></button>
+
+        <?php if (($settings['promo_popup_type'] ?? 'image') === 'pdf'): ?>
+            <iframe src="public/<?= htmlspecialchars($settings['promo_popup_file']) ?>" style="width: 100%; height: 70vh; border:none; display: block;"></iframe>
+        <?php else: ?>
+            <img src="public/<?= htmlspecialchars($settings['promo_popup_file']) ?>" class="img-fluid" style="max-height: 75vh; width: 100%; object-fit: contain; display: block; margin: 0 auto; background: #fff;" alt="Welcome Promo">
+        <?php endif; ?>
+        
+        <?php if (!empty($settings['promo_popup_content'])): ?>
+        <div class="p-4 text-dark text-center" style="border-top: 1px solid #eee; background: #fdfdfd;">
+            <p class="mb-0" style="white-space: pre-wrap; font-size: 1.05rem; line-height: 1.5;"><?= htmlspecialchars($settings['promo_popup_content']) ?></p>
+        </div>
+        <?php endif; ?>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("Welcome Popup script initialized.");
+    
+    // Kiểm tra xem có phải là tải lại trang (F5) hoặc truy cập từ bên ngoài (nhập URL, từ Google...)
+    let isReload = false;
+    let isExternalEntry = false;
+    
+    if (window.performance) {
+        if (performance.getEntriesByType) {
+            let navEntries = performance.getEntriesByType("navigation");
+            if (navEntries.length > 0 && navEntries[0].type === "reload") {
+                isReload = true;
+            }
+        } else if (performance.navigation && performance.navigation.type === 1) {
+            isReload = true;
+        }
+    }
+    
+    if (document.referrer === "" || document.referrer.indexOf(location.hostname) === -1) {
+        isExternalEntry = true;
+    }
+    
+    // Chỉ hiện Popup nếu là F5 hoặc mới vào web lần đầu
+    if (isReload || isExternalEntry) {
+        setTimeout(function() {
+            var promoModalEl = document.getElementById('welcomePromoModal');
+            console.log("Modal element found:", promoModalEl);
+            if (promoModalEl) {
+                try {
+                    var promoModal = new bootstrap.Modal(promoModalEl, {
+                        backdrop: 'static', 
+                        keyboard: true
+                    });
+                    promoModal.show();
+                    console.log("Modal shown successfully.");
+                } catch (e) {
+                    console.error("Error showing modal:", e);
+                }
+            }
+        }, 1000);
+    }
+});
+</script>
+<?php endif; ?>
+
 <?php include __DIR__ . '/views/client/layouts/footer.php'; ?>
 
 <style>
@@ -1140,10 +1241,10 @@ document.addEventListener('DOMContentLoaded', function() {
     100% { transform: scale(1.08); }
   }
   .carousel-item.active {
-    animation: kenBurnsLux 20s ease-out forwards;
+    
   }
   .carousel-item .container {
-    animation: reverseKenBurnsLux 20s ease-out forwards;
+    
   }
   @keyframes reverseKenBurnsLux {
     0% { transform: scale(1); }
@@ -1484,12 +1585,7 @@ document.addEventListener('DOMContentLoaded', function() {
     grid-template-columns: repeat(12, 1fr);
     grid-auto-rows: 250px;
     gap: 0px;
-    width: 100vw;
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
+    width: 100%;
   }
 
   .atmo-item {

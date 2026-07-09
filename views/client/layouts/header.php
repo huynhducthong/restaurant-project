@@ -2,15 +2,19 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+// Prevent browser caching PHP layouts in local development
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+header("Expires: Wed, 11 Jan 1984 05:00:00 GMT");
 
 require_once __DIR__ . '/../../../config/database.php';
-require_once __DIR__ . '/../../../config/language.php';
 
 $database = new Database();
 $db = $database->getConnection();
 
 /* =========================================================
-   LẤY CẤU HÌNH WEBSITE & NGÀY SINH KHÁCH HÀNG
+   Láº¤Y Cáº¤U HÃŒNH WEBSITE & NGÃ€Y SINH KHÃCH HÃ€NG
 ========================================================= */
 
 $user_birthday = null;
@@ -46,7 +50,7 @@ try {
 
 $settings['restaurant_name'] = $settings['restaurant_name'] ?? 'Restaurantly';
 $settings['hotline']         = $settings['hotline'] ?? '0123 456 789';
-$settings['open_days']       = $settings['open_days'] ?? 'Thứ 2 - Chủ Nhật';
+$settings['open_days']       = $settings['open_days'] ?? 'Thá»© 2 - Chá»§ Nháº­t';
 $settings['open_time']       = $settings['open_time'] ?? '11:00 - 23:00';
 $settings['address']         = $settings['address'] ?? '';
 $settings['logo_url']        = $settings['logo_url'] ?? '';
@@ -81,7 +85,7 @@ $is_backend_access = in_array(
 );
 
 /* =========================================================
-   FIX ĐƯỜNG DẪN LOGO
+   FIX ÄÆ¯á»œNG DáºªN LOGO
 ========================================================= */
 
 $is_admin_area = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false);
@@ -100,18 +104,26 @@ if (!empty($logo_path)) {
         $final_logo_src = 'public/' . ltrim($logo_path, '/');
     }
 }
-?>
-
-<!DOCTYPE html>
+?><!DOCTYPE html>
 <html lang="vi">
 
 <head>
 
     <meta charset="utf-8">
     <meta name="google" content="notranslate">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script>
+        (function() {
+            var meta = document.querySelector('meta[name="viewport"]');
+            if (meta) {
+                var original = meta.getAttribute('content');
+                meta.setAttribute('content', 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0');
+                setTimeout(function() {
+                    meta.setAttribute('content', original);
+                }, 50);
+            }
+        })();
+    </script>
 
     <title>
         <?= htmlspecialchars($settings['restaurant_name']) ?>
@@ -126,6 +138,7 @@ if (!empty($logo_path)) {
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
         rel="stylesheet">
+    <link href="public/assets/client/css/style.css?v=<?= time() ?>" rel="stylesheet">
 
     <!-- BOOTSTRAP ICON -->
     <link
@@ -138,12 +151,27 @@ if (!empty($logo_path)) {
             --primary-color: #A88746;
         }
 
-        body {
+        html, body {
             margin: 0;
             padding: 0 !important;
             font-family: 'Source Sans 3', sans-serif;
-            background-color: #0c0b09;
-            color: #fff;
+            background-color: #050505; /* Deep Black for high contrast */
+            color: #FFFFFF; /* Pure White text for better contrast */
+            overflow-x: hidden; /* Prevent horizontal scrolling/overflow bugs */
+            width: 100%;
+            max-width: 100%;
+            position: relative;
+        }
+        @media (max-width: 991px) {
+            html, body, .main-wrapper {
+                width: 100vw !important;
+                max-width: 100vw !important;
+                overflow-x: hidden !important;
+            }
+        }
+        @keyframes fadeInPage {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
         }
 
         /* =======================
@@ -334,7 +362,7 @@ if (!empty($logo_path)) {
             color: #000;
         }
 
-        /* Khách: đăng ký / đăng nhập xếp dọc, nút vuông */
+        /* KhÃ¡ch: Ä‘Äƒng kÃ½ / Ä‘Äƒng nháº­p xáº¿p dá»c, nÃºt vuÃ´ng */
 
         .guest-auth-stack {
             display: flex;
@@ -509,10 +537,35 @@ if (!empty($logo_path)) {
         .oriental-item i {
             display: none; /* Hide icons in the new clean menu */
         }
+        .mobile-only-item { display: none !important; }
+        .header-container { padding-left: 8vw; padding-right: 8vw; }
         @media (max-width: 991px) {
-            .navbar {
-                display: none;
-            }
+            #header { top: 0 !important; }
+            .navbar { display: none; }
+            .mobile-only-item { display: flex !important; }
+            #topbar { display: none !important; }
+            .header-container { padding-left: 15px !important; padding-right: 15px !important; }
+            .btn-book-outside { padding: 6px 12px; font-size: 14px; white-space: nowrap; }
+            .oriental-trigger i { font-size: 28px; }
+        }
+
+        /* =======================
+           PAGE TRANSITION OVERLAY
+        ======================= */
+        .page-transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #050505;
+            z-index: 999999;
+            pointer-events: none;
+            animation: fadeOutOverlay 0.8s cubic-bezier(0.8, 0, 0.2, 1) forwards;
+        }
+        @keyframes fadeOutOverlay {
+            0% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
         }
 
     </style>
@@ -520,12 +573,20 @@ if (!empty($logo_path)) {
 </head>
 
 <body>
+    <!-- MOBILE VIEWPORT STRETCH FIX WRAPPER -->
+    <div class="main-wrapper" style="width: 100%; overflow-x: hidden; position: relative;">
+        <!-- Invisible Layout Helper to resolve WebKit viewport init issues -->
+        <div style="height: 0px; width: 100%; clear: both; display: block; overflow: hidden; pointer-events: none; visibility: hidden;"></div>
+
+    <!-- PAGE TRANSITION OVERLAY -->
+    <div class="page-transition-overlay"></div>
+    
 
     <!-- TOPBAR -->
 
     <div id="topbar">
 
-        <div class="container-fluid d-flex justify-content-between" style="padding-left: 8vw; padding-right: 8vw;">
+        <div class="container-fluid px-3 px-lg-5 d-flex justify-content-between">
 
             <div class="contact-info d-flex align-items-center flex-wrap">
 
@@ -560,10 +621,94 @@ if (!empty($logo_path)) {
             </div>
 
             <div class="lang-switcher d-flex align-items-center">
-                <a href="?lang=en" style="color: <?= $current_lang == 'en' ? '#C9A66B' : 'rgba(255,255,255,0.7)' ?>; text-decoration: none; font-weight: 600; font-size: 14px; letter-spacing: 1px;">EN</a>
+                <a href="#" onclick="setLanguage('en'); return false;" id="btn-lang-en" style="color: rgba(255,255,255,0.7); text-decoration: none; font-weight: 600; font-size: 14px; letter-spacing: 1px;">EN</a>
                 <span class="mx-2" style="color: rgba(255,255,255,0.5); font-size: 14px;">/</span>
-                <a href="?lang=vn" style="color: <?= $current_lang == 'vn' ? '#C9A66B' : 'rgba(255,255,255,0.7)' ?>; text-decoration: none; font-weight: 600; font-size: 14px; letter-spacing: 1px;">VN</a>
+                <a href="#" onclick="setLanguage('vi'); return false;" id="btn-lang-vn" style="color: #C9A66B; text-decoration: none; font-weight: 600; font-size: 14px; letter-spacing: 1px;">VN</a>
             </div>
+
+            <!-- Hidden Google Translate Logic -->
+            <div id="google_translate_element" style="display:none;"></div>
+            <style>
+                /* Aggressively hide the Google Translate top banner (All versions) */
+                .goog-te-banner-frame,
+                .goog-te-banner-frame.skiptranslate,
+                iframe.goog-te-banner-frame,
+                iframe.skiptranslate,
+                .skiptranslate > iframe.skiptranslate,
+                .VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+                .VIpgJd-ZVi9od-aZ2wEe-wOHMyf-ti6hGc,
+                iframe[src*="translate.googleapis.com"] { 
+                    display: none !important; 
+                    visibility: hidden !important;
+                    height: 0 !important;
+                }
+                body { 
+                    position: static !important;
+                    top: 0px !important; 
+                    margin-top: 0px !important;
+                }
+                #goog-gt-tt, .goog-te-balloon-frame { display: none !important; } /* Hide tooltips */
+            
+        
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+    
+        /* =======================
+           PAGE TRANSITION OVERLAY
+        ======================= */
+        .page-transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #050505;
+            z-index: 999999;
+            pointer-events: none;
+            animation: fadeOutOverlay 0.8s cubic-bezier(0.8, 0, 0.2, 1) forwards;
+        }
+        @keyframes fadeOutOverlay {
+            0% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+    </style>
+            <script type="text/javascript">
+                function googleTranslateElementInit() {
+                    new google.translate.TranslateElement({pageLanguage: 'vi', includedLanguages: 'en,vi', autoDisplay: false}, 'google_translate_element');
+                }
+                
+                document.addEventListener("DOMContentLoaded", function() {
+                    let match = document.cookie.match(/(?:^|;)\s*googtrans=([^;]*)/);
+                    let currentLang = match ? decodeURIComponent(match[1]) : '/vi/vi';
+                    if (currentLang === '/vi/en' || currentLang === '/en/en') {
+                        document.getElementById('btn-lang-en').style.color = '#C9A66B';
+                        document.getElementById('btn-lang-vn').style.color = 'rgba(255,255,255,0.7)';
+                    } else {
+                        document.getElementById('btn-lang-en').style.color = 'rgba(255,255,255,0.7)';
+                        document.getElementById('btn-lang-vn').style.color = '#C9A66B';
+                    }
+                });
+
+                function setLanguage(lang) {
+                    var domain = window.location.hostname;
+                    if (lang === 'vi') {
+                        // Clear cookie to restore original Vietnamese (both domain and non-domain to be safe)
+                        document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                        document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + domain;
+                    } else {
+                        // Set cookie for English (both domain and non-domain to guarantee Google reads it on first load)
+                        document.cookie = "googtrans=/vi/" + lang + "; path=/;";
+                        document.cookie = "googtrans=/vi/" + lang + "; path=/; domain=" + domain;
+                    }
+                    // Add a tiny delay to ensure browser finishes writing cookies before reload
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 100);
+                }
+            </script>
+            <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
         </div>
 
@@ -573,7 +718,7 @@ if (!empty($logo_path)) {
 
     <header id="header">
 
-        <div class="container-fluid d-flex align-items-center justify-content-between" style="padding-left: 8vw; padding-right: 8vw;">
+        <div class="container-fluid px-3 px-lg-5 d-flex align-items-center justify-content-between">
 
             <!-- LOGO -->
 
@@ -590,7 +735,7 @@ if (!empty($logo_path)) {
 
                     <?php endif; ?>
 
-                    <span>
+                    <span class="notranslate">
                         <?= htmlspecialchars($settings['restaurant_name']) ?>
                     </span>
 
@@ -606,33 +751,33 @@ if (!empty($logo_path)) {
                 <ul>
                       <li>
                           <a class="<?= ($current_page == 'index.php' && strpos($_SERVER['REQUEST_URI'], '/about') === false) ? 'active' : '' ?>" href="<?= safe_url('index.php', $path_prefix ?? '') ?>">
-                              <?= __('home') ?>
+                              <?= 'Trang chủ' ?>
                           </a>
                       </li>
 
                     <li>
                         <a class="<?= ($current_page == 'index.php' && strpos($_SERVER['REQUEST_URI'], '/about') !== false || $current_page == 'about.php') ? 'active' : '' ?>"
                             href="<?= safe_url('about.php', $path_prefix ?? '') ?>">
-                            <?= __('news') ?>
+                            <?= 'Tin tức' ?>
                         </a>
                     </li>
 
                     <li>
                         <a class="<?= ($current_page == 'menu.php') ? 'active' : '' ?>" href="<?= safe_url('menu.php', $path_prefix ?? '') ?>">
-                            <?= __('menu') ?>
+                            <?= 'Thực đơn' ?>
                         </a>
                     </li>
 
                     <li>
                         <a class="<?= ($current_page == 'chefs.php' || ($current_page == 'about.php' && isset($_GET['cat_id']) && $_GET['cat_id'] == 3)) ? 'active' : '' ?>"
                             href="<?= safe_url('chefs.php', $path_prefix ?? '') ?>">
-                            <?= __('team_chefs') ?>
+                            <?= 'Bếp trưởng' ?>
                         </a>
                     </li>
 
                     <li>
                         <a class="<?= ($current_page == 'contact.php') ? 'active' : '' ?>" href="<?= safe_url('contact.php', $path_prefix ?? '') ?>">
-                            <?= __('contact') ?>
+                            <?= 'Liên hệ' ?>
                         </a>
                     </li>
                 </ul>
@@ -648,8 +793,7 @@ if (!empty($logo_path)) {
 
                     <!-- ORIENTAL MEGA MENU & OUTSIDE BOOKING BUTTON -->
                     <div class="oriental-nav-wrapper" style="display:flex; align-items:center; gap:15px;">
-                        <a href="<?= safe_url('booking_service.php?type=bespoke', $path_prefix ?? '') ?>" class="btn-book-outside" style="background-color: #1a1814; color: #A88746; border-color: #A88746; margin-right: 10px;">BESPOKE DINING</a>
-                        <a href="<?= safe_url('booking_service.php?type=table', $path_prefix ?? '') ?>" class="btn-book-outside"><?= __('book_table') ?></a>
+                        <a href="<?= safe_url('booking_service.php?type=table', $path_prefix ?? '') ?>" class="btn-book-outside"><?= 'Đặt bàn' ?></a>
 
                         <!-- Divider line -->
                         <div style="width: 1px; height: 35px; background-color: rgba(168, 135, 70, 0.4); margin: 0 10px;"></div>
@@ -659,9 +803,16 @@ if (!empty($logo_path)) {
                         </div>
                         
                         <div class="oriental-panel" id="orientalPanel">
+                            <!-- MOBILE NAVIGATION LINKS -->
+                            <a href="<?= safe_url('index.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Trang chủ</a>
+                            <a href="<?= safe_url('about.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Tin tức</a>
+                            <a href="<?= safe_url('menu.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Thực đơn</a>
+                            <a href="<?= safe_url('chefs.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Bếp trưởng</a>
+                            <a href="<?= safe_url('contact.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Liên hệ</a>
+                            <div class="mobile-only-item" style="height: 1px; background-color: rgba(168, 135, 70, 0.4); margin: 10px 20px;"></div>
 
                             <?php if (isset($_SESSION['user_id'])): ?>
-                                <!-- TRANG QUẢN TRỊ / BẢNG CÔNG -->
+                                <!-- TRANG QUẢN TRỊ -->
                                 <?php if (in_array($user_role, ['admin', 'staff', 'waiter', 'chef', 'cashier', 1, 2])): ?>
                                     <a href="<?= safe_url('admin/admin_dashboard.php', $path_prefix ?? '') ?>" class="oriental-item" style="color: var(--primary-color);">
                                         Trang quản trị
@@ -676,7 +827,7 @@ if (!empty($logo_path)) {
                                 <!-- ĐĂNG XUẤT -->
                                 <a href="<?= safe_url('public/logout.php', $path_prefix ?? '') ?>" class="oriental-item text-danger-custom fw-bold">
                                         <i class="fas fa-sign-out-alt"></i>
-                                        <?= __('logout') ?>
+                                        <?= 'Đăng xuất' ?>
                                 </a>
                             <?php else: ?>
                                 <!-- ĐĂNG KÝ -->
@@ -700,7 +851,10 @@ if (!empty($logo_path)) {
 
     </header>
 
-    <!-- BOOTSTRAP JS -->
+    
+
+<!-- BOOTSTRAP JS -->
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -774,8 +928,8 @@ if (!empty($logo_path)) {
                 // Create a custom Toast notification
                 var toastHTML = '<div id="bdToast" style="position:fixed;top:120px;right:20px;z-index:99999;background:rgba(9,30,27,0.98);border:1px solid #A88746;padding:25px;border-radius:12px;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,0.6);transform:translateX(150%);transition:0.6s cubic-bezier(0.34, 1.56, 0.64, 1);max-width:320px;text-align:center;">'+
                 '<i class="fas fa-gift fa-3x mb-3" style="color:#A88746"></i>'+
-                '<h4 style="font-family:\'Source Sans 3\',serif;color:#A88746;margin-bottom:12px;font-size:1.5rem">Chúc Mừng Sinh Nhật!</h4>'+
-                '<p style="font-size:13px;margin:0;line-height:1.6;color:rgba(255,255,255,0.85)">Hệ thống ghi nhận hôm nay là sinh nhật của Quý khách. Nền tảng đã chuẩn bị sẵn đặc quyền ưu đãi dành riêng cho Đơn đặt bàn ngày hôm nay!</p>'+
+                '<h4 style="font-family:\'Source Sans 3\',serif;color:#A88746;margin-bottom:12px;font-size:1.5rem">ChÃºc Má»«ng Sinh Nháº­t!</h4>'+
+                '<p style="font-size:13px;margin:0;line-height:1.6;color:rgba(255,255,255,0.85)">Há»‡ thá»‘ng ghi nháº­n hÃ´m nay lÃ  sinh nháº­t cá»§a QuÃ½ khÃ¡ch. Ná»n táº£ng Ä‘Ã£ chuáº©n bá»‹ sáºµn Ä‘áº·c quyá»n Æ°u Ä‘Ã£i dÃ nh riÃªng cho ÄÆ¡n Ä‘áº·t bÃ n ngÃ y hÃ´m nay!</p>'+
                 '</div>';
                 document.body.insertAdjacentHTML('beforeend', toastHTML);
                 setTimeout(function(){ document.getElementById('bdToast').style.transform = 'translateX(0)'; }, 500);
@@ -796,18 +950,18 @@ if (!empty($logo_path)) {
 
     if ($h_month == '02' && $h_day == '14') {
         $is_holiday = true;
-        $holiday_name = "Lễ Tình Nhân (Valentine's Day)";
-        $holiday_msg = "Chúc Quý khách một mùa Valentine ấm áp. Đừng quên thiết kế một bàn tiệc lãng mạn dành tặng người thương nhé!";
+        $holiday_name = "Lá»… TÃ¬nh NhÃ¢n (Valentine's Day)";
+        $holiday_msg = "ChÃºc QuÃ½ khÃ¡ch má»™t mÃ¹a Valentine áº¥m Ã¡p. Äá»«ng quÃªn thiáº¿t káº¿ má»™t bÃ n tiá»‡c lÃ£ng máº¡n dÃ nh táº·ng ngÆ°á»i thÆ°Æ¡ng nhÃ©!";
         $holiday_icon = "fa-heart text-danger";
     } elseif ($h_month == '03' && $h_day == '08') {
         $is_holiday = true;
-        $holiday_name = "Quốc Tế Phụ Nữ 8/3";
-        $holiday_msg = "Tôn vinh phái đẹp! Hãy để chúng tôi mang đến trải nghiệm Fine Dining hoàn hảo nhất cho những người phụ nữ tuyệt vời của bạn.";
+        $holiday_name = "Quá»‘c Táº¿ Phá»¥ Ná»¯ 8/3";
+        $holiday_msg = "TÃ´n vinh phÃ¡i Ä‘áº¹p! HÃ£y Ä‘á»ƒ chÃºng tÃ´i mang Ä‘áº¿n tráº£i nghiá»‡m Fine Dining hoÃ n háº£o nháº¥t cho nhá»¯ng ngÆ°á»i phá»¥ ná»¯ tuyá»‡t vá»i cá»§a báº¡n.";
         $holiday_icon = "fa-female text-danger";
     } elseif ($h_month == '12' && $h_day == '24' || $h_day == '25') {
         $is_holiday = true;
-        $holiday_name = "Giáng Sinh An Lành";
-        $holiday_msg = "Merry Christmas! Hệ thống đã mở các Gói thiết kế Không gian Mùa đông độc quyền. Chúc Quý khách một mùa lễ hội an lành!";
+        $holiday_name = "GiÃ¡ng Sinh An LÃ nh";
+        $holiday_msg = "Merry Christmas! Há»‡ thá»‘ng Ä‘Ã£ má»Ÿ cÃ¡c GÃ³i thiáº¿t káº¿ KhÃ´ng gian MÃ¹a Ä‘Ã´ng Ä‘á»™c quyá»n. ChÃºc QuÃ½ khÃ¡ch má»™t mÃ¹a lá»… há»™i an lÃ nh!";
         $holiday_icon = "fa-snowflake text-info";
     }
 
@@ -862,6 +1016,35 @@ if (!empty($logo_path)) {
             }
         });
     </script>
-</body>
 
-</html>
+
+
+<script>
+    // Force WebKit/iOS Safari to reset viewport scaling factor aggressively
+    (function() {
+        function resetViewport() {
+            var meta = document.querySelector('meta[name="viewport"]');
+            if (meta) {
+                var original = meta.getAttribute('content');
+                meta.setAttribute('content', 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0');
+                setTimeout(function() {
+                    meta.setAttribute('content', original);
+                }, 50);
+            }
+        }
+        // Run immediately
+        resetViewport();
+        // Run on DOM content ready
+        document.addEventListener('DOMContentLoaded', resetViewport);
+        // Run on full assets load
+        window.addEventListener('load', resetViewport);
+        // Run on orientation change
+        window.addEventListener('orientationchange', resetViewport);
+        // Run on page show (history navigation)
+        window.addEventListener('pageshow', function(e) {
+            if (e.persisted) {
+                resetViewport();
+            }
+        });
+    })();
+</script>

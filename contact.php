@@ -252,6 +252,15 @@ include 'views/client/layouts/header.php';
         color: #94a3b8;
         cursor: not-allowed;
     }
+    
+    @media (max-width: 768px) {
+        .contact-hero { padding: 120px 0 60px; }
+        .contact-hero h2 { font-size: 2.5rem; }
+        .contact-section { padding: 60px 0; margin-top: -30px; }
+        .form-wrapper { padding: 30px 20px; }
+        .info-item { padding: 20px; }
+        .map-mini { height: 250px; }
+    }
 </style>
 
 <main class="contact-page">

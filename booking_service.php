@@ -121,7 +121,7 @@ $bespoke_budgets = $db->query("SELECT * FROM bespoke_budgets ORDER BY sort_order
 $bespoke_styles = $db->query("SELECT * FROM bespoke_styles ORDER BY sort_order ASC")->fetchAll(PDO::FETCH_ASSOC);
 $bespoke_occasions = $db->query("SELECT * FROM bespoke_occasions ORDER BY sort_order ASC")->fetchAll(PDO::FETCH_ASSOC);
 
-$chefs = $db->query("SELECT id, name FROM chefs WHERE is_active = 1 ORDER BY sort_order ASC, id DESC")->fetchAll(PDO::FETCH_ASSOC);
+$chefs = $db->query("SELECT id, name, service_fee FROM chefs WHERE is_active = 1 AND position IN ('Bếp trưởng', 'Bếp chính') ORDER BY sort_order ASC, id DESC")->fetchAll(PDO::FETCH_ASSOC);
 
 // Lấy thông tin người dùng và sổ địa chỉ nếu đã đăng nhập
 $user_info = null;
@@ -592,15 +592,6 @@ select.input-lux {
                             <button type="button" class="btn-qty" onclick="cg(1)">+</button>
                         </div>
                         <label class="label-lux" style="top: -8px; left: 15px; font-size: 11px; color: var(--accent-burgundy); background: #FFFFFF; padding: 0 5px; letter-spacing: 1px; text-transform: uppercase; z-index: 2; font-weight: 600;">Số lượng khách *</label>
-                        <?php if ($type === 'chef'): ?>
-                            <div class="mt-2 p-3" style="background: rgba(168, 135, 70, 0.08); border: 1px solid rgba(168, 135, 70, 0.3); font-size: 12px; color: var(--text-main); line-height: 1.6; border-radius: 4px;">
-                                <i class="fas fa-info-circle me-1" style="color: var(--forest);"></i> <strong style="color: var(--forest);">Phí phục vụ Bếp trưởng</strong> thay đổi theo số lượng khách:<br>
-                                • ≤ 2 khách: 250.000đ<br>
-                                • 3-6 khách: 500.000đ<br>
-                                • 7-12 khách: 1.000.000đ<br>
-                                • Trên 12 khách: 1.200.000đ
-                            </div>
-                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -677,7 +668,7 @@ select.input-lux {
                         <select id="selected_chef" class="input-lux" onchange="updateChefReq(); us();">
                             <option value="">-- Nhà hàng tự sắp xếp --</option>
                             <?php foreach ($chefs as $c): ?>
-                                <option value="<?= htmlspecialchars($c['name']) ?>" <?= ($autofilled_chef_name === $c['name']) ? 'selected' : '' ?>>Chef <?= htmlspecialchars($c['name']) ?></option>
+                                <option value="<?= htmlspecialchars($c['name']) ?>" data-fee="<?= (int)($c['service_fee'] ?? 0) ?>" <?= ($autofilled_chef_name === $c['name']) ? 'selected' : '' ?>>Chef <?= htmlspecialchars($c['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
                         <label class="label-lux" >Bếp trưởng chỉ định</label>
@@ -761,7 +752,17 @@ select.input-lux {
                 <h3 class="section-title-lux" style="font-size: 1.4rem; color: var(--accent-burgundy);">Thực Đơn</h3>
                 
                 <div id="standard-menu-fields">
-                <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">Bộ Sưu Tập Hương Vị</p>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:0; letter-spacing:1px; text-transform:uppercase;">Bộ Sưu Tập Hương Vị</p>
+                    <button type="button" id="btn-ai-setmenu" class="btn btn-sm" style="background: linear-gradient(135deg, #A88746, #c8933a); color: #fff; font-family: var(--font-sans); font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; border-radius: 4px; border: none; padding: 6px 12px; box-shadow: 0 4px 10px rgba(168,135,70,0.3);" onclick="recommendAISetMenu()">
+                        <i class="fas fa-magic me-2"></i> Nhờ Bếp Trưởng Chọn Set Menu
+                    </button>
+                </div>
+                
+                <div id="ai-setmenu-alert" style="display:none; background: rgba(168,135,70,0.05); border-left: 4px solid var(--accent-burgundy); padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+                    <strong style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem;"><i class="fas fa-hat-chef me-2"></i> Gợi Ý Từ Bếp Trưởng</strong>
+                    <p id="ai-setmenu-reason" style="font-size: 13px; color: var(--text-main); margin-bottom: 0; margin-top: 5px;"></p>
+                </div>
                 <div style="display:grid; grid-template-columns: 1fr; max-width: 350px; gap:15px; margin-bottom: 25px;">
                     <div class="card-select cc active" data-price="0" onclick="selCombo(0,this)">
                         <div style="color:var(--accent-burgundy); font-size:15px; margin-bottom:5px;">Gọi Món Tự Do</div>
@@ -830,8 +831,15 @@ select.input-lux {
                         </div>
                     </div>
                     <div class="input-group-lux mb-0">
-                        <textarea name="chef_requirements_detail" id="creq_detail" class="input-lux" rows="3" placeholder=" " oninput="updateChefReq(); us();"></textarea>
+                        <textarea name="chef_requirements_detail" id="creq_detail" class="input-lux" rows="5" placeholder=" " oninput="updateChefReq(); us();"></textarea>
                         <label class="label-lux"><i class="fas fa-utensils me-1"></i> Yêu cầu chi tiết cho Thực đơn (Chủ đề, nguyên liệu đặc biệt...)</label>
+                    </div>
+                    
+                    <!-- AI Concierge Button -->
+                    <div class="mt-2 text-end">
+                        <button type="button" id="btn-ai-concierge" class="btn btn-sm" style="background: linear-gradient(135deg, #A88746, #c8933a); color: #fff; font-family: var(--font-sans); font-size: 13px; letter-spacing: 1px; text-transform: uppercase; border-radius: 4px; border: none; padding: 8px 15px; box-shadow: 0 4px 10px rgba(168,135,70,0.3);" onclick="generateAIBespokeMenu()">
+                            <i class="fas fa-magic me-2"></i> Nhờ AI Viết Gợi Ý Thực Đơn
+                        </button>
                     </div>
                     
                     <div class="bespoke-process mt-4 pt-3 border-top">
@@ -840,7 +848,7 @@ select.input-lux {
                             <!-- BƯỚC 1: ACTIVE -->
                             <div style="display:flex; align-items:center; gap:15px;">
                                 <div style="width:30px; height:30px; border-radius:50%; background:#d4b06a; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0; box-shadow: 0 0 10px rgba(212,176,106,0.5);">1</div>
-                                <div style="font-size:14px; color:var(--text-dark); font-weight:600;">Gửi yêu cầu thiết kế <span style="font-size:11px; color:#d4b06a; font-style:italic; font-weight:normal;">(Bạn đang ở bước này)</span></div>
+                                <div id="bespoke-step-1" style="font-size:14px; color:var(--text-dark); font-weight:600;">Gửi yêu cầu thiết kế <span style="font-size:11px; color:#d4b06a; font-style:italic; font-weight:normal;">(Bạn đang ở bước này)</span></div>
                             </div>
                             <div style="width:2px; height:15px; background:rgba(212,176,106,0.3); margin-left:14px;"></div>
                             
@@ -854,14 +862,14 @@ select.input-lux {
                             <!-- BƯỚC 3: UPCOMING -->
                             <div style="display:flex; align-items:center; gap:15px; opacity:0.6;">
                                 <div style="width:30px; height:30px; border-radius:50%; border: 2px solid #d4b06a; background:transparent; color:#d4b06a; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">3</div>
-                                <div style="font-size:13px; color:var(--text-muted);">Xác nhận thực đơn & Báo giá</div>
+                                <div id="bespoke-step-3" style="font-size:13px; color:var(--text-muted);">Xác nhận thực đơn & Báo giá</div>
                             </div>
                             <div style="width:2px; height:15px; background:rgba(212,176,106,0.2); margin-left:14px;"></div>
                             
                             <!-- BƯỚC 4: UPCOMING -->
                             <div style="display:flex; align-items:center; gap:15px; opacity:0.6;">
                                 <div style="width:30px; height:30px; border-radius:50%; border: 2px solid #d4b06a; background:transparent; color:#d4b06a; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">4</div>
-                                <div style="font-size:13px; color:var(--text-muted);">Thanh toán cọc & Chuẩn bị</div>
+                                <div id="bespoke-step-4" style="font-size:13px; color:var(--text-muted);">Thanh toán cọc & Chuẩn bị</div>
                             </div>
                         </div>
                     </div>
@@ -1167,7 +1175,18 @@ select.input-lux {
         showStep(step);
     }
     function nextStep(step) {
-        if (step === 1 && validateStep1()) showStep(2);
+        if (step === 1 && validateStep1()) {
+            showStep(2);
+            // Tự động gợi ý Set Menu khi vừa sang bước 2 (chỉ chạy 1 lần)
+            var isBespoke = document.getElementById('is_bespoke_menu') ? document.getElementById('is_bespoke_menu').value : '0';
+            if (!window.hasAutoRecommended && typeof recommendAISetMenu === 'function' && isBespoke != '1') {
+                window.hasAutoRecommended = true;
+                // Gọi API gợi ý ngầm sau 500ms để hiệu ứng chuyển bước mượt mà hơn
+                setTimeout(function() {
+                    recommendAISetMenu();
+                }, 500);
+            }
+        }
         if (step === 2 && validateStep2()) showStep(3);
     }
     function prevStep(step) { showStep(step - 1); }
@@ -2338,7 +2357,8 @@ function us(){
     var n=document.querySelector('[name="customer_name"]');
     document.getElementById('sn').textContent=n&&n.value?n.value:'—';
 
-    var typeStr = "<?= $type ?>";
+    var typeStrEl = document.querySelector('input[name="service_type"]');
+    var typeStr = typeStrEl ? typeStrEl.value : "table";
     var d=document.getElementById('bd');
     if(d&&d.value){
         var dt=new Date(d.value);
@@ -2369,14 +2389,15 @@ function us(){
         document.getElementById('sp2').textContent = selPrice.toLocaleString('vi-VN')+' đ';
     }
 
-    // Tính phí Đầu bếp tại gia dựa trên số khách
+    // Tính phí Đầu bếp tại gia dựa trên phí tùy chỉnh của từng đầu bếp
     var guestsNum = parseInt(document.getElementById('gi').value) || 2;
     var chefServiceFee = 0;
     if (typeStr === 'chef') {
-        if (guestsNum <= 2) chefServiceFee = 250000;
-        else if (guestsNum <= 6) chefServiceFee = 500000;
-        else if (guestsNum <= 12) chefServiceFee = 1000000;
-        else chefServiceFee = 1200000;
+        var chefSelect = document.getElementById('selected_chef');
+        if (chefSelect && chefSelect.selectedIndex > 0) {
+            var selectedOption = chefSelect.options[chefSelect.selectedIndex];
+            chefServiceFee = parseFloat(selectedOption.getAttribute('data-fee')) || 0;
+        }
         
         var schef = document.getElementById('schef-fee');
         if (schef) schef.textContent = chefServiceFee.toLocaleString('vi-VN') + ' đ';
@@ -2386,8 +2407,33 @@ function us(){
     var sid = document.getElementById('sid') ? parseInt(document.getElementById('sid').value) : 0;
     var food = 0;
     if (sid === -1 || isBespokeMenu === '1') {
-        document.getElementById('sm').textContent = "Thiết kế riêng (Dựa theo NS)";
-        food = 0;
+        var budgetSelect = document.getElementById('chef_budget');
+        var budgetPrice = 0;
+        if (budgetSelect && budgetSelect.selectedIndex >= 0) {
+            budgetPrice = parseFloat(budgetSelect.options[budgetSelect.selectedIndex].getAttribute('data-price')) || 0;
+        }
+        
+        // Thay đổi text Quy trình Bespoke theo Ngân sách
+        var step1 = document.getElementById('bespoke-step-1');
+        var step3 = document.getElementById('bespoke-step-3');
+        var step4 = document.getElementById('bespoke-step-4');
+        if (budgetPrice > 0) {
+            if (step1) step1.innerHTML = 'Gửi yêu cầu & Thanh toán cọc <span style="font-size:11px; color:#d4b06a; font-style:italic; font-weight:normal;">(Bạn đang ở bước này)</span>';
+            if (step3) step3.innerHTML = 'Chốt thực đơn';
+            if (step4) step4.innerHTML = 'Chuẩn bị & Phục vụ';
+        } else {
+            if (step1) step1.innerHTML = 'Gửi yêu cầu thiết kế <span style="font-size:11px; color:#d4b06a; font-style:italic; font-weight:normal;">(Bạn đang ở bước này)</span>';
+            if (step3) step3.innerHTML = 'Báo giá & Chốt thực đơn';
+            if (step4) step4.innerHTML = 'Thanh toán cọc & Chuẩn bị';
+        }
+
+        food = budgetPrice * guestsNum;
+        if (food > 0) {
+            document.getElementById('sm').textContent = food.toLocaleString('vi-VN') + " đ (Dự kiến)";
+        } else {
+            document.getElementById('sm').textContent = "Thiết kế riêng (Dựa theo NS)";
+        }
+        
         var listWrap = document.getElementById('selected-foods-list');
         if (listWrap) listWrap.style.display = 'none';
     } else {
@@ -2726,6 +2772,126 @@ window.addEventListener('popstate', function(e) {
         window.location.reload();
     });
 });
+function generateAIBespokeMenu() {
+    var occasion = document.getElementById('chef_occasion') ? document.getElementById('chef_occasion').value : '';
+    var budget = document.getElementById('chef_budget') ? document.getElementById('chef_budget').value : '';
+    var style = document.getElementById('chef_style') ? document.getElementById('chef_style').value : '';
+    var guests = document.getElementById('guests') ? document.getElementById('guests').value : '2';
+    
+    var btn = document.getElementById('btn-ai-concierge');
+    if(!btn) return;
+    var originalHTML = btn.innerHTML;
+    
+    // Set loading state
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Bếp trưởng đang xem xét...';
+    btn.disabled = true;
+    
+    var formData = new FormData();
+    formData.append('occasion', occasion);
+    formData.append('budget', budget);
+    formData.append('style', style);
+    formData.append('guests', guests);
+    
+    fetch('ajax/ajax_ai_booking_concierge.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(res => {
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+        
+        if (res.status === 'success') {
+            var textarea = document.getElementById('creq_detail');
+            // Thêm kết quả AI vào textarea (xuống dòng nếu đã có nội dung)
+            if (textarea.value.trim() !== '') {
+                textarea.value += '\n\n---\n\n' + res.data;
+            } else {
+                textarea.value = res.data;
+            }
+            // Kích hoạt sự kiện oninput để cập nhật preview
+            textarea.dispatchEvent(new Event('input', { bubbles: true }));
+            if (typeof updateChefReq === 'function') updateChefReq();
+            if (typeof us === 'function') us();
+        } else {
+            alert('Lỗi AI: ' + res.message);
+        }
+    })
+    .catch(err => {
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+        alert('Lỗi kết nối tới hệ thống Bếp trưởng AI.');
+    });
+}
+
+function recommendAISetMenu() {
+    var btn = document.getElementById('btn-ai-setmenu');
+    if(!btn) return;
+    var originalHTML = btn.innerHTML;
+    
+    // Đổi nút thành Loading
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Đang tìm Set Menu...';
+    btn.disabled = true;
+    
+    fetch('ajax/ajax_ai_setmenu_recommend.php')
+    .then(response => response.json())
+    .then(res => {
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+        
+        if (res.status === 'success' && res.data) {
+            var comboId = res.data.combo_id;
+            var reason = res.data.reason;
+            
+            // Tìm card combo tương ứng trên màn hình
+            var card = document.querySelector('.card-select.cc[onclick*="selCombo(' + comboId + ',"]');
+            
+            if (card) {
+                // Tự động click vào card
+                card.click();
+                
+                // Cuộn mượt mà đến vùng combo
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Hiển thị khung thông báo Lý do
+                var alertBox = document.getElementById('ai-setmenu-alert');
+                var reasonText = document.getElementById('ai-setmenu-reason');
+                reasonText.innerHTML = reason;
+                alertBox.style.display = 'block';
+                
+                // Hiệu ứng nhấp nháy cho khung alert để thu hút sự chú ý
+                alertBox.animate([
+                    { opacity: 0.5, transform: 'scale(0.98)' },
+                    { opacity: 1, transform: 'scale(1)' }
+                ], {
+                    duration: 500,
+                    easing: 'ease-out'
+                });
+                
+                // Thêm viền sáng (glowing border) cho card
+                card.style.boxShadow = '0 0 15px rgba(168,135,70,0.8)';
+                card.style.borderColor = 'var(--accent-burgundy)';
+                card.style.transition = 'all 0.5s ease';
+                
+                // Hủy glowing border sau 5 giây để không làm rối mắt mãi mãi
+                setTimeout(function() {
+                    card.style.boxShadow = '';
+                }, 5000);
+                
+            } else {
+                alert('Bếp trưởng đã gợi ý một Set Menu nhưng hiện tại nó đang bị ẩn (chưa chọn đúng Chủ đề). ID: ' + comboId);
+            }
+            
+        } else {
+            alert('Không thể nhận gợi ý: ' + (res.message || 'Lỗi không xác định'));
+        }
+    })
+    .catch(err => {
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+        alert('Lỗi kết nối tới hệ thống Bếp trưởng AI.');
+    });
+}
 </script>
 
 <?php include 'views/client/layouts/footer.php'; ?>

@@ -1,376 +1,255 @@
 <?php
-require_once __DIR__ . '/../../../config/database.php';
+require_once __DIR__ . "/../../../config/database.php";
 $db = (new Database())->getConnection();
 
 $stmt = $db->query("SELECT * FROM settings");
 $settings = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $settings[$row['key_name']] = $row['key_value'];
+    $settings["$row[key_name]"] = $row["key_value"];
 }
 
-// Các liên kết footer được giữ cố định
-$links = [];
-
-// Đảm bảo $path_prefix và safe_url tồn tại
-$path_prefix = $path_prefix ?? '';
-if (!function_exists('safe_url')) {
-    function safe_url($url, $prefix)
-    {
-        if (empty($url))
-            return '';
-        // Nếu URL là tuyệt đối (bắt đầu bằng http, https, // hoặc /)
-        if (preg_match('/^(https?:|\/\/|\/)/i', $url)) {
-            return $url;
-        }
+$path_prefix = $path_prefix ?? "";
+if (!function_exists("safe_url")) {
+    function safe_url($url, $prefix) {
+        if (empty($url)) return "";
+        if (preg_match("/^(https?:|\/\/|\/)/i", $url)) return $url;
         return $prefix . $url;
     }
 }
 
-$bgImg = !empty($settings['footer_bg_image']) ? safe_url('public/assets/img/' . $settings['footer_bg_image'], $path_prefix) : '';
-$logo = !empty($settings['footer_logo']) ? safe_url('public/assets/img/' . $settings['footer_logo'], $path_prefix) : '';
 $showSocial = true;
-$showMap = !empty($settings['google_map_iframe']);
-$showNews = true;
+$showMap = !empty($settings["google_map_iframe"]);
+
+$f_img_1 = !empty($settings["footer_img_1"]) ? safe_url("public/assets/img/" . $settings["footer_img_1"], $path_prefix) : safe_url("public/assets/img/default_footer_1.jpg", $path_prefix);
+$f_img_2 = !empty($settings["footer_img_2"]) ? safe_url("public/assets/img/" . $settings["footer_img_2"], $path_prefix) : safe_url("public/assets/img/default_footer_2.jpg", $path_prefix);
+$f_img_3 = !empty($settings["footer_img_3"]) ? safe_url("public/assets/img/" . $settings["footer_img_3"], $path_prefix) : safe_url("public/assets/img/default_footer_3.jpg", $path_prefix);
 ?>
-
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
-
-    <?php $text_color = '#1a1814'; ?>
-
-    .footer {
-        position: relative;
-        padding: 80px 0 40px;
-        background-color: #E6E5E3;
-        color:
-            <?= $text_color ?>
-        ;
-        border-top: 1px solid rgba(200, 155, 92, 0.25);
-        <?php if ($bgImg): ?>
-            background: url('<?= $bgImg ?>') center/cover no-repeat fixed;
-        <?php endif; ?>
+    .new-footer {
+        background-color: #0c0c0c;
+        color: #fff;
+        font-family: "Source Sans 3", sans-serif;
     }
-
-    <?php if ($bgImg): ?>
-        .footer::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            /* Gradient nửa sáng nửa tối từ trên xuống (trung hòa ở trên, tối dần ở dưới) */
-            background: linear-gradient(to bottom, 
-                rgba(230, 229, 227, 0.35) 0%, 
-                rgba(230, 229, 227, 0.65) 50%, 
-                rgba(12, 11, 9, 0.92) 100%
-            );
-            z-index: 1;
-        }
-
-        /* Đảm bảo độ tương phản tốt cho phần bottom-bar khi nền tối dần */
-        .footer .bottom-bar {
-            border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
-            color: rgba(255, 255, 255, 0.85) !important;
-        }
-        .footer .bottom-bar a {
-            color: rgba(255, 255, 255, 0.85) !important;
-        }
-        .footer .bottom-bar a:hover {
-            color: #C89B5C !important;
-        }
-    <?php endif; ?>
-    .footer .container {
-        position: relative;
-        z-index: 2;
+    .footer-top-grid {
+        display: flex;
+        flex-wrap: wrap;
+        background: #111;
     }
-
-    .footer h4 {
-        font-size: 14px;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        color: inherit;
-        opacity: 0.8;
-        margin-bottom: 25px;
-        font-weight: 700;
-    }
-
-    .footer p,
-    .footer a,
-    .footer li {
-        font-size: 17px;
-        font-weight: 600;
-        color: inherit;
-        line-height: 1.8;
-        text-decoration: none;
-        transition: opacity 0.3s;
-        margin-bottom: 5px;
-    }
-
-    .footer a:hover {
-        color: #C89B5C !important;
-        opacity: 1;
-    }
-
-    .footer-logo {
-        max-height: 80px;
-        margin-bottom: 25px;
-    }
-
-    .social-icons {
-        margin-top: 25px;
-    }
-
-    .social-icons a {
-        display: inline-block;
-        margin-right: 15px;
-        font-size: 18px;
-        color: inherit;
-    }
-
-    .explore-links a {
-        display: block;
-        margin-bottom: 12px;
-    }
-
-    .contact-info {
-        margin-bottom: 25px;
-    }
-
-    /* Map Overlay */
-    .map-wrapper {
-        position: relative;
-        width: 100%;
-        height: 150px;
-        border-radius: 4px;
-        overflow: hidden;
-        margin-top: 10px;
-    }
-
-    .map-wrapper iframe {
-        width: 100%;
-        height: 100%;
-        border: none;
-    }
-
-    .map-overlay {
-        position: absolute;
-        inset: 0;
-        background: rgba(17, 63, 54, 0.7);
-        backdrop-filter: blur(2px);
-        z-index: 2;
-        cursor: pointer;
+    .footer-top-left {
+        flex: 1 1 400px;
         display: flex;
         align-items: center;
+        padding: 60px;
+    }
+    .footer-top-left h2 {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 3.5rem;
+        color: #fff;
+        margin: 0;
+        line-height: 1.2;
+    }
+    .map-wrapper iframe {
+        width: 100% !important;
+        height: 100% !important;
+        border: none;
+        filter: grayscale(100%) invert(92%) contrast(83%) hue-rotate(180deg);
+    }
+    .footer-top-right {
+        flex: 1 1 600px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .footer-top-right img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        aspect-ratio: 1/1;
+        transition: transform 0.5s ease;
+    }
+    .footer-ig-box {
+        overflow: hidden;
+        position: relative;
+    }
+    .footer-ig-box:hover img {
+        transform: scale(1.05);
+    }
+    .footer-main {
+        padding: 80px 20px 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 30px;
+        text-align: center;
+    }
+    .footer-col-left { text-align: center; }
+    .footer-col-left ul {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 20px 0;
+    }
+    .footer-col-left li { margin-bottom: 12px; }
+    .footer-col-left a, .footer-col-right a {
+        color: #ccc;
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.3s;
+    }
+    .footer-col-left a:hover, .footer-col-right a:hover {
+        color: #C19A5B;
+    }
+    .footer-michelin {
+        display: flex;
         justify-content: center;
-        transition: opacity 0.3s ease;
+        gap: 15px;
     }
-
-    .map-overlay-message {
-        background: #FFFFFF;
-        color: #113f36;
-        padding: 10px 20px;
-        border-radius: 4px;
-        font-size: 12px;
-        font-family: 'Source Sans 3', sans-serif;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        pointer-events: none;
+    .footer-michelin img { width: 35px; opacity: 0.8; }
+    
+    .footer-col-center .footer-logo-text {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 4rem;
+        color: #C19A5B;
+        font-style: italic;
+        line-height: 1;
+        margin-bottom: 20px;
+        display: inline-block;
     }
-
-    .map-wrapper.active .map-overlay {
-        opacity: 0;
-        pointer-events: none;
+    .footer-socials {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
     }
-
-    .newsletter-form {
-        margin-top: 10px;
+    .footer-socials a {
+        color: #fff;
+        font-size: 1.2rem;
+        transition: color 0.3s;
     }
-
-    .newsletter-form input {
-        width: 100%;
-        padding: 12px 0;
-        border: none;
-        border-bottom: 1px solid currentColor;
-        background: transparent;
-        color: inherit;
-        outline: none;
-        margin-bottom: 15px;
-        font-family: 'Source Sans 3', sans-serif;
-        font-size: 17px;
-        font-weight: 600;
-        opacity: 0.8;
+    .footer-socials a:hover {
+        color: #C19A5B;
     }
-
-    .newsletter-form input::placeholder {
-        color: inherit;
-        opacity: 0.6;
+    
+    .footer-col-right { text-align: center; }
+    .footer-col-right h4 {
+        font-family: "Cormorant Garamond", serif;
+        color: #fff;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
     }
-
-    .newsletter-form button {
-        background:
-            <?= $text_color ?>
-        ;
-        color: #113f36;
-        width: 100%;
-        border: none;
-        padding: 14px 20px;
-        border-radius: 4px;
-        font-weight: 600;
-        cursor: pointer;
-        font-family: 'Source Sans 3', sans-serif;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        font-size: 12px;
-        transition: opacity 0.3s;
+    .footer-col-right p {
+        color: #ccc;
+        font-size: 14px;
+        margin-bottom: 8px;
+        line-height: 1.6;
     }
-
-    .newsletter-form button:hover {
-        opacity: 0.8;
-    }
-
-    .bottom-bar {
-        border-top: 1px solid currentColor;
-        opacity: 0.8;
-        margin-top: 60px;
-        padding-top: 25px;
+    
+    .footer-bottom {
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding: 20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-family: 'Source Sans 3', sans-serif;
-        font-size: 14px;
-        color: inherit;
+        font-size: 12px;
+        color: #777;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .footer-bottom-links a {
+        color: #777;
+        text-decoration: none;
+        margin-left: 15px;
+        transition: color 0.3s;
+    }
+    .footer-bottom-links a:hover {
+        color: #C19A5B;
     }
 
-    @media (max-width: 768px) {
-        .bottom-bar {
+    @media (max-width: 900px) {
+        .footer-main {
+            grid-template-columns: 1fr;
+            gap: 50px;
+        }
+        .footer-bottom {
             flex-direction: column;
             gap: 15px;
             text-align: center;
         }
+        .footer-top-left { padding: 40px 20px; text-align: center; justify-content: center; }
+        .footer-top-left h2 { font-size: 2.5rem; }
+        .footer-top-left, .footer-top-right {
+            flex: 1 1 100% !important;
+            max-width: 100% !important;
+        }
     }
 </style>
 
-<footer class="footer">
-    <div class="container">
-        <div class="row gy-5">
-            <!-- Cột 1: Thông tin liên hệ -->
-            <div class="col-lg-3 col-md-6">
-                <?php if ($logo): ?>
-                    <img src="<?= htmlspecialchars($logo) ?>" alt="Logo" class="footer-logo">
-                <?php else: ?>
-                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
-                        <h4
-                            style="margin: 0; font-family: 'Source Sans 3', sans-serif; font-size: 24px; text-transform: none; letter-spacing: normal; color: inherit; line-height: 1.2;">
-                            <?= htmlspecialchars($settings['restaurant_name'] ?? 'Restaurantly') ?>
-                        </h4>
-                    </div>
-                <?php endif; ?>
-
-                <div class="contact-info" style="margin-bottom: 25px;">
-                    <?php if (!empty($settings['address'])): ?>
-                        <p style=""><?= htmlspecialchars($settings['address']) ?></p><?php endif; ?>
-                    <?php if (!empty($settings['hotline'])): ?>
-                        <p style=" margin-top: 15px;"><?= htmlspecialchars($settings['hotline']) ?></p><?php endif; ?>
-                    <p style=""><a href="mailto:contact@restaurantly.com">contact@restaurantly.com</a></p>
+<footer class="new-footer">
+    <div class="footer-top-grid">
+        <div class="footer-top-left" style="position: relative; overflow: hidden;">
+            <?php if (!empty($settings["google_map_iframe"])): ?>
+                <div class="map-wrapper" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1;">
+                    <?= $settings["google_map_iframe"] ?>
                 </div>
-
-                <?php if ($showSocial): ?>
-                    <div class="social-icons" style="margin-top:0">
-                        <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a href="https://tiktok.com" target="_blank"><i class="fab fa-tiktok"></i></a>
-                        <a href="https://zalo.me" target="_blank"><i class="fab fa-zalo"></i></a>
-                    </div>
-                <?php endif; ?>
-            </div>
-
-            <!-- Cột 2: Quick Links & Thực Đơn -->
-            <div class="col-lg-3 col-md-6">
-                <h4>LIÊN KẾT NHANH</h4>
-                <div class="explore-links" style="margin-bottom: 30px;">
-                    <?php foreach ($links as $l): ?>
-                        <a href="<?= htmlspecialchars(safe_url($l['url'], $path_prefix)) ?>"
-                            style=""><?= htmlspecialchars($l['title']) ?></a>
-                    <?php endforeach; ?>
-                    <?php if (empty($links)): ?>
-                        <a href="<?= safe_url('index.php', $path_prefix) ?>" style="">Trang chủ</a>
-                        <a href="<?= safe_url('about/index.php', $path_prefix) ?>" style="">Về chúng tôi</a>
-                        <a href="<?= safe_url('contact.php', $path_prefix) ?>" style="">Liên hệ</a>
-                    <?php endif; ?>
-                </div>
-
-                <h4>THỰC ĐƠN</h4>
-                <div class="explore-links">
-                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#starters" style="">Món khai vị (Appetizers)</a>
-                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#main" style="">Món chính (Main Courses)</a>
-                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#seafood" style="">Hải sản tươi sống (Seafood)</a>
-                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#bbq" style="">Đồ nướng (BBQ & Grill)</a>
-                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#vegetarian" style="">Món chay (Vegetarian)</a>
-                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#desserts" style="">Tráng miệng (Desserts)</a>
-                    <a href="<?= safe_url('menu.php', $path_prefix) ?>#drinks" style="">Đồ uống & Rượu vang (Drinks)</a>
-                </div>
-            </div>
-
-            <!-- Cột 3: Dịch vụ & Mô tả -->
-            <div class="col-lg-3 col-md-6">
-                <h4>DỊCH VỤ</h4>
-                <div class="explore-links" style="margin-bottom: 30px;">
-                    <a href="<?= safe_url('services.php', $path_prefix) ?>#private" style="">Đặt tiệc cá nhân (Private
-                        Dining)</a>
-                    <a href="<?= safe_url('services.php', $path_prefix) ?>#events" style="">Tiệc cưới & Sự kiện
-                        (Events)</a>
-                    <a href="<?= safe_url('services.php', $path_prefix) ?>#catering" style="">Phục vụ tận nơi
-                        (Catering)</a>
-                    <a href="<?= safe_url('services.php', $path_prefix) ?>#delivery" style="">Giao hàng (Delivery)</a>
-                </div>
-
-                <h4>MÔ TẢ</h4>
-                <p style=" line-height: 1.8; color: inherit;">Trải nghiệm ẩm thực tuyệt vời với không gian sang trọng và
-                    các món ăn được chế biến từ nguyên liệu tươi ngon nhất.</p>
-            </div>
-
-            <!-- Cột 4: Giờ mở cửa & Đặt bàn -->
-            <div class="col-lg-3 col-md-6">
-                <h4>GIỜ MỞ CỬA</h4>
-                <div class="contact-info" style=" line-height: 2;">
-                    <?php if (!empty($settings['open_time']) && !empty($settings['open_days'])): ?>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span><?= htmlspecialchars($settings['open_days']) ?></span>
-                            <span><?= htmlspecialchars($settings['open_time']) ?></span></div>
-                    <?php else: ?>
-                        <div style="display: flex; justify-content: space-between;"><span>Thứ 2</span> <span>Nghỉ định
-                                kỳ</span></div>
-                        <div style="display: flex; justify-content: space-between;"><span>Thứ 3 - Thứ 6</span> <span>10:00
-                                AM - 10:00 PM</span></div>
-                        <div style="display: flex; justify-content: space-between;"><span>Thứ 7 - CN</span> <span>09:00 AM -
-                                11:00 PM</span></div>
-                        <div style="display: flex; justify-content: space-between;"><span>Ngày Lễ</span> <span>Theo lịch đặt
-                                trước</span></div>
-                    <?php endif; ?>
-                </div>
-
-                <a href="<?= safe_url('booking_service.php?type=table', $path_prefix ?? '') ?>"
-                    style="display: block; text-align: center; background: #FFFFFF; color: #113f36; padding: 12px; border-radius: 6px; font-family: 'Source Sans 3', sans-serif; font-weight: 600; margin-top: 30px; text-decoration: none; transition: background 0.3s;"
-                    onmouseover="this.style.background='#e0e0e0'" onmouseout="this.style.background='#fff'">
-                    Đặt Bàn Ngay (Book a Table)
-                </a>
-
-                <?php if ($showMap && !empty($settings['google_map_iframe'])): ?>
-                    <div class="map-wrapper mt-4" id="footerMapWrapper">
-                        <?= $settings['google_map_iframe'] ?>
-                    </div>
-                <?php endif; ?>
+                <div style="position: absolute; inset: 0; background: linear-gradient(to right, rgba(17,17,17,0.95) 0%, rgba(17,17,17,0.4) 100%); z-index: 2; pointer-events: none;"></div>
+            <?php endif; ?>
+            <h2 style="position: relative; z-index: 3;">Điểm Đến</h2>
+        </div>
+        <div class="footer-top-right">
+            <div class="footer-ig-box"><img src="<?= $f_img_1 ?>" alt="Insta 1"></div>
+            <div class="footer-ig-box"><img src="<?= $f_img_2 ?>" alt="Insta 2"></div>
+            <div class="footer-ig-box"><img src="<?= $f_img_3 ?>" alt="Insta 3"></div>
+        </div>
+    </div>
+    
+    <div class="footer-main">
+        <div class="footer-col-left">
+            <ul>
+                <li><a href="<?= safe_url("index.php", $path_prefix) ?>">Home</a></li>
+                <li><a href="<?= safe_url("about.php", $path_prefix) ?>">About</a></li>
+                <li><a href="<?= safe_url("booking_service.php", $path_prefix) ?>">Stay</a></li>
+                <li><a href="<?= safe_url("menu.php", $path_prefix) ?>">Menu</a></li>
+                <li><a href="<?= safe_url("contact.php", $path_prefix) ?>">Contact</a></li>
+            </ul>
+            <div class="footer-michelin">
+                <i class="fas fa-certificate" style="color: #fff; font-size: 24px;"></i>
+                <i class="fas fa-award" style="color: #fff; font-size: 24px;"></i>
             </div>
         </div>
-        <div class="bottom-bar">
-            <div>© 2026 Restaurantly. All Rights Reserved.</div>
-            <div>
-                <a href="#">Điều khoản sử dụng</a>
-                <span style="margin: 0 10px;">|</span>
-                <a href="#">Chính sách bảo mật</a>
+        
+        <div class="footer-col-center">
+            <div class="footer-logo-text notranslate">
+                <?= htmlspecialchars($settings["restaurant_name"] ?? "NHÃ") ?>.
             </div>
+            <div class="footer-socials">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+        
+        <div class="footer-col-right">
+            <h4>Contact</h4>
+            <p>Restaurant <span class="notranslate"><?= htmlspecialchars($settings["restaurant_name"] ?? "NHÃ") ?></span>.<br>
+            <?= htmlspecialchars($settings["address"] ?? "Kasteellaan 1\n5421 CB Gemert\nThe Netherlands") ?></p>
+            <p style="margin-top: 15px;">
+                <?= htmlspecialchars($settings["hotline"] ?? "+31 40 200 5955") ?><br>
+                <?= htmlspecialchars($settings["email"] ?? "info@restaurantgem.com") ?>
+            </p>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <div>&copy; 2026 Restaurant <span class="notranslate"><?= htmlspecialchars($settings["restaurant_name"] ?? "NHÃ") ?></span> - All rights reserved - Website by Unique Design</div>
+        <div class="footer-bottom-links">
+            <a href="#">Cookies</a>
+            <a href="#">Privacy</a>
+            <a href="#">Terms of service</a>
+            <a href="#">Sitemap</a>
         </div>
     </div>
 </footer>
+
+
 
 <!-- FLOATING GLOBAL CHAT WIDGET -->
 <div class="global-chat-widget">
@@ -1028,3 +907,8 @@ if ($is_logged_in_chat) {
 </script>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+
+    </div><!-- /.main-wrapper -->
+</body>
+</html>

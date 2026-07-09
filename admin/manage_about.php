@@ -205,25 +205,11 @@ $processed_reports = $db->query("
     ORDER BY latest_report_time DESC
 ")->fetchAll(PDO::FETCH_ASSOC);
 ?>
-<script src="https://cdn.tiny.cloud/1/ehi6s1017gy2rgbgi7qg9fbj7ufj1ccc7lybxdnkb9u2w5tc/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
 <div class="container-fluid py-4">
 <h2 class="fw-bold mb-4">Quản lý Tin Tức</h2>
 <?= $message ?>
 <ul class="nav nav-tabs mb-4" id="manageTab">
   <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-posts">📝 Bài Viết</a></li>
-  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-stats">📊 Tương Tác</a></li>
-  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-comments">💬 Bình Luận</a></li>
-  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-bans">🚫 Danh sách Cấm</a></li>
-  <li class="nav-item">
-    <a class="nav-link position-relative" data-bs-toggle="tab" href="#tab-reports">
-      🚨 Báo cáo Bình luận
-      <?php if (count($pending_reports) > 0): ?>
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem;">
-          <?= count($pending_reports) ?>
-        </span>
-      <?php endif; ?>
-    </a>
-  </li>
 </ul>
 <div class="tab-content">
 
@@ -894,6 +880,7 @@ function executeDeleteProcessedReports(ids) {
 <!-- Bootstrap JS (Required for Tabs and Modals) -->
 
 
+<script src="https://cdn.tiny.cloud/1/ehi6s1017gy2rgbgi7qg9fbj7ufj1ccc7lybxdnkb9u2w5tc/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
 <script>
 tinymce.init({
     selector: '#editor1',

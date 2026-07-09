@@ -16,8 +16,8 @@ function process_image_upload($file_input_name, $target_dir, &$errors, $old_imag
         return $old_image;
     }
 
-    $allowed_ext = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-    $allowed_mime = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    $allowed_ext = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'mp4', 'webm'];
+    $allowed_mime = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'video/webm'];
 
     $file_name = $_FILES[$file_input_name]['name'];
     $tmp_path = $_FILES[$file_input_name]['tmp_name'];
@@ -26,7 +26,7 @@ function process_image_upload($file_input_name, $target_dir, &$errors, $old_imag
 
     // 2. Kiểm tra phần mở rộng (đuôi file)
     if (!in_array($ext, $allowed_ext)) {
-        $errors[] = "Chỉ chấp nhận file ảnh (JPG, PNG, WEBP, GIF).";
+        $errors[] = "Chỉ chấp nhận file ảnh (JPG, PNG, WEBP, GIF) hoặc video (MP4, WEBM).";
         return $old_image;
     }
 
@@ -37,9 +37,9 @@ function process_image_upload($file_input_name, $target_dir, &$errors, $old_imag
         return $old_image;
     }
 
-    // 4. Kiểm tra dung lượng (Tối đa 5MB)
-    if ($file_size > 5 * 1024 * 1024) {
-        $errors[] = "Dung lượng ảnh không được vượt quá 5MB.";
+    // 4. Kiểm tra dung lượng (Tối đa 50MB)
+    if ($file_size > 50 * 1024 * 1024) {
+        $errors[] = "Dung lượng file không được vượt quá 50MB.";
         return $old_image;
     }
 
