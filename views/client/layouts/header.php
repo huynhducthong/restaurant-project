@@ -2,6 +2,11 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+// Prevent browser caching PHP layouts in local development
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+header("Expires: Wed, 11 Jan 1984 05:00:00 GMT");
 
 require_once __DIR__ . '/../../../config/database.php';
 
@@ -99,18 +104,26 @@ if (!empty($logo_path)) {
         $final_logo_src = 'public/' . ltrim($logo_path, '/');
     }
 }
-?>
-
-<!DOCTYPE html>
+?><!DOCTYPE html>
 <html lang="vi">
 
 <head>
 
     <meta charset="utf-8">
     <meta name="google" content="notranslate">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script>
+        (function() {
+            var meta = document.querySelector('meta[name="viewport"]');
+            if (meta) {
+                var original = meta.getAttribute('content');
+                meta.setAttribute('content', 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0');
+                setTimeout(function() {
+                    meta.setAttribute('content', original);
+                }, 50);
+            }
+        })();
+    </script>
 
     <title>
         <?= htmlspecialchars($settings['restaurant_name']) ?>
@@ -125,6 +138,7 @@ if (!empty($logo_path)) {
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
         rel="stylesheet">
+    <link href="public/assets/client/css/style.css?v=<?= time() ?>" rel="stylesheet">
 
     <!-- BOOTSTRAP ICON -->
     <link
@@ -137,13 +151,24 @@ if (!empty($logo_path)) {
             --primary-color: #A88746;
         }
 
-        body {
+        html, body {
             margin: 0;
             padding: 0 !important;
             font-family: 'Source Sans 3', sans-serif;
             background-color: #050505; /* Deep Black for high contrast */
             color: #FFFFFF; /* Pure White text for better contrast */
+            overflow-x: hidden; /* Prevent horizontal scrolling/overflow bugs */
+            width: 100%;
+            max-width: 100%;
+            position: relative;
+        }
+        @media (max-width: 991px) {
+            html, body, .main-wrapper {
+                width: 100vw !important;
+                max-width: 100vw !important;
+                overflow-x: hidden !important;
             }
+        }
         @keyframes fadeInPage {
             0% { opacity: 0; }
             100% { opacity: 1; }
@@ -515,6 +540,7 @@ if (!empty($logo_path)) {
         .mobile-only-item { display: none !important; }
         .header-container { padding-left: 8vw; padding-right: 8vw; }
         @media (max-width: 991px) {
+            #header { top: 0 !important; }
             .navbar { display: none; }
             .mobile-only-item { display: flex !important; }
             #topbar { display: none !important; }
@@ -530,8 +556,8 @@ if (!empty($logo_path)) {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             background-color: #050505;
             z-index: 999999;
             pointer-events: none;
@@ -547,6 +573,11 @@ if (!empty($logo_path)) {
 </head>
 
 <body>
+    <!-- MOBILE VIEWPORT STRETCH FIX WRAPPER -->
+    <div class="main-wrapper" style="width: 100%; overflow-x: hidden; position: relative;">
+        <!-- Invisible Layout Helper to resolve WebKit viewport init issues -->
+        <div style="height: 0px; width: 100%; clear: both; display: block; overflow: hidden; pointer-events: none; visibility: hidden;"></div>
+
     <!-- PAGE TRANSITION OVERLAY -->
     <div class="page-transition-overlay"></div>
     
@@ -555,7 +586,7 @@ if (!empty($logo_path)) {
 
     <div id="topbar">
 
-        <div class="container-fluid d-flex justify-content-between" style="padding-left: 8vw; padding-right: 8vw;">
+        <div class="container-fluid px-3 px-lg-5 d-flex justify-content-between">
 
             <div class="contact-info d-flex align-items-center flex-wrap">
 
@@ -630,8 +661,8 @@ if (!empty($logo_path)) {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             background-color: #050505;
             z-index: 999999;
             pointer-events: none;
@@ -687,7 +718,7 @@ if (!empty($logo_path)) {
 
     <header id="header">
 
-        <div class="container-fluid d-flex align-items-center justify-content-between" style="padding-left: 8vw; padding-right: 8vw;">
+        <div class="container-fluid px-3 px-lg-5 d-flex align-items-center justify-content-between">
 
             <!-- LOGO -->
 
@@ -985,8 +1016,35 @@ if (!empty($logo_path)) {
             }
         });
     </script>
-</body>
-
-</html>
 
 
+
+<script>
+    // Force WebKit/iOS Safari to reset viewport scaling factor aggressively
+    (function() {
+        function resetViewport() {
+            var meta = document.querySelector('meta[name="viewport"]');
+            if (meta) {
+                var original = meta.getAttribute('content');
+                meta.setAttribute('content', 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0');
+                setTimeout(function() {
+                    meta.setAttribute('content', original);
+                }, 50);
+            }
+        }
+        // Run immediately
+        resetViewport();
+        // Run on DOM content ready
+        document.addEventListener('DOMContentLoaded', resetViewport);
+        // Run on full assets load
+        window.addEventListener('load', resetViewport);
+        // Run on orientation change
+        window.addEventListener('orientationchange', resetViewport);
+        // Run on page show (history navigation)
+        window.addEventListener('pageshow', function(e) {
+            if (e.persisted) {
+                resetViewport();
+            }
+        });
+    })();
+</script>
