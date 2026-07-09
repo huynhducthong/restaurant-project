@@ -57,54 +57,110 @@
         </p>
         <div class="mermaid">
                 flowchart TD
-                    %% Định nghĩa Client
-                    subgraph Client [🧑 Phía Khách Hàng]
+                    %% ===== ĐỊNH NGHĨA CÁC KHỐI (NODES) =====
+                    
+                    subgraph Client [🧑 Khách Hàng]
                         direction TB
-                        A(Khách hàng truy cập Web) --> B{Hành động}
-                        B -->|Xem Thông tin| C(Xem Menu, Giới thiệu)
-                        B -->|Tạo Đặt Bàn| D(Chọn ngày, giờ, số người)
-                        D --> E(Thanh toán Cọc)
+                        A(Khách truy cập Web)
+                        B{Hành động}
+                        C(Lịch sử & Cột mốc VIP)
+                        TYPE{Chọn Dịch Vụ}
+                        D1(Bàn Tiêu Chuẩn & Ghi chú)
+                        D2(Thiết Kế Riêng & Ghi chú)
+                        D3(Đầu Bếp Tại Gia & Địa chỉ)
+                        E(Thanh toán Cọc)
+                        H(Khách vãng lai đến quán)
+                        EAT(Khách hàng dùng bữa)
+                        REV(Khách đánh giá Đầu bếp)
                     end
 
-                    %% Định nghĩa Thu ngân & Lễ tân
-                    subgraph Reception [💻 Thu Ngân & Lễ Tân]
+                    subgraph Reception [💻 Lễ Tân & Thu Ngân]
                         direction TB
-                        E -->|Gửi yêu cầu| F(Màn hình Quản lý Đặt Bàn)
-                        F -->|Xác nhận| G(Xếp bàn cho khách)
-                        H(Khách vãng lai đến quán) --> I(Màn hình Thu Ngân - POS)
-                        G --> I
-                        I -->|Nhập Order món ăn| J(Gửi Order xuống Bếp)
+                        F(Quản lý Đặt Bàn)
+                        G(Xếp bàn tại quán)
+                        G2(Điều phối Đầu bếp đi làm)
+                        I(Màn hình Thu Ngân - POS)
+                        R(Nhân viên mang món ra bàn)
+                        S(Tính tiền & In Hóa đơn)
                     end
 
-                    %% Định nghĩa Bếp & Kho
                     subgraph Kitchen_Inventory [🍳 Bếp & Kho Hàng]
                         direction TB
-                        J --> K(Màn hình KDS - Bếp)
-                        K -->|Đầu bếp nấu xong| L(Xác nhận Hoàn thành)
-                        L --> M{Hệ thống Tự Động}
-                        M -->|Theo công thức| N(Trừ nguyên liệu trong Kho)
-                        N --> O{Kiểm tra Tồn kho}
-                        O -->|Dưới mức Min| P(Báo động Tồn kho thấp)
-                        O -->|Gần Hết HSD| Q(Báo động Sắp hết HSD)
+                        K(Màn hình KDS hiển thị Ghi chú)
+                        L(Xác nhận Nấu xong)
+                        M{Hệ thống Tự Động}
+                        N(Trừ nguyên liệu trong Kho)
+                        O{Kiểm tra Tồn kho}
+                        P(Báo động Tồn kho thấp)
+                        Q(Báo động Sắp hết HSD)
                     end
 
-                    %% Định nghĩa Quản lý
-                    subgraph Admin [📊 Ban Quản Trị & Thống Kê]
+                    subgraph Admin [📊 Quản Trị & Automation]
                         direction TB
-                        L -->|Trạng thái Món Xong| R(Báo cho Thu Ngân mang ra)
-                        R --> S(Tính tiền & In Hóa đơn)
-                        S --> T(Ghi nhận + DOANH THU)
-                        
-                        P -.->|Gợi ý nhập hàng| U(Quản lý Kho)
-                        Q -.-> U
-                        U -->|Tạo đơn nhập mới| V(Nhập hàng vào kho)
-                        V --> W(Ghi nhận - CHI PHÍ)
-
-                        T --> X((Bảng Điều Khiển Dashboard))
-                        W --> X
-                        X --> Y[Thống kê Lợi nhuận]
-                        Y --> Z[Xuất File Excel/PDF]
+                        T(Ghi nhận DOANH THU)
+                        CRM(Hệ thống Cột Mốc VIP)
+                        U(Quản lý Kho)
+                        V(Tạo đơn Nhập hàng)
+                        W(Ghi nhận CHI PHÍ)
+                        X((Bảng Điều Khiển Dashboard))
+                        Y[Thống kê Lợi nhuận]
+                        BOT((🤖 Telegram Bot))
                     end
+
+                    %% ===== LIÊN KẾT CÁC KHỐI (LINKS) =====
+                    
+                    %% Luồng Khách Hàng đặt bàn
+                    A --> B
+                    B -->|Xem Hồ sơ| C
+                    B -->|Tạo Đặt Bàn| TYPE
+                    TYPE --> D1
+                    TYPE --> D2
+                    TYPE --> D3
+                    D1 --> E
+                    D2 --> E
+                    D3 --> E
+
+                    %% Luồng xử lý Lễ tân & POS
+                    E -->|Gửi yêu cầu| F
+                    F -->|Duyệt Tiêu Chuẩn / Thiết kế| G
+                    F -->|Duyệt Tại Gia| G2
+                    G --> I
+                    H --> I
+                    I -->|Nhập Order + Ghi chú| K
+                    
+                    %% Luồng Bếp & Phục vụ
+                    K --> L
+                    L -->|Báo Món Xong| R
+                    R --> EAT
+                    EAT -->|Yêu cầu thanh toán| S
+
+                    %% Luồng Kho tự động
+                    L --> M
+                    M -->|Theo công thức| N
+                    N --> O
+                    O -->|Dưới mức Min| P
+                    O -->|Gần Hết HSD| Q
+
+                    %% Luồng Quản trị (Admin)
+                    S --> T
+                    T --> X
+                    P -.->|Gợi ý nhập hàng| U
+                    Q -.-> U
+                    U --> V
+                    V --> W
+                    W --> X
+                    X --> Y
+
+                    %% Luồng Chăm sóc Khách hàng (CRM)
+                    S -.->|Cộng dồn chi tiêu| CRM
+                    CRM -.->|Tặng Voucher| C
+                    S -.->|Vote sao| REV
+                    REV -.->|Ghi nhận thái độ| K
+
+                    %% Luồng Telegram Bot
+                    P -.->|Cảnh báo 09:00| BOT
+                    Q -.->|Cảnh báo 09:00| BOT
+                    X -.->|Báo cáo 23:00| BOT
 
                     %% Style cho các node
                     classDef client fill:#e3f2fd,stroke:#2196f3,stroke-width:2px,color:#000;
@@ -112,12 +168,14 @@
                     classDef kitchen fill:#e8f5e9,stroke:#4caf50,stroke-width:2px,color:#000;
                     classDef admin fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px,color:#000;
                     classDef auto fill:#ffebee,stroke:#f44336,stroke-width:2px,stroke-dasharray: 5 5,color:#000;
+                    classDef bot fill:#fff9c4,stroke:#fbc02d,stroke-width:3px,color:#000,stroke-dasharray: 5 5;
 
-                    class A,B,C,D,E client;
-                    class F,G,H,I,R,S pos;
+                    class A,B,C,TYPE,D1,D2,D3,E,EAT,CRM,REV client;
+                    class F,G,G2,H,I,R,S pos;
                     class J,K,L,U,V kitchen;
                     class T,W,X,Y,Z admin;
                     class M,N,O,P,Q auto;
+                    class BOT bot;
             </div>
     </div>
 

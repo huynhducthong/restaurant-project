@@ -119,7 +119,10 @@ $total = 0;
         </table>
     <?php endif; ?>
 
-    <?php if ($booking['combo_id'] == -1): 
+    <?php 
+    $is_negotiated = false;
+    $step4 = false;
+    if ($booking['combo_id'] == -1): 
         $s_status = $booking['status'];
         $step2 = in_array($s_status, ['Confirmed', 'Completed']);
         $step3 = in_array($s_status, ['Confirmed', 'Completed']);
@@ -128,7 +131,10 @@ $total = 0;
         $is_negotiated = (strpos($booking['chef_requirements'] ?? '', 'Thỏa thuận') !== false);
         $step1_text = $is_negotiated ? '1. Gửi yêu cầu thiết kế' : '1. Gửi yêu cầu & Thanh toán cọc';
         $step3_text = $is_negotiated ? '3. Báo giá & Chốt thực đơn' : '3. Chốt thực đơn';
-        $step4_text = $is_negotiated ? '4. Thanh toán cọc bổ sung & Chuẩn bị' : '4. Chuẩn bị & Phục vụ';
+        
+        // Nếu là Thỏa thuận và đang chờ duyệt (Pending) thì mới hiển thị chữ "Thanh toán cọc bổ sung"
+        // Nếu đã xác nhận (Confirmed) hoặc hoàn thành (Completed) thì chỉ hiển thị "Chuẩn bị & Phục vụ"
+        $step4_text = ($is_negotiated && $s_status == 'Pending') ? '4. Thanh toán cọc bổ sung & Chuẩn bị' : '4. Chuẩn bị & Phục vụ';
     ?>
     <div style="margin-top:20px; padding:15px; background:#fffbf5; border:1px solid #e8e2d9; border-radius:8px;">
         <h6 style="color:var(--accent-burgundy); font-weight:bold; font-size:13px; text-transform:uppercase; margin-bottom:10px;"><i class="fas fa-magic me-1"></i> Trải Nghiệm Thiết Kế Riêng</h6>
@@ -180,7 +186,8 @@ $total = 0;
 
     <?php 
     // Nút thanh toán cọc bổ sung cho khách hàng
-    if ($is_negotiated && $booking['deposit_amount'] > 0 && !$step4 && in_array($booking['status'], ['Pending', 'Confirmed'])): 
+    // Chỉ hiển thị khi đơn đang chờ duyệt (Pending), vì khi Admin bấm Xác nhận (Confirmed) tức là đã nhận được cọc
+    if ($is_negotiated && $booking['deposit_amount'] > 0 && !$step4 && $booking['status'] === 'Pending'): 
     ?>
     <div style="text-align:center; margin-top:15px; margin-bottom:5px;">
         <a href="booking_payment.php?id=<?= $booking_id ?>" class="btn btn-sm" style="background-color: var(--accent-burgundy); border-color: var(--accent-burgundy); color: #fff; font-size: 13px; font-weight: 500; padding: 6px 15px; border-radius: 6px;">

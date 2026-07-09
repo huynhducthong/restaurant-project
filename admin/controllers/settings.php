@@ -19,6 +19,92 @@ unset($_SESSION['settings_flash']);
 // PHẦN XỬ LÝ LOGIC (Lưu dữ liệu, Upload ảnh, Redirect)
 // Mọi lệnh header() chuyển trang phải nằm ở khu vực này
 // ============================================
+
+// --- XỬ LÝ VIDEO ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_update_video'])) {
+    // ✅ Lấy video không hardcode id=1 — lấy bản ghi đầu tiên, tạo nếu chưa có
+    $video = $db->query("SELECT * FROM videos ORDER BY id ASC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+    if (!$video) {
+        $db->exec("INSERT INTO videos (video_type, video_url, file_path) VALUES ('youtube', '', '')");
+        $video = $db->query("SELECT * FROM videos ORDER BY id ASC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+    }
+    $video_id_db = (int)$video['id'];
+
+    $type      = $_POST['video_type'] ?? 'youtube';
+    $title     = trim($_POST['title'] ?? '');
+    $desc      = trim($_POST['description'] ?? '');
+    $video_url = '';
+    $file_path = $video['file_path'] ?? ''; 
+
+    if (in_array($type, ['youtube', 'vimeo', 'muse'])) {
+        $url_input = trim($_POST['video_url'] ?? '');
+        
+        if ($type === 'youtube') {
+            if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url_input, $match)) {
+                $video_url = $match[1];
+            } else {
+                $video_url = preg_replace('/[^a-zA-Z0-9_\-]/', '', $url_input);
+            }
+        } elseif ($type === 'vimeo') {
+            if (preg_match('/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/', $url_input, $match)) {
+                $video_url = $match[1];
+            } else {
+                $video_url = preg_replace('/[^0-9]/', '', $url_input);
+            }
+        } elseif ($type === 'muse') {
+            if (preg_match('/(?:muse\.ai\/v\/|muse\.ai\/embed\/)([a-zA-Z0-9]+)/', $url_input, $match)) {
+                $video_url = $match[1];
+            } else {
+                $video_url = preg_replace('/[^a-zA-Z0-9]/', '', $url_input);
+            }
+        }
+    } else {
+        // Xử lý upload file local
+        if (isset($_FILES['video_file']) && $_FILES['video_file']['error'] === UPLOAD_ERR_OK) {
+            $allowed_ext  = ['mp4', 'webm', 'mov'];
+            $allowed_mime = ['video/mp4', 'video/webm', 'video/quicktime'];
+            $max_size     = 200 * 1024 * 1024;
+
+            $ext      = strtolower(pathinfo($_FILES['video_file']['name'], PATHINFO_EXTENSION));
+            $tmp_path = $_FILES['video_file']['tmp_name'];
+            $size     = $_FILES['video_file']['size'];
+
+            $upload_error = '';
+            if (!in_array($ext, $allowed_ext)) {
+                $upload_error = 'Chỉ chấp nhận: MP4, WEBM, MOV.';
+            } elseif ($size > $max_size) {
+                $upload_error = 'File quá lớn. Tối đa 200MB.';
+            }
+
+            if ($upload_error) {
+                $_SESSION['settings_flash'] = ['type' => 'error', 'msg' => $upload_error];
+                header('Location: settings.php?tab=video'); exit;
+            }
+
+            $upload_dir = __DIR__ . '/../../uploads/videos/';
+            if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
+
+            $new_file_name = bin2hex(random_bytes(10)) . '.' . $ext;
+            $target        = $upload_dir . $new_file_name;
+
+            if (move_uploaded_file($tmp_path, $target)) {
+                if (!empty($video['file_path'])) {
+                    $old = __DIR__ . '/../../' . ltrim($video['file_path'], '/');
+                    if (file_exists($old)) @unlink($old);
+                }
+                $file_path = 'uploads/videos/' . $new_file_name;
+            }
+        }
+    }
+
+    // Lưu vào DB
+    $db->prepare("UPDATE videos SET video_type = ?, video_url = ?, file_path = ?, title = ?, description = ? WHERE id = ?")
+       ->execute([$type, $video_url, $file_path, $title, $desc, $video_id_db]);
+
+    $_SESSION['settings_flash'] = ['type' => 'success', 'msg' => 'Cập nhật cấu hình Video thành công!'];
+    header('Location: settings.php?tab=video'); exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fields = [
         'hotline'         => $_POST['hotline']         ?? '',
@@ -36,6 +122,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'telegram_eod_hour'    => (string) max(0, min(23, (int) ($_POST['telegram_eod_hour'] ?? 22))),
         'telegram_eod_enabled' => $_POST['telegram_eod_enabled'] ?? '1',
         'google_map_iframe'    => $_POST['google_map_iframe'] ?? '',
+        'promo_popup_enabled'  => $_POST['promo_popup_enabled'] ?? '0',
+        'promo_popup_content'  => $_POST['promo_popup_content'] ?? '',
     ];
 
     // Prepare 1 lần ngoài loop, execute nhiều lần
@@ -90,6 +178,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // Validate upload promo popup
+    if (!empty($_FILES['promo_popup_file']['name'])) {
+        $allowed_ext  = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
+        $allowed_mime = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+        $max_size     = 5 * 1024 * 1024; // 5MB
+
+        $ext      = strtolower(pathinfo($_FILES['promo_popup_file']['name'], PATHINFO_EXTENSION));
+        $tmp_path = $_FILES['promo_popup_file']['tmp_name'];
+        $size     = $_FILES['promo_popup_file']['size'];
+
+        if (!in_array($ext, $allowed_ext)) {
+            $_SESSION['settings_flash'] = ['type' => 'error', 'msg' => 'Popup chỉ chấp nhận: JPG, PNG, WEBP, PDF.'];
+            header('Location: settings.php'); exit;
+        }
+        if ($size > $max_size) {
+            $_SESSION['settings_flash'] = ['type' => 'error', 'msg' => 'File Popup quá lớn. Tối đa 5MB.'];
+            header('Location: settings.php'); exit;
+        }
+        
+        $mime = mime_content_type($tmp_path);
+        if (!in_array($mime, $allowed_mime)) {
+            $_SESSION['settings_flash'] = ['type' => 'error', 'msg' => 'File Popup không hợp lệ.'];
+            header('Location: settings.php'); exit;
+        }
+
+        // Xóa file cũ trước khi lưu file mới
+        $stmtOld = $db->prepare("SELECT key_value FROM settings WHERE key_name = 'promo_popup_file'");
+        $stmtOld->execute();
+        $oldFile = $stmtOld->fetchColumn();
+        if ($oldFile && file_exists(__DIR__ . '/../../public/' . $oldFile)) {
+            unlink(__DIR__ . '/../../public/' . $oldFile);
+        }
+
+        $file_name   = 'promo_popup_' . time() . '.' . $ext;
+        $target_file = __DIR__ . '/../../public/assets/img/' . $file_name;
+        
+        if (move_uploaded_file($tmp_path, $target_file)) {
+            $stmt->execute(['promo_popup_file', 'assets/img/' . $file_name]);
+            $type = ($ext === 'pdf') ? 'pdf' : 'image';
+            $stmt->execute(['promo_popup_type', $type]);
+        } else {
+            $_SESSION['settings_flash'] = ['type' => 'error', 'msg' => 'Không thể tải file Popup lên.'];
+            header('Location: settings.php'); exit;
+        }
+    }
+
+    
+    // Validate upload footer images
+    for ($i = 1; $i <= 3; $i++) {
+        $input_name = 'footer_img_' . $i;
+        if (!empty($_FILES[$input_name]['name'])) {
+            $allowed_ext  = ['jpg', 'jpeg', 'png', 'webp'];
+            $max_size     = 2 * 1024 * 1024; // 2MB
+            $ext      = strtolower(pathinfo($_FILES[$input_name]['name'], PATHINFO_EXTENSION));
+            $tmp_path = $_FILES[$input_name]['tmp_name'];
+            $size     = $_FILES[$input_name]['size'];
+
+            if (in_array($ext, $allowed_ext) && $size <= $max_size) {
+                $file_name   = 'footer_img_' . $i . '_' . time() . '.' . $ext;
+                $target_file = __DIR__ . '/../../public/assets/img/' . $file_name;
+                
+                if (move_uploaded_file($tmp_path, $target_file)) {
+                    $stmt->execute([$input_name, $file_name]);
+                }
+            }
+        }
+    }
+
     // Flash session + redirect HTTP
     $_SESSION['settings_flash'] = ['type' => 'success', 'msg' => 'Cập nhật cấu hình thành công!'];
     
@@ -133,6 +289,9 @@ $settings = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $settings[$row['key_name']] = $row['key_value'];
 }
+
+// Lấy thông tin video
+$video_db = $db->query("SELECT * FROM videos ORDER BY id ASC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
 
 // Lấy danh sách gallery
 $stmt_gal = $db->query("SELECT * FROM galleries ORDER BY sort_order ASC, id DESC");
@@ -223,6 +382,11 @@ include '../../public/admin_layout_header.php';
                                 <i class="bi bi-images me-1"></i> Thư Viện Ảnh (Gallery)
                             </button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link <?= $active_tab === 'video' ? 'active' : '' ?>" id="video-tab" data-bs-toggle="pill" data-bs-target="#video" type="button" role="tab" aria-controls="video" aria-selected="<?= $active_tab === 'video' ? 'true' : 'false' ?>">
+                                <i class="bi bi-camera-video me-1"></i> Video
+                            </button>
+                        </li>
                         
                     </ul>
 
@@ -248,6 +412,51 @@ include '../../public/admin_layout_header.php';
                                                 <option value="center" <?= ($settings['name_position'] ?? '') == 'center' ? 'selected' : '' ?>>Giữa</option>
                                                 <option value="right"  <?= ($settings['name_position'] ?? '') == 'right'  ? 'selected' : '' ?>>Phải</option>
                                             </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12 mb-4">
+                                            <div class="p-3 rounded" style="background: #fdf5e6; border-left: 4px solid #cda45e;">
+                                                <h5 class="fw-bold mb-3"><i class="bi bi-window-stack me-2"></i>Cửa Sổ Nổi (Welcome Popup)</h5>
+                                                <div class="row">
+                                                    <div class="col-md-4 mb-3">
+                                                        <label class="form-label fw-bold">Trạng thái Popup</label>
+                                                        <div class="form-check form-switch">
+                                                            <input type="hidden" name="promo_popup_enabled" value="0">
+                                                            <input class="form-check-input" type="checkbox" role="switch" name="promo_popup_enabled" value="1"
+                                                                <?= ($settings['promo_popup_enabled'] ?? '0') == '1' ? 'checked' : '' ?>>
+                                                            <label class="form-check-label">Bật hiển thị ở Trang Chủ</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-8 mb-3">
+                                                        <label class="form-label fw-bold">Tệp đính kèm (Ảnh hoặc PDF)</label>
+                                                        <input type="file" name="promo_popup_file" class="form-control" accept=".jpg,.jpeg,.png,.webp,.pdf">
+                                                        <?php if (!empty($settings['promo_popup_file'])): ?>
+                                                            <div class="mt-3 p-3 bg-white border rounded text-center">
+                                                                <p class="mb-2 text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Đã lưu file thành công!</p>
+                                                                <?php if (($settings['promo_popup_type'] ?? 'image') === 'pdf'): ?>
+                                                                    <div class="text-primary mb-2"><i class="bi bi-file-earmark-pdf fs-1"></i></div>
+                                                                    <a href="../../public/<?= htmlspecialchars($settings['promo_popup_file']) ?>" target="_blank" class="btn btn-sm btn-outline-primary">Xem PDF Hiện Tại</a>
+                                                                <?php else: ?>
+                                                                    <img src="../../public/<?= htmlspecialchars($settings['promo_popup_file']) ?>" alt="Preview" style="max-height: 150px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                                                                    <div class="mt-2">
+                                                                        <a href="../../public/<?= htmlspecialchars($settings['promo_popup_file']) ?>" target="_blank" class="btn btn-sm btn-outline-secondary"><i class="bi bi-box-arrow-up-right"></i> Mở ảnh lớn</a>
+                                                                    </div>
+                                                                <?php endif; ?>
+                                                                <div class="mt-2 text-muted small">
+                                                                    (Lưu ý: Ô chọn file ở trên luôn hiển thị "No file chosen" sau khi tải lại trang, nhưng file của bạn đã được lưu an toàn ở đây)
+                                                                </div>
+                                                            </div>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <div class="col-md-12 mb-3">
+                                                        <label class="form-label fw-bold">Nội dung đi kèm (Tùy chọn)</label>
+                                                        <textarea name="promo_popup_content" class="form-control" rows="3" placeholder="Nhập nội dung ngắn gọn..."><?= htmlspecialchars($settings['promo_popup_content'] ?? '') ?></textarea>
+                                                        <small class="text-muted">Nội dung này sẽ hiển thị bên dưới hình ảnh trong Popup.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -301,6 +510,27 @@ include '../../public/admin_layout_header.php';
                                         <label class="form-label fw-bold">Bản đồ Google Maps (Footer)</label>
                                         <textarea name="google_map_iframe" class="form-control" rows="3" placeholder="Nhập mã nhúng (iframe) Google Maps vào đây..."><?= htmlspecialchars($settings['google_map_iframe'] ?? '') ?></textarea>
                                         <small class="text-muted">Nhập đoạn mã iframe lấy từ Google Maps để hiển thị ở chân trang.</small>
+                                    </div>
+                                
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold">3 Ảnh Dưới Footer</label>
+                                        <div class="row g-3">
+                                            <?php for ($i = 1; $i <= 3; $i++): ?>
+                                                <?php $key = 'footer_img_' . $i; ?>
+                                                <div class="col-md-4 text-center">
+                                                    <div class="mb-2">
+                                                        <?php if (!empty($settings[$key])): ?>
+                                                            <img src="../../public/assets/img/<?= htmlspecialchars($settings[$key]) ?>" class="img-thumbnail" style="height: 120px; object-fit: cover; width: 100%;">
+                                                        <?php else: ?>
+                                                            <div class="bg-light d-flex align-items-center justify-content-center border" style="height: 120px; width: 100%;">
+                                                                <span class="text-muted small">Chưa có ảnh</span>
+                                                            </div>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <input type="file" name="<?= $key ?>" class="form-control form-control-sm" accept=".jpg,.jpeg,.png,.webp">
+                                                </div>
+                                            <?php endfor; ?>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -474,6 +704,109 @@ include '../../public/admin_layout_header.php';
                             </div>
                         </div>
 
+                        </div>
+
+                        <!-- TAB VIDEO -->
+                        <div class="tab-pane fade <?= $active_tab === 'video' ? 'show active' : '' ?> pt-2" id="video" role="tabpanel" aria-labelledby="video-tab" tabindex="0">
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <div class="card shadow-sm border-0 bg-light mb-4 h-100">
+                                        <div class="card-body">
+                                            <h6 class="mb-3 text-uppercase fw-bold text-muted">Cấu hình Video Trải nghiệm</h6>
+                                            <form action="settings.php" method="POST" enctype="multipart/form-data">
+                                                
+                                                <div class="mb-3">
+                                                    <label class="form-label small fw-bold">Nguồn Video</label>
+                                                    <select name="video_type" id="video_type" class="form-select form-select-sm" onchange="toggleVideoType()">
+                                                        <option value="youtube" <?= ($video_db['video_type'] ?? '') === 'youtube' ? 'selected' : '' ?>>YouTube</option>
+                                                        <option value="vimeo" <?= ($video_db['video_type'] ?? '') === 'vimeo' ? 'selected' : '' ?>>Vimeo</option>
+                                                        <option value="muse" <?= ($video_db['video_type'] ?? '') === 'muse' ? 'selected' : '' ?>>Muse.ai</option>
+                                                        <option value="local" <?= ($video_db['video_type'] ?? '') === 'local' ? 'selected' : '' ?>>Tải lên (MP4/WEBM)</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="mb-3" id="url_input_group">
+                                                    <label class="form-label small fw-bold">Đường dẫn Video (URL)</label>
+                                                    <input type="text" name="video_url" class="form-control form-control-sm" value="<?= htmlspecialchars($video_db['video_url'] ?? '') ?>" placeholder="Nhập link Youtube, Vimeo...">
+                                                </div>
+
+                                                <div class="mb-3" id="file_input_group" style="display:none;">
+                                                    <label class="form-label small fw-bold">Tải video lên</label>
+                                                    <input type="file" name="video_file" class="form-control form-control-sm" accept="video/mp4,video/webm,video/quicktime">
+                                                    <?php if(!empty($video_db['file_path'])): ?>
+                                                        <small class="text-success d-block mt-1">Đã có video: <?= htmlspecialchars(basename($video_db['file_path'])) ?></small>
+                                                    <?php endif; ?>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label small fw-bold">Tiêu đề (Tùy chọn)</label>
+                                                    <input type="text" name="title" class="form-control form-control-sm" value="<?= htmlspecialchars($video_db['title'] ?? '') ?>">
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label small fw-bold">Mô tả (Tùy chọn)</label>
+                                                    <textarea name="description" class="form-control form-control-sm" rows="3"><?= htmlspecialchars($video_db['description'] ?? '') ?></textarea>
+                                                </div>
+
+                                                <button type="submit" name="btn_update_video" class="btn btn-save mt-3">
+                                                    <i class="bi bi-check-circle me-2"></i> LƯU VIDEO
+                                                </button>
+                                            </form>
+                                            
+                                            <script>
+                                                function toggleVideoType() {
+                                                    let type = document.getElementById('video_type').value;
+                                                    if(type === 'local') {
+                                                        document.getElementById('url_input_group').style.display = 'none';
+                                                        document.getElementById('file_input_group').style.display = 'block';
+                                                    } else {
+                                                        document.getElementById('url_input_group').style.display = 'block';
+                                                        document.getElementById('file_input_group').style.display = 'none';
+                                                    }
+                                                }
+                                                document.addEventListener("DOMContentLoaded", function() { toggleVideoType(); });
+                                            </script>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CỘT 5: XEM TRƯỚC (LIVE PREVIEW) -->
+                                <div class="col-md-5">
+                                    <div class="card shadow-sm border-0 bg-light mb-4 h-100">
+                                        <div class="card-body">
+                                            <h6 class="mb-3 text-uppercase fw-bold text-muted">Xem trước</h6>
+                                            <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm" style="background: #000;">
+                                                <?php if(($video_db['video_type'] ?? '') === 'youtube' && !empty($video_db['video_url'])): ?>
+                                                    <iframe src="https://www.youtube.com/embed/<?= htmlspecialchars($video_db['video_url']) ?>?autoplay=1&mute=1&loop=1&playlist=<?= htmlspecialchars($video_db['video_url']) ?>" allowfullscreen style="border:0;"></iframe>
+                                                <?php elseif(($video_db['video_type'] ?? '') === 'vimeo' && !empty($video_db['video_url'])): ?>
+                                                    <iframe src="https://player.vimeo.com/video/<?= htmlspecialchars($video_db['video_url']) ?>?autoplay=1&loop=1&muted=1" allowfullscreen style="border:0;"></iframe>
+                                                <?php elseif(($video_db['video_type'] ?? '') === 'muse' && !empty($video_db['video_url'])): ?>
+                                                    <iframe src="https://muse.ai/embed/<?= htmlspecialchars($video_db['video_url']) ?>?autoplay=1&loop=1&muted=1" allowfullscreen style="border:0;"></iframe>
+                                                <?php elseif(($video_db['video_type'] ?? '') === 'local' && !empty($video_db['file_path'])): ?>
+                                                    <video controls autoplay loop muted style="width: 100%; height: 100%; object-fit: cover;">
+                                                        <source src="../../<?= htmlspecialchars($video_db['file_path']) ?>" type="video/mp4">
+                                                        Trình duyệt của bạn không hỗ trợ video.
+                                                    </video>
+                                                <?php else: ?>
+                                                    <div class="d-flex align-items-center justify-content-center text-muted" style="height: 100%; background: #eee;">
+                                                        <span>Chưa có video</span>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                            
+                                            <?php if(!empty($video_db['title'])): ?>
+                                                <h5 class="mt-3" style="color: #cda45e;"><?= htmlspecialchars($video_db['title']) ?></h5>
+                                            <?php endif; ?>
+                                            
+                                            <?php if(!empty($video_db['description'])): ?>
+                                                <p class="text-muted small mt-2"><?= nl2br(htmlspecialchars($video_db['description'])) ?></p>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- End Tab Content -->
                 </div>
             </div>
@@ -490,10 +823,10 @@ document.addEventListener("DOMContentLoaded", function() {
         var tabTrigger = new bootstrap.Tab(triggerEl)
         triggerEl.addEventListener('click', function (event) {
             tabTrigger.show();
-            // Ẩn form chính nếu tab là gallery
+            // Ẩn form chính nếu tab là gallery hoặc video
             let activeTabId = event.target.getAttribute('data-bs-target');
             let formWrapper = document.getElementById('settings-forms-wrapper');
-            if(activeTabId === '#gallery') {
+            if(activeTabId === '#gallery' || activeTabId === '#video') {
                 formWrapper.classList.remove('show', 'active');
             } else {
                 formWrapper.classList.add('show', 'active');

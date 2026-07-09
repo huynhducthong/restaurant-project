@@ -205,7 +205,6 @@ $processed_reports = $db->query("
     ORDER BY latest_report_time DESC
 ")->fetchAll(PDO::FETCH_ASSOC);
 ?>
-<script src="https://cdn.tiny.cloud/1/ehi6s1017gy2rgbgi7qg9fbj7ufj1ccc7lybxdnkb9u2w5tc/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
 <div class="container-fluid py-4">
 <h2 class="fw-bold mb-4">Quản lý Tin Tức</h2>
 <?= $message ?>
@@ -881,6 +880,7 @@ function executeDeleteProcessedReports(ids) {
 <!-- Bootstrap JS (Required for Tabs and Modals) -->
 
 
+<script src="https://cdn.tiny.cloud/1/ehi6s1017gy2rgbgi7qg9fbj7ufj1ccc7lybxdnkb9u2w5tc/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
 <script>
 tinymce.init({
     selector: '#editor1',

@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th7 03, 2026 lúc 07:56 PM
--- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.2.12
+-- Host: 127.0.0.1
+-- Generation Time: Jul 07, 2026 at 09:49 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Cơ sở dữ liệu: `restaurant_db`
+-- Database: `restaurant_db`
 --
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `about_categories`
+-- Table structure for table `about_categories`
 --
 
 DROP TABLE IF EXISTS `about_categories`;
@@ -35,7 +35,7 @@ CREATE TABLE `about_categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `about_categories`
+-- Dumping data for table `about_categories`
 --
 
 INSERT INTO `about_categories` (`id`, `name`, `slug`) VALUES
@@ -45,7 +45,7 @@ INSERT INTO `about_categories` (`id`, `name`, `slug`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `about_comments`
+-- Table structure for table `about_comments`
 --
 
 DROP TABLE IF EXISTS `about_comments`;
@@ -68,7 +68,7 @@ CREATE TABLE `about_comments` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `about_comment_bans`
+-- Table structure for table `about_comment_bans`
 --
 
 DROP TABLE IF EXISTS `about_comment_bans`;
@@ -86,7 +86,7 @@ CREATE TABLE `about_comment_bans` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `about_comment_likes`
+-- Table structure for table `about_comment_likes`
 --
 
 DROP TABLE IF EXISTS `about_comment_likes`;
@@ -100,7 +100,7 @@ CREATE TABLE `about_comment_likes` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `about_comment_reports`
+-- Table structure for table `about_comment_reports`
 --
 
 DROP TABLE IF EXISTS `about_comment_reports`;
@@ -115,7 +115,7 @@ CREATE TABLE `about_comment_reports` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `about_comment_reports`
+-- Dumping data for table `about_comment_reports`
 --
 
 INSERT INTO `about_comment_reports` (`id`, `comment_id`, `user_id`, `reason`, `user_ip`, `created_at`, `status`) VALUES
@@ -125,7 +125,7 @@ INSERT INTO `about_comment_reports` (`id`, `comment_id`, `user_id`, `reason`, `u
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `about_content`
+-- Table structure for table `about_content`
 --
 
 DROP TABLE IF EXISTS `about_content`;
@@ -145,7 +145,7 @@ CREATE TABLE `about_content` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `about_content`
+-- Dumping data for table `about_content`
 --
 
 INSERT INTO `about_content` (`id`, `category_id`, `title`, `slug`, `content`, `thumbnail`, `display_order`, `is_pinned`, `status`, `milestone_text`, `created_at`, `publish_date`) VALUES
@@ -163,7 +163,7 @@ INSERT INTO `about_content` (`id`, `category_id`, `title`, `slug`, `content`, `t
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `about_likes`
+-- Table structure for table `about_likes`
 --
 
 DROP TABLE IF EXISTS `about_likes`;
@@ -176,7 +176,7 @@ CREATE TABLE `about_likes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `about_likes`
+-- Dumping data for table `about_likes`
 --
 
 INSERT INTO `about_likes` (`id`, `content_id`, `user_ip`, `user_id`, `created_at`) VALUES
@@ -185,7 +185,7 @@ INSERT INTO `about_likes` (`id`, `content_id`, `user_ip`, `user_id`, `created_at
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `about_saved_posts`
+-- Table structure for table `about_saved_posts`
 --
 
 DROP TABLE IF EXISTS `about_saved_posts`;
@@ -199,7 +199,7 @@ CREATE TABLE `about_saved_posts` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `about_shares`
+-- Table structure for table `about_shares`
 --
 
 DROP TABLE IF EXISTS `about_shares`;
@@ -212,7 +212,7 @@ CREATE TABLE `about_shares` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `about_shares`
+-- Dumping data for table `about_shares`
 --
 
 INSERT INTO `about_shares` (`id`, `content_id`, `platform`, `user_ip`, `created_at`) VALUES
@@ -415,12 +415,17 @@ INSERT INTO `about_shares` (`id`, `content_id`, `platform`, `user_ip`, `created_
 (197, 2, 'view', '::1', '2026-07-01 12:33:53'),
 (198, 1, 'view', '::1', '2026-07-01 12:34:57'),
 (199, 2, 'view', '::1', '2026-07-01 12:37:42'),
-(200, 1, 'view', '::1', '2026-07-01 14:28:25');
+(200, 1, 'view', '::1', '2026-07-01 14:28:25'),
+(201, 1, 'view', '::1', '2026-07-06 04:24:40'),
+(202, 1, 'view', '::1', '2026-07-06 13:27:26'),
+(203, 1, 'view', '::1', '2026-07-06 13:54:00'),
+(204, 3, 'view', '::1', '2026-07-07 03:55:00'),
+(205, 2, 'view', '::1', '2026-07-07 03:55:07');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `admins`
+-- Table structure for table `admins`
 --
 
 DROP TABLE IF EXISTS `admins`;
@@ -433,7 +438,7 @@ CREATE TABLE `admins` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `banners`
+-- Table structure for table `banners`
 --
 
 DROP TABLE IF EXISTS `banners`;
@@ -462,17 +467,17 @@ CREATE TABLE `banners` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `banners`
+-- Dumping data for table `banners`
 --
 
 INSERT INTO `banners` (`id`, `image_url`, `title`, `description`, `font_family`, `text_color`, `text_align`, `font_style`, `display_order`, `created_at`, `desc_color`, `desc_font_family`, `desc_font_style`, `title_font_size`, `desc_font_size`, `is_active`, `button_text`, `button_link`, `button_color`, `start_date`, `end_date`) VALUES
-(2, 'e1ed0ad828fff1d6a15d.jpg', 'Chào mừng bạn đến với Restaurantly', 'Cung cấp những món ăn tuyệt vời trong hơn 18 năm!', '\'Playfair Display\', serif', '#cda45e', 'left', 'bold', 1, '2026-04-20 12:14:02', '#efebeb', '\'Poppins\', sans-serif', 'normal', 72, 24, 1, 'đặt bàn', 'http://localhost/restaurant-project/booking_service.php?type=table', '#cda45e', NULL, NULL),
-(7, 'e9d525284d704a42c194.jpg', 'Trãi nghiệm menu thiết kế độc bản', 'Tinh hoa ẩm thực', '\'Poppins\', sans-serif', '#cda45e', 'left', 'bold', 2, '2026-04-20 12:20:10', '#eeeeee', '\'Poppins\', sans-serif', 'normal', 56, 24, 1, 'Thiết kế riêng', 'http://localhost/restaurant-project/booking_service.php?type=bespoke', '#cda45e', NULL, NULL);
+(2, 'b22abb84ee8aa90e689e.jpg', 'Chào mừng bạn đến với Restaurantly', 'Cung cấp những món ăn tuyệt vời trong hơn 18 năm!', '\'Poppins\', sans-serif', '#cda45e', 'left', 'bold', 1, '2026-04-20 12:14:02', '#efebeb', '\'Poppins\', sans-serif', 'normal', 72, 24, 1, 'đặt bàn', 'http://localhost/restaurant-project/booking_service.php?type=table', '#cda45e', NULL, NULL),
+(7, 'f20fdb8d5bff0738ea56.png', 'Trãi nghiệm menu thiết kế độc bản', 'Tinh hoa ẩm thực', '\'Poppins\', sans-serif', '#cda45e', 'left', 'bold', 2, '2026-04-20 12:20:10', '#eeeeee', '\'Poppins\', sans-serif', 'normal', 56, 24, 1, 'Thiết kế riêng', 'http://localhost/restaurant-project/booking_service.php?type=bespoke', '#cda45e', NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `bespoke_budgets`
+-- Table structure for table `bespoke_budgets`
 --
 
 DROP TABLE IF EXISTS `bespoke_budgets`;
@@ -484,7 +489,7 @@ CREATE TABLE `bespoke_budgets` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `bespoke_budgets`
+-- Dumping data for table `bespoke_budgets`
 --
 
 INSERT INTO `bespoke_budgets` (`id`, `label`, `price_value`, `sort_order`) VALUES
@@ -497,7 +502,7 @@ INSERT INTO `bespoke_budgets` (`id`, `label`, `price_value`, `sort_order`) VALUE
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `bespoke_occasions`
+-- Table structure for table `bespoke_occasions`
 --
 
 DROP TABLE IF EXISTS `bespoke_occasions`;
@@ -508,7 +513,7 @@ CREATE TABLE `bespoke_occasions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `bespoke_occasions`
+-- Dumping data for table `bespoke_occasions`
 --
 
 INSERT INTO `bespoke_occasions` (`id`, `name`, `sort_order`) VALUES
@@ -522,7 +527,7 @@ INSERT INTO `bespoke_occasions` (`id`, `name`, `sort_order`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `bespoke_styles`
+-- Table structure for table `bespoke_styles`
 --
 
 DROP TABLE IF EXISTS `bespoke_styles`;
@@ -533,7 +538,7 @@ CREATE TABLE `bespoke_styles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `bespoke_styles`
+-- Dumping data for table `bespoke_styles`
 --
 
 INSERT INTO `bespoke_styles` (`id`, `name`, `sort_order`) VALUES
@@ -547,7 +552,7 @@ INSERT INTO `bespoke_styles` (`id`, `name`, `sort_order`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `bookings`
+-- Table structure for table `bookings`
 --
 
 DROP TABLE IF EXISTS `bookings`;
@@ -567,7 +572,7 @@ CREATE TABLE `bookings` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `booking_details`
+-- Table structure for table `booking_details`
 --
 
 DROP TABLE IF EXISTS `booking_details`;
@@ -586,7 +591,7 @@ CREATE TABLE `booking_details` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `booking_details`
+-- Dumping data for table `booking_details`
 --
 
 INSERT INTO `booking_details` (`id`, `booking_id`, `menu_id`, `excluded_combo_items`, `toppings_info`, `item_type`, `quantity`, `notes`, `price`, `created_at`, `status`) VALUES
@@ -677,12 +682,15 @@ INSERT INTO `booking_details` (`id`, `booking_id`, `menu_id`, `excluded_combo_it
 (1081, 1114, 13, NULL, NULL, 'food', 1, '', 0.00, '2026-06-30 10:45:21', 'pending'),
 (1082, 1115, 13, NULL, NULL, 'food', 1, '', 0.00, '2026-06-30 10:46:43', 'pending'),
 (1083, 1116, 12, NULL, NULL, 'food', 1, NULL, 0.00, '2026-07-01 14:34:44', 'pending'),
-(1084, 1116, 16, NULL, NULL, 'food', 1, NULL, 0.00, '2026-07-01 14:34:44', 'pending');
+(1084, 1116, 16, NULL, NULL, 'food', 1, NULL, 0.00, '2026-07-01 14:34:44', 'pending'),
+(1085, 1122, 1, NULL, '5', 'food', 1, '[Topping: Chín hoàn toàn (Well Done)]', 0.00, '2026-07-02 01:43:07', 'cooking'),
+(1086, 1123, 1, NULL, '5', 'food', 1, '[Topping: Chín hoàn toàn (Well Done)]', 0.00, '2026-07-02 01:45:50', 'pending'),
+(1087, 1124, 1, NULL, NULL, 'food', 1, '', 0.00, '2026-07-02 01:47:30', 'pending');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `booking_inventory_deductions`
+-- Table structure for table `booking_inventory_deductions`
 --
 
 DROP TABLE IF EXISTS `booking_inventory_deductions`;
@@ -696,7 +704,7 @@ CREATE TABLE `booking_inventory_deductions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `booking_inventory_deductions`
+-- Dumping data for table `booking_inventory_deductions`
 --
 
 INSERT INTO `booking_inventory_deductions` (`id`, `booking_id`, `ingredient_id`, `warehouse_id`, `quantity`, `created_at`) VALUES
@@ -866,12 +874,24 @@ INSERT INTO `booking_inventory_deductions` (`id`, `booking_id`, `ingredient_id`,
 (304, 1116, 22, 2, 0.02, '2026-07-01 14:35:10'),
 (305, 1116, 22, 2, 0.02, '2026-07-01 14:35:10'),
 (306, 1116, 35, 2, 1.00, '2026-07-01 14:35:10'),
-(307, 1116, 35, 2, 1.00, '2026-07-01 14:35:10');
+(307, 1116, 35, 2, 1.00, '2026-07-01 14:35:10'),
+(308, 1122, 2, 2, 0.02, '2026-07-02 01:43:31'),
+(309, 1122, 14, 2, 0.45, '2026-07-02 01:43:31'),
+(310, 1122, 12, 2, 0.00, '2026-07-02 01:43:31'),
+(311, 1122, 3, 2, 0.01, '2026-07-02 01:43:31'),
+(312, 1123, 2, 2, 0.02, '2026-07-02 01:46:20'),
+(313, 1123, 14, 2, 0.45, '2026-07-02 01:46:20'),
+(314, 1123, 12, 2, 0.00, '2026-07-02 01:46:20'),
+(315, 1123, 3, 2, 0.01, '2026-07-02 01:46:20'),
+(316, 1124, 2, 2, 0.02, '2026-07-02 01:47:47'),
+(317, 1124, 14, 2, 0.45, '2026-07-02 01:47:47'),
+(318, 1124, 12, 2, 0.00, '2026-07-02 01:47:47'),
+(319, 1124, 3, 2, 0.01, '2026-07-02 01:47:47');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `bot_context_logs`
+-- Table structure for table `bot_context_logs`
 --
 
 DROP TABLE IF EXISTS `bot_context_logs`;
@@ -882,7 +902,7 @@ CREATE TABLE `bot_context_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `bot_context_logs`
+-- Dumping data for table `bot_context_logs`
 --
 
 INSERT INTO `bot_context_logs` (`id`, `keyword_searched`, `created_at`) VALUES
@@ -897,12 +917,13 @@ INSERT INTO `bot_context_logs` (`id`, `keyword_searched`, `created_at`) VALUES
 (9, 'chào', '2026-06-26 14:40:31'),
 (10, 'chào bạn', '2026-06-26 14:51:20'),
 (11, 'tôi muốn đặt bàn', '2026-07-01 12:18:06'),
-(12, 'hi', '2026-07-01 12:18:09');
+(12, 'hi', '2026-07-01 12:18:09'),
+(13, 'hi', '2026-07-02 00:53:19');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `bot_responses`
+-- Table structure for table `bot_responses`
 --
 
 DROP TABLE IF EXISTS `bot_responses`;
@@ -913,7 +934,7 @@ CREATE TABLE `bot_responses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `bot_responses`
+-- Dumping data for table `bot_responses`
 --
 
 INSERT INTO `bot_responses` (`id`, `keywords`, `answer`) VALUES
@@ -932,7 +953,7 @@ INSERT INTO `bot_responses` (`id`, `keywords`, `answer`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `categories`
+-- Table structure for table `categories`
 --
 
 DROP TABLE IF EXISTS `categories`;
@@ -942,7 +963,7 @@ CREATE TABLE `categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `categories`
+-- Dumping data for table `categories`
 --
 
 INSERT INTO `categories` (`id`, `name`) VALUES
@@ -955,7 +976,7 @@ INSERT INTO `categories` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `chat_messages`
+-- Table structure for table `chat_messages`
 --
 
 DROP TABLE IF EXISTS `chat_messages`;
@@ -971,7 +992,7 @@ CREATE TABLE `chat_messages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `chat_messages`
+-- Dumping data for table `chat_messages`
 --
 
 INSERT INTO `chat_messages` (`id`, `session_id`, `sender_type`, `message_type`, `content`, `is_read`, `created_at`, `is_hidden`) VALUES
@@ -1020,12 +1041,14 @@ INSERT INTO `chat_messages` (`id`, `session_id`, `sender_type`, `message_type`, 
 (46, 'sess_1781954337712_976', 'customer', 'text', 'Tôi muốn đặt bàn', 1, '2026-07-01 12:18:06', 0),
 (47, 'sess_1781954337712_976', 'bot', 'text', 'Để kiểm tra tình trạng bàn chính xác, bạn vui lòng chọn phần Đặt bàn trên Website hoặc nhắn \'gặp nhân viên\' để được hỗ trợ kiểm tra ngay nhé.', 0, '2026-07-01 12:18:06', 0),
 (48, 'sess_1781954337712_976', 'customer', 'text', 'hi', 1, '2026-07-01 12:18:09', 0),
-(49, 'sess_1781954337712_976', 'bot', 'text', 'Chào bạn! Mình có thể giúp gì cho bạn?', 0, '2026-07-01 12:18:09', 0);
+(49, 'sess_1781954337712_976', 'bot', 'text', 'Chào bạn! Mình có thể giúp gì cho bạn?', 0, '2026-07-01 12:18:09', 0),
+(50, 'sess_1781954337712_976', 'customer', 'text', 'hi', 0, '2026-07-02 00:53:19', 0),
+(51, 'sess_1781954337712_976', 'bot', 'text', 'Chào bạn! Mình có thể giúp gì cho bạn?', 0, '2026-07-02 00:53:19', 0);
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `chat_sessions`
+-- Table structure for table `chat_sessions`
 --
 
 DROP TABLE IF EXISTS `chat_sessions`;
@@ -1040,7 +1063,7 @@ CREATE TABLE `chat_sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `chat_sessions`
+-- Dumping data for table `chat_sessions`
 --
 
 INSERT INTO `chat_sessions` (`session_id`, `customer_name`, `customer_phone`, `status`, `created_at`, `first_response_at`, `closed_at`) VALUES
@@ -1051,7 +1074,7 @@ INSERT INTO `chat_sessions` (`session_id`, `customer_name`, `customer_phone`, `s
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `chefs`
+-- Table structure for table `chefs`
 --
 
 DROP TABLE IF EXISTS `chefs`;
@@ -1083,7 +1106,7 @@ CREATE TABLE `chefs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `chefs`
+-- Dumping data for table `chefs`
 --
 
 INSERT INTO `chefs` (`id`, `name`, `position`, `image`, `experience`, `specialty`, `description`, `quote`, `facebook`, `instagram`, `email`, `is_active`, `is_featured`, `sort_order`, `awards`, `signature_dishes`, `signature_technique`, `signature_technique_specs`, `signature_technique_process`, `signature_technique_quote`, `signature_technique_difficulty`, `signature_technique_final_result`, `gallery_images`, `service_fee`) VALUES
@@ -1099,7 +1122,7 @@ INSERT INTO `chefs` (`id`, `name`, `position`, `image`, `experience`, `specialty
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `chef_certificates`
+-- Table structure for table `chef_certificates`
 --
 
 DROP TABLE IF EXISTS `chef_certificates`;
@@ -1114,7 +1137,7 @@ CREATE TABLE `chef_certificates` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `chef_certificates`
+-- Dumping data for table `chef_certificates`
 --
 
 INSERT INTO `chef_certificates` (`id`, `chef_id`, `certificate_name`, `issuer`, `issue_date`, `certificate_image`, `created_at`) VALUES
@@ -1139,7 +1162,7 @@ INSERT INTO `chef_certificates` (`id`, `chef_id`, `certificate_name`, `issuer`, 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `chef_gallery`
+-- Table structure for table `chef_gallery`
 --
 
 DROP TABLE IF EXISTS `chef_gallery`;
@@ -1152,7 +1175,7 @@ CREATE TABLE `chef_gallery` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `chef_gallery`
+-- Dumping data for table `chef_gallery`
 --
 
 INSERT INTO `chef_gallery` (`id`, `chef_id`, `image`, `sort_order`, `created_at`) VALUES
@@ -1208,7 +1231,7 @@ INSERT INTO `chef_gallery` (`id`, `chef_id`, `image`, `sort_order`, `created_at`
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `chef_reviews`
+-- Table structure for table `chef_reviews`
 --
 
 DROP TABLE IF EXISTS `chef_reviews`;
@@ -1226,7 +1249,7 @@ CREATE TABLE `chef_reviews` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `chef_reviews`
+-- Dumping data for table `chef_reviews`
 --
 
 INSERT INTO `chef_reviews` (`id`, `chef_id`, `user_id`, `author_name`, `rating`, `comment`, `created_at`, `status`, `experience_type`, `chef_response`) VALUES
@@ -1250,7 +1273,7 @@ INSERT INTO `chef_reviews` (`id`, `chef_id`, `user_id`, `author_name`, `rating`,
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `combos`
+-- Table structure for table `combos`
 --
 
 DROP TABLE IF EXISTS `combos`;
@@ -1267,7 +1290,7 @@ CREATE TABLE `combos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `combos`
+-- Dumping data for table `combos`
 --
 
 INSERT INTO `combos` (`id`, `name`, `description`, `price`, `image`, `status`, `is_active`, `created_at`, `theme_id`) VALUES
@@ -1278,7 +1301,7 @@ INSERT INTO `combos` (`id`, `name`, `description`, `price`, `image`, `status`, `
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `combo_items`
+-- Table structure for table `combo_items`
 --
 
 DROP TABLE IF EXISTS `combo_items`;
@@ -1289,7 +1312,7 @@ CREATE TABLE `combo_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `combo_items`
+-- Dumping data for table `combo_items`
 --
 
 INSERT INTO `combo_items` (`id`, `combo_id`, `food_id`) VALUES
@@ -1306,7 +1329,7 @@ INSERT INTO `combo_items` (`id`, `combo_id`, `food_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `contacts`
+-- Table structure for table `contacts`
 --
 
 DROP TABLE IF EXISTS `contacts`;
@@ -1326,7 +1349,7 @@ CREATE TABLE `contacts` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `decor_packages`
+-- Table structure for table `decor_packages`
 --
 
 DROP TABLE IF EXISTS `decor_packages`;
@@ -1342,7 +1365,7 @@ CREATE TABLE `decor_packages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `decor_packages`
+-- Dumping data for table `decor_packages`
 --
 
 INSERT INTO `decor_packages` (`id`, `event_type_id`, `name`, `description`, `price`, `image_url`, `status`, `created_at`) VALUES
@@ -1365,7 +1388,7 @@ INSERT INTO `decor_packages` (`id`, `event_type_id`, `name`, `description`, `pri
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `employees`
+-- Table structure for table `employees`
 --
 
 DROP TABLE IF EXISTS `employees`;
@@ -1388,7 +1411,7 @@ CREATE TABLE `employees` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `employees`
+-- Dumping data for table `employees`
 --
 
 INSERT INTO `employees` (`id`, `full_name`, `phone`, `email`, `identity_card`, `address`, `dob`, `gender`, `position`, `salary`, `status`, `avatar`, `avatar_blob`, `avatar_mime`, `created_at`) VALUES
@@ -1407,7 +1430,7 @@ INSERT INTO `employees` (`id`, `full_name`, `phone`, `email`, `identity_card`, `
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `event_types`
+-- Table structure for table `event_types`
 --
 
 DROP TABLE IF EXISTS `event_types`;
@@ -1421,7 +1444,7 @@ CREATE TABLE `event_types` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `event_types`
+-- Dumping data for table `event_types`
 --
 
 INSERT INTO `event_types` (`id`, `name`, `description`, `image_url`, `status`, `created_at`) VALUES
@@ -1434,7 +1457,7 @@ INSERT INTO `event_types` (`id`, `name`, `description`, `image_url`, `status`, `
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `foods`
+-- Table structure for table `foods`
 --
 
 DROP TABLE IF EXISTS `foods`;
@@ -1459,33 +1482,33 @@ CREATE TABLE `foods` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `foods`
+-- Dumping data for table `foods`
 --
 
 INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`, `max_toppings`, `is_active`, `is_chef_recommended`, `allergens`, `wine_pairing_id`, `chef_note`, `food_journey`, `cooking_technique`, `theme_id`, `cooking_status`) VALUES
-(1, 2, 'Beefsteak', 400000.00, '7d76786780be41b26cea039d.jpg', 'Thăn nội bò nướng than hoa mềm ngọt, kèm sốt tiêu đen đặc biệt.', 1, 4, 1, 1, '', NULL, 'Tôi luôn chọn phần thăn ngoại (Striploin) với lớp mỡ viền vừa đủ để khi áp chảo, hương thơm béo ngậy quyện chặt vào từng thớ thịt đỏ au. Một chút muối biển Maldon là đủ để đánh thức mọi giác quan.', '{\"origin\":\"B\\u1eaft ngu\\u1ed3n t\\u1eeb nh\\u1eefng th\\u1ea3o nguy\\u00ean xanh m\\u01b0\\u1edbt, n\\u01a1i nu\\u00f4i d\\u01b0\\u1ee1ng d\\u00f2ng b\\u00f2 Wagyu tr\\u1ee9 danh.\",\"selection\":\"Ch\\u1ec9 nh\\u1eefng th\\u1edb th\\u1ecbt c\\u00f3 v\\u00e2n m\\u1ee1 c\\u1ea9m th\\u1ea1ch ho\\u00e0n h\\u1ea3o \\u0111\\u1ea1t chu\\u1ea9n A5 m\\u1edbi \\u0111\\u01b0\\u1ee3c ch\\u1ecdn l\\u1ecdc.\",\"storage\":\"Tr\\u1ea3i qua qu\\u00e1 tr\\u00ecnh l\\u00ean men kh\\u00f4 (Dry-aged) 21 ng\\u00e0y trong ph\\u00f2ng v\\u00f4 tr\\u00f9ng \\u0111\\u1ec3 h\\u01b0\\u01a1ng v\\u1ecb tr\\u1edf n\\u00ean c\\u00f4 \\u0111\\u1eb7c.\",\"prep\":\"C\\u1eaft g\\u1ecdt th\\u1ee7 c\\u00f4ng, \\u01b0\\u1edbp c\\u00f9ng mu\\u1ed1i bi\\u1ec3n Flaky v\\u00e0 ti\\u00eau \\u0111en nguy\\u00ean h\\u1ea1t xay v\\u1ee1.\",\"cooking_art\":\"N\\u01b0\\u1edbng tr\\u00ean l\\u1eeda than c\\u1ee7i Oga nhi\\u1ec7t \\u0111\\u1ed9 cao, \\u00e1p ch\\u1ea3o c\\u00f9ng b\\u01a1 t\\u1ecfi v\\u00e0 c\\u1ecf x\\u1ea1 h\\u01b0\\u01a1ng t\\u01b0\\u01a1i.\",\"presentation\":\"Th\\u1ecbt b\\u00f2 \\u0111\\u01b0\\u1ee3c th\\u00e1i l\\u00e1t ho\\u00e0n h\\u1ea3o, \\u0111\\u1ec3 l\\u1ed9 m\\u00e0u h\\u1ed3ng Ruby r\\u1ef1c r\\u1ee1, \\u0111i k\\u00e8m l\\u1edbp x\\u1ed1t Demi-Glace b\\u00f3ng b\\u1ea9y.\",\"origin_img\":\"beef_origin_1782652170862.png\",\"selection_img\":\"beef_selection_1782652185664.png\",\"storage_img\":\"beef_storage_1782652202575.png\",\"prep_img\":\"beef_prep_1782652218509.png\",\"cooking_art_img\":\"beef_cooking_1782652234858.png\",\"presentation_img\":\"beef_presentation_1782652249868.png\",\"certificate_img\":\"cert_mock_new.jpg\",\"cert_title\":\"Japanese Wagyu A5 Authenticity\",\"cert_country\":\"Miyazaki - Japan\",\"cert_provider\":\"Ozaki Farm\",\"cert_date\":\"10\\/11\\/2026\"}', '', NULL, ''),
-(3, 2, 'Cá Hồi Áp Chảo', 180000.00, '1779508455_6a1124e77c5f4.jpg', 'Cá hồi Na Uy tươi áp chảo xém da, dùng kèm sốt chanh leo chua ngọt.', 1, 4, 1, 0, '', NULL, 'Bí quyết nằm ở chỗ chỉ áp chảo một mặt da cho đến khi giòn rụm, phần thịt còn lại được nấu chín bằng nhiệt độ tỏa lên để giữ trọn vẹn vị ngọt nguyên bản của vùng biển lạnh.', '{\"origin\":\"Từ những dòng hải lưu lạnh giá, tinh khiết của vùng biển Na Uy.\",\"selection\":\"Cá hồi được đánh bắt theo phương pháp bền vững, chọn phần phi lê lưng dày dặn và giàu Omega-3 nhất.\",\"storage\":\"Cấp đông siêu tốc ngay trên tàu để giữ trọn vẹn kết cấu săn chắc tự nhiên.\",\"prep\":\"Rút xương tỉ mỉ, khứa nhẹ lớp da để khi áp chảo không bị co rút.\",\"cooking_art\":\"Kỹ thuật áp chảo một mặt (Skin-on Sear) giúp lớp da giòn rụm hoàn hảo nhưng phần thịt vẫn mượt mà.\",\"presentation\":\"Đặt nhẹ nhàng trên thảm khoai tây nghiền mịn màng, điểm xuyết thêm bọt chanh dây (Foam) nghệ thuật.\"}', 'Kỹ thuật áp chảo một mặt (Skin-on Sear) giúp lớp da giòn rụm hoàn hảo trong khi phần thịt cá bên trên vẫn giữ được độ mềm ẩm mọng nước, quyện cùng xốt bơ chanh dây.', NULL, 'Đang được áp chảo nhẹ nhàng với bơ lạt Pháp, cho lớp da giòn rụm và phần thịt ánh cam mềm tan trên đầu lưỡi.'),
-(5, 2, 'Mì Ý Hải Sản', 150000.00, '1779508403_6a1124b3b9104.webp', 'Mì Spaghetti xào tôm, mực, vẹm xanh sốt cà chua cay nhẹ.', 1, 4, 1, 0, '', NULL, 'Sợi mì được luộc vừa chín tới (Al dente) để giữ độ dai giòn, sau đó xóc đều trên chảo cùng nước cốt hầm hải sản nguyên chất để từng sợi mì ngậm trọn tinh túy đại dương.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\"}', 'Kỹ thuật nấu mì Al dente chuẩn Ý kết hợp cùng xảo thuật \"Mantecatura\" – xóc chảo liên tục để tạo ra lớp xốt sánh quyện tự nhiên từ bơ, nước luộc mì và tinh chất hải sản.', NULL, 'Sợi mì đang được đảo tung trong chảo cùng nước cốt hải sản đậm đà, quyện chặt hương thơm của rượu vang trắng và thảo mộc.'),
-(6, 5, 'Salad Cá Ngừ', 95000.00, '1779508380_6a11249cb4e61.png', 'Rau xanh tổng hợp mix cá ngừ đại dương, trứng cút và sốt dầu giấm.', 1, 4, 1, 1, '', NULL, 'Sự tươi mát của rau mầm trồng trong nhà kính kết hợp cùng sốt giấm balsamic ủ 10 năm sẽ đánh thức vị giác của bạn trước khi bước vào món chính.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\"}', 'Cá ngừ được khò lửa nhanh (Torch-seared) chỉ 3 giây mỗi mặt để khóa hương vị, thái lát mỏng tang và rưới lên thứ xốt giấm đen Balsamic ủ 12 năm.', NULL, 'Các loại rau mầm tươi xanh nhất đang được trộn nhẹ tay cùng những lát cá ngừ đại dương ngọt lịm và sốt chanh leo chua thanh.'),
-(7, 3, 'Soup Kem Nấm', 65000.00, '1779508350_6a11247ee9fae.jpg', 'Soup nấm hương nấm mỡ xay mịn nấu cùng kem tươi béo ngậy.', 1, 4, 1, 0, '', NULL, 'Một món súp kinh điển đòi hỏi sự nhẫn nại. Nấm Truffle và nấm hương rừng được xào chậm với bơ Pháp trước khi xay nhuyễn cùng kem tươi hảo hạng.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\"}', 'Sử dụng kỹ thuật Roux cổ điển của Pháp để làm sánh đặc nước dùng gà hầm trong 12 tiếng, xay nhuyễn nấm porcini tươi và điểm xuyết bằng vài giọt dầu nấm Truffle thượng hạng.', NULL, 'Từng giọt súp đang được hầm liu riu cùng nấm Truffle đen thượng hạng, tỏa ra mùi hương ngai ngái nồng nàn đầy mê hoặc.'),
-(11, 5, 'Bánh Mì Bơ Tỏi', 45000.00, '1779508232_6a112408d74a9.webp', 'Bánh mì baguette nướng giòn rụm phết bơ tỏi và lá thơm băm nhỏ.', 1, 4, 1, 1, '', NULL, 'Phần bơ tỏi được pha trộn theo tỷ lệ bí mật với ngò tây tươi, phết lên những lát bánh mì baguette nướng giòn rụm, tỏa hương thơm nức mũi.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\"}', 'Bánh mì Baguette nướng lò giòn rụm được quét đều lớp bơ tỏi đánh bông (Whipped Garlic Butter), sau đó nướng lần hai dưới ngọn lửa nhỏ để phần bơ thấm đẫm vào tận ruột bánh.', NULL, 'Đang được nướng xém cạnh, bơ tỏi Pháp tan chảy thấm đẫm vào từng thớ bánh giòn rụm thơm lừng.'),
-(12, 2, 'Beef Wellington', 850000.00, '1780713599_6a23887fcefe9.jpg', 'Thăn bò hảo hạng cuộn trong lớp nấm truffles và vỏ bánh ngàn lớp nướng vàng rụm.', 1, 4, 1, 0, '', NULL, 'Đây là món ăn thử thách mọi kỹ năng của đầu bếp: Lõi thăn bò hảo hạng, lớp pate nấm Truffle đen ngậy béo, và lớp vỏ bánh ngàn lớp vàng ươm phải hoàn hảo đến từng milimet.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\"}', 'Lõi thăn nội bò được bọc trong lớp pate gan ngỗng béo ngậy và duxelles nấm, sau đó gói ghém tỉ mỉ bằng lớp vỏ bánh ngàn lớp Puff Pastry. Nướng nhiệt độ chuẩn xác để vỏ bánh vàng ruộm nhưng bò bên trong vẫn giữ màu hồng ruby tuyệt đẹp.', NULL, 'Đang được tỉ mỉ bọc trong lớp vỏ ngàn lớp vàng ươm và chuẩn bị cho vào lò nướng để đạt độ chín hoàn mỹ nhất.'),
-(13, 2, 'Duck Breast with Cherry Reduction', 650000.00, '1780713649_6a2388b12a6a1.jpg', 'Ức vịt áp chảo mềm mọng dùng kèm sốt cherry đỏ cô đặc chua ngọt tinh tế.', 1, 4, 1, 0, '', NULL, 'Ức vịt áp chảo khéo léo để phần da giòn rụm tan mỡ nhưng thịt vẫn giữ màu hồng đào (medium rare). Sốt Cherry Reduction với chút vang đỏ là điểm nhấn chua ngọt cân bằng.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\"}', 'Áp dụng phương pháp Sous-vide (nấu chậm chân không) ở 57°C trong 2 giờ để thịt vịt đạt độ mềm hoàn hảo, sau đó áp chảo phần da (Render fat) để da mỏng, giòn và loại bỏ hoàn toàn mỡ thừa.', NULL, 'Ức vịt đang được áp chảo cho lớp mỡ tươm ra óng ánh, chờ quyện cùng nước sốt anh đào đỏ mọng đang được cô đặc trên bếp.'),
-(14, 2, 'Herb-Crusted Lamb Rack', 750000.00, '1780713689_6a2388d90ba6f.jpg', 'Sườn cừu Pháp nướng phủ lớp vụn bánh mì và thảo mộc thơm lừng.', 1, 4, 1, 0, '', NULL, 'Sườn cừu được bọc trong một lớp vỏ thảo mộc tươi (hương thảo, ngò tây, vụn bánh mì), nướng vừa tới để giữ độ mọng nước mà không hề có mùi gắt đặc trưng.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\"}', 'Sườn cừu được phết một lớp mù tạt Dijon mỏng, sau đó lăn qua hỗn hợp vụn bánh mì Panko, tỏi và thảo mộc tươi xay nhuyễn. Nướng đối lưu để tạo lớp vỏ xanh giòn tan mà không làm cháy thảo mộc.', NULL, 'Sườn cừu non tẩm ướp thảo mộc đang được nướng chậm, tỏa ra hương thảo (rosemary) thơm ngát cả gian bếp.'),
-(15, 1, 'Seared Hokkaido Scallops', 950000.00, '1780713718_6a2388f69f231.jpg', 'Cồi sò điệp Hokkaido áp chảo dùng kèm sốt bơ chanh vàng béo ngậy.', 1, 4, 1, 0, '', NULL, 'Còi sò điệp Hokkaido to bản chỉ cần áp chảo thật nhanh trên lửa lớn để xém vàng hai mặt. Vị ngọt lịm tự nhiên của hải sản vùng nước lạnh không cần quá nhiều gia vị phô trương.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\"}', '', NULL, ''),
-(16, 1, 'Burrata & Heirloom Tomato', 350000.00, '1780713742_6a23890e80b50.jpg', 'Phô mai Burrata tươi béo ngậy ăn cùng cà chua Heirloom và sốt dầu giấm balsamic.', 1, 4, 1, 0, '', NULL, 'Tôm sú tươi sống bật nhảy được xóc nhanh qua lửa lớn cùng muối hồng Himalaya và ớt sừng non, lớp vỏ ngoài giòn rụm nhưng thịt bên trong vẫn ngọt lịm.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\"}', 'Không sử dụng quá nhiều nhiệt, kỹ thuật ở đây là nghệ thuật cân bằng. Cà chua được ngâm nhanh qua nước đá để lột vỏ, ướp cùng dầu ô liu Extra Virgin ép lạnh và muối biển Flaky.', NULL, 'Phô mai Burrata tươi rói đang được đặt trang trọng lên những lát cà chua Heirloom mọng nước, rưới thêm dầu olive nguyên chất.'),
-(17, 1, 'Tuna Tartare', 400000.00, '1780713767_6a238927e7dd3.jpg', 'Cá ngừ đại dương xắt lựu tẩm ướp tinh tế, dùng kèm quả bơ và bánh quy giòn.', 1, 4, 1, 0, '', NULL, 'Cá ngừ đại dương tươi rói được thái hạt lựu, ướp cùng dầu mè, tương tương và một chút chanh vàng để tôn lên độ thanh mát, tan ngay trong miệng.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\"}', 'Nghệ thuật dao thớt điêu luyện: Cá ngừ được thái lựu cực mịn mà không làm dập thớ thịt, ướp lạnh cùng chút dầu mè, nước tương Yuzu và ăn kèm mút bơ sáp béo ngậy.', NULL, 'Cá ngừ đại dương đang được băm nhuyễn tinh tế, hòa quyện cùng bơ sáp và nước tương yuzu thanh mát.'),
-(18, 4, 'Signature Truffle Martini', 400000.00, '1781149007_6a2a2d4f3f01a.jpg', 'Sự kết hợp hoàn hảo giữa Gin thượng hạng, dầu Nấm Truffle trắng và một chút Vermouth ủ mộc. Sang trọng, đậm đà và vương giả.', 1, 4, 1, 1, '', NULL, 'Không chỉ là một ly cocktail, đó là một trải nghiệm thị giác và khứu giác. Dầu nấm Truffle đen được nhỏ vài giọt lên bề mặt, mang lại hương vị ngai ngái đầy bí ẩn.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\"}', 'Kỹ thuật Fat-washing với dầu nấm Truffle trắng lên men tự nhiên vào rượu Gin cao cấp. Sau đó, ly cocktail được khuấy (Stirred, không phải Shaken) với đá viên tinh khiết để giữ nguyên sự mượt mà.', NULL, 'Bartender đang lắc lạnh điệu nghệ, nhỏ thêm vài giọt dầu nấm Truffle đen để mang lại hương vị ngai ngái đầy bí ẩn.'),
-(19, 4, 'Smoked Rosemary Old Fashioned', 380000.00, '1781148879_6a2a2ccfe97e9.jpg', 'Rượu Bourbon Whiskey ủ lâu năm hòa quyện cùng mật ong nguyên chất rừng sâu, khói hương thảo nướng cháy mang lại hậu vị sâu lắng, rất phù hợp cho những ngày lễ và tiết trời se lạnh mùa này.', 1, 4, 1, 0, '', NULL, 'Khói gỗ hương thảo đốt cháy chậm sẽ quẩn quanh trong ly pha lê, đánh thức hương vị caramel của rượu Bourbon lâu năm. Một ly rượu dành cho những tâm hồn sâu sắc.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\"}', 'Sử dụng súng tạo khói (Smoking Gun) để xông khói lá hương thảo tươi cháy xém trực tiếp vào ly thủy tinh trước khi rót rượu Bourbon hảo hạng, tạo tầng hương vị bí ẩn, nam tính.', NULL, 'Ly cocktail đang được xông khói nhánh hương thảo cháy xém, ôm trọn lấy hương vị nồng ấm của rượu Bourbon thượng hạng.'),
-(20, 4, 'Margarita hoa hồng lựu', 250000.00, '1781148793_6a2a2c79ba047.webp', 'Margarita lựu hoa hồng là một thức uống thơm ngon và đầy không khí lễ hội, không thể thiếu trong bất kỳ bữa tiệc nào. Vị chua thanh của lựu kết hợp tuyệt vời với vị ngọt dịu từ siro hoa hồng. Viền ly bằng một lớp muối hoa hồng và bạn sẽ thấy mình muốn nhâm nhi thức uống này suốt mùa đông.', 1, 4, 1, 0, '', NULL, 'Sự lãng mạn được rót vào ly với cánh hoa hồng tươi xay nhuyễn và nước lựu ép lạnh. Vành ly viền muối biển sẽ trung hòa độ chua ngọt một cách hoàn hảo.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\"}', 'Kỹ thuật Shaken điệu nghệ giúp hòa quyện hoàn toàn rượu Tequila Blanco, nước ép lựu tươi và syrup hoa hồng chưng cất thủ công. Viền ly được áo một lớp muối hồng Himalaya tinh tế.', NULL, 'Đang được pha chế tỉ mỉ với rượu Tequila, hòa quyện cùng sắc đỏ quyến rũ của siro lựu và cánh hoa hồng tươi.'),
+(1, 2, 'Beefsteak', 400000.00, '7d76786780be41b26cea039d.jpg', 'Thăn nội bò nướng than hoa mềm ngọt, kèm sốt tiêu đen đặc biệt.', 1, 4, 1, 1, '', NULL, 'Tôi luôn chọn phần thăn ngoại (Striploin) với lớp mỡ viền vừa đủ để khi áp chảo, hương thơm béo ngậy quyện chặt vào từng thớ thịt đỏ au. Một chút muối biển Maldon là đủ để đánh thức mọi giác quan.', '{\"origin\":\"B\\u1eaft ngu\\u1ed3n t\\u1eeb nh\\u1eefng th\\u1ea3o nguy\\u00ean xanh m\\u01b0\\u1edbt, n\\u01a1i nu\\u00f4i d\\u01b0\\u1ee1ng d\\u00f2ng b\\u00f2 Wagyu tr\\u1ee9 danh.\",\"selection\":\"Ch\\u1ec9 nh\\u1eefng th\\u1edb th\\u1ecbt c\\u00f3 v\\u00e2n m\\u1ee1 c\\u1ea9m th\\u1ea1ch ho\\u00e0n h\\u1ea3o \\u0111\\u1ea1t chu\\u1ea9n A5 m\\u1edbi \\u0111\\u01b0\\u1ee3c ch\\u1ecdn l\\u1ecdc.\",\"storage\":\"Tr\\u1ea3i qua qu\\u00e1 tr\\u00ecnh l\\u00ean men kh\\u00f4 (Dry-aged) 21 ng\\u00e0y trong ph\\u00f2ng v\\u00f4 tr\\u00f9ng \\u0111\\u1ec3 h\\u01b0\\u01a1ng v\\u1ecb tr\\u1edf n\\u00ean c\\u00f4 \\u0111\\u1eb7c.\",\"prep\":\"C\\u1eaft g\\u1ecdt th\\u1ee7 c\\u00f4ng, \\u01b0\\u1edbp c\\u00f9ng mu\\u1ed1i bi\\u1ec3n Flaky v\\u00e0 ti\\u00eau \\u0111en nguy\\u00ean h\\u1ea1t xay v\\u1ee1.\",\"cooking_art\":\"N\\u01b0\\u1edbng tr\\u00ean l\\u1eeda than c\\u1ee7i Oga nhi\\u1ec7t \\u0111\\u1ed9 cao, \\u00e1p ch\\u1ea3o c\\u00f9ng b\\u01a1 t\\u1ecfi v\\u00e0 c\\u1ecf x\\u1ea1 h\\u01b0\\u01a1ng t\\u01b0\\u01a1i.\",\"presentation\":\"Th\\u1ecbt b\\u00f2 \\u0111\\u01b0\\u1ee3c th\\u00e1i l\\u00e1t ho\\u00e0n h\\u1ea3o, \\u0111\\u1ec3 l\\u1ed9 m\\u00e0u h\\u1ed3ng Ruby r\\u1ef1c r\\u1ee1, \\u0111i k\\u00e8m l\\u1edbp x\\u1ed1t Demi-Glace b\\u00f3ng b\\u1ea9y.\",\"origin_img\":\"wagyu_cows_meadow.png\",\"selection_img\":\"beef_selection_1782652185664.png\",\"storage_img\":\"beef_storage_1782652202575.png\",\"prep_img\":\"beef_prep_1782652218509.png\",\"cooking_art_img\":\"beef_cooking_1782652234858.png\",\"presentation_img\":\"beef_presentation_1782652249868.png\",\"certificate_img\":\"cert_mock_new.jpg\",\"cert_title\":\"Japanese Wagyu A5 Authenticity\",\"cert_country\":\"Miyazaki - Japan\",\"cert_provider\":\"Ozaki Farm\",\"cert_date\":\"10\\/11\\/2026\"}', '', NULL, ''),
+(3, 2, 'Cá Hồi Áp Chảo', 180000.00, '1779508455_6a1124e77c5f4.jpg', 'Cá hồi Na Uy tươi áp chảo xém da, dùng kèm sốt chanh leo chua ngọt.', 1, 4, 1, 0, '', NULL, 'Bí quyết nằm ở chỗ chỉ áp chảo một mặt da cho đến khi giòn rụm, phần thịt còn lại được nấu chín bằng nhiệt độ tỏa lên để giữ trọn vẹn vị ngọt nguyên bản của vùng biển lạnh.', '{\"origin\":\"Từ những dòng hải lưu lạnh giá, tinh khiết của vùng biển Na Uy.\",\"selection\":\"Cá hồi được đánh bắt theo phương pháp bền vững, chọn phần phi lê lưng dày dặn và giàu Omega-3 nhất.\",\"storage\":\"Cấp đông siêu tốc ngay trên tàu để giữ trọn vẹn kết cấu săn chắc tự nhiên.\",\"prep\":\"Rút xương tỉ mỉ, khứa nhẹ lớp da để khi áp chảo không bị co rút.\",\"cooking_art\":\"Kỹ thuật áp chảo một mặt (Skin-on Sear) giúp lớp da giòn rụm hoàn hảo nhưng phần thịt vẫn mượt mà.\",\"presentation\":\"Đặt nhẹ nhàng trên thảm khoai tây nghiền mịn màng, điểm xuyết thêm bọt chanh dây (Foam) nghệ thuật.\",\"origin_img\":\"1783312838_6a4b31c61567c.jpg\",\"selection_img\":\"1783312838_6a4b31c615d26.jpg\",\"storage_img\":\"1783312838_6a4b31c61716c.png\",\"prep_img\":\"1783312838_6a4b31c617c63.jpg\",\"cooking_art_img\":\"1783312838_6a4b31c618aea.jpg\",\"presentation_img\":\"1783312838_6a4b31c61944c.jpg\",\"certificate_img\":\"1783312838_6a4b31c61a281.png\"}', '', NULL, ''),
+(5, 2, 'Mì Ý Hải Sản', 150000.00, '1779508403_6a1124b3b9104.webp', 'Mì Spaghetti xào tôm, mực, vẹm xanh sốt cà chua cay nhẹ.', 1, 4, 1, 0, '', NULL, 'Sợi mì được luộc vừa chín tới (Al dente) để giữ độ dai giòn, sau đó xóc đều trên chảo cùng nước cốt hầm hải sản nguyên chất để từng sợi mì ngậm trọn tinh túy đại dương.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\",\"origin_img\":\"1783312920_6a4b32182f4c5.jpg\",\"selection_img\":\"1783312920_6a4b321830d61.png\",\"storage_img\":\"1783312920_6a4b321831914.jpg\",\"prep_img\":\"1783312920_6a4b3218325f0.jpg\",\"cooking_art_img\":\"1783312920_6a4b321833617.jpg\",\"presentation_img\":\"1783312920_6a4b32183451e.png\",\"certificate_img\":\"1783312920_6a4b321835cf3.png\"}', '', NULL, ''),
+(6, 5, 'Salad Cá Ngừ', 95000.00, '1779508380_6a11249cb4e61.png', 'Rau xanh tổng hợp mix cá ngừ đại dương, trứng cút và sốt dầu giấm.', 1, 4, 1, 0, '', NULL, 'Sự tươi mát của rau mầm trồng trong nhà kính kết hợp cùng sốt giấm balsamic ủ 10 năm sẽ đánh thức vị giác của bạn trước khi bước vào món chính.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\",\"origin_img\":\"1783331253_6a4b79b52e685.webp\",\"selection_img\":\"1783331307_6a4b79ebec9dd.webp\",\"storage_img\":\"1783331333_6a4b7a0504f17.png\",\"prep_img\":\"1783331400_6a4b7a4834e8a.webp\",\"cooking_art_img\":\"1783331446_6a4b7a762856a.webp\",\"presentation_img\":\"1783331400_6a4b7a4835a21.webp\",\"certificate_img\":\"1783331307_6a4b79ebedc26.png\"}', '', NULL, ''),
+(7, 3, 'Soup Kem Nấm', 65000.00, '1779508350_6a11247ee9fae.jpg', 'Soup nấm hương nấm mỡ xay mịn nấu cùng kem tươi béo ngậy.', 1, 4, 1, 0, '', NULL, 'Một món súp kinh điển đòi hỏi sự nhẫn nại. Nấm Truffle và nấm hương rừng được xào chậm với bơ Pháp trước khi xay nhuyễn cùng kem tươi hảo hạng.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\",\"origin_img\":\"1783332172_6a4b7d4c58137.webp\",\"selection_img\":\"1783332187_6a4b7d5b8b504.webp\",\"storage_img\":\"1783332103_6a4b7d07f1800.png\",\"prep_img\":\"1783332094_6a4b7cfee9f29.webp\",\"cooking_art_img\":\"1783332048_6a4b7cd0a847a.webp\",\"presentation_img\":\"1783332024_6a4b7cb89da40.webp\"}', '', NULL, ''),
+(11, 5, 'Bánh Mì Bơ Tỏi', 45000.00, '1779508232_6a112408d74a9.webp', 'Bánh mì baguette nướng giòn rụm phết bơ tỏi và lá thơm băm nhỏ.', 1, 4, 1, 0, '', NULL, 'Phần bơ tỏi được pha trộn theo tỷ lệ bí mật với ngò tây tươi, phết lên những lát bánh mì baguette nướng giòn rụm, tỏa hương thơm nức mũi.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\",\"origin_img\":\"1783331032_6a4b78d830cf9.webp\",\"selection_img\":\"1783331047_6a4b78e7b6dd4.webp\",\"storage_img\":\"1783330927_6a4b786f0f90d.png\",\"prep_img\":\"1783331086_6a4b790e0efdf.webp\",\"cooking_art_img\":\"1783331194_6a4b797a112c1.webp\",\"presentation_img\":\"1783331140_6a4b7944a96a2.webp\",\"certificate_img\":\"1783330927_6a4b786f1005c.png\"}', '', NULL, ''),
+(12, 2, 'Beef Wellington', 850000.00, '1780713599_6a23887fcefe9.jpg', 'Thăn bò hảo hạng cuộn trong lớp nấm truffles và vỏ bánh ngàn lớp nướng vàng rụm.', 1, 4, 1, 0, '', NULL, 'Đây là món ăn thử thách mọi kỹ năng của đầu bếp: Lõi thăn bò hảo hạng, lớp pate nấm Truffle đen ngậy béo, và lớp vỏ bánh ngàn lớp vàng ươm phải hoàn hảo đến từng milimet.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\",\"origin_img\":\"1783313632_6a4b34e0bd0f6.jpg\",\"selection_img\":\"1783313632_6a4b34e0bd758.jpg\",\"storage_img\":\"1783313632_6a4b34e0bdc0e.jpg\",\"prep_img\":\"1783313258_6a4b336ad4666.png\",\"cooking_art_img\":\"1783313632_6a4b34e0bee01.png\",\"presentation_img\":\"1783313293_6a4b338d8ae77.png\",\"certificate_img\":\"1783313632_6a4b34e0bf6a7.png\"}', '', NULL, ''),
+(13, 2, 'Duck Breast with Cherry Reduction', 650000.00, '1780713649_6a2388b12a6a1.jpg', 'Ức vịt áp chảo mềm mọng dùng kèm sốt cherry đỏ cô đặc chua ngọt tinh tế.', 1, 4, 1, 0, '', NULL, 'Ức vịt áp chảo khéo léo để phần da giòn rụm tan mỡ nhưng thịt vẫn giữ màu hồng đào (medium rare). Sốt Cherry Reduction với chút vang đỏ là điểm nhấn chua ngọt cân bằng.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\",\"origin_img\":\"1783314503_6a4b3847b8a9e.png\",\"selection_img\":\"1783314371_6a4b37c315d6f.webp\",\"storage_img\":\"1783314302_6a4b377e7cc15.webp\",\"prep_img\":\"1783314470_6a4b38260e225.webp\",\"cooking_art_img\":\"1783314422_6a4b37f61d6bd.webp\",\"presentation_img\":\"1783314159_6a4b36ef2e4a2.webp\",\"certificate_img\":\"1783314334_6a4b379ee990e.png\"}', '', NULL, ''),
+(14, 2, 'Herb-Crusted Lamb Rack', 750000.00, '1780713689_6a2388d90ba6f.jpg', 'Sườn cừu Pháp nướng phủ lớp vụn bánh mì và thảo mộc thơm lừng.', 1, 4, 1, 0, '', NULL, 'Sườn cừu được bọc trong một lớp vỏ thảo mộc tươi (hương thảo, ngò tây, vụn bánh mì), nướng vừa tới để giữ độ mọng nước mà không hề có mùi gắt đặc trưng.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\",\"origin_img\":\"1783314697_6a4b390923888.jpg\",\"selection_img\":\"1783314697_6a4b39092432a.jpg\",\"storage_img\":\"1783314963_6a4b3a13457aa.webp\",\"prep_img\":\"1783315082_6a4b3a8a0d79f.webp\",\"cooking_art_img\":\"1783315122_6a4b3ab2dabe9.webp\",\"presentation_img\":\"1783315139_6a4b3ac3ea922.webp\",\"certificate_img\":\"1783315167_6a4b3adf00249.png\"}', '', NULL, ''),
+(15, 1, 'Seared Hokkaido Scallops', 950000.00, '1780713718_6a2388f69f231.jpg', 'Cồi sò điệp Hokkaido áp chảo dùng kèm sốt bơ chanh vàng béo ngậy.', 1, 4, 1, 0, '', NULL, 'Còi sò điệp Hokkaido to bản chỉ cần áp chảo thật nhanh trên lửa lớn để xém vàng hai mặt. Vị ngọt lịm tự nhiên của hải sản vùng nước lạnh không cần quá nhiều gia vị phô trương.', '{\"origin\":\"Cồi sò điệp Hokkaido được đánh bắt tại vùng biển lạnh giá phía Bắc Nhật Bản, nơi dòng hải lưu Oyashio đi qua, mang lại độ ngọt thịt tự nhiên và chất lượng hảo hạng bậc nhất.\",\"selection\":\"Tuyển chọn khắt khe những cá thể sò điệp trưởng thành đạt chuẩn loại 1 (Jumbo), đánh bắt tự nhiên và cấp đông sâu ngay trên tàu để giữ vẹn nguyên sự tươi mới tinh khiết.\",\"storage\":\"Bảo quản ở nhiệt độ -40 độ C chuẩn sashimi, rã đông chậm tự nhiên trong môi trường lạnh nhằm bảo vệ tuyệt đối kết cấu mô thịt và giữ trọn vị ngọt của biển cả.\",\"prep\":\"Sơ chế tỉ mỉ, làm sạch nhẹ nhàng qua nước muối loãng, sau đó thấm khô hoàn toàn bề mặt bằng giấy chuyên dụng để đảm bảo hiệu ứng caramel hóa khi áp chảo.\",\"cooking_art\":\"Nghệ thuật áp chảo nhanh (Pan-Searing) đỉnh cao trên chảo gang nhiệt độ cao cùng bơ lạt Pháp, tạo lớp vỏ vàng nâu xém cạnh giòn tan ôm trọn phần lõi mọng nước, mềm mịn như bơ.\",\"presentation\":\"Được tôn vinh như một tác phẩm nghệ thuật, điểm xuyết cùng nấm truffle đen, trứng cá tầm Caviar và một lớp xốt bơ chanh vàng óng, kích thích trọn vẹn mọi giác quan.\",\"origin_img\":\"1783316005_6a4b3e254763e.webp\",\"selection_img\":\"1783317272_6a4b4318afd39.webp\",\"storage_img\":\"1783318648_6a4b48785b22d.png\",\"prep_img\":\"scallop_prep_new.png\",\"cooking_art_img\":\"1783320195_6a4b4e83a670f.png\",\"presentation_img\":\"scallop_presentation_new.png\",\"certificate_img\":\"1783317249_6a4b43016f9e9.png\"}', '', NULL, ''),
+(16, 1, 'Burrata & Heirloom Tomato', 350000.00, '1780713742_6a23890e80b50.jpg', 'Phô mai Burrata tươi béo ngậy ăn cùng cà chua Heirloom và sốt dầu giấm balsamic.', 1, 4, 1, 0, '', NULL, 'Tôm sú tươi sống bật nhảy được xóc nhanh qua lửa lớn cùng muối hồng Himalaya và ớt sừng non, lớp vỏ ngoài giòn rụm nhưng thịt bên trong vẫn ngọt lịm.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\",\"origin_img\":\"1783315835_6a4b3d7b79000.webp\",\"selection_img\":\"1783315866_6a4b3d9a8195a.webp\",\"storage_img\":\"1783315599_6a4b3c8f8d075.png\",\"prep_img\":\"1783315892_6a4b3db4c6369.webp\",\"cooking_art_img\":\"1783315599_6a4b3c8f8dcdf.webp\",\"presentation_img\":\"1783315551_6a4b3c5fcf1fb.webp\",\"certificate_img\":\"1783315928_6a4b3dd84ddb9.png\"}', '', NULL, ''),
+(17, 1, 'Tuna Tartare', 400000.00, '1780713767_6a238927e7dd3.jpg', 'Cá ngừ đại dương xắt lựu tẩm ướp tinh tế, dùng kèm quả bơ và bánh quy giòn.', 1, 4, 1, 0, '', NULL, 'Cá ngừ đại dương tươi rói được thái hạt lựu, ướp cùng dầu mè, tương tương và một chút chanh vàng để tôn lên độ thanh mát, tan ngay trong miệng.', '{\"origin\":\"Bắt nguồn từ những mẻ cá ngừ vây xanh (Bluefin Tuna) khổng lồ được đánh bắt tự nhiên ngoài khơi đại dương, mang theo hương vị thuần khiết và tươi mới nhất của biển cả.\",\"selection\":\"Chỉ những phần thăn cá ngừ (Loin) mang sắc đỏ ngọc ruby rực rỡ với tỷ lệ nạc mỡ hoàn hảo mới được các bậc thầy tuyển chọn để đảm bảo chất lượng tuyệt đối.\",\"storage\":\"Lưu trữ nghiêm ngặt trong hệ thống cấp đông sâu -60 độ C chuẩn quốc tế, giúp khóa chặt độ tươi ngon và cấu trúc protein của cá ngay sau khi đánh bắt.\",\"prep\":\"Thực hiện bởi bàn tay tài hoa của bếp trưởng, dùng dao Yanagiba sắc lẹm thái hạt lựu từng thớ cá một cách dứt khoát, giữ nguyên kết cấu đàn hồi nguyên bản.\",\"cooking_art\":\"Pha trộn tinh tế với dầu mè thơm lừng, nước tương hảo hạng và hẹ xắt nhỏ, phối hợp nhịp nhàng để các gia vị quyện chặt vào từng miếng cá mà không làm mất đi vị ngọt tự nhiên.\",\"presentation\":\"Trình bày theo phong cách đương đại: Tartare cá ngừ tươi nguyên bản, dùng kèm xốt kem béo ngậy điểm xuyết trứng cá, ăn cùng các loại vi rau mầm, vụn bánh giòn tan và bánh mì nướng than hoa trên nền đĩa đá phiến mộc mạc.\",\"origin_img\":\"tuna_origin.png\",\"selection_img\":\"tuna_selection.png\",\"storage_img\":\"tuna_storage.png\",\"prep_img\":\"tuna_prep.png\",\"cooking_art_img\":\"tuna_cooking_art.png\",\"presentation_img\":\"tuna_presentation.png\",\"certificate_img\":\"1783315457_6a4b3c01b3987.png\"}', '', NULL, ''),
+(18, 4, 'Signature Truffle Martini', 400000.00, '1781149007_6a2a2d4f3f01a.jpg', 'Sự kết hợp hoàn hảo giữa Gin thượng hạng, dầu Nấm Truffle trắng và một chút Vermouth ủ mộc. Sang trọng, đậm đà và vương giả.', 1, 4, 1, 0, '', NULL, 'Không chỉ là một ly cocktail, đó là một trải nghiệm thị giác và khứu giác. Dầu nấm Truffle đen được nhỏ vài giọt lên bề mặt, mang lại hương vị ngai ngái đầy bí ẩn.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\",\"origin_img\":\"1783331946_6a4b7c6a0e199.webp\",\"cooking_art_img\":\"1783331969_6a4b7c81cf299.webp\",\"presentation_img\":\"1783331985_6a4b7c9184186.webp\"}', '', NULL, ''),
+(19, 4, 'Smoked Rosemary Old Fashioned', 380000.00, '1781148879_6a2a2ccfe97e9.jpg', 'Rượu Bourbon Whiskey ủ lâu năm hòa quyện cùng mật ong nguyên chất rừng sâu, khói hương thảo nướng cháy mang lại hậu vị sâu lắng, rất phù hợp cho những ngày lễ và tiết trời se lạnh mùa này.', 1, 4, 1, 0, '', NULL, 'Khói gỗ hương thảo đốt cháy chậm sẽ quẩn quanh trong ly pha lê, đánh thức hương vị caramel của rượu Bourbon lâu năm. Một ly rượu dành cho những tâm hồn sâu sắc.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\",\"origin_img\":\"1783331897_6a4b7c39b1e2b.webp\",\"prep_img\":\"1783331834_6a4b7bfae3f96.webp\",\"cooking_art_img\":\"1783331855_6a4b7c0f33e27.webp\",\"presentation_img\":\"1783331800_6a4b7bd82fda8.webp\"}', '', NULL, ''),
+(20, 4, 'Margarita hoa hồng lựu', 250000.00, '1781148793_6a2a2c79ba047.webp', 'Margarita lựu hoa hồng là một thức uống thơm ngon và đầy không khí lễ hội, không thể thiếu trong bất kỳ bữa tiệc nào. Vị chua thanh của lựu kết hợp tuyệt vời với vị ngọt dịu từ siro hoa hồng. Viền ly bằng một lớp muối hoa hồng và bạn sẽ thấy mình muốn nhâm nhi thức uống này suốt mùa đông.', 1, 4, 1, 0, '', NULL, 'Sự lãng mạn được rót vào ly với cánh hoa hồng tươi xay nhuyễn và nước lựu ép lạnh. Vành ly viền muối biển sẽ trung hòa độ chua ngọt một cách hoàn hảo.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\",\"origin_img\":\"1783331760_6a4b7bb0574eb.jpg\",\"cooking_art_img\":\"1783331716_6a4b7b846efe6.webp\",\"presentation_img\":\"1783331698_6a4b7b72ac486.webp\"}', '', NULL, ''),
 (21, 4, 'cocktail Gold Rush', 450000.00, '1781148667_6a2a2bfb171d5.jpg', 'Vang đỏ Cabernet Sauvignon cao cấp mix cùng trái cây nhiệt đới, điểm xuyết những vảy vàng 24k ăn được. Phù hợp cho những dịp kỷ niệm.', 1, 4, 1, 1, '', NULL, 'Một ly Gold Rush chuẩn vị cần sự cân bằng tuyệt đối giữa vị chua thanh của chanh vàng nguyên bản và độ ngọt sâu của mật ong rừng. Lắc thật mạnh cùng đá viên lớn để ly cocktail đạt độ lạnh sâu mà không bị loãng.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\",\"origin_img\":\"gold_rush_origin_1782720351886.png\",\"selection_img\":\"gold_rush_selection_1782720363687.png\",\"storage_img\":\"\",\"prep_img\":\"gold_rush_prep_1782720378446.png\",\"cooking_art_img\":\"gold_rush_mix_1782720414326.png\",\"presentation_img\":\"gold_rush_presentation_1782720428215.png\",\"certificate_img\":\"gold_rush_cert_1782720444757.png\"}', 'Làm lạnh ly cocktail sâu, dùng kỹ thuật lắc mạnh (Hard Shake) cùng mật ong rừng và nước cốt chanh vàng tươi. Điểm xuyết một lá vàng 24K mỏng manh ăn được lên bề mặt.', NULL, 'Mật ong vàng óng đang được khuấy đều cùng Bourbon và chanh vàng, điểm xuyết thêm lấp lánh vô cùng sang trọng.'),
-(22, 4, 'Zen Garden Elixir', 180000.00, '1781148509_6a2a2b5da1be3.png', 'Thức uống Zen Garden Elixir là sự kết hợp hài hòa, gói gọn tinh thần thanh bình của một khu vườn trà Nhật Bản. Loại cocktail này làm nổi bật hương vị đất, đậm đà của matcha kết hợp với vị ngọt dịu của vải và vị chua thanh của yuzu. Đây là lựa chọn sảng khoái dành cho những ai tìm kiếm trải nghiệm độc đáo và thư thái.', 1, 4, 1, 0, '', NULL, 'Một thức uống thanh lọc tâm hồn. Trà xanh sương mù kết hợp cùng chanh yuzu Nhật Bản và hương sả, mang lại cảm giác bình yên như đang dạo bước trong một khu vườn thiền.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\"}', 'Sử dụng trà xanh Matcha nghiền bằng cối đá truyền thống, pha chế bằng kỹ thuật Build trực tiếp với rượu Gin ướp hoa cúc và nước khoáng có ga tự nhiên.', NULL, 'Đang được pha chế tĩnh lặng như một nghi thức, mang đến sự thanh tao của tinh chất thảo mộc hòa quyện cùng sương mai.'),
+(22, 4, 'Zen Garden Elixir', 180000.00, '1781148509_6a2a2b5da1be3.png', 'Thức uống Zen Garden Elixir là sự kết hợp hài hòa, gói gọn tinh thần thanh bình của một khu vườn trà Nhật Bản. Loại cocktail này làm nổi bật hương vị đất, đậm đà của matcha kết hợp với vị ngọt dịu của vải và vị chua thanh của yuzu. Đây là lựa chọn sảng khoái dành cho những ai tìm kiếm trải nghiệm độc đáo và thư thái.', 1, 4, 1, 0, '', NULL, 'Một thức uống thanh lọc tâm hồn. Trà xanh sương mù kết hợp cùng chanh yuzu Nhật Bản và hương sả, mang lại cảm giác bình yên như đang dạo bước trong một khu vườn thiền.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\",\"origin_img\":\"1783331642_6a4b7b3a67710.webp\",\"storage_img\":\"1783331574_6a4b7af61478b.jpg\",\"presentation_img\":\"1783331516_6a4b7abc32fcf.png\"}', '', NULL, ''),
 (23, 1, 'Bánh Cua', 399000.00, '1782874308_6a4480c443bfb.jpg', '**Bánh Cua (Crab Cakes)** là món khai vị kinh điển của ẩm thực ven biển Bắc Mỹ, nổi bật với phần thịt cua xanh Đại Tây Dương được giữ nguyên từng thớ để tôn vinh vị ngọt tự nhiên của hải sản. Kết hợp cùng bột panko, thảo mộc tươi và các loại gia vị được cân bằng tinh tế, bánh được áp chảo đến khi lớp vỏ ngoài vàng giòn trong khi phần nhân bên trong vẫn mềm, mọng và đậm đà. Khi thưởng thức cùng sốt aioli hoặc tartar, rau mầm và một lát chanh vàng, Crab Cakes mang đến sự hài hòa giữa hương vị thanh lịch và kết cấu hấp dẫn, trở thành món khai vị được yêu thích trong nhiều nhà hàng Fine Dining.', 1, 0, 1, 0, '', NULL, '', '{\"origin\":\"Cua xanh Đại Tây Dương được tuyển chọn từ những vùng biển trù phú dọc bờ Đông Hoa Kỳ, nơi dòng hải lưu trong lành và hệ sinh thái ven biển tạo nên môi trường lý tưởng cho loài cua này phát triển. Sau khi được đánh bắt theo phương pháp bền vững, cua được vận chuyển trong điều kiện kiểm soát nghiêm ngặt nhằm giữ trọn độ tươi và vị ngọt tự nhiên. Phần thịt cua trắng mềm, thanh khiết mang hương vị đặc trưng của đại dương, là nguyên liệu được nhiều nhà hàng Fine Dining trên thế giới tin dùng.\",\"selection\":\"Mỗi mẻ cua đều trải qua quy trình tuyển chọn khắt khe để đảm bảo chất lượng đồng nhất. Chúng tôi chỉ sử dụng phần thịt trắng nguyên khối với kết cấu săn chắc, không lẫn vụn vỏ hay tạp chất. Từng thớ thịt được kiểm tra kỹ lưỡng về màu sắc, hương thơm và độ tươi nhằm đáp ứng những tiêu chuẩn cao nhất trước khi bước vào căn bếp.\",\"storage\":\"Ngay sau khi được tách khỏi vỏ, thịt cua được làm lạnh nhanh và bảo quản trong chuỗi lạnh liên tục nhằm duy trì kết cấu mềm mại cũng như hương vị nguyên bản. Mỗi lô nguyên liệu đều được kiểm soát nghiêm ngặt về thời gian lưu trữ và điều kiện bảo quản, giúp đảm bảo chất lượng tối ưu khi đến tay đội ngũ đầu bếp.\",\"prep\":\"Quá trình sơ chế được thực hiện hoàn toàn thủ công bởi đội ngũ đầu bếp giàu kinh nghiệm. Từng phần thịt cua được nhẹ nhàng tách và làm sạch để giữ nguyên những thớ thịt tự nhiên quý giá. Mỗi mẻ nguyên liệu đều được kiểm tra lần cuối nhằm loại bỏ hoàn toàn những mảnh vỏ nhỏ, mang đến sự tinh tế và an toàn tuyệt đối cho thực khách.\",\"cooking_art\":\"Đội ngũ đầu bếp kết hợp thịt cua với các nguyên liệu được chọn lọc kỹ lưỡng như bột panko, thảo mộc tươi và gia vị cao cấp nhằm tôn lên vị ngọt tự nhiên của hải sản thay vì che lấp nó. Những chiếc Crab Cakes được tạo hình bằng tay, áp chảo đến khi lớp vỏ bên ngoài vàng giòn, trong khi phần nhân vẫn mềm, mọng và giữ trọn hương vị đặc trưng của cua xanh Đại Tây Dương.\",\"presentation\":\"Mỗi phần Crab Cakes được trình bày như một tác phẩm nghệ thuật, nơi sắc vàng óng của bánh hòa quyện cùng màu xanh tươi của rau mầm và điểm nhấn từ các loại thảo mộc hoặc hoa ăn được. Sự kết hợp giữa kết cấu, màu sắc và khoảng trống trên đĩa tạo nên một tổng thể thanh lịch, mang đến trải nghiệm thị giác tinh tế trước khi thực khách thưởng thức hương vị.\",\"origin_img\":\"1782906758_6a44ff86e9391.jpg\",\"selection_img\":\"1782906758_6a44ff86e997a.jpg\",\"storage_img\":\"1782906758_6a44ff86e9cb0.jpg\",\"prep_img\":\"1782906758_6a44ff86e9e97.jpg\",\"cooking_art_img\":\"1782906758_6a44ff86ea0d6.jpg\",\"presentation_img\":\"1782906758_6a44ff86ea2a2.jpg\",\"certificate_img\":\"1782906758_6a44ff86ea470.jpg\"}', '', NULL, '');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `food_recipes`
+-- Table structure for table `food_recipes`
 --
 
 DROP TABLE IF EXISTS `food_recipes`;
@@ -1498,7 +1521,7 @@ CREATE TABLE `food_recipes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `food_recipes`
+-- Dumping data for table `food_recipes`
 --
 
 INSERT INTO `food_recipes` (`id`, `food_id`, `ingredient_id`, `quantity_required`, `unit`) VALUES
@@ -1576,7 +1599,7 @@ INSERT INTO `food_recipes` (`id`, `food_id`, `ingredient_id`, `quantity_required
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `food_toppings`
+-- Table structure for table `food_toppings`
 --
 
 DROP TABLE IF EXISTS `food_toppings`;
@@ -1587,65 +1610,14 @@ CREATE TABLE `food_toppings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `food_toppings`
+-- Dumping data for table `food_toppings`
 --
 
 INSERT INTO `food_toppings` (`id`, `food_id`, `topping_id`) VALUES
-(11, 12, 1),
-(12, 12, 2),
-(13, 12, 3),
-(14, 12, 4),
-(15, 12, 5),
-(16, 13, 1),
-(17, 13, 2),
-(18, 13, 3),
-(19, 13, 4),
-(20, 13, 5),
-(21, 14, 1),
-(22, 14, 2),
-(23, 14, 3),
-(24, 14, 4),
-(25, 14, 5),
 (38, 21, 6),
 (39, 21, 7),
 (40, 21, 8),
 (41, 21, 9),
-(42, 22, 6),
-(43, 22, 7),
-(44, 22, 8),
-(45, 22, 9),
-(50, 3, 10),
-(51, 3, 11),
-(52, 3, 12),
-(53, 3, 13),
-(58, 12, 10),
-(59, 12, 11),
-(60, 12, 12),
-(61, 12, 13),
-(66, 5, 14),
-(67, 5, 15),
-(68, 5, 16),
-(69, 5, 17),
-(70, 5, 18),
-(75, 3, 19),
-(76, 3, 20),
-(77, 3, 21),
-(81, 12, 19),
-(82, 12, 20),
-(83, 12, 21),
-(84, 7, 19),
-(89, 20, 8),
-(90, 20, 7),
-(91, 20, 6),
-(92, 20, 9),
-(97, 19, 8),
-(98, 19, 7),
-(99, 19, 6),
-(100, 19, 9),
-(101, 18, 8),
-(102, 18, 7),
-(103, 18, 6),
-(104, 18, 9),
 (117, 1, 19),
 (118, 1, 20),
 (119, 1, 21),
@@ -1658,12 +1630,63 @@ INSERT INTO `food_toppings` (`id`, `food_id`, `topping_id`) VALUES
 (126, 1, 3),
 (127, 1, 1),
 (128, 1, 2),
-(129, 15, 18);
+(130, 3, 19),
+(131, 3, 20),
+(132, 3, 21),
+(133, 3, 13),
+(134, 3, 10),
+(135, 3, 12),
+(136, 3, 11),
+(137, 5, 14),
+(138, 5, 16),
+(139, 5, 17),
+(140, 5, 18),
+(141, 5, 15),
+(166, 12, 19),
+(167, 12, 20),
+(168, 12, 21),
+(169, 12, 13),
+(170, 12, 10),
+(171, 12, 12),
+(172, 12, 11),
+(173, 12, 5),
+(174, 12, 4),
+(175, 12, 3),
+(176, 12, 1),
+(177, 12, 2),
+(208, 13, 5),
+(209, 13, 4),
+(210, 13, 3),
+(211, 13, 1),
+(212, 13, 2),
+(248, 14, 5),
+(249, 14, 4),
+(250, 14, 3),
+(251, 14, 1),
+(252, 14, 2),
+(259, 15, 18),
+(268, 22, 8),
+(269, 22, 7),
+(270, 22, 6),
+(271, 22, 9),
+(280, 20, 8),
+(281, 20, 7),
+(282, 20, 6),
+(283, 20, 9),
+(296, 19, 8),
+(297, 19, 7),
+(298, 19, 6),
+(299, 19, 9),
+(308, 18, 8),
+(309, 18, 7),
+(310, 18, 6),
+(311, 18, 9),
+(317, 7, 19);
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `footer_links`
+-- Table structure for table `footer_links`
 --
 
 DROP TABLE IF EXISTS `footer_links`;
@@ -1675,7 +1698,7 @@ CREATE TABLE `footer_links` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `footer_links`
+-- Dumping data for table `footer_links`
 --
 
 INSERT INTO `footer_links` (`id`, `title`, `url`, `priority`) VALUES
@@ -1687,7 +1710,7 @@ INSERT INTO `footer_links` (`id`, `title`, `url`, `priority`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `footer_settings`
+-- Table structure for table `footer_settings`
 --
 
 DROP TABLE IF EXISTS `footer_settings`;
@@ -1697,7 +1720,7 @@ CREATE TABLE `footer_settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `footer_settings`
+-- Dumping data for table `footer_settings`
 --
 
 INSERT INTO `footer_settings` (`setting_key`, `setting_value`) VALUES
@@ -2039,7 +2062,7 @@ INSERT INTO `footer_settings` (`setting_key`, `setting_value`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `galleries`
+-- Table structure for table `galleries`
 --
 
 DROP TABLE IF EXISTS `galleries`;
@@ -2053,7 +2076,7 @@ CREATE TABLE `galleries` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `galleries`
+-- Dumping data for table `galleries`
 --
 
 INSERT INTO `galleries` (`id`, `image_url`, `title`, `sort_order`, `is_active`, `created_at`) VALUES
@@ -2068,7 +2091,7 @@ INSERT INTO `galleries` (`id`, `image_url`, `title`, `sort_order`, `is_active`, 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `inventory`
+-- Table structure for table `inventory`
 --
 
 DROP TABLE IF EXISTS `inventory`;
@@ -2091,7 +2114,7 @@ CREATE TABLE `inventory` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `inventory`
+-- Dumping data for table `inventory`
 --
 
 INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `cost_price`, `supplier_id`, `entry_date`, `expiry_date`, `revenue`, `updated_at`, `min_stock`, `is_active`, `storage_zone`, `storage_temperature`, `allergens`) VALUES
@@ -2189,7 +2212,7 @@ INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `cost_price
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `inventory_audits`
+-- Table structure for table `inventory_audits`
 --
 
 DROP TABLE IF EXISTS `inventory_audits`;
@@ -2201,7 +2224,7 @@ CREATE TABLE `inventory_audits` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `inventory_audits`
+-- Dumping data for table `inventory_audits`
 --
 
 INSERT INTO `inventory_audits` (`id`, `audit_date`, `performed_by`, `notes`) VALUES
@@ -2214,7 +2237,7 @@ INSERT INTO `inventory_audits` (`id`, `audit_date`, `performed_by`, `notes`) VAL
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `inventory_audit_details`
+-- Table structure for table `inventory_audit_details`
 --
 
 DROP TABLE IF EXISTS `inventory_audit_details`;
@@ -2228,7 +2251,7 @@ CREATE TABLE `inventory_audit_details` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `inventory_audit_details`
+-- Dumping data for table `inventory_audit_details`
 --
 
 INSERT INTO `inventory_audit_details` (`id`, `audit_id`, `ingredient_id`, `system_qty`, `physical_qty`, `variance`) VALUES
@@ -2248,7 +2271,7 @@ INSERT INTO `inventory_audit_details` (`id`, `audit_id`, `ingredient_id`, `syste
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `inventory_batches`
+-- Table structure for table `inventory_batches`
 --
 
 DROP TABLE IF EXISTS `inventory_batches`;
@@ -2266,7 +2289,7 @@ CREATE TABLE `inventory_batches` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `inventory_batches`
+-- Dumping data for table `inventory_batches`
 --
 
 INSERT INTO `inventory_batches` (`id`, `ingredient_id`, `warehouse_id`, `batch_code`, `quantity`, `expiry_date`, `cost_price`, `receiving_temperature`, `created_at`, `supplier_batch_number`) VALUES
@@ -2354,14 +2377,14 @@ INSERT INTO `inventory_batches` (`id`, `ingredient_id`, `warehouse_id`, `batch_c
 (100, 14, 8, 'BATCH-AUTO-20260618-193014-612', 5.000, '2026-11-30', 350000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-612'),
 (101, 9, 2, 'BATCH-AUTO-20260618-193014-622', 9.200, '2026-11-30', 180000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-622'),
 (102, 9, 8, 'BATCH-AUTO-20260618-193014-580', 6.000, '2026-11-30', 180000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-580'),
-(103, 14, 2, 'BATCH-AUTO-20260618-193014-455', 0.150, '2026-11-30', 350000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-455'),
+(103, 14, 2, 'BATCH-AUTO-20260618-193014-455', 0.000, '2026-11-30', 350000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-455'),
 (104, 2, 9, 'BATCH-AUTO-20260618-193014-586', 3.000, '2026-07-10', 150000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-586'),
 (105, 12, 9, 'BATCH-AUTO-20260618-193014-243', 1.000, '2027-06-03', 180000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-243'),
 (106, 21, 9, 'BATCH-AUTO-20260618-193014-253', 1.000, '2027-06-04', 7500.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-253'),
 (107, 26, 9, 'BATCH-AUTO-20260618-193014-108', 2.000, '2027-06-04', 25000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-108'),
 (108, 21, 2, 'BATCH-AUTO-20260618-193014-352', 8.998, '2027-06-04', 7500.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-352'),
 (109, 2, 2, 'BATCH-AUTO-20260618-193014-912', 0.000, '2026-07-10', 150000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-912'),
-(110, 12, 2, 'BATCH-AUTO-20260618-193014-410', 0.991, '2027-06-03', 180000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-410'),
+(110, 12, 2, 'BATCH-AUTO-20260618-193014-410', 0.982, '2027-06-03', 180000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-410'),
 (111, 3, 2, 'BATCH-AUTO-20260618-193014-398', 0.000, '2026-07-17', 50000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-398'),
 (112, 2, 6, 'BATCH-AUTO-20260618-193014-264', 0.310, '2026-07-10', 150000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-264'),
 (113, 14, 6, 'BATCH-AUTO-20260618-193014-511', 3.350, '2026-11-30', 350000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-511'),
@@ -2505,7 +2528,7 @@ INSERT INTO `inventory_batches` (`id`, `ingredient_id`, `warehouse_id`, `batch_c
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `inventory_categories`
+-- Table structure for table `inventory_categories`
 --
 
 DROP TABLE IF EXISTS `inventory_categories`;
@@ -2516,7 +2539,7 @@ CREATE TABLE `inventory_categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `inventory_categories`
+-- Dumping data for table `inventory_categories`
 --
 
 INSERT INTO `inventory_categories` (`id`, `name`, `default_warehouse_id`) VALUES
@@ -2534,7 +2557,7 @@ INSERT INTO `inventory_categories` (`id`, `name`, `default_warehouse_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `inventory_history`
+-- Table structure for table `inventory_history`
 --
 
 DROP TABLE IF EXISTS `inventory_history`;
@@ -2549,7 +2572,7 @@ CREATE TABLE `inventory_history` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `inventory_history`
+-- Dumping data for table `inventory_history`
 --
 
 INSERT INTO `inventory_history` (`id`, `ingredient_id`, `warehouse_id`, `type`, `quantity`, `created_at`, `performed_by`) VALUES
@@ -3278,12 +3301,28 @@ INSERT INTO `inventory_history` (`id`, `ingredient_id`, `warehouse_id`, `type`, 
 (967, 22, 2, 'export', 0.0200, '2026-07-01 14:35:10', 'POS (Vét kho dự phòng #1116)'),
 (968, 22, 2, 'export', 0.0200, '2026-07-01 14:35:10', 'POS (Vét kho dự phòng #1116)'),
 (969, 35, 2, 'export', 1.0000, '2026-07-01 14:35:10', 'POS (Xác nhận Món & Topping #1116)'),
-(970, 35, 2, 'export', 1.0000, '2026-07-01 14:35:10', 'POS (Xác nhận Món & Topping #1116)');
+(970, 35, 2, 'export', 1.0000, '2026-07-01 14:35:10', 'POS (Xác nhận Món & Topping #1116)'),
+(971, 2, 2, 'export', 0.0150, '2026-07-02 01:43:31', 'POS (Xác nhận Món & Topping #1122)'),
+(972, 14, 2, 'export', 0.4500, '2026-07-02 01:43:31', 'POS (Xác nhận Món & Topping #1122)'),
+(973, 12, 2, 'export', 0.0030, '2026-07-02 01:43:31', 'POS (Xác nhận Món & Topping #1122)'),
+(974, 3, 2, 'export', 0.0100, '2026-07-02 01:43:31', 'POS (Xác nhận Món & Topping #1122)'),
+(975, 2, 2, 'export', 0.0150, '2026-07-02 01:44:18', 'Hệ thống KDS (Báo xong món POS)'),
+(976, 14, 2, 'export', 0.4500, '2026-07-02 01:44:18', 'Hệ thống KDS (Báo xong món POS)'),
+(977, 12, 2, 'export', 0.0030, '2026-07-02 01:44:18', 'Hệ thống KDS (Báo xong món POS)'),
+(978, 3, 2, 'export', 0.0100, '2026-07-02 01:44:18', 'Hệ thống KDS (Báo xong món POS)'),
+(979, 2, 2, 'export', 0.0150, '2026-07-02 01:46:20', 'POS (Xác nhận Món & Topping #1123)'),
+(980, 14, 2, 'export', 0.4500, '2026-07-02 01:46:20', 'POS (Xác nhận Món & Topping #1123)'),
+(981, 12, 2, 'export', 0.0030, '2026-07-02 01:46:20', 'POS (Xác nhận Món & Topping #1123)'),
+(982, 3, 2, 'export', 0.0100, '2026-07-02 01:46:20', 'POS (Xác nhận Món & Topping #1123)'),
+(983, 2, 2, 'export', 0.0150, '2026-07-02 01:47:47', 'POS (Xác nhận Món & Topping #1124)'),
+(984, 14, 2, 'export', 0.4500, '2026-07-02 01:47:47', 'POS (Xác nhận Món & Topping #1124)'),
+(985, 12, 2, 'export', 0.0030, '2026-07-02 01:47:47', 'POS (Xác nhận Món & Topping #1124)'),
+(986, 3, 2, 'export', 0.0100, '2026-07-02 01:47:47', 'POS (Xác nhận Món & Topping #1124)');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `inventory_receipts`
+-- Table structure for table `inventory_receipts`
 --
 
 DROP TABLE IF EXISTS `inventory_receipts`;
@@ -3299,7 +3338,7 @@ CREATE TABLE `inventory_receipts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `inventory_receipts`
+-- Dumping data for table `inventory_receipts`
 --
 
 INSERT INTO `inventory_receipts` (`id`, `ingredient_id`, `supplier_id`, `quantity`, `import_price`, `entry_date`, `expiry_date`, `note`) VALUES
@@ -3314,7 +3353,7 @@ INSERT INTO `inventory_receipts` (`id`, `ingredient_id`, `supplier_id`, `quantit
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `inventory_stocks`
+-- Table structure for table `inventory_stocks`
 --
 
 DROP TABLE IF EXISTS `inventory_stocks`;
@@ -3327,7 +3366,7 @@ CREATE TABLE `inventory_stocks` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `inventory_stocks`
+-- Dumping data for table `inventory_stocks`
 --
 
 INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity`, `last_updated`) VALUES
@@ -3352,7 +3391,7 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 (39, 8, 14, 5.0000, '2026-06-04 09:12:38'),
 (40, 2, 9, 9.2000, '2026-06-26 18:46:08'),
 (41, 8, 9, 6.0000, '2026-06-04 09:14:07'),
-(43, 2, 14, 6.1500, '2026-07-01 21:35:10'),
+(43, 2, 14, 4.3500, '2026-07-02 08:47:47'),
 (44, 9, 2, 1.0000, '2026-06-23 16:16:09'),
 (45, 9, 10, 0.0000, '2026-06-18 19:12:11'),
 (46, 9, 4, 10.0000, '2026-06-04 09:34:21'),
@@ -3372,16 +3411,16 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 (60, 9, 26, 2.0000, '2026-06-15 09:47:56'),
 (61, 2, 21, 8.9980, '2026-06-30 09:47:05'),
 (64, 2, 1, 96.0000, '2026-06-13 09:13:29'),
-(67, 2, 2, 2.0000, '2026-07-01 10:18:41'),
-(71, 2, 12, 0.9910, '2026-06-30 09:47:05'),
-(79, 2, 3, 2.0000, '2026-07-01 10:18:41'),
+(67, 2, 2, 1.9400, '2026-07-02 08:47:47'),
+(71, 2, 12, 0.9790, '2026-07-02 08:47:47'),
+(79, 2, 3, 1.9600, '2026-07-02 08:47:47'),
 (88, 2, 15, 2.8200, '2026-06-05 08:34:31'),
 (89, 6, 21, 0.0020, '2026-06-30 09:47:05'),
 (90, 6, 1, 4.0000, '2026-06-06 14:54:29'),
-(91, 6, 2, 0.4150, '2026-06-30 09:47:05'),
-(92, 6, 12, 0.0060, '2026-06-30 09:47:05'),
-(93, 6, 14, 4.6500, '2026-07-01 21:35:10'),
-(96, 6, 3, 0.1100, '2026-06-30 09:47:05'),
+(91, 6, 2, 0.4600, '2026-07-02 08:47:47'),
+(92, 6, 12, 0.0150, '2026-07-02 08:47:47'),
+(93, 6, 14, 6.0000, '2026-07-02 08:47:47'),
+(96, 6, 3, 0.1400, '2026-07-02 08:47:47'),
 (97, 6, 15, 0.1800, '2026-06-05 08:34:31'),
 (127, 1, 27, 20.0000, '2026-06-06 09:58:13'),
 (128, 1, 28, 4.0000, '2026-06-06 10:08:11'),
@@ -3596,7 +3635,7 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `inventory_transfers`
+-- Table structure for table `inventory_transfers`
 --
 
 DROP TABLE IF EXISTS `inventory_transfers`;
@@ -3613,7 +3652,7 @@ CREATE TABLE `inventory_transfers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `inventory_transfers`
+-- Dumping data for table `inventory_transfers`
 --
 
 INSERT INTO `inventory_transfers` (`id`, `from_warehouse_id`, `to_warehouse_id`, `performed_by`, `transfer_date`, `note`, `status`, `approved_by`, `approved_at`) VALUES
@@ -3746,7 +3785,7 @@ INSERT INTO `inventory_transfers` (`id`, `from_warehouse_id`, `to_warehouse_id`,
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `inventory_units`
+-- Table structure for table `inventory_units`
 --
 
 DROP TABLE IF EXISTS `inventory_units`;
@@ -3756,7 +3795,7 @@ CREATE TABLE `inventory_units` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `inventory_units`
+-- Dumping data for table `inventory_units`
 --
 
 INSERT INTO `inventory_units` (`id`, `name`) VALUES
@@ -3773,7 +3812,7 @@ INSERT INTO `inventory_units` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `milestones`
+-- Table structure for table `milestones`
 --
 
 DROP TABLE IF EXISTS `milestones`;
@@ -3788,7 +3827,7 @@ CREATE TABLE `milestones` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `milestones`
+-- Dumping data for table `milestones`
 --
 
 INSERT INTO `milestones` (`id`, `type`, `threshold`, `reward_title`, `reward_desc`, `discount_percent`, `created_at`) VALUES
@@ -3815,7 +3854,7 @@ INSERT INTO `milestones` (`id`, `type`, `threshold`, `reward_title`, `reward_des
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `navigation_menu`
+-- Table structure for table `navigation_menu`
 --
 
 DROP TABLE IF EXISTS `navigation_menu`;
@@ -3827,7 +3866,7 @@ CREATE TABLE `navigation_menu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `navigation_menu`
+-- Dumping data for table `navigation_menu`
 --
 
 INSERT INTO `navigation_menu` (`id`, `title`, `url`, `position`) VALUES
@@ -3840,7 +3879,7 @@ INSERT INTO `navigation_menu` (`id`, `title`, `url`, `position`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `newsletters`
+-- Table structure for table `newsletters`
 --
 
 DROP TABLE IF EXISTS `newsletters`;
@@ -3853,7 +3892,7 @@ CREATE TABLE `newsletters` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `notifications`
+-- Table structure for table `notifications`
 --
 
 DROP TABLE IF EXISTS `notifications`;
@@ -3870,7 +3909,7 @@ CREATE TABLE `notifications` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `order_items`
+-- Table structure for table `order_items`
 --
 
 DROP TABLE IF EXISTS `order_items`;
@@ -3886,7 +3925,7 @@ CREATE TABLE `order_items` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `order_item_toppings`
+-- Table structure for table `order_item_toppings`
 --
 
 DROP TABLE IF EXISTS `order_item_toppings`;
@@ -3898,7 +3937,7 @@ CREATE TABLE `order_item_toppings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `order_item_toppings`
+-- Dumping data for table `order_item_toppings`
 --
 
 INSERT INTO `order_item_toppings` (`id`, `order_item_id`, `topping_id`, `price`) VALUES
@@ -3913,12 +3952,14 @@ INSERT INTO `order_item_toppings` (`id`, `order_item_id`, `topping_id`, `price`)
 (13, 56, 19, 15000.00),
 (14, 56, 11, 30000.00),
 (1012, 56, 7, 0.00),
-(1013, 1068, 17, 20000.00);
+(1013, 1068, 17, 20000.00),
+(1014, 1085, 5, 0.00),
+(1015, 1086, 5, 0.00);
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `positions`
+-- Table structure for table `positions`
 --
 
 DROP TABLE IF EXISTS `positions`;
@@ -3929,7 +3970,7 @@ CREATE TABLE `positions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `positions`
+-- Dumping data for table `positions`
 --
 
 INSERT INTO `positions` (`id`, `position_name`, `base_salary`) VALUES
@@ -3945,7 +3986,7 @@ INSERT INTO `positions` (`id`, `position_name`, `base_salary`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `pos_orders`
+-- Table structure for table `pos_orders`
 --
 
 DROP TABLE IF EXISTS `pos_orders`;
@@ -3963,7 +4004,7 @@ CREATE TABLE `pos_orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `pos_orders`
+-- Dumping data for table `pos_orders`
 --
 
 INSERT INTO `pos_orders` (`id`, `table_id`, `status`, `total_amount`, `created_at`, `updated_at`, `payment_method`, `booking_id`, `deposit_amount`, `guests`) VALUES
@@ -4008,12 +4049,13 @@ INSERT INTO `pos_orders` (`id`, `table_id`, `status`, `total_amount`, `created_a
 (1031, 4, 'cancelled', 0.00, '2026-06-26 12:44:02', '2026-06-26 12:44:10', 'cash', NULL, 0.00, 1),
 (1032, 4, 'cancelled', 0.00, '2026-06-26 13:48:18', '2026-06-26 13:50:00', 'cash', NULL, 0.00, 1),
 (1033, 14, 'paid', 195000.00, '2026-06-26 14:36:20', '2026-06-26 14:39:04', 'cash', 1111, 58500.00, 1),
-(1034, 14, 'paid', 650000.00, '2026-06-30 10:47:05', '2026-06-30 10:47:28', 'transfer', 1115, 195000.00, 1);
+(1034, 14, 'paid', 650000.00, '2026-06-30 10:47:05', '2026-06-30 10:47:28', 'transfer', 1115, 195000.00, 1),
+(1035, 14, 'paid', 400000.00, '2026-07-02 01:44:11', '2026-07-02 01:44:42', 'transfer', 1122, 120000.00, 1);
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `pos_order_items`
+-- Table structure for table `pos_order_items`
 --
 
 DROP TABLE IF EXISTS `pos_order_items`;
@@ -4031,7 +4073,7 @@ CREATE TABLE `pos_order_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `pos_order_items`
+-- Dumping data for table `pos_order_items`
 --
 
 INSERT INTO `pos_order_items` (`id`, `pos_order_id`, `item_type`, `item_id`, `quantity`, `price`, `notes`, `status`, `created_at`, `updated_at`) VALUES
@@ -4058,12 +4100,13 @@ INSERT INTO `pos_order_items` (`id`, `pos_order_id`, `item_type`, `item_id`, `qu
 (48, 1029, 'food', 8, 1, 145000.00, NULL, 'served', '2026-06-26 12:38:48', '2026-06-26 12:39:47'),
 (49, 1030, 'food', 17, 1, 400000.00, '', 'served', '2026-06-26 12:42:54', '2026-06-26 12:43:14'),
 (52, 1033, 'food', 9, 1, 195000.00, NULL, 'served', '2026-06-26 14:36:20', '2026-06-26 14:38:59'),
-(53, 1034, 'food', 13, 1, 650000.00, NULL, 'served', '2026-06-30 10:47:05', '2026-06-30 10:47:23');
+(53, 1034, 'food', 13, 1, 650000.00, NULL, 'served', '2026-06-30 10:47:05', '2026-06-30 10:47:23'),
+(54, 1035, 'food', 1, 1, 400000.00, NULL, 'served', '2026-07-02 01:44:11', '2026-07-02 01:44:30');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `po_receipt_inspections`
+-- Table structure for table `po_receipt_inspections`
 --
 
 DROP TABLE IF EXISTS `po_receipt_inspections`;
@@ -4083,7 +4126,7 @@ CREATE TABLE `po_receipt_inspections` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `po_receipt_inspections`
+-- Dumping data for table `po_receipt_inspections`
 --
 
 INSERT INTO `po_receipt_inspections` (`id`, `po_id`, `ingredient_id`, `image_path`, `check_packaging`, `check_color`, `check_odor`, `check_freshness`, `check_size`, `check_weight`, `notes`, `created_at`) VALUES
@@ -4112,7 +4155,7 @@ INSERT INTO `po_receipt_inspections` (`id`, `po_id`, `ingredient_id`, `image_pat
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `purchase_orders`
+-- Table structure for table `purchase_orders`
 --
 
 DROP TABLE IF EXISTS `purchase_orders`;
@@ -4129,7 +4172,7 @@ CREATE TABLE `purchase_orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `purchase_orders`
+-- Dumping data for table `purchase_orders`
 --
 
 INSERT INTO `purchase_orders` (`id`, `po_code`, `supplier_id`, `created_by`, `created_at`, `status`, `total_amount`, `notes`, `batch_cert_file`) VALUES
@@ -4168,7 +4211,7 @@ INSERT INTO `purchase_orders` (`id`, `po_code`, `supplier_id`, `created_by`, `cr
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `purchase_order_details`
+-- Table structure for table `purchase_order_details`
 --
 
 DROP TABLE IF EXISTS `purchase_order_details`;
@@ -4181,7 +4224,7 @@ CREATE TABLE `purchase_order_details` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `purchase_order_details`
+-- Dumping data for table `purchase_order_details`
 --
 
 INSERT INTO `purchase_order_details` (`id`, `po_id`, `ingredient_id`, `expected_qty`, `expected_price`) VALUES
@@ -4291,7 +4334,7 @@ INSERT INTO `purchase_order_details` (`id`, `po_id`, `ingredient_id`, `expected_
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `restaurant_expenses`
+-- Table structure for table `restaurant_expenses`
 --
 
 DROP TABLE IF EXISTS `restaurant_expenses`;
@@ -4306,7 +4349,7 @@ CREATE TABLE `restaurant_expenses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `restaurant_expenses`
+-- Dumping data for table `restaurant_expenses`
 --
 
 INSERT INTO `restaurant_expenses` (`id`, `category`, `amount`, `expense_date`, `note`, `created_at`, `updated_at`) VALUES
@@ -4317,7 +4360,7 @@ INSERT INTO `restaurant_expenses` (`id`, `category`, `amount`, `expense_date`, `
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `restaurant_tables`
+-- Table structure for table `restaurant_tables`
 --
 
 DROP TABLE IF EXISTS `restaurant_tables`;
@@ -4336,7 +4379,7 @@ CREATE TABLE `restaurant_tables` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `restaurant_tables`
+-- Dumping data for table `restaurant_tables`
 --
 
 INSERT INTO `restaurant_tables` (`id`, `table_code`, `table_number`, `room_type`, `category`, `capacity`, `price`, `status`, `is_available`, `pos_x`, `pos_y`) VALUES
@@ -4360,7 +4403,7 @@ INSERT INTO `restaurant_tables` (`id`, `table_code`, `table_number`, `room_type`
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `services`
+-- Table structure for table `services`
 --
 
 DROP TABLE IF EXISTS `services`;
@@ -4371,7 +4414,7 @@ CREATE TABLE `services` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `services`
+-- Dumping data for table `services`
 --
 
 INSERT INTO `services` (`id`, `service_name`, `price`) VALUES
@@ -4382,7 +4425,7 @@ INSERT INTO `services` (`id`, `service_name`, `price`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `service_bookings`
+-- Table structure for table `service_bookings`
 --
 
 DROP TABLE IF EXISTS `service_bookings`;
@@ -4415,141 +4458,149 @@ CREATE TABLE `service_bookings` (
   `light_tone` varchar(50) DEFAULT NULL,
   `chef_requirements` text DEFAULT NULL,
   `is_reminded` tinyint(1) DEFAULT 0,
-  `decor_id` int(11) DEFAULT NULL
+  `decor_id` int(11) DEFAULT NULL,
+  `ai_suggested_menu` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `service_bookings`
+-- Dumping data for table `service_bookings`
 --
 
-INSERT INTO `service_bookings` (`id`, `user_id`, `customer_name`, `customer_phone`, `booking_date`, `service_type`, `table_id`, `chef_id`, `combo_id`, `guests`, `message`, `total_amount`, `deposit_amount`, `status`, `event_type`, `decor_package`, `has_cake`, `has_flower`, `is_archived`, `created_at`, `has_candle`, `has_handwritten_card`, `card_message`, `flower_preference`, `music_playlist`, `light_tone`, `chef_requirements`, `is_reminded`, `decor_id`) VALUES
-(1, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-16 15:17:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-13 08:17:11', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(2, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-23 15:18:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-13 08:18:22', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(3, 2, 'Khách demo', '0909123456', '2026-05-20 18:00:00', 'table', 2, NULL, 1, 4, 'Đặt combo gia đình', 850000.00, 255000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-14 10:00:00', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(4, NULL, 'Ẩn danh', '0911222333', '2026-05-25 12:00:00', 'birthday', 19, NULL, 0, 8, 'Tiệc sinh nhật', 2000000.00, 600000.00, 'Completed', 'birthday', 'premium', 1, 1, 0, '2026-05-14 10:05:00', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(5, 5, 'Huỳnh Dương', '0122222222', '2026-05-22 09:30:00', 'chef', 0, NULL, 1, 20, '', 1370000.00, 411000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-05-14 15:07:47', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(6, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-24 13:58:00', 'table', 1, NULL, 0, 2, '', 145000.00, 43500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-23 06:58:54', 0, 0, NULL, NULL, NULL, NULL, 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: ', 0, NULL),
-(7, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-26 19:37:00', 'table', 1, NULL, 0, 2, '', 445000.00, 133500.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-05-24 12:37:30', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: ', 0, NULL),
-(8, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-25 19:38:00', 'table', 2, NULL, 0, 2, '', 170000.00, 51000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-05-24 12:38:32', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: ', 0, NULL),
-(9, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-25 19:42:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-24 12:42:37', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: ', 0, NULL),
-(10, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-26 20:11:00', 'table', 2, NULL, -1, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-24 13:11:20', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Dưới 1.500.000 đ / khách\nPhong cách: Ẩm thực Việt Nam Đương Đại (Contemporary Vietnamese)\nChi tiết: rgreh\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(11, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-31 10:30:00', 'table', 0, NULL, -1, 2, '', 280000.00, 84000.00, 'Completed', NULL, NULL, 0, 1, 0, '2026-05-30 03:30:35', 1, 1, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: 1.500.000 đ - 3.000.000 đ / khách\nPhong cách: Ẩm thực Việt Nam Đương Đại (Contemporary Vietnamese)\nChi tiết: cdevwesb\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(12, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-04 11:26:00', 'table', 1, NULL, 0, 2, '', 95000.00, 28500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 04:26:57', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(13, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-02 11:30:00', 'table', 1, NULL, 0, 2, '', 0.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 04:31:27', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(14, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-02 11:36:00', 'table', 1, NULL, 0, 2, '', 45000.00, 13500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 04:36:48', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(15, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-02 16:02:00', 'table', 2, NULL, 0, 2, '', 45000.00, 13500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 09:02:55', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(16, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-02 16:04:00', 'table', 1, NULL, 0, 2, '', 45000.00, 13500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 09:04:01', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(17, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-04 19:55:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-03 12:56:04', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(18, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-04 19:57:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-03 12:57:41', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(19, 2, 'Quản trị viên', '1234567890', '2026-06-05 09:57:00', 'table', 1, NULL, 0, 2, '', 445000.00, 133500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 02:57:44', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(20, 2, 'Quản trị viên', '1234567890', '2026-06-04 10:06:00', 'table', 1, NULL, 0, 2, '', 445000.00, 133500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 03:06:56', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(21, 2, 'Quản trị viên', '1234567890', '2026-06-05 10:10:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 03:10:16', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(22, 2, 'Quản trị viên', '1234567890', '2026-06-04 10:10:00', 'table', 2, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 03:10:48', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(23, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-06 08:21:00', 'chef', 0, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 01:21:07', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(24, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-05 08:22:00', 'chef', 0, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 01:22:32', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(25, 12, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3125000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-19 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(26, 12, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3125000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-11 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(27, 12, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3125000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-20 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(28, 12, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3125000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-28 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(29, 13, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3250000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-20 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(30, 13, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3250000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-30 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(31, 14, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 1500000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-15 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(32, 15, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3666666.67, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-23 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(33, 15, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3666666.67, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-08 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(34, 15, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3666666.67, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-06-04 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(35, 16, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 800000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-17 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(36, 17, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 2750000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-14 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(37, 17, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 2750000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-13 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(38, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-15 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(39, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-07 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(40, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-15 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(41, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-26 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(42, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-20 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(43, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-06-01 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(44, 19, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 1600000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-15 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(45, 19, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 1600000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-31 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(46, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-06 14:32:00', '', 1, NULL, -1, 2, 'Mục đích: Hẹn hò | Chế độ ăn: Healthy | DỊ ỨNG: Hải sản', 3050000.00, 915000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-06 07:32:43', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Dưới 1.500.000 đ / khách\r\nPhong cách: Tùy Bếp trưởng đề xuất\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(47, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-30 14:40:00', 'table', 2, NULL, 0, 2, '', 45000.00, 13500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-06 07:40:35', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(48, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-07 14:50:00', 'table', 1, NULL, 0, 2, '', 895000.00, 268500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-06 07:50:57', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(49, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-06 14:51:00', 'table', 1, NULL, 0, 2, '', 145000.00, 43500.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-06 07:51:56', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(50, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-06 16:56:00', 'table', 1, NULL, 0, 2, '', 220000.00, 66000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-06 07:57:08', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(51, 37, 'Phạm Minh Hoa', '0991796427', '2026-05-30 18:30:19', 'chef', 5, NULL, 3, 7, NULL, 8023442.00, 2407032.60, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(52, 36, 'Vũ Bảo Vy', '0941689163', '2026-05-02 10:05:52', 'chef', 9, NULL, 2, 7, NULL, 2308419.00, 692525.70, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(53, 35, 'Huỳnh Minh Linh', '0920234689', '2026-03-15 10:55:49', 'birthday', 8, NULL, 3, 8, NULL, 9607922.00, 2882376.60, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(54, 34, 'Phạm Thị Xuân', '0985291351', '2026-01-12 17:37:15', 'table', 7, NULL, 1, 5, NULL, 2291436.00, 687430.80, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(55, 33, 'Phạm Đức Quân', '0994414869', '2026-05-29 22:57:29', 'birthday', 6, NULL, 4, 10, NULL, 7035593.00, 2110677.90, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(56, 32, 'Lê Gia An', '0932506191', '2025-12-23 08:19:13', 'birthday', 2, NULL, 4, 3, NULL, 6147481.00, 1844244.30, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(57, 32, 'Lê Gia An', '0932506191', '2026-03-02 04:39:36', 'birthday', 3, NULL, 2, 8, NULL, 6680471.00, 2004141.30, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(58, 31, 'Đặng Bảo Sơn', '0939391711', '2026-03-18 20:18:42', 'birthday', 7, NULL, 1, 10, NULL, 2461854.00, 738556.20, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(59, 30, 'Phan Hoàng Sơn', '0948958860', '2026-01-26 02:33:16', 'table', 10, NULL, 3, 9, NULL, 5516881.00, 1655064.30, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(60, 29, 'Nguyễn Gia Dương', '0927194712', '2025-12-27 03:56:09', 'table', 9, NULL, 5, 5, NULL, 6725596.00, 2017678.80, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(61, 28, 'Trần Thị Hải', '0987490077', '2026-02-26 06:09:07', 'table', 1, NULL, 5, 7, NULL, 7869611.00, 2360883.30, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(62, 28, 'Trần Thị Hải', '0987490077', '2025-12-15 13:26:21', 'birthday', 5, NULL, 5, 2, NULL, 1464277.00, 439283.10, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(63, 27, 'Lê Minh Yến', '0958971878', '2026-03-07 07:15:39', 'chef', 8, NULL, 2, 7, NULL, 5889750.00, 1766925.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(64, 27, 'Lê Minh Yến', '0958971878', '2026-01-12 20:21:22', 'birthday', 2, NULL, 1, 3, NULL, 3492336.00, 1047700.80, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(65, 27, 'Lê Minh Yến', '0958971878', '2026-03-18 21:04:05', 'chef', 4, NULL, 5, 6, NULL, 2709103.00, 812730.90, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(66, 26, 'Lê Thị Mai', '0916261315', '2026-04-22 03:32:54', 'birthday', 9, NULL, 3, 3, NULL, 2686254.00, 805876.20, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(67, 25, 'Võ Văn Yến', '0952393534', '2026-04-11 11:17:44', 'birthday', 1, NULL, 4, 3, NULL, 2814244.00, 844273.20, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(68, 24, 'Vũ Minh Hải', '0995865619', '2026-04-18 21:45:59', 'table', 10, NULL, 4, 7, NULL, 9695115.00, 2908534.50, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(69, 24, 'Vũ Minh Hải', '0995865619', '2026-02-01 03:24:36', 'chef', 10, NULL, 4, 3, NULL, 6445778.00, 1933733.40, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(70, 23, 'Trần Văn Cường', '0997746456', '2026-02-03 13:15:35', 'table', 2, NULL, 1, 10, NULL, 2992285.00, 897685.50, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(71, 23, 'Trần Văn Cường', '0997746456', '2026-03-17 20:20:00', 'chef', 9, NULL, 5, 8, NULL, 4846552.00, 1453965.60, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(72, 23, 'Trần Văn Cường', '0997746456', '2026-05-17 08:18:00', 'birthday', 5, NULL, 1, 4, NULL, 3453361.00, 1036008.30, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(73, 22, 'Huỳnh Ngọc Sơn', '0953062208', '2026-01-28 15:34:50', 'birthday', 6, NULL, 4, 6, NULL, 6683159.00, 2004947.70, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(74, 22, 'Huỳnh Ngọc Sơn', '0953062208', '2026-05-01 13:33:22', 'birthday', 3, NULL, 1, 6, NULL, 9032822.00, 2709846.60, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(75, 21, 'Trần Minh Xuân', '0917904228', '2026-01-17 06:55:29', 'birthday', 10, NULL, 4, 9, NULL, 8143613.00, 2443083.90, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(76, 21, 'Trần Minh Xuân', '0917904228', '2026-02-24 11:35:31', 'birthday', 2, NULL, 2, 3, NULL, 7279423.00, 2183826.90, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(77, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-09 01:09:00', 'table', 1, NULL, 0, 2, '', 45000.00, 13500.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-08 03:08:55', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(78, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-14 10:10:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-08 03:10:39', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(79, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-08 13:12:00', 'table', 1, NULL, 0, 2, '', 0.00, 0.00, 'No-Show', NULL, NULL, 0, 0, 1, '2026-06-08 03:13:11', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(80, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-08 12:29:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-08 03:29:40', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(81, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-08 12:33:00', 'table', 1, NULL, 2, 2, '', 1200000.00, 360000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-08 03:33:27', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(82, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-08 15:38:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-08 06:39:32', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(83, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-08 15:43:00', 'table', 1, NULL, 0, 2, 'Chế độ ăn: Healthy | DỊ ỨNG: Hải sản', 450000.00, 135000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-08 06:43:32', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(84, 2, 'Quản trị viên', '1234567890', '2026-06-08 18:56:00', 'table', 1, NULL, 0, 2, 'DỊ ỨNG: Hải sản', 70000.00, 21000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-08 09:58:47', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL),
-(85, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-12 04:45:00', 'table', 1, NULL, 0, 2, '', 180000.00, 54000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-12 02:46:20', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL),
-(86, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-12 04:52:00', 'table', 1, NULL, 0, 2, '', 570000.00, 171000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-12 02:52:46', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL),
-(87, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-12 04:53:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-12 02:53:42', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL),
-(88, 6, 'Long Hoang', '0867081911', '2026-06-13 12:13:00', 'table', 1, NULL, 0, 3, '', 560000.00, 168000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-13 05:14:13', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL),
-(89, 6, 'Long Hoang', '0867081911', '2026-06-13 12:26:00', 'table', 0, NULL, 0, 2, '', 560000.00, 168000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-13 05:27:22', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL),
-(90, 6, 'Long Hoang', '0867081911', '2026-06-13 12:29:00', 'table', 1, NULL, 0, 2, '', 560000.00, 168000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-13 05:30:23', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL),
-(91, 6, 'Long Hoang', '0867081911', '2026-06-13 12:31:00', 'table', 0, NULL, 0, 2, '', 560000.00, 168000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-13 05:31:34', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL),
-(92, 6, 'Long Hoang', '0867081911', '2026-06-15 11:13:00', 'table', 0, NULL, 0, 2, '', 230000.00, 69000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-15 04:13:33', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL),
-(93, 6, 'Long Hoang', '0867081911', '2026-06-15 11:15:00', 'table', 0, NULL, 0, 2, '', 180000.00, 54000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-15 04:21:21', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL),
-(94, 6, 'Long Hoang', '0867081911', '2026-06-18 11:23:00', 'table', 0, NULL, 0, 2, '', 1530000.00, 459000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-15 04:23:59', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL),
-(95, 21, 'tranminhxuan169_1', '0917904228', '2026-06-16 13:32:00', 'table', 20, NULL, 2, 2, '\n[Phục vụ riêng] Phục vụ Nam\n[Hệ thống: Đã giảm 10% cho khách hàng VIP Hội viên VIP]', 2245500.00, 673650.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-16 06:33:39', 1, 0, '', '', 'Classic Jazz (Cổ điển)', 'Warm (Ấm áp, Mờ ảo)', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Well Done\n- Hương vị: Chua thanh\n- Yêu thích: Cua hoàng đế\n- DỊ ỨNG: Không', 0, NULL),
-(96, NULL, 'Test Khach', '0912345678', '2026-06-16 15:00:00', 'table', 1, NULL, NULL, 2, NULL, 0.00, 0.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-16 07:06:08', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL),
-(1095, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-16 14:36:00', 'table', 1, NULL, 0, 2, '', 530000.00, 159000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-15 07:36:26', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL),
-(1096, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-15 17:40:00', 'table', 1, NULL, 0, 2, '', 795000.00, 238500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-15 07:43:37', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL),
-(1097, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-16 14:49:00', 'table', 1, NULL, 0, 2, '', 630000.00, 189000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-15 07:49:42', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL),
-(1098, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-15 17:50:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-15 07:51:04', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL),
-(1099, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-16 16:22:00', 'table', 1, NULL, 0, 2, '', 600000.00, 180000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-15 09:22:54', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL),
-(1100, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-16 16:24:00', 'table', 1, NULL, 0, 2, '', 430000.00, 129000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-15 09:24:44', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL),
-(1101, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-23 16:50:00', 'table', 14, NULL, 0, 2, '\n[Hệ thống: Đã giảm 10% cho khách hàng VIP Hội viên VIP]', 175500.00, 52650.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-23 06:50:28', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, NULL),
-(1102, 2, 'Quản trị viên', '1234567890', '2026-06-23 17:38:00', 'table', 4, NULL, 0, 2, '\n[Hệ thống: Đã giảm 10% cho khách hàng VIP Hội viên VIP]', 148500.00, 44550.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-23 07:39:22', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, NULL),
-(1103, 2, 'Quản trị viên', '1234567890', '2026-06-25 21:11:00', 'table', 14, NULL, 0, 2, '\n[Hệ thống: Đã giảm 10% cho khách hàng VIP Hội viên VIP]', 360000.00, 108000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-25 12:11:26', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, NULL),
-(1104, 2, 'Quản trị viên', '1234567890', '2026-06-25 22:06:00', 'table', 14, NULL, 0, 2, '\n[Hệ thống: Đã giảm 10% cho khách hàng VIP Hội viên VIP]', 765000.00, 229500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-25 13:06:35', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, NULL),
-(1105, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-26 20:45:00', 'table', 14, NULL, 0, 2, '\n[Hệ thống: Đã giảm 10% cho khách hàng VIP Hội viên VIP]', 198000.00, 59400.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-26 11:45:36', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, NULL),
-(1106, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-27 18:48:00', 'table', 14, NULL, 0, 2, '\n[Hệ thống: Đã giảm 10% cho khách hàng VIP Hội viên VIP]', 585000.00, 175500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-26 11:49:06', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, NULL),
-(1107, 45, 'Huỳnh Thông', '1234567890', '2026-06-26 21:11:00', 'table', 14, NULL, 0, 2, '', 150000.00, 45000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-26 12:11:45', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL),
-(1108, 45, 'Huỳnh Thông', '1234567890', '2026-06-26 21:18:00', 'table', 14, NULL, 0, 2, '', 180000.00, 54000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-26 12:19:05', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL),
-(1109, 45, 'Huỳnh Thông', '1234567890', '2026-06-26 21:30:00', 'table', 14, NULL, 0, 2, '', 750000.00, 225000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-26 12:30:44', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL),
-(1110, 45, 'Huỳnh Thông', '1234567890', '2026-06-26 22:37:00', 'table', 4, NULL, 0, 2, '', 145000.00, 43500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-26 12:37:55', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL),
-(1111, 45, 'Huỳnh Thông', '1234567890', '2026-06-26 23:34:00', 'table', 14, NULL, 0, 2, '', 195000.00, 58500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-26 14:34:53', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL),
-(1112, 2, 'Quản trị viên', '1234567890', '2026-06-29 22:52:00', 'table', 14, NULL, -1, 2, '', 3000000.00, 900000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-29 14:50:32', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Dịp: Kỷ niệm\r\nNgân sách: Dưới 1.500.000 đ / khách\r\nPhong cách: Tùy Bếp trưởng đề xuất\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, NULL),
-(1113, 45, 'Huỳnh Thông', '1234567890', '2026-06-30 22:39:00', 'table', 14, NULL, 1, 2, '', 850000.00, 255000.00, 'Completed', 'Sinh nhật', 'Gói Mặc Định', 1, 0, 0, '2026-06-30 02:40:48', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, 1),
-(1114, 2, 'Quản trị viên', '1234567890', '2026-07-01 22:52:00', 'table', 14, NULL, 0, 2, '\n[Hệ thống: Đã tự động giảm 10% nhờ đặc quyền cột mốc: Tăng mã giãm giá]', 585000.00, 175500.00, 'Cancelled', '', NULL, 0, 0, 1, '2026-06-30 10:45:21', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, 0),
-(1115, 2, 'Quản trị viên', '1234567890', '2026-06-30 22:52:00', 'table', 14, NULL, 0, 2, '', 650000.00, 195000.00, 'Completed', '', NULL, 0, 0, 0, '2026-06-30 10:46:43', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, 0),
-(1116, 2, 'Quản trị viên', '1234567890', '2026-07-03 22:34:00', 'chef', 0, NULL, 2, 2, '\n[Đầu bếp tại gia] Quy mô ekip (1-4 khách): 1 Chef + 1 Phục vụ', 1450000.00, 435000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-07-01 14:34:44', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Địa điểm phục vụ: biên hòa\r\nBếp trưởng chỉ định: Vũ Văn Chính\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, NULL),
-(1117, 2, 'Quản trị viên', '1234567890', '2026-07-03 22:46:00', 'table', 14, NULL, -1, 2, '', 3000000.00, 900000.00, 'Completed', '', NULL, 0, 0, 0, '2026-07-01 14:46:52', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Dịp: Kỷ niệm\r\nNgân sách: Dưới 1.500.000 đ / khách\r\nPhong cách: Ẩm thực Việt Nam Đương Đại \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, 0),
-(1118, 2, 'Quản trị viên', '1234567890', '2026-07-04 12:30:00', 'table', 14, NULL, -1, 2, '', 2000000.00, 600000.00, 'Completed', '', NULL, 0, 0, 0, '2026-07-01 15:30:34', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Dịp: Kỷ niệm\r\nNgân sách: Thỏa thuận sau khi thiết kế thực đơn\r\nPhong cách: Ẩm thực Việt Nam Đương Đại \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: Cá', 0, 0),
-(1119, 2, 'Quản trị viên', '1234567890', '2026-07-04 12:30:00', 'table', 14, NULL, -1, 2, '', 2000000.00, 600000.00, 'Completed', '', NULL, 0, 0, 0, '2026-07-01 15:38:05', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Dịp: Kỷ niệm\r\nNgân sách: Thỏa thuận sau khi thiết kế thực đơn\r\nPhong cách: Ẩm thực Việt Nam Đương Đại \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: Cá', 0, 0),
-(1120, 2, 'Quản trị viên', '1234567890', '2026-07-04 12:30:00', 'table', 4, NULL, -1, 2, '', 1000000.00, 300000.00, 'Completed', '', NULL, 0, 0, 0, '2026-07-01 15:44:43', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Dịp: Kỷ niệm\r\nNgân sách: Thỏa thuận sau khi thiết kế thực đơn\r\nPhong cách: Ẩm thực Việt Nam Đương Đại \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: Cá', 0, 0);
+INSERT INTO `service_bookings` (`id`, `user_id`, `customer_name`, `customer_phone`, `booking_date`, `service_type`, `table_id`, `chef_id`, `combo_id`, `guests`, `message`, `total_amount`, `deposit_amount`, `status`, `event_type`, `decor_package`, `has_cake`, `has_flower`, `is_archived`, `created_at`, `has_candle`, `has_handwritten_card`, `card_message`, `flower_preference`, `music_playlist`, `light_tone`, `chef_requirements`, `is_reminded`, `decor_id`, `ai_suggested_menu`) VALUES
+(1, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-16 15:17:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-13 08:17:11', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(2, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-23 15:18:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-13 08:18:22', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(3, 2, 'Khách demo', '0909123456', '2026-05-20 18:00:00', 'table', 2, NULL, 1, 4, 'Đặt combo gia đình', 850000.00, 255000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-14 10:00:00', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(4, NULL, 'Ẩn danh', '0911222333', '2026-05-25 12:00:00', 'birthday', 19, NULL, 0, 8, 'Tiệc sinh nhật', 2000000.00, 600000.00, 'Completed', 'birthday', 'premium', 1, 1, 0, '2026-05-14 10:05:00', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(5, 5, 'Huỳnh Dương', '0122222222', '2026-05-22 09:30:00', 'chef', 0, NULL, 1, 20, '', 1370000.00, 411000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-05-14 15:07:47', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(6, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-24 13:58:00', 'table', 1, NULL, 0, 2, '', 145000.00, 43500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-23 06:58:54', 0, 0, NULL, NULL, NULL, NULL, 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: ', 0, NULL, NULL),
+(7, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-26 19:37:00', 'table', 1, NULL, 0, 2, '', 445000.00, 133500.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-05-24 12:37:30', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: ', 0, NULL, NULL),
+(8, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-25 19:38:00', 'table', 2, NULL, 0, 2, '', 170000.00, 51000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-05-24 12:38:32', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: ', 0, NULL, NULL),
+(9, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-25 19:42:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-24 12:42:37', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: ', 0, NULL, NULL),
+(10, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-26 20:11:00', 'table', 2, NULL, -1, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-05-24 13:11:20', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Dưới 1.500.000 đ / khách\nPhong cách: Ẩm thực Việt Nam Đương Đại (Contemporary Vietnamese)\nChi tiết: rgreh\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(11, 2, 'Huỳnh Đức Thông', '1234567890', '2026-05-31 10:30:00', 'table', 0, NULL, -1, 2, '', 280000.00, 84000.00, 'Completed', NULL, NULL, 0, 1, 0, '2026-05-30 03:30:35', 1, 1, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: 1.500.000 đ - 3.000.000 đ / khách\nPhong cách: Ẩm thực Việt Nam Đương Đại (Contemporary Vietnamese)\nChi tiết: cdevwesb\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(12, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-04 11:26:00', 'table', 1, NULL, 0, 2, '', 95000.00, 28500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 04:26:57', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(13, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-02 11:30:00', 'table', 1, NULL, 0, 2, '', 0.00, 0.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 04:31:27', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(14, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-02 11:36:00', 'table', 1, NULL, 0, 2, '', 45000.00, 13500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 04:36:48', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(15, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-02 16:02:00', 'table', 2, NULL, 0, 2, '', 45000.00, 13500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 09:02:55', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(16, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-02 16:04:00', 'table', 1, NULL, 0, 2, '', 45000.00, 13500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-01 09:04:01', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò Wagyu, Nấm Truffle\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(17, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-04 19:55:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-03 12:56:04', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(18, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-04 19:57:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-03 12:57:41', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(19, 2, 'Quản trị viên', '1234567890', '2026-06-05 09:57:00', 'table', 1, NULL, 0, 2, '', 445000.00, 133500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 02:57:44', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(20, 2, 'Quản trị viên', '1234567890', '2026-06-04 10:06:00', 'table', 1, NULL, 0, 2, '', 445000.00, 133500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 03:06:56', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(21, 2, 'Quản trị viên', '1234567890', '2026-06-05 10:10:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 03:10:16', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(22, 2, 'Quản trị viên', '1234567890', '2026-06-04 10:10:00', 'table', 2, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-04 03:10:48', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(23, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-06 08:21:00', 'chef', 0, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 01:21:07', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(24, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-05 08:22:00', 'chef', 0, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 01:22:32', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Thỏa thuận sau khi thiết kế thực đơn\nPhong cách: Tùy Bếp trưởng đề xuất\nChi tiết: \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(25, 12, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3125000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-19 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(26, 12, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3125000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-11 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(27, 12, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3125000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-20 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(28, 12, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3125000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-28 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(29, 13, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3250000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-20 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(30, 13, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3250000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-30 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(31, 14, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 1500000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-15 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(32, 15, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3666666.67, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-23 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(33, 15, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3666666.67, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-08 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(34, 15, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3666666.67, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-06-04 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(35, 16, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 800000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-17 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(36, 17, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 2750000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-14 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(37, 17, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 2750000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-13 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(38, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-15 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(39, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-07 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(40, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-15 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(41, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-26 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(42, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-20 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(43, 18, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 3000000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-06-01 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(44, 19, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 1600000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-15 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(45, 19, '', '', '0000-00-00 00:00:00', 'table', NULL, NULL, NULL, 1, NULL, 1600000.00, 0.00, 'Completed', NULL, NULL, 0, 0, 1, '2026-05-31 04:25:03', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(46, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-06 14:32:00', '', 1, NULL, -1, 2, 'Mục đích: Hẹn hò | Chế độ ăn: Healthy | DỊ ỨNG: Hải sản', 3050000.00, 915000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-06 07:32:43', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Ngân sách: Dưới 1.500.000 đ / khách\r\nPhong cách: Tùy Bếp trưởng đề xuất\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(47, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-30 14:40:00', 'table', 2, NULL, 0, 2, '', 45000.00, 13500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-06 07:40:35', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(48, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-07 14:50:00', 'table', 1, NULL, 0, 2, '', 895000.00, 268500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-06 07:50:57', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(49, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-06 14:51:00', 'table', 1, NULL, 0, 2, '', 145000.00, 43500.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-06 07:51:56', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(50, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-06 16:56:00', 'table', 1, NULL, 0, 2, '', 220000.00, 66000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-06 07:57:08', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(51, 37, 'Phạm Minh Hoa', '0991796427', '2026-05-30 18:30:19', 'chef', 5, NULL, 3, 7, NULL, 8023442.00, 2407032.60, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(52, 36, 'Vũ Bảo Vy', '0941689163', '2026-05-02 10:05:52', 'chef', 9, NULL, 2, 7, NULL, 2308419.00, 692525.70, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(53, 35, 'Huỳnh Minh Linh', '0920234689', '2026-03-15 10:55:49', 'birthday', 8, NULL, 3, 8, NULL, 9607922.00, 2882376.60, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(54, 34, 'Phạm Thị Xuân', '0985291351', '2026-01-12 17:37:15', 'table', 7, NULL, 1, 5, NULL, 2291436.00, 687430.80, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(55, 33, 'Phạm Đức Quân', '0994414869', '2026-05-29 22:57:29', 'birthday', 6, NULL, 4, 10, NULL, 7035593.00, 2110677.90, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(56, 32, 'Lê Gia An', '0932506191', '2025-12-23 08:19:13', 'birthday', 2, NULL, 4, 3, NULL, 6147481.00, 1844244.30, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(57, 32, 'Lê Gia An', '0932506191', '2026-03-02 04:39:36', 'birthday', 3, NULL, 2, 8, NULL, 6680471.00, 2004141.30, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(58, 31, 'Đặng Bảo Sơn', '0939391711', '2026-03-18 20:18:42', 'birthday', 7, NULL, 1, 10, NULL, 2461854.00, 738556.20, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:39', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(59, 30, 'Phan Hoàng Sơn', '0948958860', '2026-01-26 02:33:16', 'table', 10, NULL, 3, 9, NULL, 5516881.00, 1655064.30, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(60, 29, 'Nguyễn Gia Dương', '0927194712', '2025-12-27 03:56:09', 'table', 9, NULL, 5, 5, NULL, 6725596.00, 2017678.80, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(61, 28, 'Trần Thị Hải', '0987490077', '2026-02-26 06:09:07', 'table', 1, NULL, 5, 7, NULL, 7869611.00, 2360883.30, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(62, 28, 'Trần Thị Hải', '0987490077', '2025-12-15 13:26:21', 'birthday', 5, NULL, 5, 2, NULL, 1464277.00, 439283.10, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(63, 27, 'Lê Minh Yến', '0958971878', '2026-03-07 07:15:39', 'chef', 8, NULL, 2, 7, NULL, 5889750.00, 1766925.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(64, 27, 'Lê Minh Yến', '0958971878', '2026-01-12 20:21:22', 'birthday', 2, NULL, 1, 3, NULL, 3492336.00, 1047700.80, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(65, 27, 'Lê Minh Yến', '0958971878', '2026-03-18 21:04:05', 'chef', 4, NULL, 5, 6, NULL, 2709103.00, 812730.90, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(66, 26, 'Lê Thị Mai', '0916261315', '2026-04-22 03:32:54', 'birthday', 9, NULL, 3, 3, NULL, 2686254.00, 805876.20, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(67, 25, 'Võ Văn Yến', '0952393534', '2026-04-11 11:17:44', 'birthday', 1, NULL, 4, 3, NULL, 2814244.00, 844273.20, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(68, 24, 'Vũ Minh Hải', '0995865619', '2026-04-18 21:45:59', 'table', 10, NULL, 4, 7, NULL, 9695115.00, 2908534.50, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(69, 24, 'Vũ Minh Hải', '0995865619', '2026-02-01 03:24:36', 'chef', 10, NULL, 4, 3, NULL, 6445778.00, 1933733.40, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(70, 23, 'Trần Văn Cường', '0997746456', '2026-02-03 13:15:35', 'table', 2, NULL, 1, 10, NULL, 2992285.00, 897685.50, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(71, 23, 'Trần Văn Cường', '0997746456', '2026-03-17 20:20:00', 'chef', 9, NULL, 5, 8, NULL, 4846552.00, 1453965.60, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(72, 23, 'Trần Văn Cường', '0997746456', '2026-05-17 08:18:00', 'birthday', 5, NULL, 1, 4, NULL, 3453361.00, 1036008.30, 'Cancelled', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(73, 22, 'Huỳnh Ngọc Sơn', '0953062208', '2026-01-28 15:34:50', 'birthday', 6, NULL, 4, 6, NULL, 6683159.00, 2004947.70, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(74, 22, 'Huỳnh Ngọc Sơn', '0953062208', '2026-05-01 13:33:22', 'birthday', 3, NULL, 1, 6, NULL, 9032822.00, 2709846.60, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(75, 21, 'Trần Minh Xuân', '0917904228', '2026-01-17 06:55:29', 'birthday', 10, NULL, 4, 9, NULL, 8143613.00, 2443083.90, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(76, 21, 'Trần Minh Xuân', '0917904228', '2026-02-24 11:35:31', 'birthday', 2, NULL, 2, 3, NULL, 7279423.00, 2183826.90, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-05 14:54:40', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(77, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-09 01:09:00', 'table', 1, NULL, 0, 2, '', 45000.00, 13500.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-08 03:08:55', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(78, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-14 10:10:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-08 03:10:39', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(79, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-08 13:12:00', 'table', 1, NULL, 0, 2, '', 0.00, 0.00, 'No-Show', NULL, NULL, 0, 0, 1, '2026-06-08 03:13:11', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(80, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-08 12:29:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-08 03:29:40', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(81, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-08 12:33:00', 'table', 1, NULL, 2, 2, '', 1200000.00, 360000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-08 03:33:27', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(82, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-08 15:38:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-08 06:39:32', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(83, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-08 15:43:00', 'table', 1, NULL, 0, 2, 'Chế độ ăn: Healthy | DỊ ỨNG: Hải sản', 450000.00, 135000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-08 06:43:32', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(84, 2, 'Quản trị viên', '1234567890', '2026-06-08 18:56:00', 'table', 1, NULL, 0, 2, 'DỊ ỨNG: Hải sản', 70000.00, 21000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-08 09:58:47', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Đậu phộng', 0, NULL, NULL),
+(85, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-12 04:45:00', 'table', 1, NULL, 0, 2, '', 180000.00, 54000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-12 02:46:20', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL, NULL),
+(86, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-12 04:52:00', 'table', 1, NULL, 0, 2, '', 570000.00, 171000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-12 02:52:46', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL, NULL),
+(87, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-12 04:53:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-12 02:53:42', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL, NULL),
+(88, 6, 'Long Hoang', '0867081911', '2026-06-13 12:13:00', 'table', 1, NULL, 0, 3, '', 560000.00, 168000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-13 05:14:13', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL, NULL),
+(89, 6, 'Long Hoang', '0867081911', '2026-06-13 12:26:00', 'table', 0, NULL, 0, 2, '', 560000.00, 168000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-13 05:27:22', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL, NULL),
+(90, 6, 'Long Hoang', '0867081911', '2026-06-13 12:29:00', 'table', 1, NULL, 0, 2, '', 560000.00, 168000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-13 05:30:23', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL, NULL),
+(91, 6, 'Long Hoang', '0867081911', '2026-06-13 12:31:00', 'table', 0, NULL, 0, 2, '', 560000.00, 168000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-13 05:31:34', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL, NULL),
+(92, 6, 'Long Hoang', '0867081911', '2026-06-15 11:13:00', 'table', 0, NULL, 0, 2, '', 230000.00, 69000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-15 04:13:33', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL, NULL),
+(93, 6, 'Long Hoang', '0867081911', '2026-06-15 11:15:00', 'table', 0, NULL, 0, 2, '', 180000.00, 54000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-15 04:21:21', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL, NULL),
+(94, 6, 'Long Hoang', '0867081911', '2026-06-18 11:23:00', 'table', 0, NULL, 0, 2, '', 1530000.00, 459000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-15 04:23:59', 1, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL, NULL),
+(95, 21, 'tranminhxuan169_1', '0917904228', '2026-06-16 13:32:00', 'table', 20, NULL, 2, 2, '\n[Phục vụ riêng] Phục vụ Nam\n[Hệ thống: Đã giảm 10% cho khách hàng VIP Hội viên VIP]', 2245500.00, 673650.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-16 06:33:39', 1, 0, '', '', 'Classic Jazz (Cổ điển)', 'Warm (Ấm áp, Mờ ảo)', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Well Done\n- Hương vị: Chua thanh\n- Yêu thích: Cua hoàng đế\n- DỊ ỨNG: Không', 0, NULL, NULL),
+(96, NULL, 'Test Khach', '0912345678', '2026-06-16 15:00:00', 'table', 1, NULL, NULL, 2, NULL, 0.00, 0.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-16 07:06:08', 0, 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(1095, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-16 14:36:00', 'table', 1, NULL, 0, 2, '', 530000.00, 159000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-15 07:36:26', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL, NULL),
+(1096, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-15 17:40:00', 'table', 1, NULL, 0, 2, '', 795000.00, 238500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-15 07:43:37', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL, NULL),
+(1097, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-16 14:49:00', 'table', 1, NULL, 0, 2, '', 630000.00, 189000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-15 07:49:42', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL, NULL),
+(1098, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-15 17:50:00', 'table', 1, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-15 07:51:04', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL, NULL),
+(1099, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-16 16:22:00', 'table', 1, NULL, 0, 2, '', 600000.00, 180000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-15 09:22:54', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL, NULL),
+(1100, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-16 16:24:00', 'table', 1, NULL, 0, 2, '', 430000.00, 129000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-15 09:24:44', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi', 0, NULL, NULL),
+(1101, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-23 16:50:00', 'table', 14, NULL, 0, 2, '\n[Hệ thống: Đã giảm 10% cho khách hàng VIP Hội viên VIP]', 175500.00, 52650.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-23 06:50:28', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, NULL, NULL),
+(1102, 2, 'Quản trị viên', '1234567890', '2026-06-23 17:38:00', 'table', 4, NULL, 0, 2, '\n[Hệ thống: Đã giảm 10% cho khách hàng VIP Hội viên VIP]', 148500.00, 44550.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-23 07:39:22', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, NULL, NULL),
+(1103, 2, 'Quản trị viên', '1234567890', '2026-06-25 21:11:00', 'table', 14, NULL, 0, 2, '\n[Hệ thống: Đã giảm 10% cho khách hàng VIP Hội viên VIP]', 360000.00, 108000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-25 12:11:26', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, NULL, NULL),
+(1104, 2, 'Quản trị viên', '1234567890', '2026-06-25 22:06:00', 'table', 14, NULL, 0, 2, '\n[Hệ thống: Đã giảm 10% cho khách hàng VIP Hội viên VIP]', 765000.00, 229500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-25 13:06:35', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, NULL, NULL),
+(1105, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-26 20:45:00', 'table', 14, NULL, 0, 2, '\n[Hệ thống: Đã giảm 10% cho khách hàng VIP Hội viên VIP]', 198000.00, 59400.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-26 11:45:36', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, NULL, NULL),
+(1106, 2, 'Huỳnh Đức Thông', '1234567890', '2026-06-27 18:48:00', 'table', 14, NULL, 0, 2, '\n[Hệ thống: Đã giảm 10% cho khách hàng VIP Hội viên VIP]', 585000.00, 175500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-26 11:49:06', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, NULL, NULL),
+(1107, 45, 'Huỳnh Thông', '1234567890', '2026-06-26 21:11:00', 'table', 14, NULL, 0, 2, '', 150000.00, 45000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-26 12:11:45', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL, NULL),
+(1108, 45, 'Huỳnh Thông', '1234567890', '2026-06-26 21:18:00', 'table', 14, NULL, 0, 2, '', 180000.00, 54000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-26 12:19:05', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL, NULL),
+(1109, 45, 'Huỳnh Thông', '1234567890', '2026-06-26 21:30:00', 'table', 14, NULL, 0, 2, '', 750000.00, 225000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-26 12:30:44', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL, NULL),
+(1110, 45, 'Huỳnh Thông', '1234567890', '2026-06-26 22:37:00', 'table', 4, NULL, 0, 2, '', 145000.00, 43500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-26 12:37:55', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL, NULL),
+(1111, 45, 'Huỳnh Thông', '1234567890', '2026-06-26 23:34:00', 'table', 14, NULL, 0, 2, '', 195000.00, 58500.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-06-26 14:34:53', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, NULL, NULL),
+(1112, 2, 'Quản trị viên', '1234567890', '2026-06-29 22:52:00', 'table', 14, NULL, -1, 2, '', 3000000.00, 900000.00, 'Cancelled', NULL, NULL, 0, 0, 1, '2026-06-29 14:50:32', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Dịp: Kỷ niệm\r\nNgân sách: Dưới 1.500.000 đ / khách\r\nPhong cách: Tùy Bếp trưởng đề xuất\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, NULL, NULL),
+(1113, 45, 'Huỳnh Thông', '1234567890', '2026-06-30 22:39:00', 'table', 14, NULL, 1, 2, '', 850000.00, 255000.00, 'Completed', 'Sinh nhật', 'Gói Mặc Định', 1, 0, 0, '2026-06-30 02:40:48', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '', 0, 1, NULL),
+(1114, 2, 'Quản trị viên', '1234567890', '2026-07-01 22:52:00', 'table', 14, NULL, 0, 2, '\n[Hệ thống: Đã tự động giảm 10% nhờ đặc quyền cột mốc: Tăng mã giãm giá]', 585000.00, 175500.00, 'Cancelled', '', NULL, 0, 0, 1, '2026-06-30 10:45:21', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, 0, NULL),
+(1115, 2, 'Quản trị viên', '1234567890', '2026-06-30 22:52:00', 'table', 14, NULL, 0, 2, '', 650000.00, 195000.00, 'Completed', '', NULL, 0, 0, 0, '2026-06-30 10:46:43', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, 0, NULL),
+(1116, 2, 'Quản trị viên', '1234567890', '2026-07-03 22:34:00', 'chef', 0, NULL, 2, 2, '\n[Đầu bếp tại gia] Quy mô ekip (1-4 khách): 1 Chef + 1 Phục vụ', 1450000.00, 435000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-07-01 14:34:44', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Địa điểm phục vụ: biên hòa\r\nBếp trưởng chỉ định: Vũ Văn Chính\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, NULL, NULL),
+(1117, 2, 'Quản trị viên', '1234567890', '2026-07-03 22:46:00', 'table', 14, NULL, -1, 2, '', 3000000.00, 900000.00, 'Completed', '', NULL, 0, 0, 0, '2026-07-01 14:46:52', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Dịp: Kỷ niệm\r\nNgân sách: Dưới 1.500.000 đ / khách\r\nPhong cách: Ẩm thực Việt Nam Đương Đại \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- Không thích: Hành lá, Rau mùi\n- DỊ ỨNG: Cá', 0, 0, NULL),
+(1118, 2, 'Quản trị viên', '1234567890', '2026-07-04 12:30:00', 'table', 14, NULL, -1, 2, '', 2000000.00, 600000.00, 'Completed', '', NULL, 0, 0, 0, '2026-07-01 15:30:34', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Dịp: Kỷ niệm\r\nNgân sách: Thỏa thuận sau khi thiết kế thực đơn\r\nPhong cách: Ẩm thực Việt Nam Đương Đại \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: Cá', 0, 0, NULL),
+(1119, 2, 'Quản trị viên', '1234567890', '2026-07-04 12:30:00', 'table', 14, NULL, -1, 2, '', 2000000.00, 600000.00, 'Completed', '', NULL, 0, 0, 0, '2026-07-01 15:38:05', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Dịp: Kỷ niệm\r\nNgân sách: Thỏa thuận sau khi thiết kế thực đơn\r\nPhong cách: Ẩm thực Việt Nam Đương Đại \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: Cá', 0, 0, NULL),
+(1120, 2, 'Quản trị viên', '1234567890', '2026-07-04 12:30:00', 'table', 4, NULL, -1, 2, '', 1000000.00, 300000.00, 'Completed', '', NULL, 0, 0, 0, '2026-07-01 15:44:43', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Dịp: Kỷ niệm\r\nNgân sách: Thỏa thuận sau khi thiết kế thực đơn\r\nPhong cách: Ẩm thực Việt Nam Đương Đại \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: Cá', 0, 0, NULL),
+(1121, 2, 'Huỳnh Đức Thông', '109876512345', '2026-07-04 09:02:00', 'chef', 0, NULL, -1, 2, '\n[Đầu bếp tại gia] Quy mô ekip (1-4 khách): 1 Chef + 1 Phục vụ', 1000000.00, 300000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-07-02 00:02:26', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Địa điểm phục vụ: biên hòa\r\nBếp trưởng chỉ định: Vũ Văn Chính\r\nDịp: Kỷ niệm\r\nNgân sách: Thỏa thuận sau khi thiết kế thực đơn\r\nPhong cách: Tùy Bếp trưởng đề xuất\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: Cá', 0, NULL, NULL),
+(1122, 2, 'Huỳnh Đức Thông', '1234567890', '2026-07-02 10:42:00', 'table', 14, NULL, 0, 2, '', 400000.00, 120000.00, 'Completed', '', NULL, 0, 0, 0, '2026-07-02 01:43:07', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: sò điệp', 0, 0, NULL),
+(1123, 2, 'Huỳnh Đức Thông', '1234567890', '2026-07-04 11:42:00', 'table', 14, NULL, -1, 2, '', 3000000.00, 900000.00, 'Completed', '', NULL, 0, 0, 0, '2026-07-02 01:45:50', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Dịp: Kỷ niệm\r\nNgân sách: Dưới 1.500.000 đ / khách\r\nPhong cách: Ẩm thực Việt Nam Đương Đại \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: sò điệp', 0, 0, NULL),
+(1124, 2, 'Huỳnh Đức Thông', '1234567890', '2026-07-03 09:47:00', 'chef', 0, NULL, 0, 2, '\n[Đầu bếp tại gia] Quy mô ekip (1-4 khách): 1 Chef + 1 Phục vụ', 650000.00, 195000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-07-02 01:47:30', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Địa điểm phục vụ: biên hòa\r\nBếp trưởng chỉ định: Vũ Văn Chính\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: sò điệp', 0, NULL, NULL),
+(1125, 2, 'Quản trị viên', '1234567890', '2026-07-08 12:20:00', 'chef', 0, NULL, 0, 2, '\n[Đầu bếp tại gia] Quy mô ekip (1-4 khách): 1 Chef + 1 Phục vụ', 250000.00, 75000.00, 'Completed', NULL, NULL, 0, 0, 0, '2026-07-06 02:21:12', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Địa điểm phục vụ: biên hòa\r\nBếp trưởng chỉ định: Vũ Văn Chính\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: sò điệp', 0, NULL, NULL),
+(1126, 2, 'Quản trị viên', '1234567890', '2026-07-09 09:53:00', 'table', 14, NULL, -1, 2, '', 1500000.00, 450000.00, 'Completed', '', NULL, 0, 0, 0, '2026-07-06 02:54:25', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Dịp: Kỷ niệm\r\nNgân sách: Thỏa thuận sau khi thiết kế thực đơn\r\nPhong cách: Ẩm thực Việt Nam Đương Đại \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: Hải sản', 0, 0, '**TÊN THỰC ĐƠN: PHÙ SA VÀ LỬA - BẢN GIAO HƯỞNG KỶ NIỆM**\n\n**1. Khai vị nhỏ (Amuse-Bouche)**\n* **Khói Lam Chiều (Smoke of the Afternoon)**\n* *Mô tả:* Bánh tart nhỏ làm từ bột gạo lứt Tây Nguyên nướng giòn, nhân pa-tê gan ngỗng béo ngậy kết dính với hạt điều Bình Phước caramen hóa, phủ lớp gel quất (tắc) chua thanh và hoa dại bản địa.\n* *Sự phù hợp với DNA:* Món ăn mang hương vị béo ngậy, đậm đà (rich) từ gan ngỗng và hạt điều, được cân bằng hoàn hảo bằng vị chua của quất để kích thích vị giác. Hoàn toàn không chứa các thành phần hải sản, mở đầu nhẹ nhàng nhưng ấn tượng cho buổi tối kỷ niệm ấm áp.\n\n**2. Khai vị (Appetizer)**\n* **Hương Rừng Tây Bắc (Whispers of the Highlands)**\n* *Mô tả:* Ức vịt chạy đồng tẩm ướp mắc khén, hạt dổi nồng nàn, áp chảo vừa chín tới giữ độ mềm mọng mượt mà. Món ăn dùng kèm sốt mận Tả Van cô đặc chua ngọt và củ cải đỏ Đà Lạt muối chua nguyên bản.\n* *Sự phù hợp với DNA:* Vị đậm đà (bold) từ các loại gia vị bản địa Tây Bắc kết hợp cùng thịt vịt giàu hương vị mang đến chiều sâu cho món khai vị. Tránh tuyệt đối nước mắm truyền thống để đảm bảo an toàn dị ứng hải sản cho quý khách, thay bằng muối hun khói để giữ vị mặn mòi nguyên bản.\n\n**3. Món phụ (Entree)**\n* **Sương Sớm Sa Pa (Sapa\'s Morning Mist)**\n* *Mô tả:* Nấm rừng Sa Pa (nấm hương, nấm vuốt hổ) hầm chậm trong 24 giờ cùng tỏi đen Lý Sơn tạo nên phần nước dùng đậm đặc, dùng kèm bọt sữa dừa hun khói ấm áp và vụn hạt dẻ Trùng Khánh nướng vàng.\n* *Sự phù hợp với DNA:* Một món ăn thuần chay nhưng mang nốt hương cực kỳ đậm đà (bold/rich) nhờ vị ngọt sâu (umami) tự nhiên từ nấm rừng và tỏi đen. Sự ấm nóng của món ăn tượng trưng cho sự bền chặt, nồng ấm của tình yêu trong ngày kỷ niệm.\n\n**4. Món chính (Main Course)**\n* **Phù Sa Ngày Nắng (Sunlit Silt)**\n* *Mô tả:* Thăn ngoại bò tơ Tây Ninh hảo hạng được áp chảo và nướng trên than củi đến độ chín **Medium** hoàn hảo, rưới sốt tương bần Hưng Yên ủ sồi đậm vị, ăn kèm măng tây Đà Lạt nướng sém cạnh và bánh chưng ép giòn nồng nàn hương lá nếp.\n* *Sự phù hợp với DNA:* Chiều lòng tuyệt đối sở thích ăn **Bò** của quý khách với độ chín Medium mọng nước, mềm mượt. Sốt tương bần ủ sồi độc quyền của nhà hàng tạo nên tầng hương vị đậm đà (bold) đặc trưng của ẩm thực Việt Nam đương đại mà không cần dùng đến bất kỳ nguyên liệu biển nào.\n\n**5. Tráng miệng (Dessert)**\n* **Phù Hoa Đất Sét (Clay Luxury)**\n* *Mô tả:* Mousse sô-cô-la đen Single Origin 70% (nguồn gốc bền vững từ Bến Tre) đắng nhẹ, kết hợp cùng caramel muối tre hun khói nồng nàn và bánh xốp chuối ngự nướng mật ong rừng vàng óng.\n* *Sự phù hợp với DNA:* Kết thúc ngọt ngào và đậm đà (rich/bold) từ sô-cô-la đắng kết hợp với vị mặn nhẹ từ muối tre hun khói. Đây là lời chúc ngọt ngào, sâu sắc gửi đến hành trình kỷ niệm của hai vị khách quý.\n\n---\n\n**Gợi ý Rượu Vang:**\n* **Chai vang đỏ Penfolds Bin 28 Kalimna Shiraz (Nam Úc)**\n* *Lý do:* Chai Shiraz có cấu trúc mạnh mẽ, đậm đà (full-bodied) với hương thơm nồng nàn của quả mâm xôi đen, cam thảo và gia vị ấm. Tannin mượt mà của chai vang này sẽ cộng hưởng tuyệt vời với độ chín Medium của thịt bò tơ và các nốt vị đậm (bold) xuyên suốt thực đơn, mang lại trải nghiệm ẩm thực thăng hoa cho đêm kỷ niệm.'),
+(1127, 2, 'Quản trị viên', '1234567890', '2026-07-09 10:38:00', 'table', 14, NULL, -1, 2, '', 0.00, 0.00, 'Completed', '', NULL, 0, 0, 0, '2026-07-06 03:38:49', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: Hải sản', 0, 0, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `settings`
+-- Table structure for table `settings`
 --
 
 DROP TABLE IF EXISTS `settings`;
@@ -4559,7 +4610,7 @@ CREATE TABLE `settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `settings`
+-- Dumping data for table `settings`
 --
 
 INSERT INTO `settings` (`key_name`, `key_value`) VALUES
@@ -4567,6 +4618,9 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 ('email', ''),
 ('enable_telegram', '1'),
 ('facebook_url', ''),
+('footer_img_1', 'footer_img_1_1783398228.jpg'),
+('footer_img_2', 'footer_img_2_1783398228.jpg'),
+('footer_img_3', 'footer_img_3_1783398228.jpg'),
 ('footer_text', '© 2024 Restaurantly. All Rights Reserved.'),
 ('google_map_iframe', '<iframe src=\"https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d15670.10340930544!2d106.82963755!3d10.923593799999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2s!5e0!3m2!1svi!2s!4v1782909454504!5m2!1svi!2s\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"strict-origin-when-cross-origin\"></iframe>'),
 ('hotline', '0456789124'),
@@ -4575,8 +4629,8 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 ('inv_expiry_warning_days', '30'),
 ('inv_low_stock', '5'),
 ('inv_low_stock_threshold', '5'),
-('last_telegram_alert_date', '2026-07-04'),
-('last_telegram_eod_date', '2026-06-30'),
+('last_telegram_alert_date', '2026-07-07'),
+('last_telegram_eod_date', '2026-07-07'),
 ('logo_url', 'assets/img/logo.png'),
 ('logo_ver', '1779627100'),
 ('maps_embed', ''),
@@ -4584,7 +4638,11 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 ('name_position', 'left'),
 ('open_days', 'Thứ 2 - Chủ Nhật'),
 ('open_time', '09:00 AM - 12:00 PM'),
-('restaurant_name', 'Restaurantly'),
+('promo_popup_content', 'NHÃ tự hào công bố một bước ngoặt quan trọng trên bản đồ ẩm thực bền vững thế giới: NHÃ Restaurant đã chính thức đạt chứng nhận 3 sao của Food Made Good Standard – cấp độ cao nhất từ Hiệp hội Nhà hàng Bền vững quốc tế (The Sustainable Restaurant Association – SRA). Với kết quả này, NHÃ Restaurant không chỉ là đại diện đầu tiên của Việt Nam vươn tới chuẩn mực 3 sao, mà còn khẳng định sức mạnh của một hệ thống ẩm thực nhất quán về triết lý từ NHÃ Danang (Sao Xanh MICHELIN) đến NHÃ Tokyo.'),
+('promo_popup_enabled', '1'),
+('promo_popup_file', 'assets/img/promo_popup_1783342235.jpg'),
+('promo_popup_type', 'image'),
+('restaurant_name', 'NHÃ'),
 ('telegram_bot_token', '8935031959:AAEzSndMhjXuiIyXkeSNCtzTzj4TGoCo81s'),
 ('telegram_chat_id', '5676940088'),
 ('telegram_eod_enabled', '1'),
@@ -4594,7 +4652,7 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `suppliers`
+-- Table structure for table `suppliers`
 --
 
 DROP TABLE IF EXISTS `suppliers`;
@@ -4611,7 +4669,7 @@ CREATE TABLE `suppliers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `suppliers`
+-- Dumping data for table `suppliers`
 --
 
 INSERT INTO `suppliers` (`id`, `name`, `phone`, `address`, `created_at`, `email`, `contact_person`, `origin_country`, `transport_conditions`) VALUES
@@ -4625,7 +4683,7 @@ INSERT INTO `suppliers` (`id`, `name`, `phone`, `address`, `created_at`, `email`
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `supplier_certificates`
+-- Table structure for table `supplier_certificates`
 --
 
 DROP TABLE IF EXISTS `supplier_certificates`;
@@ -4642,7 +4700,7 @@ CREATE TABLE `supplier_certificates` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `supplier_certificates`
+-- Dumping data for table `supplier_certificates`
 --
 
 INSERT INTO `supplier_certificates` (`id`, `supplier_id`, `cert_type`, `cert_name`, `cert_number`, `issue_date`, `expiry_date`, `file_path`, `created_at`) VALUES
@@ -4660,7 +4718,7 @@ INSERT INTO `supplier_certificates` (`id`, `supplier_id`, `cert_type`, `cert_nam
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `themes`
+-- Table structure for table `themes`
 --
 
 DROP TABLE IF EXISTS `themes`;
@@ -4676,7 +4734,7 @@ CREATE TABLE `themes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `themes`
+-- Dumping data for table `themes`
 --
 
 INSERT INTO `themes` (`id`, `name`, `description`, `start_date`, `end_date`, `image`, `is_active`, `created_at`) VALUES
@@ -4685,7 +4743,7 @@ INSERT INTO `themes` (`id`, `name`, `description`, `start_date`, `end_date`, `im
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `toppings`
+-- Table structure for table `toppings`
 --
 
 DROP TABLE IF EXISTS `toppings`;
@@ -4701,7 +4759,7 @@ CREATE TABLE `toppings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `toppings`
+-- Dumping data for table `toppings`
 --
 
 INSERT INTO `toppings` (`id`, `name`, `description`, `price`, `image`, `selection_type`, `topping_group`, `status`) VALUES
@@ -4714,9 +4772,9 @@ INSERT INTO `toppings` (`id`, `name`, `description`, `price`, `image`, `selectio
 (7, 'Ít đá', NULL, 0.00, NULL, 'radio', 'Tùy chọn Thức uống', 1),
 (8, 'Ít ngọt (Less Sugar)', NULL, 0.00, NULL, 'checkbox', 'Tùy chọn Thức uống', 1),
 (9, 'Không đường (No Sugar)', NULL, 0.00, NULL, 'checkbox', 'Tùy chọn Thức uống', 1),
-(10, 'Thêm Sốt Nấm Truffle đen', NULL, 50000.00, NULL, 'checkbox', 'Sốt ăn kèm', 1),
-(11, 'Thêm Sốt Tiêu đen', NULL, 30000.00, NULL, 'checkbox', 'Sốt ăn kèm', 1),
-(12, 'Thêm Sốt Phô mai cay', NULL, 35000.00, NULL, 'checkbox', 'Sốt ăn kèm', 1),
+(10, 'Thêm Sốt Nấm Truffle đen', '', 120000.00, NULL, 'checkbox', 'Sốt ăn kèm', 1),
+(11, 'Thêm Sốt Tiêu đen', '', 50000.00, NULL, 'checkbox', 'Sốt ăn kèm', 1),
+(12, 'Thêm Sốt Phô mai cay', '', 50000.00, NULL, 'checkbox', 'Sốt ăn kèm', 1),
 (13, 'Thêm Sốt BBQ mặn ngọt', NULL, 25000.00, NULL, 'checkbox', 'Sốt ăn kèm', 1),
 (14, 'Gấp đôi Phô mai Mozzarella', NULL, 30000.00, NULL, 'checkbox', 'Topping Pizza/Pasta', 1),
 (15, 'Thêm Xúc xích Đức', NULL, 35000.00, NULL, 'checkbox', 'Topping Pizza/Pasta', 1),
@@ -4731,7 +4789,7 @@ INSERT INTO `toppings` (`id`, `name`, `description`, `price`, `image`, `selectio
 (24, 'Cánh hoa hồng hữu cơ', 'Tạo hương thơm nhẹ nhàng và sang trọng', 25000.00, NULL, 'checkbox', 'Trái cây & Hoa', 1),
 (25, 'Dưa leo cuộn dải mỏng', 'Trang trí tinh tế', 10000.00, NULL, 'checkbox', 'Trái cây & Hoa', 1),
 (26, 'Quả cherry ngâm rượu', 'Ngọt ngào, đậm vị', 30000.00, NULL, 'checkbox', 'Trái cây & Hoa', 1),
-(27, 'Nhánh hương thảo tươi / khói', 'Hương thảo mộc độc đáo', 15000.00, NULL, 'checkbox', 'Thảo mộc & Gia vị', 1),
+(27, 'Nhánh hương thảo tươi / khói', 'Hương thảo mộc độc đáo', 35000.00, NULL, 'checkbox', 'Thảo mộc & Gia vị', 1),
 (28, 'Lá bạc hà tươi', 'Hương vị the mát', 10000.00, NULL, 'checkbox', 'Thảo mộc & Gia vị', 1),
 (29, 'Thanh quế khô (đốt cháy)', 'Tạo hương khói ấm áp', 20000.00, NULL, 'checkbox', 'Thảo mộc & Gia vị', 1),
 (30, 'Hoa hồi', 'Gia vị thơm nồng', 15000.00, NULL, 'checkbox', 'Thảo mộc & Gia vị', 1),
@@ -4745,12 +4803,12 @@ INSERT INTO `toppings` (`id`, `name`, `description`, `price`, `image`, `selectio
 (38, 'Nhũ vàng thực phẩm', 'Lấp lánh, sang trọng', 100000.00, NULL, 'checkbox', 'Viền ly & Nghệ thuật', 1),
 (39, 'Muối hồng Himalaya', 'Viền ly Margarita', 20000.00, NULL, 'checkbox', 'Viền ly & Nghệ thuật', 1),
 (40, 'Đường tinh thể màu hồng', 'Đường viền ly ngọt ngào', 15000.00, NULL, 'checkbox', 'Viền ly & Nghệ thuật', 1),
-(41, 'Lớp bọt Foam kem mặn', 'Béo ngậy, mặn mà', 30000.00, NULL, 'checkbox', 'Viền ly & Nghệ thuật', 1);
+(41, 'Lớp bọt Foam kem mặn', 'Béo ngậy, mặn mà', 50000.00, NULL, 'checkbox', 'Viền ly & Nghệ thuật', 1);
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `topping_recipes`
+-- Table structure for table `topping_recipes`
 --
 
 DROP TABLE IF EXISTS `topping_recipes`;
@@ -4763,7 +4821,7 @@ CREATE TABLE `topping_recipes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `topping_recipes`
+-- Dumping data for table `topping_recipes`
 --
 
 INSERT INTO `topping_recipes` (`id`, `topping_id`, `item_id`, `quantity_required`, `created_at`) VALUES
@@ -4802,7 +4860,7 @@ INSERT INTO `topping_recipes` (`id`, `topping_id`, `item_id`, `quantity_required
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `transfer_details`
+-- Table structure for table `transfer_details`
 --
 
 DROP TABLE IF EXISTS `transfer_details`;
@@ -4814,7 +4872,7 @@ CREATE TABLE `transfer_details` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `transfer_details`
+-- Dumping data for table `transfer_details`
 --
 
 INSERT INTO `transfer_details` (`id`, `transfer_id`, `ingredient_id`, `quantity`) VALUES
@@ -4981,7 +5039,7 @@ INSERT INTO `transfer_details` (`id`, `transfer_id`, `ingredient_id`, `quantity`
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `users`
+-- Table structure for table `users`
 --
 
 DROP TABLE IF EXISTS `users`;
@@ -5011,7 +5069,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `avatar`, `avatar_blob`, `avatar_mime`, `phone`, `birthday`, `email`, `google_id`, `role`, `is_active`, `created_at`, `employee_id`, `doneness`, `flavor_profile`, `fav_ingredients`, `disliked_ingredients`, `allergies`, `visit_count`, `total_spent`) VALUES
@@ -5059,7 +5117,7 @@ INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `avatar`, `avata
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `user_addresses`
+-- Table structure for table `user_addresses`
 --
 
 DROP TABLE IF EXISTS `user_addresses`;
@@ -5073,7 +5131,7 @@ CREATE TABLE `user_addresses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `user_addresses`
+-- Dumping data for table `user_addresses`
 --
 
 INSERT INTO `user_addresses` (`id`, `user_id`, `address_type`, `address_detail`, `is_default`, `created_at`) VALUES
@@ -5083,7 +5141,7 @@ INSERT INTO `user_addresses` (`id`, `user_id`, `address_type`, `address_detail`,
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `user_milestones`
+-- Table structure for table `user_milestones`
 --
 
 DROP TABLE IF EXISTS `user_milestones`;
@@ -5097,7 +5155,7 @@ CREATE TABLE `user_milestones` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `user_milestones`
+-- Dumping data for table `user_milestones`
 --
 
 INSERT INTO `user_milestones` (`id`, `user_id`, `milestone_id`, `achieved_at`, `is_redeemed`, `redeemed_at`) VALUES
@@ -5118,7 +5176,7 @@ INSERT INTO `user_milestones` (`id`, `user_id`, `milestone_id`, `achieved_at`, `
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `user_vip`
+-- Table structure for table `user_vip`
 --
 
 DROP TABLE IF EXISTS `user_vip`;
@@ -5132,7 +5190,7 @@ CREATE TABLE `user_vip` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `user_vip`
+-- Dumping data for table `user_vip`
 --
 
 INSERT INTO `user_vip` (`id`, `user_id`, `plan_id`, `start_date`, `end_date`, `status`) VALUES
@@ -5144,7 +5202,7 @@ INSERT INTO `user_vip` (`id`, `user_id`, `plan_id`, `start_date`, `end_date`, `s
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `videos`
+-- Table structure for table `videos`
 --
 
 DROP TABLE IF EXISTS `videos`;
@@ -5159,7 +5217,7 @@ CREATE TABLE `videos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `videos`
+-- Dumping data for table `videos`
 --
 
 INSERT INTO `videos` (`id`, `video_type`, `video_url`, `file_path`, `created_at`, `title`, `description`) VALUES
@@ -5168,7 +5226,7 @@ INSERT INTO `videos` (`id`, `video_type`, `video_url`, `file_path`, `created_at`
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `vip_plans`
+-- Table structure for table `vip_plans`
 --
 
 DROP TABLE IF EXISTS `vip_plans`;
@@ -5182,7 +5240,7 @@ CREATE TABLE `vip_plans` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `vip_plans`
+-- Dumping data for table `vip_plans`
 --
 
 INSERT INTO `vip_plans` (`id`, `name`, `discount_percent`, `duration_days`, `price`, `description`) VALUES
@@ -5191,7 +5249,7 @@ INSERT INTO `vip_plans` (`id`, `name`, `discount_percent`, `duration_days`, `pri
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `warehouses`
+-- Table structure for table `warehouses`
 --
 
 DROP TABLE IF EXISTS `warehouses`;
@@ -5203,7 +5261,7 @@ CREATE TABLE `warehouses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `warehouses`
+-- Dumping data for table `warehouses`
 --
 
 INSERT INTO `warehouses` (`id`, `name`, `type`, `status`) VALUES
@@ -5218,17 +5276,17 @@ INSERT INTO `warehouses` (`id`, `name`, `type`, `status`) VALUES
 (9, 'Kho Nguyên Liệu Khô (Gia vị, đồ khô)', '', 1);
 
 --
--- Chỉ mục cho các bảng đã đổ
+-- Indexes for dumped tables
 --
 
 --
--- Chỉ mục cho bảng `about_categories`
+-- Indexes for table `about_categories`
 --
 ALTER TABLE `about_categories`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `about_comments`
+-- Indexes for table `about_comments`
 --
 ALTER TABLE `about_comments`
   ADD PRIMARY KEY (`id`),
@@ -5236,7 +5294,7 @@ ALTER TABLE `about_comments`
   ADD KEY `idx_author_ip` (`author_ip`);
 
 --
--- Chỉ mục cho bảng `about_comment_bans`
+-- Indexes for table `about_comment_bans`
 --
 ALTER TABLE `about_comment_bans`
   ADD PRIMARY KEY (`id`),
@@ -5244,204 +5302,204 @@ ALTER TABLE `about_comment_bans`
   ADD UNIQUE KEY `unique_user_ban` (`user_id`);
 
 --
--- Chỉ mục cho bảng `about_comment_likes`
+-- Indexes for table `about_comment_likes`
 --
 ALTER TABLE `about_comment_likes`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_like` (`comment_id`,`user_id`);
 
 --
--- Chỉ mục cho bảng `about_comment_reports`
+-- Indexes for table `about_comment_reports`
 --
 ALTER TABLE `about_comment_reports`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `about_content`
+-- Indexes for table `about_content`
 --
 ALTER TABLE `about_content`
   ADD PRIMARY KEY (`id`),
   ADD KEY `category_id` (`category_id`);
 
 --
--- Chỉ mục cho bảng `about_likes`
+-- Indexes for table `about_likes`
 --
 ALTER TABLE `about_likes`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_like` (`content_id`,`user_ip`);
 
 --
--- Chỉ mục cho bảng `about_saved_posts`
+-- Indexes for table `about_saved_posts`
 --
 ALTER TABLE `about_saved_posts`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `user_id` (`user_id`,`post_id`);
 
 --
--- Chỉ mục cho bảng `about_shares`
+-- Indexes for table `about_shares`
 --
 ALTER TABLE `about_shares`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_content` (`content_id`);
 
 --
--- Chỉ mục cho bảng `admins`
+-- Indexes for table `admins`
 --
 ALTER TABLE `admins`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `banners`
+-- Indexes for table `banners`
 --
 ALTER TABLE `banners`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `bespoke_budgets`
+-- Indexes for table `bespoke_budgets`
 --
 ALTER TABLE `bespoke_budgets`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `bespoke_occasions`
+-- Indexes for table `bespoke_occasions`
 --
 ALTER TABLE `bespoke_occasions`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `bespoke_styles`
+-- Indexes for table `bespoke_styles`
 --
 ALTER TABLE `bespoke_styles`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `bookings`
+-- Indexes for table `bookings`
 --
 ALTER TABLE `bookings`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `booking_details`
+-- Indexes for table `booking_details`
 --
 ALTER TABLE `booking_details`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `booking_inventory_deductions`
+-- Indexes for table `booking_inventory_deductions`
 --
 ALTER TABLE `booking_inventory_deductions`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `bot_context_logs`
+-- Indexes for table `bot_context_logs`
 --
 ALTER TABLE `bot_context_logs`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `bot_responses`
+-- Indexes for table `bot_responses`
 --
 ALTER TABLE `bot_responses`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `categories`
+-- Indexes for table `categories`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `chat_messages`
+-- Indexes for table `chat_messages`
 --
 ALTER TABLE `chat_messages`
   ADD PRIMARY KEY (`id`),
   ADD KEY `session_id` (`session_id`);
 
 --
--- Chỉ mục cho bảng `chat_sessions`
+-- Indexes for table `chat_sessions`
 --
 ALTER TABLE `chat_sessions`
   ADD PRIMARY KEY (`session_id`);
 
 --
--- Chỉ mục cho bảng `chefs`
+-- Indexes for table `chefs`
 --
 ALTER TABLE `chefs`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `chef_certificates`
+-- Indexes for table `chef_certificates`
 --
 ALTER TABLE `chef_certificates`
   ADD PRIMARY KEY (`id`),
   ADD KEY `chef_id` (`chef_id`);
 
 --
--- Chỉ mục cho bảng `chef_gallery`
+-- Indexes for table `chef_gallery`
 --
 ALTER TABLE `chef_gallery`
   ADD PRIMARY KEY (`id`),
   ADD KEY `chef_id` (`chef_id`);
 
 --
--- Chỉ mục cho bảng `chef_reviews`
+-- Indexes for table `chef_reviews`
 --
 ALTER TABLE `chef_reviews`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `combos`
+-- Indexes for table `combos`
 --
 ALTER TABLE `combos`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_combo_theme` (`theme_id`);
 
 --
--- Chỉ mục cho bảng `combo_items`
+-- Indexes for table `combo_items`
 --
 ALTER TABLE `combo_items`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `contacts`
+-- Indexes for table `contacts`
 --
 ALTER TABLE `contacts`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `decor_packages`
+-- Indexes for table `decor_packages`
 --
 ALTER TABLE `decor_packages`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_decor_event` (`event_type_id`);
 
 --
--- Chỉ mục cho bảng `employees`
+-- Indexes for table `employees`
 --
 ALTER TABLE `employees`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `event_types`
+-- Indexes for table `event_types`
 --
 ALTER TABLE `event_types`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `foods`
+-- Indexes for table `foods`
 --
 ALTER TABLE `foods`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_food_theme` (`theme_id`);
 
 --
--- Chỉ mục cho bảng `food_recipes`
+-- Indexes for table `food_recipes`
 --
 ALTER TABLE `food_recipes`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `food_toppings`
+-- Indexes for table `food_toppings`
 --
 ALTER TABLE `food_toppings`
   ADD PRIMARY KEY (`id`),
@@ -5449,37 +5507,37 @@ ALTER TABLE `food_toppings`
   ADD KEY `topping_id` (`topping_id`);
 
 --
--- Chỉ mục cho bảng `footer_links`
+-- Indexes for table `footer_links`
 --
 ALTER TABLE `footer_links`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `galleries`
+-- Indexes for table `galleries`
 --
 ALTER TABLE `galleries`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `inventory`
+-- Indexes for table `inventory`
 --
 ALTER TABLE `inventory`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `inventory_audits`
+-- Indexes for table `inventory_audits`
 --
 ALTER TABLE `inventory_audits`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `inventory_audit_details`
+-- Indexes for table `inventory_audit_details`
 --
 ALTER TABLE `inventory_audit_details`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `inventory_batches`
+-- Indexes for table `inventory_batches`
 --
 ALTER TABLE `inventory_batches`
   ADD PRIMARY KEY (`id`),
@@ -5488,74 +5546,74 @@ ALTER TABLE `inventory_batches`
   ADD KEY `expiry_date` (`expiry_date`);
 
 --
--- Chỉ mục cho bảng `inventory_categories`
+-- Indexes for table `inventory_categories`
 --
 ALTER TABLE `inventory_categories`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `inventory_history`
+-- Indexes for table `inventory_history`
 --
 ALTER TABLE `inventory_history`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `inventory_receipts`
+-- Indexes for table `inventory_receipts`
 --
 ALTER TABLE `inventory_receipts`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `inventory_stocks`
+-- Indexes for table `inventory_stocks`
 --
 ALTER TABLE `inventory_stocks`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `idx_wh_ing` (`warehouse_id`,`ingredient_id`);
 
 --
--- Chỉ mục cho bảng `inventory_transfers`
+-- Indexes for table `inventory_transfers`
 --
 ALTER TABLE `inventory_transfers`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `inventory_units`
+-- Indexes for table `inventory_units`
 --
 ALTER TABLE `inventory_units`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `milestones`
+-- Indexes for table `milestones`
 --
 ALTER TABLE `milestones`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `navigation_menu`
+-- Indexes for table `navigation_menu`
 --
 ALTER TABLE `navigation_menu`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `newsletters`
+-- Indexes for table `newsletters`
 --
 ALTER TABLE `newsletters`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `notifications`
+-- Indexes for table `notifications`
 --
 ALTER TABLE `notifications`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `order_items`
+-- Indexes for table `order_items`
 --
 ALTER TABLE `order_items`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `order_item_toppings`
+-- Indexes for table `order_item_toppings`
 --
 ALTER TABLE `order_item_toppings`
   ADD PRIMARY KEY (`id`),
@@ -5563,26 +5621,26 @@ ALTER TABLE `order_item_toppings`
   ADD KEY `topping_id` (`topping_id`);
 
 --
--- Chỉ mục cho bảng `positions`
+-- Indexes for table `positions`
 --
 ALTER TABLE `positions`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `pos_orders`
+-- Indexes for table `pos_orders`
 --
 ALTER TABLE `pos_orders`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `pos_order_items`
+-- Indexes for table `pos_order_items`
 --
 ALTER TABLE `pos_order_items`
   ADD PRIMARY KEY (`id`),
   ADD KEY `pos_order_id` (`pos_order_id`);
 
 --
--- Chỉ mục cho bảng `po_receipt_inspections`
+-- Indexes for table `po_receipt_inspections`
 --
 ALTER TABLE `po_receipt_inspections`
   ADD PRIMARY KEY (`id`),
@@ -5590,37 +5648,37 @@ ALTER TABLE `po_receipt_inspections`
   ADD KEY `ingredient_id` (`ingredient_id`);
 
 --
--- Chỉ mục cho bảng `purchase_orders`
+-- Indexes for table `purchase_orders`
 --
 ALTER TABLE `purchase_orders`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `purchase_order_details`
+-- Indexes for table `purchase_order_details`
 --
 ALTER TABLE `purchase_order_details`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `restaurant_expenses`
+-- Indexes for table `restaurant_expenses`
 --
 ALTER TABLE `restaurant_expenses`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `restaurant_tables`
+-- Indexes for table `restaurant_tables`
 --
 ALTER TABLE `restaurant_tables`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `services`
+-- Indexes for table `services`
 --
 ALTER TABLE `services`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `service_bookings`
+-- Indexes for table `service_bookings`
 --
 ALTER TABLE `service_bookings`
   ADD PRIMARY KEY (`id`),
@@ -5628,38 +5686,38 @@ ALTER TABLE `service_bookings`
   ADD KEY `fk_sb_chef` (`chef_id`);
 
 --
--- Chỉ mục cho bảng `settings`
+-- Indexes for table `settings`
 --
 ALTER TABLE `settings`
   ADD PRIMARY KEY (`key_name`);
 
 --
--- Chỉ mục cho bảng `suppliers`
+-- Indexes for table `suppliers`
 --
 ALTER TABLE `suppliers`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `supplier_certificates`
+-- Indexes for table `supplier_certificates`
 --
 ALTER TABLE `supplier_certificates`
   ADD PRIMARY KEY (`id`),
   ADD KEY `supplier_id` (`supplier_id`);
 
 --
--- Chỉ mục cho bảng `themes`
+-- Indexes for table `themes`
 --
 ALTER TABLE `themes`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `toppings`
+-- Indexes for table `toppings`
 --
 ALTER TABLE `toppings`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `topping_recipes`
+-- Indexes for table `topping_recipes`
 --
 ALTER TABLE `topping_recipes`
   ADD PRIMARY KEY (`id`),
@@ -5667,27 +5725,27 @@ ALTER TABLE `topping_recipes`
   ADD KEY `item_id` (`item_id`);
 
 --
--- Chỉ mục cho bảng `transfer_details`
+-- Indexes for table `transfer_details`
 --
 ALTER TABLE `transfer_details`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD KEY `employee_id` (`employee_id`);
 
 --
--- Chỉ mục cho bảng `user_addresses`
+-- Indexes for table `user_addresses`
 --
 ALTER TABLE `user_addresses`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Chỉ mục cho bảng `user_milestones`
+-- Indexes for table `user_milestones`
 --
 ALTER TABLE `user_milestones`
   ADD PRIMARY KEY (`id`),
@@ -5695,7 +5753,7 @@ ALTER TABLE `user_milestones`
   ADD KEY `milestone_id` (`milestone_id`);
 
 --
--- Chỉ mục cho bảng `user_vip`
+-- Indexes for table `user_vip`
 --
 ALTER TABLE `user_vip`
   ADD PRIMARY KEY (`id`),
@@ -5703,585 +5761,585 @@ ALTER TABLE `user_vip`
   ADD KEY `fk_user_vip_plan_id` (`plan_id`);
 
 --
--- Chỉ mục cho bảng `videos`
+-- Indexes for table `videos`
 --
 ALTER TABLE `videos`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `vip_plans`
+-- Indexes for table `vip_plans`
 --
 ALTER TABLE `vip_plans`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `warehouses`
+-- Indexes for table `warehouses`
 --
 ALTER TABLE `warehouses`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT cho các bảng đã đổ
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT cho bảng `about_categories`
+-- AUTO_INCREMENT for table `about_categories`
 --
 ALTER TABLE `about_categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT cho bảng `about_comments`
+-- AUTO_INCREMENT for table `about_comments`
 --
 ALTER TABLE `about_comments`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
--- AUTO_INCREMENT cho bảng `about_comment_bans`
+-- AUTO_INCREMENT for table `about_comment_bans`
 --
 ALTER TABLE `about_comment_bans`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT cho bảng `about_comment_likes`
+-- AUTO_INCREMENT for table `about_comment_likes`
 --
 ALTER TABLE `about_comment_likes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `about_comment_reports`
+-- AUTO_INCREMENT for table `about_comment_reports`
 --
 ALTER TABLE `about_comment_reports`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT cho bảng `about_content`
+-- AUTO_INCREMENT for table `about_content`
 --
 ALTER TABLE `about_content`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT cho bảng `about_likes`
+-- AUTO_INCREMENT for table `about_likes`
 --
 ALTER TABLE `about_likes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
--- AUTO_INCREMENT cho bảng `about_saved_posts`
+-- AUTO_INCREMENT for table `about_saved_posts`
 --
 ALTER TABLE `about_saved_posts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT cho bảng `about_shares`
+-- AUTO_INCREMENT for table `about_shares`
 --
 ALTER TABLE `about_shares`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=201;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=206;
 
 --
--- AUTO_INCREMENT cho bảng `admins`
+-- AUTO_INCREMENT for table `admins`
 --
 ALTER TABLE `admins`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `banners`
+-- AUTO_INCREMENT for table `banners`
 --
 ALTER TABLE `banners`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT cho bảng `bespoke_budgets`
+-- AUTO_INCREMENT for table `bespoke_budgets`
 --
 ALTER TABLE `bespoke_budgets`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT cho bảng `bespoke_occasions`
+-- AUTO_INCREMENT for table `bespoke_occasions`
 --
 ALTER TABLE `bespoke_occasions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT cho bảng `bespoke_styles`
+-- AUTO_INCREMENT for table `bespoke_styles`
 --
 ALTER TABLE `bespoke_styles`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT cho bảng `bookings`
+-- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `booking_details`
+-- AUTO_INCREMENT for table `booking_details`
 --
 ALTER TABLE `booking_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1085;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1088;
 
 --
--- AUTO_INCREMENT cho bảng `booking_inventory_deductions`
+-- AUTO_INCREMENT for table `booking_inventory_deductions`
 --
 ALTER TABLE `booking_inventory_deductions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=308;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=320;
 
 --
--- AUTO_INCREMENT cho bảng `bot_context_logs`
+-- AUTO_INCREMENT for table `bot_context_logs`
 --
 ALTER TABLE `bot_context_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
--- AUTO_INCREMENT cho bảng `bot_responses`
+-- AUTO_INCREMENT for table `bot_responses`
 --
 ALTER TABLE `bot_responses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
--- AUTO_INCREMENT cho bảng `categories`
+-- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT cho bảng `chat_messages`
+-- AUTO_INCREMENT for table `chat_messages`
 --
 ALTER TABLE `chat_messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
--- AUTO_INCREMENT cho bảng `chefs`
+-- AUTO_INCREMENT for table `chefs`
 --
 ALTER TABLE `chefs`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- AUTO_INCREMENT cho bảng `chef_certificates`
+-- AUTO_INCREMENT for table `chef_certificates`
 --
 ALTER TABLE `chef_certificates`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
--- AUTO_INCREMENT cho bảng `chef_gallery`
+-- AUTO_INCREMENT for table `chef_gallery`
 --
 ALTER TABLE `chef_gallery`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=113;
 
 --
--- AUTO_INCREMENT cho bảng `chef_reviews`
+-- AUTO_INCREMENT for table `chef_reviews`
 --
 ALTER TABLE `chef_reviews`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- AUTO_INCREMENT cho bảng `combos`
+-- AUTO_INCREMENT for table `combos`
 --
 ALTER TABLE `combos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT cho bảng `combo_items`
+-- AUTO_INCREMENT for table `combo_items`
 --
 ALTER TABLE `combo_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
--- AUTO_INCREMENT cho bảng `contacts`
+-- AUTO_INCREMENT for table `contacts`
 --
 ALTER TABLE `contacts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `decor_packages`
+-- AUTO_INCREMENT for table `decor_packages`
 --
 ALTER TABLE `decor_packages`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
--- AUTO_INCREMENT cho bảng `employees`
+-- AUTO_INCREMENT for table `employees`
 --
 ALTER TABLE `employees`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- AUTO_INCREMENT cho bảng `event_types`
+-- AUTO_INCREMENT for table `event_types`
 --
 ALTER TABLE `event_types`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT cho bảng `foods`
+-- AUTO_INCREMENT for table `foods`
 --
 ALTER TABLE `foods`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
--- AUTO_INCREMENT cho bảng `food_recipes`
+-- AUTO_INCREMENT for table `food_recipes`
 --
 ALTER TABLE `food_recipes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=196;
 
 --
--- AUTO_INCREMENT cho bảng `food_toppings`
+-- AUTO_INCREMENT for table `food_toppings`
 --
 ALTER TABLE `food_toppings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=130;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=318;
 
 --
--- AUTO_INCREMENT cho bảng `footer_links`
+-- AUTO_INCREMENT for table `footer_links`
 --
 ALTER TABLE `footer_links`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT cho bảng `galleries`
+-- AUTO_INCREMENT for table `galleries`
 --
 ALTER TABLE `galleries`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT cho bảng `inventory`
+-- AUTO_INCREMENT for table `inventory`
 --
 ALTER TABLE `inventory`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
 
 --
--- AUTO_INCREMENT cho bảng `inventory_audits`
+-- AUTO_INCREMENT for table `inventory_audits`
 --
 ALTER TABLE `inventory_audits`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT cho bảng `inventory_audit_details`
+-- AUTO_INCREMENT for table `inventory_audit_details`
 --
 ALTER TABLE `inventory_audit_details`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT cho bảng `inventory_batches`
+-- AUTO_INCREMENT for table `inventory_batches`
 --
 ALTER TABLE `inventory_batches`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=250;
 
 --
--- AUTO_INCREMENT cho bảng `inventory_categories`
+-- AUTO_INCREMENT for table `inventory_categories`
 --
 ALTER TABLE `inventory_categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT cho bảng `inventory_history`
+-- AUTO_INCREMENT for table `inventory_history`
 --
 ALTER TABLE `inventory_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=971;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=987;
 
 --
--- AUTO_INCREMENT cho bảng `inventory_receipts`
+-- AUTO_INCREMENT for table `inventory_receipts`
 --
 ALTER TABLE `inventory_receipts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT cho bảng `inventory_stocks`
+-- AUTO_INCREMENT for table `inventory_stocks`
 --
 ALTER TABLE `inventory_stocks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=682;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=694;
 
 --
--- AUTO_INCREMENT cho bảng `inventory_transfers`
+-- AUTO_INCREMENT for table `inventory_transfers`
 --
 ALTER TABLE `inventory_transfers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
 
 --
--- AUTO_INCREMENT cho bảng `inventory_units`
+-- AUTO_INCREMENT for table `inventory_units`
 --
 ALTER TABLE `inventory_units`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT cho bảng `milestones`
+-- AUTO_INCREMENT for table `milestones`
 --
 ALTER TABLE `milestones`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
--- AUTO_INCREMENT cho bảng `navigation_menu`
+-- AUTO_INCREMENT for table `navigation_menu`
 --
 ALTER TABLE `navigation_menu`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT cho bảng `newsletters`
+-- AUTO_INCREMENT for table `newsletters`
 --
 ALTER TABLE `newsletters`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `notifications`
+-- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `order_items`
+-- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `order_item_toppings`
+-- AUTO_INCREMENT for table `order_item_toppings`
 --
 ALTER TABLE `order_item_toppings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1014;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1016;
 
 --
--- AUTO_INCREMENT cho bảng `positions`
+-- AUTO_INCREMENT for table `positions`
 --
 ALTER TABLE `positions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- AUTO_INCREMENT cho bảng `pos_orders`
+-- AUTO_INCREMENT for table `pos_orders`
 --
 ALTER TABLE `pos_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1035;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1036;
 
 --
--- AUTO_INCREMENT cho bảng `pos_order_items`
+-- AUTO_INCREMENT for table `pos_order_items`
 --
 ALTER TABLE `pos_order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
--- AUTO_INCREMENT cho bảng `po_receipt_inspections`
+-- AUTO_INCREMENT for table `po_receipt_inspections`
 --
 ALTER TABLE `po_receipt_inspections`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
--- AUTO_INCREMENT cho bảng `purchase_orders`
+-- AUTO_INCREMENT for table `purchase_orders`
 --
 ALTER TABLE `purchase_orders`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
--- AUTO_INCREMENT cho bảng `purchase_order_details`
+-- AUTO_INCREMENT for table `purchase_order_details`
 --
 ALTER TABLE `purchase_order_details`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=117;
 
 --
--- AUTO_INCREMENT cho bảng `restaurant_expenses`
+-- AUTO_INCREMENT for table `restaurant_expenses`
 --
 ALTER TABLE `restaurant_expenses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT cho bảng `restaurant_tables`
+-- AUTO_INCREMENT for table `restaurant_tables`
 --
 ALTER TABLE `restaurant_tables`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT cho bảng `services`
+-- AUTO_INCREMENT for table `services`
 --
 ALTER TABLE `services`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT cho bảng `service_bookings`
+-- AUTO_INCREMENT for table `service_bookings`
 --
 ALTER TABLE `service_bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1121;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1128;
 
 --
--- AUTO_INCREMENT cho bảng `suppliers`
+-- AUTO_INCREMENT for table `suppliers`
 --
 ALTER TABLE `suppliers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT cho bảng `supplier_certificates`
+-- AUTO_INCREMENT for table `supplier_certificates`
 --
 ALTER TABLE `supplier_certificates`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT cho bảng `themes`
+-- AUTO_INCREMENT for table `themes`
 --
 ALTER TABLE `themes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT cho bảng `toppings`
+-- AUTO_INCREMENT for table `toppings`
 --
 ALTER TABLE `toppings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
--- AUTO_INCREMENT cho bảng `topping_recipes`
+-- AUTO_INCREMENT for table `topping_recipes`
 --
 ALTER TABLE `topping_recipes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
--- AUTO_INCREMENT cho bảng `transfer_details`
+-- AUTO_INCREMENT for table `transfer_details`
 --
 ALTER TABLE `transfer_details`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=164;
 
 --
--- AUTO_INCREMENT cho bảng `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
--- AUTO_INCREMENT cho bảng `user_addresses`
+-- AUTO_INCREMENT for table `user_addresses`
 --
 ALTER TABLE `user_addresses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT cho bảng `user_milestones`
+-- AUTO_INCREMENT for table `user_milestones`
 --
 ALTER TABLE `user_milestones`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
--- AUTO_INCREMENT cho bảng `user_vip`
+-- AUTO_INCREMENT for table `user_vip`
 --
 ALTER TABLE `user_vip`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT cho bảng `videos`
+-- AUTO_INCREMENT for table `videos`
 --
 ALTER TABLE `videos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT cho bảng `vip_plans`
+-- AUTO_INCREMENT for table `vip_plans`
 --
 ALTER TABLE `vip_plans`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT cho bảng `warehouses`
+-- AUTO_INCREMENT for table `warehouses`
 --
 ALTER TABLE `warehouses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- Các ràng buộc cho các bảng đã đổ
+-- Constraints for dumped tables
 --
 
 --
--- Các ràng buộc cho bảng `chat_messages`
+-- Constraints for table `chat_messages`
 --
 ALTER TABLE `chat_messages`
   ADD CONSTRAINT `chat_messages_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `chat_sessions` (`session_id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `chef_certificates`
+-- Constraints for table `chef_certificates`
 --
 ALTER TABLE `chef_certificates`
   ADD CONSTRAINT `chef_certificates_ibfk_1` FOREIGN KEY (`chef_id`) REFERENCES `chefs` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `chef_gallery`
+-- Constraints for table `chef_gallery`
 --
 ALTER TABLE `chef_gallery`
   ADD CONSTRAINT `chef_gallery_ibfk_1` FOREIGN KEY (`chef_id`) REFERENCES `chefs` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `combos`
+-- Constraints for table `combos`
 --
 ALTER TABLE `combos`
   ADD CONSTRAINT `fk_combo_theme` FOREIGN KEY (`theme_id`) REFERENCES `themes` (`id`) ON DELETE SET NULL;
 
 --
--- Các ràng buộc cho bảng `decor_packages`
+-- Constraints for table `decor_packages`
 --
 ALTER TABLE `decor_packages`
   ADD CONSTRAINT `fk_decor_event` FOREIGN KEY (`event_type_id`) REFERENCES `event_types` (`id`) ON DELETE SET NULL;
 
 --
--- Các ràng buộc cho bảng `foods`
+-- Constraints for table `foods`
 --
 ALTER TABLE `foods`
   ADD CONSTRAINT `fk_food_theme` FOREIGN KEY (`theme_id`) REFERENCES `themes` (`id`) ON DELETE SET NULL;
 
 --
--- Các ràng buộc cho bảng `food_toppings`
+-- Constraints for table `food_toppings`
 --
 ALTER TABLE `food_toppings`
   ADD CONSTRAINT `fk_food_toppings_food` FOREIGN KEY (`food_id`) REFERENCES `foods` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_food_toppings_topping` FOREIGN KEY (`topping_id`) REFERENCES `toppings` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `order_item_toppings`
+-- Constraints for table `order_item_toppings`
 --
 ALTER TABLE `order_item_toppings`
   ADD CONSTRAINT `fk_order_item_toppings_order_item` FOREIGN KEY (`order_item_id`) REFERENCES `booking_details` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_order_item_toppings_topping` FOREIGN KEY (`topping_id`) REFERENCES `toppings` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `pos_order_items`
+-- Constraints for table `pos_order_items`
 --
 ALTER TABLE `pos_order_items`
   ADD CONSTRAINT `pos_order_items_ibfk_1` FOREIGN KEY (`pos_order_id`) REFERENCES `pos_orders` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `po_receipt_inspections`
+-- Constraints for table `po_receipt_inspections`
 --
 ALTER TABLE `po_receipt_inspections`
   ADD CONSTRAINT `po_receipt_inspections_ibfk_1` FOREIGN KEY (`po_id`) REFERENCES `purchase_orders` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `po_receipt_inspections_ibfk_2` FOREIGN KEY (`ingredient_id`) REFERENCES `inventory` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `service_bookings`
+-- Constraints for table `service_bookings`
 --
 ALTER TABLE `service_bookings`
   ADD CONSTRAINT `fk_booking_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_sb_chef` FOREIGN KEY (`chef_id`) REFERENCES `chefs` (`id`) ON DELETE SET NULL;
 
 --
--- Các ràng buộc cho bảng `supplier_certificates`
+-- Constraints for table `supplier_certificates`
 --
 ALTER TABLE `supplier_certificates`
   ADD CONSTRAINT `supplier_certificates_ibfk_1` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `topping_recipes`
+-- Constraints for table `topping_recipes`
 --
 ALTER TABLE `topping_recipes`
   ADD CONSTRAINT `fk_topping_recipes_item` FOREIGN KEY (`item_id`) REFERENCES `inventory` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_topping_recipes_topping` FOREIGN KEY (`topping_id`) REFERENCES `toppings` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `users`
+-- Constraints for table `users`
 --
 ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE SET NULL;
 
 --
--- Các ràng buộc cho bảng `user_addresses`
+-- Constraints for table `user_addresses`
 --
 ALTER TABLE `user_addresses`
   ADD CONSTRAINT `user_addresses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `user_milestones`
+-- Constraints for table `user_milestones`
 --
 ALTER TABLE `user_milestones`
   ADD CONSTRAINT `user_milestones_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `user_milestones_ibfk_2` FOREIGN KEY (`milestone_id`) REFERENCES `milestones` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `user_vip`
+-- Constraints for table `user_vip`
 --
 ALTER TABLE `user_vip`
   ADD CONSTRAINT `fk_user_vip_plan_id` FOREIGN KEY (`plan_id`) REFERENCES `vip_plans` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,

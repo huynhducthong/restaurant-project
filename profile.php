@@ -189,7 +189,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $doneness = $_POST['doneness'] ?? '';
         $flavor_profile = isset($_POST['flavor_profile']) ? implode(', ', $_POST['flavor_profile']) : '';
         $fav_ingredients = isset($_POST['fav_ingredients']) ? implode(', ', $_POST['fav_ingredients']) : '';
-        $disliked_ingredients = isset($_POST['disliked_ingredients']) ? implode(', ', $_POST['disliked_ingredients']) : '';
+        $disliked_arr = isset($_POST['disliked_ingredients']) ? $_POST['disliked_ingredients'] : [];
+        if (!empty($_POST['other_dislikes'])) {
+            $other_d_arr = array_map('trim', explode(',', $_POST['other_dislikes']));
+            $disliked_arr = array_merge($disliked_arr, $other_d_arr);
+        }
+        $disliked_arr = array_unique(array_filter($disliked_arr));
+        $disliked_ingredients = implode(', ', $disliked_arr);
         
         $allergies_arr = isset($_POST['allergies']) ? $_POST['allergies'] : [];
         if (!empty($_POST['other_allergies'])) {
@@ -247,6 +253,7 @@ $bookings_stmt->execute([$user_id]);
 $user_bookings = $bookings_stmt->fetchAll();
 
 include __DIR__ . '/views/client/layouts/header.php';
+
 ?>
 
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -556,6 +563,7 @@ body{
   .prof-card-body{padding:20px;}
   .prof-card-head{padding:16px 20px 0;}
 }
+
 </style>
 
 <style>
@@ -596,6 +604,7 @@ body{
 #topbar i { color: var(--accent-burgundy) !important; }
 #topbar .lang-switcher a { color: var(--ink) !important; }
 #topbar .lang-switcher span { color: var(--muted) !important; }
+
 </style>
 
 <div class="profile-wrap" style="background-color: #faf9f6;">
@@ -827,7 +836,8 @@ body{
             .journey-header h3 { font-family: 'Cormorant Garamond', serif; color: #A88746; font-size: 2rem; margin-bottom: 10px; font-weight: 600; }
             .journey-header p { font-size: 1.05rem; color: #555; }
             .visit-count-badge { display: inline-block; background: #A88746; color: #fff; padding: 6px 18px; border-radius: 30px; font-weight: 600; margin-top: 10px; font-size: 14px; letter-spacing: 0.5px; }
-        </style>
+        
+</style>
 
         <div class="journey-container">
             <div class="journey-header">
@@ -932,12 +942,23 @@ body{
             <div class="col-md-6 mb-2">
               <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-x-circle me-2"></i>Không thích ăn (Dislikes)</h6>
               <div class="d-flex flex-wrap gap-2 mt-3">
-                <?php $disopts = ['Hành lá', 'Rau mùi', 'Hành tây', 'Tỏi', 'Ớt chuông', 'Tiêu xanh', 'Thịt mỡ']; 
+                <?php 
+                $disopts = ['Hành lá', 'Rau mùi', 'Hành tây', 'Tỏi', 'Ớt chuông', 'Tiêu xanh', 'Thịt mỡ']; 
+                $my_dislikes_arr = array_map('trim', explode(',', $current_user['disliked_ingredients'] ?? ''));
+                $other_dislikes = array_filter($my_dislikes_arr, function($d) use ($disopts) {
+                    return !in_array($d, $disopts) && !empty($d);
+                });
+                $other_dislikes_str = implode(', ', $other_dislikes);
+                
                 foreach($disopts as $dis): ?>
                 <label class="d-flex align-items-center gap-2" style="cursor:pointer; font-size:14px; width:45%;">
-                  <input type="checkbox" name="disliked_ingredients[]" value="<?= $dis ?>" <?= in_array($dis, $my_dislikes) ? 'checked' : '' ?> style="accent-color:var(--F);"> <?= $dis ?>
+                  <input type="checkbox" name="disliked_ingredients[]" value="<?= $dis ?>" <?= in_array($dis, $my_dislikes_arr) ? 'checked' : '' ?> style="accent-color:var(--F);"> <?= $dis ?>
                 </label>
                 <?php endforeach; ?>
+              </div>
+              <div class="mt-3" style="padding-right: 15px;">
+                <label class="small fw-bold" style="color:#555;">Không thích khác (nếu có, phân cách bằng dấu phẩy)</label>
+                <input type="text" name="other_dislikes" class="form-control form-control-sm mt-1" value="<?= htmlspecialchars($other_dislikes_str) ?>" placeholder="Ví dụ: Hành phi, Cà rốt...">
               </div>
             </div>
 
@@ -1183,6 +1204,7 @@ body{
 <style>
 .spin { display:inline-block; animation:spin 1s linear infinite; }
 @keyframes spin { 100% { transform:rotate(360deg); } }
+
 </style>
 
 <script>
