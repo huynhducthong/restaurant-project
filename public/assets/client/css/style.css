@@ -4346,11 +4346,52 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     height: 2px;
     background: #cda45e;
 }
+}
 .cd-tech-part .cd-tech-desc {
     font-size: 0.95rem !important;
     line-height: 1.8 !important;
     color: #555 !important;
     font-style: normal !important;
+}
+
+@media (max-width: 768px) {
+    .cd-name {
+        font-size: clamp(2.5rem, 10vw, 3.5rem) !important;
+        margin-bottom: 15px;
+    }
+    .cd-hero {
+        height: 60vh !important;
+        min-height: 400px !important;
+        padding-bottom: 40px !important;
+    }
+    .cd-quote {
+        font-size: 1.3rem !important;
+    }
+    .cd-bio {
+        font-size: 1.15rem !important;
+        line-height: 1.7 !important;
+        text-align: left !important;
+    }
+    .cd-bio::first-letter {
+        font-size: 4rem !important;
+        padding-top: 5px !important;
+    }
+    .cd-section {
+        padding: 60px 0 !important;
+    }
+    .cd-hall-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+    .cd-hall-plaque {
+        padding: 30px 15px !important;
+        border-width: 6px !important;
+        outline-width: 1px !important;
+        outline-offset: -10px !important;
+    }
+    .plaque-title {
+        font-size: 1.3rem !important;
+    }
 }
 
 .st-gallery-section {

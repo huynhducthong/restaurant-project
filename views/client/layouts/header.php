@@ -771,7 +771,7 @@ if (!empty($logo_path)) {
                     <li>
                         <a class="<?= ($current_page == 'chefs.php' || ($current_page == 'about.php' && isset($_GET['cat_id']) && $_GET['cat_id'] == 3)) ? 'active' : '' ?>"
                             href="<?= safe_url('chefs.php', $path_prefix ?? '') ?>">
-                            <?= 'Bếp trưởng' ?>
+                            <?= 'Đội bếp' ?>
                         </a>
                     </li>
 
@@ -807,7 +807,7 @@ if (!empty($logo_path)) {
                             <a href="<?= safe_url('index.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Trang chủ</a>
                             <a href="<?= safe_url('about.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Tin tức</a>
                             <a href="<?= safe_url('menu.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Thực đơn</a>
-                            <a href="<?= safe_url('chefs.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Bếp trưởng</a>
+                            <a href="<?= safe_url('chefs.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Đội bếp</a>
                             <a href="<?= safe_url('contact.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Liên hệ</a>
                             <div class="mobile-only-item" style="height: 1px; background-color: rgba(168, 135, 70, 0.4); margin: 10px 20px;"></div>
 
