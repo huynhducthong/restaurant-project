@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 07, 2026 at 09:49 AM
+-- Generation Time: Jul 09, 2026 at 06:16 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -420,7 +420,8 @@ INSERT INTO `about_shares` (`id`, `content_id`, `platform`, `user_ip`, `created_
 (202, 1, 'view', '::1', '2026-07-06 13:27:26'),
 (203, 1, 'view', '::1', '2026-07-06 13:54:00'),
 (204, 3, 'view', '::1', '2026-07-07 03:55:00'),
-(205, 2, 'view', '::1', '2026-07-07 03:55:07');
+(205, 2, 'view', '::1', '2026-07-07 03:55:07'),
+(206, 10, 'view', '::1', '2026-07-09 02:30:00');
 
 -- --------------------------------------------------------
 
@@ -4629,10 +4630,10 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 ('inv_expiry_warning_days', '30'),
 ('inv_low_stock', '5'),
 ('inv_low_stock_threshold', '5'),
-('last_telegram_alert_date', '2026-07-07'),
-('last_telegram_eod_date', '2026-07-07'),
+('last_telegram_alert_date', '2026-07-09'),
+('last_telegram_eod_date', '2026-07-09'),
 ('logo_url', 'assets/img/logo.png'),
-('logo_ver', '1779627100'),
+('logo_ver', '1783568271'),
 ('maps_embed', ''),
 ('meta_desc', ''),
 ('name_position', 'left'),
@@ -5834,7 +5835,7 @@ ALTER TABLE `about_saved_posts`
 -- AUTO_INCREMENT for table `about_shares`
 --
 ALTER TABLE `about_shares`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=206;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=207;
 
 --
 -- AUTO_INCREMENT for table `admins`
