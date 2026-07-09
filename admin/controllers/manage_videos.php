@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_update'])) {
 
             if ($upload_error) {
                 $_SESSION['video_flash'] = ['type' => 'error', 'msg' => $upload_error];
-                header('Location: '/restaurant-project/admin/controllers/settings.php?tab=video); exit;
+                header('Location: /restaurant-project/admin/controllers/settings.php?tab=video'); exit;
             }
 
             $upload_dir = __DIR__ . '/../../uploads/videos/';
