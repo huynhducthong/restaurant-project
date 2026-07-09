@@ -224,7 +224,7 @@ $form_action = $is_edit
                                     <input type="file" name="fj_img_certificate" class="form-control form-control-sm bg-light border-0 mb-2" accept="image/*">
                                     <?php if (!empty($fj['certificate_img'])): ?>
                                         <div class="d-flex align-items-center gap-2 mb-2">
-                                            <img src="../../public/assets/img/journey/<?= htmlspecialchars($fj['certificate_img']) ?>" alt="cert" class="rounded" style="width: 50px; height: 50px; object-fit: cover; border: 1px solid #ccc;">
+                                            <img src="../../public/assets/img/journey/<?= htmlspecialchars($fj['certificate_img']) ?>" alt="img" class="rounded" style="width: 50px; height: 50px; object-fit: cover; border: 1px solid #ccc;">
                                             <small class="text-muted">Đã có ảnh chứng nhận</small>
                                         </div>
                                     <?php endif; ?>

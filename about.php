@@ -209,7 +209,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 /* Base Reset and Layout */
 .news-page-wrap {
     position: relative;
-    background: url('<?= $path_prefix ?>public/assets/img/about_bg_premium.png') center/cover no-repeat fixed !important;
+    background: url('<?= $path_prefix ?>public/assets/img/about_bg_premium.jpg') center/cover no-repeat fixed !important;
     color: var(--news-text);
     min-height: 85vh;
     padding: 180px 0 60px 0; /* Clear header space */

@@ -506,6 +506,26 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 <!-- Menu Container -->
 <div class="editorial-menu-container">
 
+    <?php if (isset($_SESSION['user_id']) && (!empty($user_allergies) || !empty($user_flavor) || !empty($user_fav) || !empty($user_dislikes))): ?>
+    <!-- AI Recommendation Section -->
+    <div class="menu-section a-la-carte-section" style="margin-bottom: 80px;">
+        <h2 class="menu-section-title">🌟 Dành Riêng Cho Bạn</h2>
+        <div class="menu-section-subtitle">Gợi Ý Dựa Trên DNA Ẩm Thực Của Bạn</div>
+        <div style="background: #fffcf5; border: 1px solid #c8933a; border-radius: 12px; padding: 30px; text-align: center; max-width: 900px; margin: 30px auto 0;">
+            <div id="ai-rec-loading">
+                <div class="spinner-border text-warning" role="status" style="width: 3rem; height: 3rem;"></div>
+                <p class="mt-3" style="font-family: var(--font-serif); font-size: 1.2rem; color: var(--accent-burgundy); font-style: italic;">
+                    Bếp trưởng đang xem xét khẩu vị của bạn...
+                </p>
+            </div>
+            <div id="ai-rec-content" style="display:none; font-family: var(--font-serif); font-size: 1.15rem; color: var(--text-main); text-align: left; line-height: 1.8;">
+                <!-- AI Content Here -->
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
+
     <!-- Themed Collections -->
     <?php if(!empty($active_themes)): ?>
         <?php foreach($active_themes as $t): ?>
@@ -918,6 +938,44 @@ function closeEdModal(e) {
 }
 document.addEventListener('keydown', function(e) {
     if(e.key === 'Escape') closeEdModal(null);
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const loadingEl = document.getElementById('ai-rec-loading');
+    const contentEl = document.getElementById('ai-rec-content');
+    
+    if (loadingEl && contentEl) {
+        fetch('ajax/ajax_ai_menu.php')
+            .then(response => response.json())
+            .then(res => {
+                loadingEl.style.display = 'none';
+                if (res.status === 'success') {
+                    let html = res.data;
+                    html = html.replace(/\*\*(.*?)\*\*/g, '<strong style="color:var(--accent-burgundy);">$1</strong>');
+                    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                    html = html.replace(/\n/g, '<br>');
+                    contentEl.innerHTML = html;
+                    
+                    // Fade in effect
+                    contentEl.style.opacity = 0;
+                    contentEl.style.display = 'block';
+                    let opacity = 0;
+                    let timer = setInterval(function() {
+                        if (opacity >= 1) clearInterval(timer);
+                        contentEl.style.opacity = opacity;
+                        opacity += 0.1;
+                    }, 20);
+                } else {
+                    contentEl.innerHTML = '<p style="color:red; text-align:center;">' + res.message + '</p>';
+                    contentEl.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                loadingEl.style.display = 'none';
+                contentEl.innerHTML = '<p style="color:red; text-align:center;">Lỗi kết nối tới hệ thống AI.</p>';
+                contentEl.style.display = 'block';
+            });
+    }
 });
 </script>
 

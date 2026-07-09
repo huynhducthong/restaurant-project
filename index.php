@@ -129,7 +129,7 @@ include __DIR__ . '/views/client/layouts/header.php';
         <div class="carousel-item <?= $first ? 'active' : '' ?>"
           style="background-image: url('public/assets/img/hero/<?= $row['image_url'] ?>'); background-size: cover; height: 100vh; background-position: center; position: relative;">
 
-          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 25%, rgba(0,0,0,0.2) 75%, #F9F9F9 100%);"></div>
+          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 25%, rgba(0,0,0,0.2) 75%, rgba(0,0,0,0.8) 100%);"></div>
 
           <div class="container position-relative d-flex flex-column justify-content-center h-100"
             style="text-align: <?= $row['text_align'] ?>; z-index: 2;">
@@ -144,7 +144,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                     font-style: <?= $title_style ?>;
                     text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
                     margin-bottom: 15px;">
-                  <?= __(htmlspecialchars($row['title'])) ?>
+                  <?= htmlspecialchars($row['title']) ?>
                 </h1>
 
                 <p style="
@@ -154,7 +154,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                     font-weight: <?= $desc_weight ?>; 
                     font-style: <?= $desc_style ?>;
                     text-shadow: 1px 1px 4px rgba(0,0,0,0.7);">
-                  <?= __(htmlspecialchars($row['description'])) ?>
+                  <?= htmlspecialchars($row['description']) ?>
                 </p>
                 <?php if (!empty($row['button_text'])): ?>
                   <a href="<?= htmlspecialchars($row['button_link'] ?? '#') ?>" class="animate__animated animate__fadeInUp" style="
@@ -173,7 +173,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                     transition:0.3s;
                     margin-top:20px;
                 " onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
-                    <?= __(htmlspecialchars($row['button_text'])) ?>
+                    <?= htmlspecialchars($row['button_text']) ?>
                   </a>
                 <?php endif; ?>
               </div>
@@ -633,7 +633,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <?= number_format($row['price'], 0, ',', '.') ?>đ
                                   </div>
                                 </div>
-                                <p style="color: #ffffff; font-size: 13px; margin: 0 0 8px 0; line-height: 1.6; max-width: 90%; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><?= __(htmlspecialchars($row['description'])) ?></p>
+                                <p style="color: #ffffff; font-size: 13px; margin: 0 0 8px 0; line-height: 1.6; max-width: 90%; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><?= htmlspecialchars($row['description']) ?></p>
                                 <div style="font-size: 11px; color: #e6e6e6; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"><i class="bi bi-star-fill me-1" style="color:#C9A66B; font-size:9px;"></i><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></div>
                             </div>
                             
@@ -666,7 +666,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   <?php if(!empty($t['foods'])): ?>
                   <div class="col-lg-6 col-md-12 cine-reveal" style="transition-delay: 0.5s;">
                     <div class="cine-glass-card cine-card-right">
-                      <h4 style="text-align: center; color: #C9A66B; font-family: 'Cormorant Garamond', serif; margin-bottom: 40px; font-size: 24px; font-weight: 500; letter-spacing: 6px; border-bottom: 1px solid rgba(201, 166, 107, 0.2); padding-bottom: 20px; text-transform: uppercase;"><?= __('our_menu') ?></h4>
+                      <h4 style="text-align: center; color: #C9A66B; font-family: 'Cormorant Garamond', serif; margin-bottom: 40px; font-size: 24px; font-weight: 500; letter-spacing: 6px; border-bottom: 1px solid rgba(201, 166, 107, 0.2); padding-bottom: 20px; text-transform: uppercase;"><?= 'Thực Đơn Của Chúng Tôi' ?></h4>
                       <div class="d-flex flex-column gap-4">
                         <?php foreach($t['foods'] as $f): ?>
                           <div class="menu-list-item" style="transition: transform 0.3s ease;" onmouseover="this.style.transform='translateX(10px)'" onmouseout="this.style.transform='translateX(0)'">
@@ -1160,6 +1160,78 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </main>
 
+<?php if (($settings['promo_popup_enabled'] ?? '0') == '1' && !empty($settings['promo_popup_file'])): ?>
+<!-- Welcome Promo Popup -->
+<div class="modal fade" id="welcomePromoModal" tabindex="-1" aria-labelledby="welcomePromoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 550px;">
+    <div class="modal-content" style="background: transparent; border: none; align-items: center;">
+      <div style="position: relative; display: block; background: #fff; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); overflow: hidden; width: 100%;">
+        
+        <!-- Nút tắt (Nằm bên trong góc trên phải của thẻ trắng, màu trắng dễ nhìn) -->
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="position: absolute; right: 15px; top: 15px; z-index: 1060; background-color: #ffffff; opacity: 1; padding: 10px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.4);"></button>
+
+        <?php if (($settings['promo_popup_type'] ?? 'image') === 'pdf'): ?>
+            <iframe src="public/<?= htmlspecialchars($settings['promo_popup_file']) ?>" style="width: 100%; height: 70vh; border:none; display: block;"></iframe>
+        <?php else: ?>
+            <img src="public/<?= htmlspecialchars($settings['promo_popup_file']) ?>" class="img-fluid" style="max-height: 75vh; width: 100%; object-fit: contain; display: block; margin: 0 auto; background: #fff;" alt="Welcome Promo">
+        <?php endif; ?>
+        
+        <?php if (!empty($settings['promo_popup_content'])): ?>
+        <div class="p-4 text-dark text-center" style="border-top: 1px solid #eee; background: #fdfdfd;">
+            <p class="mb-0" style="white-space: pre-wrap; font-size: 1.05rem; line-height: 1.5;"><?= htmlspecialchars($settings['promo_popup_content']) ?></p>
+        </div>
+        <?php endif; ?>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("Welcome Popup script initialized.");
+    
+    // Kiểm tra xem có phải là tải lại trang (F5) hoặc truy cập từ bên ngoài (nhập URL, từ Google...)
+    let isReload = false;
+    let isExternalEntry = false;
+    
+    if (window.performance) {
+        if (performance.getEntriesByType) {
+            let navEntries = performance.getEntriesByType("navigation");
+            if (navEntries.length > 0 && navEntries[0].type === "reload") {
+                isReload = true;
+            }
+        } else if (performance.navigation && performance.navigation.type === 1) {
+            isReload = true;
+        }
+    }
+    
+    if (document.referrer === "" || document.referrer.indexOf(location.hostname) === -1) {
+        isExternalEntry = true;
+    }
+    
+    // Chỉ hiện Popup nếu là F5 hoặc mới vào web lần đầu
+    if (isReload || isExternalEntry) {
+        setTimeout(function() {
+            var promoModalEl = document.getElementById('welcomePromoModal');
+            console.log("Modal element found:", promoModalEl);
+            if (promoModalEl) {
+                try {
+                    var promoModal = new bootstrap.Modal(promoModalEl, {
+                        backdrop: 'static', 
+                        keyboard: true
+                    });
+                    promoModal.show();
+                    console.log("Modal shown successfully.");
+                } catch (e) {
+                    console.error("Error showing modal:", e);
+                }
+            }
+        }, 1000);
+    }
+});
+</script>
+<?php endif; ?>
+
 <?php include __DIR__ . '/views/client/layouts/footer.php'; ?>
 
 <style>
@@ -1169,10 +1241,10 @@ document.addEventListener('DOMContentLoaded', function() {
     100% { transform: scale(1.08); }
   }
   .carousel-item.active {
-    animation: kenBurnsLux 20s ease-out forwards;
+    
   }
   .carousel-item .container {
-    animation: reverseKenBurnsLux 20s ease-out forwards;
+    
   }
   @keyframes reverseKenBurnsLux {
     0% { transform: scale(1); }
