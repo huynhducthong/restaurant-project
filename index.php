@@ -139,7 +139,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                 <h1 style="
                     color: <?= $row['text_color'] ?>; 
                     font-family: <?= $row['font_family'] ?>; 
-                    font-size: <?= $row['title_font_size'] ?? 48 ?>px; 
+                    font-size: clamp(2.5rem, 6vw, <?= $row['title_font_size'] ?? 48 ?>px); 
                     font-weight: <?= $title_weight ?>; 
                     font-style: <?= $title_style ?>;
                     text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
@@ -150,7 +150,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                 <p style="
                     color: <?= $row['desc_color'] ?? '#eeeeee' ?>; 
                     font-family: <?= $row['desc_font_family'] ?? "'Source Sans 3', sans-serif" ?>; 
-                    font-size: <?= $row['desc_font_size'] ?? 24 ?>px; 
+                    font-size: clamp(1rem, 3vw, <?= $row['desc_font_size'] ?? 24 ?>px); 
                     font-weight: <?= $desc_weight ?>; 
                     font-style: <?= $desc_style ?>;
                     text-shadow: 1px 1px 4px rgba(0,0,0,0.7);">
@@ -223,19 +223,19 @@ document.addEventListener('DOMContentLoaded', function() {
           <div class="video-wrapper" style="position: relative; width: 100%; border-radius: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #A88746; background: #FFFFFF;">
 
             <?php if ($video_type == 'youtube' && !empty($video_url)): ?>
-              <iframe width="100%" height="500"
+              <iframe width="100%"
                 src="https://www.youtube.com/embed/<?php echo htmlspecialchars($video_url); ?>"
-                frameborder="0" allowfullscreen style="display: block; border: none;">
+                frameborder="0" allowfullscreen style="display: block; border: none; height: clamp(250px, 50vw, 500px);">
               </iframe>
             <?php elseif ($video_type == 'vimeo' && !empty($video_url)): ?>
-              <iframe width="100%" height="500"
+              <iframe width="100%"
                 src="https://player.vimeo.com/video/<?php echo htmlspecialchars($video_url); ?>"
-                frameborder="0" allowfullscreen style="display: block; border: none;">
+                frameborder="0" allowfullscreen style="display: block; border: none; height: clamp(250px, 50vw, 500px);">
               </iframe>
             <?php elseif ($video_type == 'muse' && !empty($video_url)): ?>
-              <iframe width="100%" height="500"
+              <iframe width="100%"
                 src="https://muse.ai/embed/<?php echo htmlspecialchars($video_url); ?>?search=0&links=0"
-                frameborder="0" allowfullscreen style="display: block; border: none;">
+                frameborder="0" allowfullscreen style="display: block; border: none; height: clamp(250px, 50vw, 500px);">
               </iframe>
             <?php elseif ($video_type == 'local' && !empty($file_path)): ?>
               <?php
@@ -243,12 +243,12 @@ document.addEventListener('DOMContentLoaded', function() {
               $mime_map = ['mp4' => 'video/mp4', 'webm' => 'video/webm', 'mov' => 'video/quicktime'];
               $mime_v = $mime_map[$ext_v] ?? 'video/mp4';
               ?>
-              <video controls style="width: 100%; height: 500px; display: block; object-fit: cover;">
+              <video controls style="width: 100%; display: block; object-fit: cover; height: clamp(250px, 50vw, 500px);">
                 <source src="<?= htmlspecialchars($file_path) ?>" type="<?= $mime_v ?>">
                 Trình duyệt của bạn không hỗ trợ xem video.
               </video>
             <?php else: ?>
-              <img src="public/assets/img/about.jpg" class="img-fluid" alt="About Us" style="width: 100%; height: 500px; object-fit: cover;">
+              <img src="public/assets/img/about.jpg" class="img-fluid" alt="About Us" style="width: 100%; object-fit: cover; height: clamp(250px, 50vw, 500px);">
             <?php endif; ?>
 
           </div>
@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   $v_desc = "Nằm giữa lòng " . htmlspecialchars($settings['address'] ?? 'Biên Hòa') . ", chúng tôi mang đến một không gian ẩm thực tinh tế.";
               }
             ?>
-            <h2 style="font-family: 'Cormorant Garamond', serif; color: #A88746; font-size: 3rem; margin-bottom: 25px; font-weight: 700; line-height: 1.2;">
+            <h2 style="font-family: 'Cormorant Garamond', serif; color: #A88746; font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 25px; font-weight: 700; line-height: 1.2;">
               <?= $v_title ?>
             </h2>
             <p style="font-family: 'Source Sans 3', sans-serif; font-weight: 300; line-height: 2; color: #222222; font-size: 1.15rem; margin-bottom: 25px;">

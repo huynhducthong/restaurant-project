@@ -512,18 +512,17 @@ if (!empty($logo_path)) {
         .oriental-item i {
             display: none; /* Hide icons in the new clean menu */
         }
+        .mobile-only-item { display: none !important; }
+        .header-container { padding-left: 8vw; padding-right: 8vw; }
         @media (max-width: 991px) {
-            .navbar {
-                display: none;
-            }
+            .navbar { display: none; }
+            .mobile-only-item { display: flex !important; }
+            #topbar { display: none !important; }
+            .header-container { padding-left: 15px !important; padding-right: 15px !important; }
+            .btn-book-outside { padding: 6px 12px; font-size: 14px; white-space: nowrap; }
+            .oriental-trigger i { font-size: 28px; }
         }
 
-    
-        
-            100% { opacity: 0; visibility: hidden; }
-        }
-
-    
         /* =======================
            PAGE TRANSITION OVERLAY
         ======================= */
@@ -773,6 +772,13 @@ if (!empty($logo_path)) {
                         </div>
                         
                         <div class="oriental-panel" id="orientalPanel">
+                            <!-- MOBILE NAVIGATION LINKS -->
+                            <a href="<?= safe_url('index.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Trang chủ</a>
+                            <a href="<?= safe_url('about.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Tin tức</a>
+                            <a href="<?= safe_url('menu.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Thực đơn</a>
+                            <a href="<?= safe_url('chefs.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Bếp trưởng</a>
+                            <a href="<?= safe_url('contact.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Liên hệ</a>
+                            <div class="mobile-only-item" style="height: 1px; background-color: rgba(168, 135, 70, 0.4); margin: 10px 20px;"></div>
 
                             <?php if (isset($_SESSION['user_id'])): ?>
                                 <!-- TRANG QUẢN TRỊ -->

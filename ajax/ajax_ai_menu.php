@@ -37,6 +37,9 @@ try {
     }
 
     $user_allergies = $u['allergies'] ? array_map('trim', explode(',', mb_strtolower($u['allergies'], 'UTF-8'))) : [];
+
+    // Giải phóng session lock để người dùng có thể bấm chuyển trang trong lúc chờ AI phản hồi
+    session_write_close();
     
     // Hàm kiểm tra dị ứng (bản copy từ menu.php để dùng chung logic)
     function hasAllergenLocal($food_allergens_str, $user_allergies) {
@@ -184,7 +187,9 @@ Chào bạn, tôi là Bếp trưởng của Nhã...
     $generated_rec = $res_data['candidates'][0]['content']['parts'][0]['text'];
 
     // 7. Lưu Cache vào Session
+    session_start();
     $_SESSION['ai_menu_recommendation'] = $generated_rec;
+    session_write_close();
 
     echo json_encode(['status' => 'success', 'data' => $generated_rec]);
 
