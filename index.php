@@ -1259,10 +1259,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 ?>
             </div>
             <div class="awesome-socials">
-                <i class="bi bi-facebook"></i>
-                <i class="bi bi-twitter-x"></i>
-                <i class="bi bi-instagram"></i>
-                <i class="bi bi-linkedin"></i>
+                <?php if (!empty($chef['facebook'])): ?>
+                    <a href="<?= htmlspecialchars($chef['facebook']) ?>" target="_blank" style="color: inherit; text-decoration: none;"><i class="bi bi-facebook"></i></a>
+                <?php else: ?>
+                    <i class="bi bi-facebook"></i>
+                <?php endif; ?>
+                
+                <?php if (!empty($chef['instagram'])): ?>
+                    <a href="<?= htmlspecialchars($chef['instagram']) ?>" target="_blank" style="color: inherit; text-decoration: none;"><i class="bi bi-instagram"></i></a>
+                <?php else: ?>
+                    <i class="bi bi-instagram"></i>
+                <?php endif; ?>
+                
+                <?php if (!empty($chef['email'])): ?>
+                    <a href="mailto:<?= htmlspecialchars($chef['email']) ?>" style="color: inherit; text-decoration: none;"><i class="bi bi-envelope"></i></a>
+                <?php else: ?>
+                    <i class="bi bi-envelope"></i>
+                <?php endif; ?>
             </div>
           </div>
         <?php endforeach; ?>
