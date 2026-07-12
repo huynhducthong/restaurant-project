@@ -321,68 +321,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <main id="main">
-  <section id="about" class="about-section" style="background: #F9F9F9; color: #222222; padding: 140px 0; overflow: hidden;">
-    <div class="container-fluid px-0">
-      <div class="row g-0 align-items-center">
-        <div class="col-lg-7" style="padding-left: 5%; padding-right: 30px;">
-          <div class="video-wrapper" style="position: relative; width: 100%; border-radius: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #A88746; background: #FFFFFF;">
 
-            <?php if ($video_type == 'youtube' && !empty($video_url)): ?>
-              <iframe width="100%"
-                src="https://www.youtube.com/embed/<?php echo htmlspecialchars($video_url); ?>"
-                frameborder="0" allowfullscreen style="display: block; border: none; height: clamp(250px, 50vw, 500px);">
-              </iframe>
-            <?php elseif ($video_type == 'vimeo' && !empty($video_url)): ?>
-              <iframe width="100%"
-                src="https://player.vimeo.com/video/<?php echo htmlspecialchars($video_url); ?>"
-                frameborder="0" allowfullscreen style="display: block; border: none; height: clamp(250px, 50vw, 500px);">
-              </iframe>
-            <?php elseif ($video_type == 'muse' && !empty($video_url)): ?>
-              <iframe width="100%"
-                src="https://muse.ai/embed/<?php echo htmlspecialchars($video_url); ?>?search=0&links=0"
-                frameborder="0" allowfullscreen style="display: block; border: none; height: clamp(250px, 50vw, 500px);">
-              </iframe>
-            <?php elseif ($video_type == 'local' && !empty($file_path)): ?>
-              <?php
-              $ext_v = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
-              $mime_map = ['mp4' => 'video/mp4', 'webm' => 'video/webm', 'mov' => 'video/quicktime'];
-              $mime_v = $mime_map[$ext_v] ?? 'video/mp4';
-              ?>
-              <video controls style="width: 100%; display: block; object-fit: cover; height: clamp(250px, 50vw, 500px);">
-                <source src="<?= htmlspecialchars($file_path) ?>" type="<?= $mime_v ?>">
-                Trình duyệt của bạn không hỗ trợ xem video.
-              </video>
-            <?php else: ?>
-              <img src="public/assets/img/about.jpg" class="img-fluid" alt="About Us" style="width: 100%; object-fit: cover; height: clamp(250px, 50vw, 500px);">
-            <?php endif; ?>
-
-          </div>
-        </div>
-
-        <div class="col-lg-5 p-4 p-md-5">
-          <div class="about-content" style="padding-right: 5%;">
-            <?php
-              $v_title = $video_data['title'] ?? '';
-              $v_desc  = $video_data['description'] ?? '';
-              
-              if (empty($v_title)) {
-                  $v_title = "Câu Chuyện <br> Về " . htmlspecialchars($settings['restaurant_name'] ?? 'Restaurantly');
-              }
-              if (empty($v_desc)) {
-                  $v_desc = "Nằm giữa lòng " . htmlspecialchars($settings['address'] ?? 'Biên Hòa') . ", chúng tôi mang đến một không gian ẩm thực tinh tế.";
-              }
-            ?>
-            <h2 style="font-family: 'Cormorant Garamond', serif; color: #A88746; font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 25px; font-weight: 700; line-height: 1.2;">
-              <?= $v_title ?>
-            </h2>
-            <p style="font-family: 'Source Sans 3', sans-serif; font-weight: 300; line-height: 2; color: #222222; font-size: 1.15rem; margin-bottom: 25px;">
-              <?= nl2br(htmlspecialchars($v_desc)) ?>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <section id="menu" class="menu section-bg" style="background: #FFFFFF; padding: 100px 0; overflow: hidden;">
 
