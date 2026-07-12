@@ -635,8 +635,7 @@ document.addEventListener('DOMContentLoaded', function() {
   </style>
 
     <style>
-  .minimal-menu-wrapper {
-      background: #111111;
+  .minimal-menu-wrapper { background: #F9F9F9;
       padding: 100px 0;
   }
   .minimal-menu-theme {
@@ -662,7 +661,7 @@ document.addEventListener('DOMContentLoaded', function() {
       display: none;
       margin-top: 15px;
       padding-top: 15px;
-      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+      border-top: 1px dashed rgba(0, 0, 0, 0.1);
   }
   @media (max-width: 991px) {
       .minimal-menu-box {
@@ -675,7 +674,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <div class="container">
           <div class="section-title text-center mb-5">
               <p style="color: #A88746; font-family: 'Source Sans 3', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Tuyển Chọn Thượng Hạng</p>
-              <h2 style="color: #FFF; font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Bộ Sưu Tập Hương Vị</h2>
+              <h2 style="color: #2A201A; font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Bộ Sưu Tập Hương Vị</h2>
           </div>
           
           <?php if (!empty($active_themes)): ?>
@@ -685,27 +684,27 @@ document.addEventListener('DOMContentLoaded', function() {
                   <div class="minimal-menu-theme">
                       <div class="text-center mb-4">
                           <h3 style="color: #C9A66B; font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 400; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 10px;"><?= htmlspecialchars($t['name']) ?></h3>
-                          <p style="color: #888; font-family: 'Source Sans 3', sans-serif; font-size: 14px; max-width: 600px; margin: 0 auto; font-style: italic;"><?= htmlspecialchars($t['description']) ?></p>
+                          <p style="color: #666; font-family: 'Source Sans 3', sans-serif; font-size: 14px; max-width: 600px; margin: 0 auto; font-style: italic;"><?= htmlspecialchars($t['description']) ?></p>
                       </div>
                       
-                      <div class="row g-0 shadow-lg" style="border-radius: 8px; overflow: hidden; background: #181818;">
+                      <div class="row g-0 shadow-lg" style="border-radius: 8px; overflow: hidden; background: #FFFFFF;">
                           <!-- LEFT COLUMN: COMBOS (BLACK) -->
-                          <div class="col-lg-6 p-5 minimal-menu-box" style="background: #181818;">
-                              <h4 style="color: #FFF; font-family: 'Cormorant Garamond', serif; font-size: 24px; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;">Set Menu Thượng Hạng</h4>
+                          <div class="col-lg-6 p-5 minimal-menu-box" style="background: #FFFFFF;">
+                              <h4 style="color: #2A201A; font-family: 'Cormorant Garamond', serif; font-size: 24px; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2px; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 15px;">Set Menu Thượng Hạng</h4>
                               <div class="d-flex flex-column gap-4">
                                   <?php if(!empty($t['combos'])): ?>
                                       <?php foreach($t['combos'] as $row): ?>
                                           <div class="minimal-menu-item">
                                               <div style="cursor: pointer;" onclick="const el = document.getElementById('combo-items-<?= $row['id'] ?>'); el.style.display = (el.style.display === 'none') ? 'block' : 'none';">
                                                   <div class="d-flex align-items-center">
-                                                      <img src="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>" class="minimal-menu-img me-3" style="border: 1px solid #333;" alt="">
+                                                      <img src="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>" class="minimal-menu-img me-3" style="border: 1px solid rgba(0,0,0,0.1);" alt="">
                                                       <div style="flex: 1;">
                                                           <div class="d-flex justify-content-between align-items-baseline">
                                                               <h5 style="color: #FFF; font-family: 'Cormorant Garamond', serif; font-size: 18px; margin: 0; font-weight: 400; text-transform: uppercase;"><?= htmlspecialchars($row['name']) ?> <i class="bi bi-chevron-down ms-1" style="font-size: 12px; color: #C9A66B;"></i></h5>
                                                               <div style="flex-grow: 1; border-bottom: 1px dashed rgba(255,255,255,0.2); margin: 0 10px; position: relative; top: -4px;"></div>
                                                               <div style="color: #C9A66B; font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;"><?= number_format($row['price'], 0, ',', '.') ?>đ</div>
                                                           </div>
-                                                          <p style="color: #999; font-size: 12px; margin: 5px 0 0 0; line-height: 1.5;"><?= htmlspecialchars($row['description']) ?></p>
+                                                          <p style="color: #666; font-size: 12px; margin: 5px 0 0 0; line-height: 1.5;"><?= htmlspecialchars($row['description']) ?></p>
                                                           <div style="font-size: 10px; color: #666; font-style: italic; margin-top: 4px;"><i class="bi bi-star-fill me-1" style="color:#C9A66B; font-size:8px;"></i><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></div>
                                                       </div>
                                                   </div>
@@ -1118,6 +1117,8 @@ document.addEventListener('DOMContentLoaded', function() {
     .editorial-card { width: 100%; max-width: 400px; margin: 0 auto; }
 }
 </style>
+<style>
+
 
 .awesome-team-section {
     padding: 100px 0 80px;
