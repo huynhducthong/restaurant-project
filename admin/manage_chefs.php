@@ -398,7 +398,6 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
                                         <option value="Bếp trưởng">Bếp trưởng</option>
                                         <option value="Bếp phó">Bếp phó</option>
                                         <option value="Bếp chính">Bếp chính</option>
-                                        <option value="Đầu bếp">Đầu bếp</option>
                                         <option value="Phụ bếp">Phụ bếp</option>
                                     </select>
                                 </div>
@@ -523,7 +522,6 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
                                 <!-- Load động bằng JS -->
                             </div>
                         </div>
-                    </div>
                     </div>
 
                     <!-- Tab 3: Certificates -->
