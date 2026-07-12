@@ -3,7 +3,7 @@ require_once __DIR__ . '/config/database.php';
 $database = new Database();
 $db = $database->getConnection();
 
-$all_categories = $db->query("SELECT * FROM categories ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
+$all_categories = $db->query("SELECT * FROM categories ORDER BY sort_order ASC, id ASC")->fetchAll(PDO::FETCH_ASSOC);
 
 // Fetch Active Themes
 $active_themes = $db->query("SELECT * FROM themes WHERE is_active = 1 AND (start_date IS NULL OR start_date <= NOW()) AND (end_date IS NULL OR end_date >= NOW()) ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
@@ -174,7 +174,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 .editorial-hero-bg {
   position: absolute;
   inset: 0;
-  background-image: url('public/assets/img/hero/e1ed0ad828fff1d6a15d.jpg'); /* Default hero image */
+  background-image: url('public/assets/img/about-bg.jpg'); /* Default hero image */
   background-size: cover;
   background-position: center;
   filter: grayscale(0.2) opacity(0.8);
@@ -888,6 +888,62 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <script>
+let currentCurrency = 'VND';
+const exchangeRateVndToUsd = 25400; // Tỷ giá quy đổi
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Lưu lại giá trị VNĐ gốc cho mọi phần tử hiển thị giá
+    document.querySelectorAll('.menu-item-price').forEach(el => {
+        let text = el.innerText.trim();
+        let raw = parseInt(text.replace(/\./g, '').replace(/,/g, ''));
+        if (!isNaN(raw)) {
+            el.setAttribute('data-raw-vnd', raw);
+        }
+    });
+
+    // Tự động phát hiện khi Google Dịch (hoặc trình duyệt) dịch trang
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'class' || mutation.attributeName === 'lang') {
+                const isTranslated = document.documentElement.classList.contains('translated-ltr') 
+                                  || document.documentElement.classList.contains('translated-rtl')
+                                  || document.documentElement.lang === 'en';
+                if (isTranslated) {
+                    setCurrency('USD');
+                } else {
+                    setCurrency('VND');
+                }
+            }
+        });
+    });
+
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'lang'] });
+    
+    // Kiểm tra ngay lúc load xem đã bị dịch chưa
+    if (document.documentElement.classList.contains('translated-ltr') || document.documentElement.lang === 'en') {
+        setCurrency('USD');
+    }
+});
+
+function setCurrency(curr) {
+    if (currentCurrency === curr) return;
+    currentCurrency = curr;
+    
+    // Update prices on the page
+    document.querySelectorAll('.menu-item-price').forEach(el => {
+        let raw = el.getAttribute('data-raw-vnd');
+        if (raw) {
+            raw = parseInt(raw);
+            if (curr === 'VND') {
+                el.innerText = new Intl.NumberFormat('vi-VN').format(raw);
+            } else {
+                let usd = (raw / exchangeRateVndToUsd).toFixed(2);
+                el.innerText = '$' + usd;
+            }
+        }
+    });
+}
+
 let imageTimeoutIds = {};
 function changeFeaturedImage(imgId, newSrc) {
     var imgEl = document.getElementById(imgId);

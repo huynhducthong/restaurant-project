@@ -232,7 +232,7 @@ if ($action === 'add') {
     }
 
     // Dữ liệu cho view
-    $categories = $db->query("SELECT * FROM categories ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $categories = $db->query("SELECT * FROM categories ORDER BY sort_order ASC, name ASC")->fetchAll(PDO::FETCH_ASSOC);
     $ingredients = $db->query("SELECT id, item_name, unit_name FROM inventory ORDER BY item_name ASC")->fetchAll(PDO::FETCH_ASSOC);
     $all_units = $db->query("SELECT name FROM inventory_units ORDER BY name ASC")->fetchAll(PDO::FETCH_COLUMN);
     $drinks = $db->query("SELECT id, name FROM foods WHERE is_active = 1 AND category_id IN (SELECT id FROM categories WHERE name LIKE '%uống%') ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
@@ -425,7 +425,7 @@ if ($action === 'edit') {
     }
 
     // Dữ liệu cho view
-    $categories = $db->query("SELECT * FROM categories ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $categories = $db->query("SELECT * FROM categories ORDER BY sort_order ASC, name ASC")->fetchAll(PDO::FETCH_ASSOC);
     $ingredients = $db->query("SELECT id, item_name, unit_name FROM inventory ORDER BY item_name ASC")->fetchAll(PDO::FETCH_ASSOC);
     $all_units = $db->query("SELECT name FROM inventory_units ORDER BY name ASC")->fetchAll(PDO::FETCH_COLUMN);
     $drinks = $db->query("SELECT id, name FROM foods WHERE is_active = 1 AND category_id IN (SELECT id FROM categories WHERE name LIKE '%uống%') ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
@@ -537,7 +537,7 @@ if (!empty($foods)) {
 }
 
 $hidden_count = (int) $db->query("SELECT COUNT(*) FROM foods WHERE is_active = 0")->fetchColumn();
-$cats = $db->query("SELECT * FROM categories ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
+$cats = $db->query("SELECT * FROM categories ORDER BY sort_order ASC, name ASC")->fetchAll(PDO::FETCH_ASSOC);
 $all_units = $db->query("SELECT name FROM inventory_units ORDER BY name ASC")->fetchAll(PDO::FETCH_COLUMN);
 $ingredients = $db->query("SELECT id, item_name, unit_name FROM inventory ORDER BY item_name ASC")->fetchAll(PDO::FETCH_ASSOC);
 $msg = $_GET['msg'] ?? '';

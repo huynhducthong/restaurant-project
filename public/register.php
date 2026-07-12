@@ -1,4 +1,4 @@
-﻿<?php 
+<?php 
 session_start(); 
 require_once '../config/google_setup.php';
 $login_url = $client->createAuthUrl(); 
@@ -7,6 +7,7 @@ $login_url = $client->createAuthUrl();
 <html lang="vi">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Đăng ký - Restaurantly</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -278,8 +279,12 @@ $login_url = $client->createAuthUrl();
     .input-group-custom:nth-child(4) { animation: fadeUp 0.5s ease 0.56s both; }
     .btn-submit { animation: fadeUp 0.5s ease 0.63s both; }
 
-    @media (max-width: 480px) {
-      .card-box { padding: 36px 24px; }
+    @media (max-width: 576px) {
+      body { padding: 15px; }
+      .card-box { padding: 30px 20px; border-radius: 8px; }
+      .card-title { font-size: 24px; }
+      .brand-mark { display: none; }
+      .form-input { font-size: 16px; padding: 12px 14px 12px 40px; }
     }
   </style>
 </head>

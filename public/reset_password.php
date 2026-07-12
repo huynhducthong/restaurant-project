@@ -1,4 +1,4 @@
-﻿<?php 
+<?php 
 session_start(); 
 
 if (!isset($_SESSION['reset_otp_verified']) && !isset($_SESSION['reset_email'])) {
@@ -10,6 +10,7 @@ if (!isset($_SESSION['reset_otp_verified']) && !isset($_SESSION['reset_email']))
 <html lang="vi">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Đặt lại mật khẩu - Restaurantly</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -200,8 +201,11 @@ if (!isset($_SESSION['reset_otp_verified']) && !isset($_SESSION['reset_email']))
     .input-group-custom:nth-child(2) { animation: fadeUp 0.5s ease 0.45s both; }
     .btn-submit { animation: fadeUp 0.5s ease 0.52s both; }
 
-    @media (max-width: 480px) {
-      .card-box { padding: 36px 24px; }
+    @media (max-width: 576px) {
+      body { padding: 15px; }
+      .card-box { padding: 30px 20px; border-radius: 12px; }
+      .card-title { font-size: 24px; }
+      .form-input { font-size: 16px; padding: 12px 14px 12px 40px; }
     }
   </style>
 </head>

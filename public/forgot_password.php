@@ -1,4 +1,4 @@
-﻿<?php 
+<?php 
 session_start(); 
 ?>
 <!DOCTYPE html>
@@ -196,8 +196,11 @@ session_start();
     .input-group-custom { animation: fadeUp 0.5s ease 0.38s both; }
     .btn-submit { animation: fadeUp 0.5s ease 0.46s both; }
 
-    @media (max-width: 480px) {
-      .card-box { padding: 36px 24px; }
+    @media (max-width: 576px) {
+      body { padding: 15px; }
+      .card-box { padding: 30px 20px; border-radius: 12px; }
+      .card-title { font-size: 24px; }
+      .form-input { font-size: 16px; padding: 12px 14px 12px 40px; }
     }
   </style>
 </head>

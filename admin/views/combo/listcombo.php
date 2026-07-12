@@ -78,6 +78,7 @@ tr.inactive-row { opacity: .5; }
 
     <!-- Bảng combo -->
     <div class="card shadow-sm border-0 overflow-hidden mb-3" style="border-radius:15px;">
+        <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-dark">
                 <tr>
@@ -226,6 +227,7 @@ tr.inactive-row { opacity: .5; }
                 <?php endif; ?>
             </tbody>
         </table>
+        </div>
     </div>
 
     <!-- Phân trang -->

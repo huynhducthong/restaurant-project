@@ -213,7 +213,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     color: var(--news-text);
     min-height: 85vh;
     padding: 180px 0 60px 0; /* Clear header space */
-    font-family: 'Poppins', 'Inter', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     z-index: 1;
 }
 
@@ -233,7 +233,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 
 /* Typography elements */
 .font-playfair {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Cormorant Garamond', serif;
 }
 
 /* Breadcrumbs */
@@ -270,7 +270,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     box-shadow: 0 10px 30px rgba(0,0,0,0.02);
 }
 .widget-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 16px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -301,7 +301,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     padding-bottom: 0;
 }
 .popular-number {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 38px;
     font-weight: 700;
     color: var(--news-gold);
@@ -371,7 +371,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     box-shadow: 0 10px 30px rgba(0,0,0,0.02);
 }
 .newsletter-sidebar-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--news-gold);
@@ -485,7 +485,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     justify-content: space-between;
 }
 .news-row-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -552,7 +552,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     letter-spacing: 1px;
 }
 .article-headline {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 34px;
     font-weight: 700;
     line-height: 1.35;
@@ -709,7 +709,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     padding-top: 30px;
 }
 .related-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -744,7 +744,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     padding: 12px;
 }
 .related-card-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 14px;
     color: var(--news-text-dark);
     font-weight: 600;
@@ -774,7 +774,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     margin-bottom: 20px;
 }
 .vne-comments-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 20px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -1006,7 +1006,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     font-size: 16px;
     font-weight: 700;
     color: var(--news-text-dark);
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
 }
 .news-modal-close {
     background: none;
@@ -1490,7 +1490,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     box-shadow: 0 15px 35px rgba(79, 91, 58, 0.04) !important;
 }
 .article-sapo {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 20px !important;
     line-height: 1.6 !important;
     color: var(--news-olive) !important;
@@ -1514,7 +1514,7 @@ include __DIR__ . '/views/client/layouts/header.php';
     font-style: italic !important;
     color: var(--news-text-dark) !important;
     font-size: 18px !important;
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Cormorant Garamond', serif;
 }
 .article-featured-img {
     border-color: var(--news-border-light) !important;

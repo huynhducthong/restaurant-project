@@ -82,6 +82,8 @@ if ($action === 'stats') {
     $loss_qty   = (float)($general_stats['total_loss']   ?? 0);
     $loss_rate  = ($export_qty > 0) ? min(100, $loss_qty / $export_qty * 100) : 0;
 
+    $chart_raw = $db->query("SELECT DATE_FORMAT(created_at, '%Y-%m') as mo, SUM(CASE WHEN type='import' THEN quantity ELSE 0 END) as ti, SUM(CASE WHEN type='export' THEN quantity ELSE 0 END) as te, SUM(CASE WHEN type='loss' THEN quantity ELSE 0 END) as tl FROM inventory_history WHERE created_at >= DATE_SUB(NOW(), INTERVAL 5 MONTH) GROUP BY mo ORDER BY mo ASC")->fetchAll(PDO::FETCH_ASSOC);
+
     $prev_m = $month == 1  ? 12 : $month - 1;
     $prev_y = $month == 1  ? $year - 1 : $year;
     $next_m = $month == 12 ? 1  : $month + 1;
@@ -144,12 +146,19 @@ if ($action === 'stats') {
         </div>
         <div class="col-lg-7"><div class="card border-0 shadow-sm p-4 h-100"><h5 class="fw-bold mb-3"><i class="fas fa-chart-area text-info me-2"></i>Xuất kho theo ngày</h5><canvas id="dailyChart" height="160"></canvas></div></div>
     </div>
+
+    <!-- 6-Month Chart -->
+    <h4 class="fw-bold mt-5 mb-3 text-uppercase text-success"><i class="fas fa-chart-bar me-2"></i>Biểu Đồ Kho 6 Tháng Gần Nhất</h4>
+    <div class="card shadow-sm border-0 p-4 mb-4" style="height: 350px;">
+        <canvas id="inventoryChart"></canvas>
+    </div>
 </div>
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 (function () {
+    // 1. Daily Chart
     var raw = <?= json_encode($chart_data) ?>;
     var daysInMonth = new Date(<?= $year ?>, <?= $month ?>, 0).getDate();
     var labels = [], data = [], map = {};
@@ -160,6 +169,28 @@ if ($action === 'stats') {
         data: { labels: labels, datasets: [{ label: 'Số lượng xuất', data: data, backgroundColor: 'rgba(13,110,253,0.55)', borderRadius: 3 }] },
         options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { font: { size: 10 } } }, y: { beginAtZero: true, ticks: { precision: 0 } } } }
     });
+
+    // 2. 6-Month Chart
+    var chartRaw = <?= json_encode($chart_raw ?? []) ?>;
+    if (chartRaw.length > 0) {
+        new Chart(document.getElementById('inventoryChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: chartRaw.map(d => d.mo),
+                datasets: [
+                    { label: 'Nhập kho', data: chartRaw.map(d => parseFloat(d.ti)), backgroundColor: 'rgba(25,135,84,.7)' },
+                    { label: 'Xuất kho', data: chartRaw.map(d => parseFloat(d.te)), backgroundColor: 'rgba(13,110,253,.7)' },
+                    { label: 'Hủy hàng', data: chartRaw.map(d => parseFloat(d.tl)), backgroundColor: 'rgba(220,53,69,.7)' }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top' } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
 })();
 </script>
 

@@ -29,8 +29,6 @@ if (!empty($chef['signature_dishes'])) {
 $cert_stmt = $db->prepare("SELECT * FROM chef_certificates WHERE chef_id = ? ORDER BY issue_date DESC");
 $cert_stmt->execute([$id]);
 $awards = $cert_stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Fetch Gallery images from chef_gallery table
 $gallery_stmt = $db->prepare("SELECT * FROM chef_gallery WHERE chef_id = ? ORDER BY sort_order ASC, id ASC LIMIT 4");
 $gallery_stmt->execute([$id]);
 $gallery_images = $gallery_stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -133,7 +131,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 <div class="cd-section">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 style="font-family: 'Playfair Display', serif; color: #111; font-size: 2.5rem;">BẢNG VÀNG DANH DỰ</h2>
+            <h2 style="font-family: 'Cormorant Garamond', serif; color: #111; font-size: 2.5rem;">BẢNG VÀNG DANH DỰ</h2>
             <div style="width: 50px; height: 2px; background: #cda45e; margin: 20px auto;"></div>
         </div>
         <div class="cd-hall-grid">
@@ -167,7 +165,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 <div class="cd-section" style="background: #fdfbf7;">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 style="font-family: 'Playfair Display', serif; color: #111; font-size: 2.5rem;">Kiệt Tác Ẩm Thực</h2>
+            <h2 style="font-family: 'Cormorant Garamond', serif; color: #111; font-size: 2.5rem;">Kiệt Tác Ẩm Thực</h2>
             <div style="width: 50px; height: 2px; background: #cda45e; margin: 20px auto;"></div>
         </div>
         <div class="cd-dishes-list">
@@ -196,7 +194,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 <?php if (!empty($gallery_images)): ?>
 <div class="cd-section st-gallery-section" style="background-color: #fff; padding: 80px 0 0 0;">
     <div class="st-gallery-header text-center mb-5">
-        <h2 style="font-family: 'Playfair Display', serif; color: #111; font-size: 2.5rem; letter-spacing: 2px;">Thư Viện Ảnh Hoạt Động</h2>
+        <h2 style="font-family: 'Cormorant Garamond', serif; color: #111; font-size: 2.5rem; letter-spacing: 2px;">Thư Viện Ảnh Hoạt Động</h2>
         <div style="width: 50px; height: 2px; background: #cda45e; margin: 20px auto;"></div>
     </div>
     
@@ -220,7 +218,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 <div class="cd-section" style="background: #fcfaf5;">
     <div class="container" style="max-width: 1000px; margin: 0 auto;">
         <div class="text-center mb-5">
-            <h2 style="font-family: 'Playfair Display', serif; color: #111; font-size: 2.5rem;">Trải Nghiệm Cùng Bếp Trưởng</h2>
+            <h2 style="font-family: 'Cormorant Garamond', serif; color: #111; font-size: 2.5rem;">Trải Nghiệm Cùng Bếp Trưởng</h2>
             <p style="color: #666; font-size: 1rem; margin-top: 10px;">Những chia sẻ chân thực từ các thực khách đã trực tiếp trải nghiệm ẩm thực do Bếp trưởng thực hiện.</p>
             <div style="width: 50px; height: 2px; background: #cda45e; margin: 20px auto;"></div>
         </div>
@@ -253,7 +251,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 
             <!-- Submit Review Form -->
             <div class="write-review-luxury mt-5">
-              <h5 style="font-family:'Playfair Display',serif; font-size: 1.5rem; color: #111; margin-bottom: 20px; text-align: center;">Chia Sẻ Trải Nghiệm Của Bạn</h5>
+              <h5 style="font-family:'Cormorant Garamond', serif; font-size: 1.5rem; color: #111; margin-bottom: 20px; text-align: center;">Chia Sẻ Trải Nghiệm Của Bạn</h5>
               <form id="submitReviewForm" onsubmit="submitChefReview(event)">
                 <input type="hidden" name="chef_id" id="reviewChefId" value="<?= $chef['id'] ?>">
                 

@@ -205,8 +205,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $allergies_arr = array_unique(array_filter($allergies_arr));
         $allergies = implode(', ', $allergies_arr);
         
-        $db->prepare("UPDATE users SET doneness=?, flavor_profile=?, fav_ingredients=?, disliked_ingredients=?, allergies=? WHERE id=?")
-           ->execute([$doneness, $flavor_profile, $fav_ingredients, $disliked_ingredients, $allergies, $user_id]);
+        $drink_arr = isset($_POST['drink_preferences']) ? $_POST['drink_preferences'] : [];
+        $drink_preferences = implode(', ', array_unique(array_filter($drink_arr)));
+        
+        $db->prepare("UPDATE users SET doneness=?, flavor_profile=?, fav_ingredients=?, disliked_ingredients=?, allergies=?, drink_preferences=? WHERE id=?")
+           ->execute([$doneness, $flavor_profile, $fav_ingredients, $disliked_ingredients, $allergies, $drink_preferences, $user_id]);
         $message = "Đã cập nhật Hồ sơ Khẩu vị (Culinary DNA)!";
 
         // Gửi thông báo Telegram cho nhà hàng
@@ -219,6 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($fav_ingredients) $msg_tele .= "- Yêu thích: $fav_ingredients\n";
         if ($disliked_ingredients) $msg_tele .= "- Không thích: $disliked_ingredients\n";
         if ($allergies) $msg_tele .= "- <b>DỊ ỨNG: $allergies</b>\n";
+        if ($drink_preferences) $msg_tele .= "- Đồ uống: $drink_preferences\n";
         @sendTelegramNotification($msg_tele);
     }
     // 6. Tính năng Nâng cấp VIP được chuyển sang vip_checkout.php
@@ -262,9 +266,164 @@ include __DIR__ . '/views/client/layouts/header.php';
 
 
 
-<div class="profile-wrap" style="background-color: #faf9f6;">
-<div class="container">
+<style id="custom-layer-theme">
+    /* Lớp 1: Nền Đen ngoài cùng */
+    .profile-wrap {
+        background: #000000 !important;
+        color: #ffffff !important;
+        min-height: 100vh;
+        position: relative;
+    }
+    
+    /* Chữ bên ngoài (Tên, tổng chi tiêu) */
+    .profile-wrap h1, .profile-wrap h2, .profile-wrap h3, .profile-wrap h4, .profile-wrap h5, .profile-wrap h6, .hero-account h2.prof-name {
+        color: #ffffff !important;
+    }
+    .hero-account p, .hero-account .text-muted {
+        color: #aaaaaa !important;
+    }
+    
+    /* Viền avatar */
+    .mx-auto.mb-3.shadow {
+        border-color: #181818 !important;
+        background: #181818 !important;
+    }
 
+    /* Lớp 2: Section #181818 (Bảng chính) */
+    .prof-card {
+        background: #181818 !important;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.8) !important;
+        border: none !important;
+        border-radius: 16px;
+        color: #ffffff !important;
+    }
+    
+    .prof-card-body, label {
+        color: #e0e0e0 !important;
+    }
+    
+    .prof-card .text-muted, .form-label.text-muted {
+        color: #bbbbbb !important;
+    }
+
+    /* Tabs */
+    .s-tabs {
+        background: #181818 !important;
+        border: 1px solid #333 !important;
+    }
+    .s-tab {
+        color: #888 !important;
+    }
+    .s-tab.on {
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+    .htab {
+        color: #888 !important;
+    }
+    .htab.active {
+        color: #ffffff !important;
+        border-bottom: 2px solid #ffffff !important;
+    }
+
+    /* Lớp 3: Card trắng (Thẻ con, input, dropdown bên trong) */
+    .bk-card, .node-content {
+        background-color: #ffffff !important;
+        border: none !important;
+        color: #000000 !important;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+    }
+    .bk-card .bk-meta, .bk-card .bk-date, .bk-card .text-muted, .node-content .text-muted {
+        color: #555555 !important;
+    }
+    .node-content h1, .node-content h2, .node-content h3, .node-content h4, .node-content h5, .node-content h6 {
+        color: #000000 !important;
+    }
+    
+    /* Các input form cũng màu trắng chữ đen */
+    .form-control, .form-select, .fi {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border: 1px solid #bbbbbb !important;
+        border-radius: 0 !important;
+        padding: 10px 16px !important;
+    }
+    .form-control:focus, .form-select:focus, .fi:focus {
+        border-color: #888888 !important;
+        box-shadow: 0 0 0 3px rgba(255,255,255,0.2) !important;
+    }
+    .form-control::placeholder {
+        color: #999999 !important;
+    }
+    
+    /* Table trong Modal */
+    .modal-content {
+        background: #181818 !important;
+        color: #ffffff !important;
+        border: 1px solid #333 !important;
+    }
+    .modal-body {
+        background: #181818 !important;
+        color: #ffffff !important;
+    }
+    .modal-header, .modal-footer {
+        border-color: #333 !important;
+    }
+    .table {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .table th, .table td {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border-color: #eee !important;
+    }
+
+    /* Empty state */
+    .empty-state {
+        background: #ffffff !important;
+        color: #000000 !important;
+        border: none !important;
+        border-radius: 12px;
+    }
+</style>
+
+<div class="profile-wrap">
+    <?php 
+      $my_cover = '';
+      $covers = glob('uploads/covers/cover_' . $user_id . '.*');
+      if (!empty($covers)) {
+          $my_cover = $covers[0] . '?v=' . time();
+      } else {
+          $my_cover = 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80';
+      }
+      
+      $default_name = urlencode($current_user['full_name'] ?: $current_user['username'] ?: 'U');
+      $my_av = 'https://ui-avatars.com/api/?name=' . $default_name . '&background=143B36&color=fff&size=128';
+      if ($current_user['avatar_blob']) {
+          $my_av = 'ajax/get_avatar.php?user_id=' . $current_user['id'];
+      } elseif (!empty($current_user['avatar'])) {
+          $my_av = (strpos($current_user['avatar'], 'http') === 0) ? $current_user['avatar'] : $current_user['avatar'];
+      }
+    ?>
+
+    <!-- Full Width Banner -->
+    <div style="position:absolute; top:0; left:0; right:0; height:450px; background: url('<?= $my_cover ?>') center/cover no-repeat; z-index:0;">
+        <!-- Gradient overlay to fade smoothly into the black background -->
+        <div style="position:absolute; inset:0; background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 70%, #000000 100%);"></div>
+        <form method="POST" enctype="multipart/form-data" id="cover_form">
+           <input type="hidden" name="update_cover" value="1">
+           <label for="cover_upload" class="btn btn-sm shadow" style="background-color: rgba(255,255,255,0.9) !important; color: #000000 !important; position:absolute; bottom:40px; right:40px; font-weight:600; opacity:0.85; transition:0.3s; cursor:pointer; z-index:10; border: none;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.85">
+               <i class="bi bi-camera me-1"></i>Thay ảnh nền
+           </label>
+           <input type="file" name="cover_photo" id="cover_upload" style="visibility:hidden; position:absolute; width:1px; height:1px;" accept="image/*" onchange="this.form.submit()">
+        </form>
+    </div>
+
+<div class="container" style="position: relative; z-index: 1;">
   <?php
   // Kiểm tra xem có đơn nào đang chờ cọc không (Chỉ hiển thị khi đơn đang Pending - tức là Admin chưa Xác nhận)
   $stmt_pending = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 ORDER BY id DESC LIMIT 1");
@@ -283,36 +442,9 @@ include __DIR__ . '/views/client/layouts/header.php';
   <?php endif; ?>
 
   <!-- ══ HERO ACCOUNT ══ -->
-  <div class="hero-account text-center mb-5 mt-2">
-    <?php 
-      $my_cover = '';
-      $covers = glob('uploads/covers/cover_' . $user_id . '.*');
-      if (!empty($covers)) {
-          $my_cover = $covers[0] . '?v=' . time();
-      } else {
-          $my_cover = 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80';
-      }
-      
-      $default_name = urlencode($current_user['full_name'] ?: $current_user['username'] ?: 'U');
-      $my_av = 'https://ui-avatars.com/api/?name=' . $default_name . '&background=143B36&color=fff&size=128';
-      if ($current_user['avatar_blob']) {
-          $my_av = 'ajax/get_avatar.php?user_id=' . $current_user['id'];
-      } elseif (!empty($current_user['avatar'])) {
-          $my_av = (strpos($current_user['avatar'], 'http') === 0) ? $current_user['avatar'] : $current_user['avatar'];
-      }
-    ?>
-    <div class="hero-cover mb-4" style="height:220px; background: url('<?= $my_cover ?>') center/cover no-repeat; border-radius: 16px; position:relative; box-shadow: inset 0 -50px 100px -20px rgba(0,0,0,0.5);">
-        <form method="POST" enctype="multipart/form-data" id="cover_form">
-           <input type="hidden" name="update_cover" value="1">
-           <label for="cover_upload" class="btn btn-sm btn-light shadow" style="position:absolute; bottom:15px; right:15px; font-weight:600; opacity:0.85; transition:0.3s; cursor:pointer; z-index:10;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.85">
-               <i class="bi bi-camera me-1"></i>Thay ảnh nền
-           </label>
-           <input type="file" name="cover_photo" id="cover_upload" style="visibility:hidden; position:absolute; width:1px; height:1px;" accept="image/*" onchange="this.form.submit()">
-        </form>
-    </div>
-
-    <div style="position:relative; margin-top:-90px; z-index:2;">
-        <div class="mx-auto mb-3 shadow" style="width:140px; height:140px; border-radius:50%; position:relative; border:4px solid #fff; background:#fff;">
+  <div class="hero-account text-center mb-5" style="margin-top: 120px;">
+    <div>
+        <div class="mx-auto mb-3 shadow" style="width:140px; height:140px; border-radius:50%; position:relative; border:4px solid #181818; background:#181818;">
            <img src="<?= $my_av ?>" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
            
            <!-- Avatar Upload Form -->
@@ -324,14 +456,14 @@ include __DIR__ . '/views/client/layouts/header.php';
                <input type="file" name="avatar_photo" id="avatar_upload" style="visibility:hidden; position:absolute; width:1px; height:1px;" accept="image/*" onchange="this.form.submit()">
            </form>
         </div>
-        <h2 class="prof-name mb-2" style="font-family:'Cormorant Garamond', serif; font-size:3rem; color:var(--ink); font-weight:700;">
+        <h2 class="prof-name mb-2" style="font-family:'Cormorant Garamond', serif; font-size:3rem; color:#fff; font-weight:700;">
           <?= htmlspecialchars($current_user['full_name'] ?: $current_user['username']) ?>
         </h2>
         <?php
           $s3 = $db->prepare("SELECT SUM(total_amount) FROM service_bookings WHERE user_id=? AND status='Completed'"); $s3->execute([$user_id]);
           $total_spent = (float)$s3->fetchColumn();
         ?>
-        <div class="total-spent mb-4" style="font-size:1.1rem; color:var(--muted);">
+        <div class="total-spent mb-4" style="font-size:1.1rem; color:#aaa;">
           Tổng chi tiêu: <span style="font-weight:700; color:var(--accent-burgundy); font-size:1.4rem;"><?= number_format($total_spent, 0, ',', '.') ?> VNĐ</span>
         </div>
         <a href="?tab=profile" class="btn btn-outline-dark px-4 py-2 rounded-pill" style="font-size:13px; text-transform:uppercase; letter-spacing:1px; border-color:var(--accent-burgundy); color:var(--accent-burgundy); font-weight:600;"><i class="bi bi-pencil me-2"></i>Chỉnh sửa thông tin</a>
@@ -350,7 +482,7 @@ include __DIR__ . '/views/client/layouts/header.php';
   <!-- ══ MAIN CONTENT ══ -->
   <div class="row justify-content-center">
     <div class="col-lg-8 col-md-10">
-      <div class="prof-card" style="border:none; box-shadow: 0 10px 40px rgba(0,0,0,0.03); background: #fff;">
+      <div class="prof-card" style="border:none; box-shadow: 0 10px 40px rgba(0,0,0,0.08); background: #fff;">
         <div class="prof-card-body p-4 p-md-5">
 
           <!-- Alert -->
@@ -520,12 +652,12 @@ include __DIR__ . '/views/client/layouts/header.php';
         </div>
         <form method="POST">
           <div class="row g-4">
-            <div class="col-md-12 mb-2">
+            <div class="col-md-6 mb-2">
               <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-fire me-2"></i>Mức độ chín của Bò (Meat Doneness)</h6>
-              <div class="d-flex flex-wrap gap-3 mt-3">
+              <div class="d-flex flex-wrap mt-3 gap-2">
                 <?php $dopts = ['Rare', 'Medium Rare', 'Medium', 'Medium Well', 'Well Done']; 
                 foreach($dopts as $d): ?>
-                <label class="d-flex align-items-center gap-2" style="cursor:pointer; font-size:14px;">
+                <label class="d-flex align-items-center gap-2 mb-2" style="cursor:pointer; font-size:14px; width:45%;">
                   <input type="radio" name="doneness" value="<?= $d ?>" <?= ($my_doneness == $d) ? 'checked' : '' ?> style="accent-color:var(--F);"> <?= $d ?>
                 </label>
                 <?php endforeach; ?>
@@ -533,11 +665,25 @@ include __DIR__ . '/views/client/layouts/header.php';
             </div>
 
             <div class="col-md-6 mb-2">
+              <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-cup-straw me-2"></i>Đồ uống yêu thích (Drink Preferences)</h6>
+              <div class="d-flex flex-wrap mt-3 gap-2">
+                <?php 
+                $drinkopts = ['Rượu Vang (Wine)', 'Cocktail / Mocktail', 'Bia (Beer)', 'Trà / Coffee', 'Nước trái cây (Juice)', 'Có cồn (Alcoholic)', 'Không cồn (Non-alcoholic)']; 
+                $my_drinks = array_map('trim', explode(',', $current_user['drink_preferences'] ?? ''));
+                foreach($drinkopts as $dr): ?>
+                <label class="d-flex align-items-center gap-2 mb-2" style="cursor:pointer; font-size:14px; width:45%;">
+                  <input type="checkbox" name="drink_preferences[]" value="<?= $dr ?>" <?= in_array($dr, $my_drinks) ? 'checked' : '' ?> style="accent-color:var(--F);"> <?= $dr ?>
+                </label>
+                <?php endforeach; ?>
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-2">
               <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-palette me-2"></i>Phong cách Hương vị (Flavor Profile)</h6>
-              <div class="d-flex flex-column gap-2 mt-3">
+              <div class="d-flex flex-wrap mt-3 gap-2">
                 <?php $fopts = ['Đậm vị (Bold/Rich)', 'Thanh nhẹ (Light/Fresh)', 'Umami (Ngọt tự nhiên)', 'Ít béo (Low Fat)', 'Ăn Cay (Spicy)']; 
                 foreach($fopts as $f): ?>
-                <label class="d-flex align-items-center gap-2" style="cursor:pointer; font-size:14px;">
+                <label class="d-flex align-items-center gap-2 mb-2" style="cursor:pointer; font-size:14px; width:45%;">
                   <input type="checkbox" name="flavor_profile[]" value="<?= $f ?>" <?= in_array($f, $my_flavors) ? 'checked' : '' ?> style="accent-color:var(--F);"> <?= $f ?>
                 </label>
                 <?php endforeach; ?>
@@ -546,17 +692,17 @@ include __DIR__ . '/views/client/layouts/header.php';
 
             <div class="col-md-6 mb-2">
               <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-star me-2"></i>Nguyên liệu yêu thích (Favorites)</h6>
-              <div class="d-flex flex-column gap-2 mt-3">
+              <div class="d-flex flex-wrap mt-3 gap-2">
                 <?php 
                 $favopts = [
-                    'Bò' => 'Các loại Bò (Wagyu, Kobe...)', 
-                    'Nấm' => 'Các loại Nấm (Truffle...)', 
-                    'Gan ngỗng' => 'Gan ngỗng (Foie Gras)', 
-                    'Trứng cá' => 'Trứng cá tầm (Caviar)', 
+                    'Bò' => 'Các loại Bò', 
+                    'Nấm' => 'Các loại Nấm', 
+                    'Gan ngỗng' => 'Gan ngỗng', 
+                    'Trứng cá' => 'Trứng cá tầm', 
                     'Hải sản' => 'Hải sản (Seafood)'
                 ]; 
                 foreach($favopts as $val => $lbl): ?>
-                <label class="d-flex align-items-center gap-2" style="cursor:pointer; font-size:14px;">
+                <label class="d-flex align-items-center gap-2 mb-2" style="cursor:pointer; font-size:14px; width:45%;">
                   <input type="checkbox" name="fav_ingredients[]" value="<?= $val ?>" <?= (in_array($val, $my_favs) || in_array('Bò Wagyu', $my_favs) && $val=='Bò') ? 'checked' : '' ?> style="accent-color:var(--F);"> <?= $lbl ?>
                 </label>
                 <?php endforeach; ?>
@@ -565,7 +711,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 
             <div class="col-md-6 mb-2">
               <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-x-circle me-2"></i>Không thích ăn (Dislikes)</h6>
-              <div class="d-flex flex-wrap gap-2 mt-3">
+              <div class="d-flex flex-wrap mt-3 gap-2">
                 <?php 
                 $disopts = ['Hành lá', 'Rau mùi', 'Hành tây', 'Tỏi', 'Ớt chuông', 'Tiêu xanh', 'Thịt mỡ']; 
                 $my_dislikes_arr = array_map('trim', explode(',', $current_user['disliked_ingredients'] ?? ''));
@@ -575,7 +721,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                 $other_dislikes_str = implode(', ', $other_dislikes);
                 
                 foreach($disopts as $dis): ?>
-                <label class="d-flex align-items-center gap-2" style="cursor:pointer; font-size:14px; width:45%;">
+                <label class="d-flex align-items-center gap-2 mb-2" style="cursor:pointer; font-size:14px; width:45%;">
                   <input type="checkbox" name="disliked_ingredients[]" value="<?= $dis ?>" <?= in_array($dis, $my_dislikes_arr) ? 'checked' : '' ?> style="accent-color:var(--F);"> <?= $dis ?>
                 </label>
                 <?php endforeach; ?>
@@ -588,7 +734,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 
             <div class="col-md-6 mb-2">
               <h6 style="color:#d64545; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-exclamation-triangle-fill me-2"></i>Dị ứng Y Tế (Allergies)</h6>
-              <div class="d-flex flex-wrap gap-2 mt-3">
+              <div class="d-flex flex-wrap mt-3 gap-2">
                 <?php 
                 $algopts = ['Sữa', 'Trứng', 'Đậu phộng', 'Đậu nành', 'Lúa mì / Gluten', 'Hải sản', 'Cá', 'Hải sản có vỏ', 'Hải sản thân mềm', 'Mè / Vừng', 'Mù tạt', 'Quả hạch', 'Sulphites', 'Đậu Lupin']; 
                 $my_allergies = array_map('trim', explode(',', $current_user['allergies'] ?? ''));
@@ -597,7 +743,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                 });
                 $other_allergies_str = implode(', ', $other_allergies);
                 foreach($algopts as $alg): ?>
-                <label class="d-flex align-items-center gap-2" style="cursor:pointer; font-size:14px; color:#d64545; width:45%; font-weight:500;">
+                <label class="d-flex align-items-center gap-2 mb-2" style="cursor:pointer; font-size:14px; color:#d64545; width:45%; font-weight:500;">
                   <input type="checkbox" name="allergies[]" value="<?= $alg ?>" <?= in_array($alg, $my_allergies) ? 'checked' : '' ?> style="accent-color:#d64545;"> <?= $alg ?>
                 </label>
                 <?php endforeach; ?>
@@ -818,7 +964,7 @@ include __DIR__ . '/views/client/layouts/header.php';
         <h5 class="modal-title" style="font-family:'Cormorant Garamond', serif;"><i class="bi bi-receipt me-2"></i>Chi Tiết Đơn Đặt Bàn</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body" id="bookingDetailsContent" style="padding:25px; background: #FFFFFF;">
+      <div class="modal-body" id="bookingDetailsContent" style="padding:25px; background: #fff;">
         <div class="text-center p-4 text-muted"><i class="bi bi-arrow-repeat spin me-2"></i>Đang tải dữ liệu...</div>
       </div>
     </div>

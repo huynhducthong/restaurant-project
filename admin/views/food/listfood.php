@@ -130,6 +130,7 @@ tr.inactive-row td:first-child::after { content:''; }
             <?php if($search): ?><a href="FoodController.php" class="btn btn-sm btn-outline-dark mt-2">Xem tất cả</a><?php endif; ?>
         </div>
         <?php else: ?>
+        <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-dark">
                 <tr>
@@ -256,6 +257,7 @@ tr.inactive-row td:first-child::after { content:''; }
                 <?php endforeach; ?>
             </tbody>
         </table>
+        </div>
         <?php endif; ?>
     </div>
 

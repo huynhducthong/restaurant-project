@@ -222,23 +222,15 @@ $banners = $db->query(
 )->fetchAll(PDO::FETCH_ASSOC);
 
 $fonts = [
-    "'Poppins', sans-serif"       => "Poppins (Hiện đại)",
-    "'Cormorant Garamond', serif"   => "Playfair (Cổ điển sang trọng)",
-    "'Cormorant Garamond', serif"    => "Source Sans 3 (Trẻ trung)",
-    "'Lora', serif"               => "Lora (Thanh lịch)",
-    "'Dancing Script', cursive"   => "Dancing Script (Bay bướm)",
-    "'Pacifico', cursive"         => "Pacifico (Nghệ thuật)",
-    "'Great Vibes', cursive"      => "Great Vibes (Thư pháp sang)",
-    "'Oswald', sans-serif"        => "Oswald (Gọn gàng, mạnh mẽ)",
-    "'Roboto', sans-serif"        => "Roboto (Cơ bản, rõ nét)",
-    "'Caveat', cursive"           => "Caveat (Viết tay mộc mạc)",
+    "'Cormorant Garamond', serif" => "Cormorant Garamond (Tiêu chuẩn - Cổ điển)",
+    "'Source Sans 3', sans-serif" => "Source Sans 3 (Văn bản - Hiện đại)",
 ];
 $font_sizes = [12,14,16,18,20,22,24,26,28,36,48,56,64,72];
 
 include '../../public/admin_layout_header.php';
 ?>
 
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Lora:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Oswald:wght@400;700&family=Pacifico&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Poppins:wght@300;400;600;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
 <style>
     :root {
