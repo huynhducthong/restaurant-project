@@ -1119,43 +1119,155 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 </style>
 
-<section id="chefs" class="editorial-chef-section">
-    <div class="px-2 position-relative z-1" style="width: 100%; max-width: 100%; margin: 0 auto;">
-      <div class="section-title text-start px-md-2" style="margin-bottom: 50px !important;">
-        <div class="d-flex align-items-center" style="margin-bottom: 15px;">
-            <p style="color: #A88746; font-family: 'Cormorant Garamond', serif; font-size: 12px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; margin: 0; padding-right: 15px;">ĐỘI NGŨ ĐẦU BẾP</p>
-            <div style="flex: 0 0 60px; height: 1px; background-color: #A88746;"></div>
-        </div>
-        <h2 style="color: #A88746; font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Những Nghệ Nhân Ẩm Thực Hàng Đầu</h2>
-      </div>
-      
-      <div class="editorial-grid">
-        <?php if (!empty($home_chefs)): ?>
-          <?php 
-          $delay = 0.1;
-          foreach ($home_chefs as $chef): 
-          ?>
-            <div class="editorial-card cine-reveal" style="transition-delay: <?= $delay ?>s;" onclick="window.location.href='chefs.php'">
-              <img class="editorial-img" src="public/assets/img/chefs/<?= htmlspecialchars($chef['image']) ?>" alt="<?= htmlspecialchars($chef['name']) ?>" onerror="this.src='public/assets/img/chefs/default-chef.jpg'">
-              <div class="editorial-overlay"></div>
-              <div class="editorial-signature"><?= htmlspecialchars($chef['name']) ?></div>
-              <div class="editorial-info">
-                  <div class="editorial-title"><?= htmlspecialchars($chef['position']) ?></div>
-                  <h4 class="editorial-name"><?= htmlspecialchars($chef['name']) ?></h4>
-              </div>
+.awesome-team-section {
+    padding: 100px 0 80px;
+    background: linear-gradient(to bottom, #F4F1EA 0%, #F4F1EA 60%, #FFFFFF 60%, #FFFFFF 100%);
+    text-align: center;
+}
+.awesome-team-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 56px;
+    color: #2A201A;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    font-weight: 400;
+    text-transform: uppercase;
+}
+.awesome-team-subtitle {
+    font-family: 'Source Sans 3', sans-serif;
+    color: #666;
+    font-size: 15px;
+    max-width: 600px;
+    margin: 0 auto 30px;
+    line-height: 1.6;
+}
+.awesome-team-link {
+    display: inline-block;
+    font-family: 'Source Sans 3', sans-serif;
+    color: #2A201A;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-decoration: none;
+    border-bottom: 1px solid #2A201A;
+    padding-bottom: 5px;
+    margin-bottom: 60px;
+    transition: all 0.3s;
+}
+.awesome-team-link:hover {
+    color: #A88746;
+    border-color: #A88746;
+}
+.awesome-team-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+.awesome-card {
+    width: calc(33.333% - 20px);
+    min-width: 280px;
+    text-align: left;
+}
+.awesome-img-wrapper {
+    width: 100%;
+    aspect-ratio: 4/5;
+    background: #ccc;
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+.awesome-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+.awesome-card:hover .awesome-img-wrapper img {
+    transform: scale(1.05);
+}
+.awesome-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    color: #2A201A;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.awesome-role {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+}
+.awesome-desc {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px;
+    color: #777;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+.awesome-socials {
+    display: flex;
+    gap: 15px;
+}
+.awesome-socials i {
+    color: #2A201A;
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+.awesome-socials i:hover {
+    color: #A88746;
+}
+@media (max-width: 991px) {
+    .awesome-card { width: calc(50% - 15px); }
+    .awesome-team-section { background: linear-gradient(to bottom, #F4F1EA 0%, #F4F1EA 50%, #FFFFFF 50%, #FFFFFF 100%); }
+}
+@media (max-width: 767px) {
+    .awesome-card { width: 100%; max-width: 400px; margin: 0 auto; }
+    .awesome-team-section { background: linear-gradient(to bottom, #F4F1EA 0%, #F4F1EA 25%, #FFFFFF 25%, #FFFFFF 100%); }
+}
+</style>
+
+<section id="chefs" class="awesome-team-section">
+    <div class="awesome-team-title">ĐỘI NGŨ ĐẦU BẾP</div>
+    <div class="awesome-team-subtitle">
+        Khám phá những nghệ nhân ẩm thực hàng đầu của chúng tôi, những người luôn dành trọn đam mê để mang đến trải nghiệm hương vị tuyệt hảo nhất.
+    </div>
+    <a href="chefs.php" class="awesome-team-link">Xem tất cả</a>
+    
+    <div class="awesome-team-grid">
+      <?php if (!empty($home_chefs)): ?>
+        <?php foreach ($home_chefs as $chef): ?>
+          <div class="awesome-card" onclick="window.location.href='chefs.php'" style="cursor: pointer;">
+            <div class="awesome-img-wrapper">
+                <img src="public/assets/img/chefs/<?= htmlspecialchars($chef['image']) ?>" alt="<?= htmlspecialchars($chef['name']) ?>" onerror="this.src='public/assets/img/chefs/default-chef.jpg'">
             </div>
-          <?php 
-          $delay += 0.2;
-          endforeach; 
-          ?>
-        <?php else: ?>
-          <p class="text-center" style="color:#666666; font-style: italic;">Chưa có thông tin đầu bếp.</p>
-        <?php endif; ?>
-      </div>
-      
-      <div class="text-center">
-        <a href="chefs.php" class="editorial-btn">TẤT CẢ ĐẦU BẾP</a>
-      </div>
+            <div class="awesome-name"><?= htmlspecialchars($chef['name']) ?></div>
+            <div class="awesome-role"><?= htmlspecialchars($chef['position']) ?></div>
+            <div class="awesome-desc">
+                <?php
+                   $desc = $chef['signature_dishes'] ?? 'Đam mê ẩm thực và sáng tạo không ngừng nghỉ để mang đến những món ăn tuyệt hảo nhất.';
+                   echo htmlspecialchars($desc);
+                ?>
+            </div>
+            <div class="awesome-socials">
+                <i class="bi bi-facebook"></i>
+                <i class="bi bi-twitter-x"></i>
+                <i class="bi bi-instagram"></i>
+                <i class="bi bi-linkedin"></i>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <p class="text-center w-100" style="color:#666666; font-style: italic;">Chưa có thông tin đầu bếp.</p>
+      <?php endif; ?>
     </div>
 </section>
   <!-- ATMOSPHERE & GALLERY SECTION -->
@@ -1720,4 +1832,133 @@ document.addEventListener('DOMContentLoaded', function() {
       height: 300px;
     }
   }
+
+
+
+.awesome-team-section {
+    padding: 100px 0 80px;
+    background: #FFFFFF;
+    position: relative;
+    text-align: center;
+    z-index: 1;
+}
+.awesome-team-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 550px;
+    background: #111111;
+    z-index: -1;
+}
+.awesome-team-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 56px;
+    color: #FFFFFF;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    font-weight: 400;
+    text-transform: uppercase;
+}
+.awesome-team-subtitle {
+    font-family: 'Source Sans 3', sans-serif;
+    color: #CCCCCC;
+    font-size: 15px;
+    max-width: 600px;
+    margin: 0 auto 30px;
+    line-height: 1.6;
+}
+.awesome-team-link {
+    display: inline-block;
+    font-family: 'Source Sans 3', sans-serif;
+    color: #FFFFFF;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-decoration: none;
+    border-bottom: 1px solid #FFFFFF;
+    padding-bottom: 5px;
+    margin-bottom: 60px;
+    transition: all 0.3s;
+}
+.awesome-team-link:hover {
+    color: #A88746;
+    border-color: #A88746;
+}
+.awesome-team-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+.awesome-card {
+    width: calc(33.333% - 20px);
+    min-width: 280px;
+    text-align: left;
+}
+.awesome-img-wrapper {
+    width: 100%;
+    aspect-ratio: 4/5;
+    background: #ccc;
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+.awesome-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+.awesome-card:hover .awesome-img-wrapper img {
+    transform: scale(1.05);
+}
+.awesome-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    color: #2A201A;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.awesome-role {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+}
+.awesome-desc {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px;
+    color: #777;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+.awesome-socials {
+    display: flex;
+    gap: 15px;
+}
+.awesome-socials i {
+    color: #2A201A;
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+.awesome-socials i:hover {
+    color: #A88746;
+}
+@media (max-width: 991px) {
+    .awesome-card { width: calc(50% - 15px); }
+    .awesome-team-section::before { height: 600px; }
+}
+@media (max-width: 767px) {
+    .awesome-card { width: 100%; max-width: 400px; margin: 0 auto; }
+    .awesome-team-section::before { height: 650px; }
+}
 </style>
