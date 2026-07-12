@@ -700,7 +700,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                       <img src="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>" class="minimal-menu-img me-3" style="border: 1px solid rgba(0,0,0,0.1);" alt="">
                                                       <div style="flex: 1;">
                                                           <div class="d-flex justify-content-between align-items-baseline">
-                                                              <h5 style="color: #FFF; font-family: 'Cormorant Garamond', serif; font-size: 18px; margin: 0; font-weight: 400; text-transform: uppercase;"><?= htmlspecialchars($row['name']) ?> <i class="bi bi-chevron-down ms-1" style="font-size: 12px; color: #C9A66B;"></i></h5>
+                                                              <h5 style="color: #2A201A; font-family: 'Cormorant Garamond', serif; font-size: 18px; margin: 0; font-weight: 400; text-transform: uppercase;"><?= htmlspecialchars($row['name']) ?> <i class="bi bi-chevron-down ms-1" style="font-size: 12px; color: #C9A66B;"></i></h5>
                                                               <div style="flex-grow: 1; border-bottom: 1px dashed rgba(255,255,255,0.2); margin: 0 10px; position: relative; top: -4px;"></div>
                                                               <div style="color: #C9A66B; font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;"><?= number_format($row['price'], 0, ',', '.') ?>đ</div>
                                                           </div>
@@ -717,7 +717,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                           <div class="col-12 d-flex align-items-center mb-2 px-3">
                                                               <img src="public/assets/img/menu/<?= htmlspecialchars($item['image'] ?: 'default-food.jpg') ?>" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); margin-right: 15px;" alt="">
                                                               <div>
-                                                                  <h6 style="color: #ccc; font-family: 'Cormorant Garamond', serif; font-size: 14px; margin: 0; font-weight: 300;"><?= htmlspecialchars($item['name']) ?></h6>
+                                                                  <h6 style="color: #2A201A; font-family: 'Cormorant Garamond', serif; font-size: 14px; margin: 0; font-weight: 300;"><?= htmlspecialchars($item['name']) ?></h6>
                                                                   <div style="font-size: 10px; color: #777; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?= htmlspecialchars($item['description']) ?></div>
                                                               </div>
                                                           </div>
