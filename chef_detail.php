@@ -42,6 +42,8 @@ include __DIR__ . '/views/client/layouts/header.php';
 
 <!-- HERO SECTION -->
 <div class="cd-hero" style="--cd-bg-img: url('<?= $img ?>');">
+    <div class="cd-hero-bg" style="background-image: var(--cd-bg-img);"></div>
+    <div class="cd-hero-overlay"></div>
     <div class="cd-hero-content">
         <span class="cd-position"><?= htmlspecialchars($chef['position'] ?? 'Đầu Bếp') ?></span>
         <h1 class="cd-name"><?= htmlspecialchars($chef['name']) ?></h1>
