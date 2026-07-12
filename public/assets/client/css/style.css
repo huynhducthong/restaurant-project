@@ -479,25 +479,7 @@
 .editorial-card:hover .editorial-overlay {
     background: transparent;
 }
-.editorial-signature {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -40%) rotate(-10deg) scale(0.9);
-    font-family: 'Great Vibes', cursive;
-    font-size: clamp(3rem, 5vw, 4.5rem);
-    color: #C9A66B;
-    opacity: 0;
-    transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-    white-space: nowrap;
-    text-shadow: 0 5px 15px rgba(0,0,0,0.8);
-    pointer-events: none;
-    z-index: 2;
-}
-.editorial-card:hover .editorial-signature {
-    opacity: 1;
-    transform: translate(-50%, -50%) rotate(-10deg) scale(1);
-}
+
 .editorial-info {
     position: absolute;
     bottom: 30px;
@@ -1240,7 +1222,7 @@
     color: var(--news-text);
     min-height: 85vh;
     padding: 180px 0 60px 0; /* Clear header space */
-    font-family: 'Poppins', 'Inter', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     z-index: 1;
 }
 
@@ -1260,7 +1242,7 @@
 
 /* Typography elements */
 .font-playfair {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Cormorant Garamond', serif;
 }
 
 /* Breadcrumbs */
@@ -1297,7 +1279,7 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.02);
 }
 .widget-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 16px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -1328,7 +1310,7 @@
     padding-bottom: 0;
 }
 .popular-number {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 38px;
     font-weight: 700;
     color: var(--news-gold);
@@ -1398,7 +1380,7 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.02);
 }
 .newsletter-sidebar-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--news-gold);
@@ -1512,7 +1494,7 @@
     justify-content: space-between;
 }
 .news-row-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -1579,7 +1561,7 @@
     letter-spacing: 1px;
 }
 .article-headline {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 34px;
     font-weight: 700;
     line-height: 1.35;
@@ -1736,7 +1718,7 @@
     padding-top: 30px;
 }
 .related-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -1771,7 +1753,7 @@
     padding: 12px;
 }
 .related-card-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 14px;
     color: var(--news-text-dark);
     font-weight: 600;
@@ -1801,7 +1783,7 @@
     margin-bottom: 20px;
 }
 .vne-comments-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 20px;
     font-weight: 700;
     color: var(--news-text-dark);
@@ -2033,7 +2015,7 @@
     font-size: 16px;
     font-weight: 700;
     color: var(--news-text-dark);
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
 }
 .news-modal-close {
     background: none;
@@ -2517,7 +2499,7 @@
     box-shadow: 0 15px 35px rgba(79, 91, 58, 0.04) !important;
 }
 .article-sapo {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 20px !important;
     line-height: 1.6 !important;
     color: var(--news-olive) !important;
@@ -2541,7 +2523,7 @@
     font-style: italic !important;
     color: var(--news-text-dark) !important;
     font-size: 18px !important;
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Cormorant Garamond', serif;
 }
 .article-featured-img {
     border-color: var(--news-border-light) !important;
@@ -4000,7 +3982,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     display: block;
 }
 .cd-name {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 5rem;
     font-weight: 700;
     line-height: 1.1;
@@ -4037,7 +4019,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     text-justify: inter-word;
 }
 .cd-bio::first-letter {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 6rem;
     float: left;
     line-height: 0.7;
@@ -4073,7 +4055,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     margin-bottom: 20px;
 }
 .cd-award-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1.5rem;
     color: #111;
     margin-bottom: 10px;
@@ -4098,7 +4080,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     top: -40px;
     left: 50%;
     transform: translateX(-50%);
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 350px;
     color: rgba(205, 164, 94, 0.04);
     line-height: 1;
@@ -4118,7 +4100,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     backdrop-filter: blur(5px);
 }
 .cd-tech-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     color: #cda45e;
     font-size: 2.5rem;
     margin-bottom: 25px;
@@ -4180,7 +4162,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     justify-content: center;
 }
 .cd-dish-name {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1.8rem;
     color: #cda45e;
     margin-bottom: 15px;
@@ -4254,7 +4236,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     display: inline-block;
     background: #1a1814;
     color: #cda45e;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1.2rem;
     font-weight: 700;
     padding: 5px 20px;
@@ -4263,7 +4245,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     letter-spacing: 2px;
 }
 .plaque-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1.6rem;
     color: #111;
     font-weight: 700;
@@ -4330,7 +4312,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
 }
 .tech-part-title {
     color: #111;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1.4rem;
     margin-bottom: 15px;
     position: relative;
@@ -4611,7 +4593,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     border-radius: 12px !important;
     padding: 15px !important;
 }
-.review-author { color: #111 !important; font-size: 1.1rem !important; font-family: 'Playfair Display', serif !important; }
+.review-author { color: #111 !important; font-size: 1.1rem !important; font-family: 'Cormorant Garamond', serif !important; }
 .review-date { color: #888 !important; }
 .review-comment { color: #555 !important; font-size: 0.95rem !important; margin-top: 10px !important; }
 .review-avatar { width: 45px !important; height: 45px !important; border: 2px solid #cda45e !important; }
@@ -4661,7 +4643,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     display: inline-block;
     background: #1a1814;
     color: #cda45e;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1.2rem;
     font-weight: 700;
     padding: 5px 20px;
@@ -4670,7 +4652,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     letter-spacing: 2px;
 }
 .plaque-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1.6rem;
     color: #111;
     font-weight: 700;
@@ -4737,7 +4719,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
 }
 .tech-part-title {
     color: #111;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1.4rem;
     margin-bottom: 15px;
     position: relative;
@@ -4779,7 +4761,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
 }
 .prestige-main .rating-big {
     font-size: 4rem;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     color: #cda45e;
     line-height: 1;
 }
@@ -4872,7 +4854,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
 }
 .l-meta h4 {
     margin: 0 0 5px 0;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1.2rem;
     color: #111;
 }
@@ -4911,7 +4893,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     border-radius: 20px;
 }
 .luxury-review-body {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     color: #444;
     font-size: 1rem;
     line-height: 1.8;
@@ -4924,7 +4906,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     position: absolute;
     top: -10px;
     left: -10px;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 4rem;
     color: rgba(205, 164, 94, 0.15);
     line-height: 1;
@@ -4946,13 +4928,13 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     object-fit: cover;
 }
 .chef-response-content h5 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1rem;
     color: #111;
     margin: 0 0 5px 0;
 }
 .chef-response-content p {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 0.9rem;
     color: #555;
     margin: 0;
@@ -4972,7 +4954,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     border: 1px solid #ddd;
     background: #fdfbf7;
     border-radius: 0;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     transition: 0.3s;
 }
 .luxury-input:focus {
@@ -4988,7 +4970,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 2px;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     transition: 0.3s;
 }
 .btn-submit-luxury:hover {
@@ -5026,7 +5008,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     border-bottom: 1px solid rgba(205, 164, 94, 0.2);
 }
 .st-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 2.5rem;
     color: #1a1814;
     letter-spacing: 2px;
@@ -5050,7 +5032,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     vertical-align: middle;
 }
 .st-quote-text {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1.4rem;
     font-style: italic;
     color: #333;
@@ -5085,7 +5067,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     padding: 8px 20px;
     background: #1a1814;
     color: #cda45e;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1.1rem;
     border-radius: 30px;
 }
@@ -5098,7 +5080,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
 
 /* TIMELINE */
 .st-timeline-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     color: #1a1814;
     font-size: 1.8rem;
 }
@@ -5165,7 +5147,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
     box-shadow: 0 15px 30px rgba(0,0,0,0.2);
 }
 .st-final-icon { font-size: 2.5rem; color: #cda45e; line-height: 1; }
-.st-final-title { font-family: 'Playfair Display', serif; color: #cda45e; font-size: 1.8rem; margin-bottom: 15px; }
+.st-final-title { font-family: 'Cormorant Garamond', serif; color: #cda45e; font-size: 1.8rem; margin-bottom: 15px; }
 .st-final-text { font-size: 1.1rem; color: #ddd; font-style: italic; line-height: 1.8; margin: 0; }
 
 @media screen and (max-width: 768px) {
@@ -6498,20 +6480,21 @@ body { background-color: var(--cd-bg); }
 /* HERO SECTION */
 .cd-hero {
   position: relative;
-  height: 65vh;
-  min-height: 500px;
+  min-height: 100vh;
+  height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   margin-top: 0;
-  padding-top: 55px; /* Offset for header */
+  padding-top: 150px;
+  padding-bottom: 80px;
 }
 .cd-hero-bg {
   position: absolute;
   inset: 0;
   background-size: cover;
-  background-position: center;
+  background-position: center 20%;
   filter: brightness(0.7);
   z-index: 0;
 }
@@ -6735,7 +6718,7 @@ body { background-color: var(--cd-bg); }
         animation: fadeUp 1.5s ease forwards;
     }
     .hero-subtitle {
-        font-family: 'Inter', sans-serif;
+        font-family: 'Source Sans 3', sans-serif;
         color: var(--c-gold);
         letter-spacing: 4px;
         text-transform: uppercase;
@@ -6816,7 +6799,7 @@ body { background-color: var(--cd-bg); }
     }
     
     .editorial-text {
-        font-family: 'Inter', sans-serif;
+        font-family: 'Source Sans 3', sans-serif;
         font-size: 1.1rem;
         line-height: 1.9;
         color: #555;
@@ -6948,7 +6931,7 @@ body { background-color: var(--cd-bg); }
         color: var(--c-gold);
         font-size: 1.2rem;
         margin: 0 10px;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Source Sans 3', sans-serif;
         letter-spacing: 3px;
     }
     
