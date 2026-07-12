@@ -366,7 +366,11 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
                             <i class="fas fa-images me-1"></i> Thư viện ảnh (Gallery)
                         </button>
                     </li>
-
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="cert-tab" data-bs-toggle="tab" data-bs-target="#tab-cert" type="button" role="tab" aria-controls="tab-cert" aria-selected="false">
+                            <i class="fas fa-certificate me-1"></i> Chứng Nhận
+                        </button>
+                    </li>
                 </ul>
 
                 <div class="tab-content" id="chefModalTabContent">
@@ -394,7 +398,6 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
                                         <option value="Bếp trưởng">Bếp trưởng</option>
                                         <option value="Bếp phó">Bếp phó</option>
                                         <option value="Bếp chính">Bếp chính</option>
-                                        <option value="Đầu bếp">Đầu bếp</option>
                                         <option value="Phụ bếp">Phụ bếp</option>
                                     </select>
                                 </div>
@@ -442,10 +445,7 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
                                 </div>
                                 
                                 <div class="col-md-4 d-flex align-items-center gap-4 mt-4">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" name="is_active" id="chefIsActive" checked value="1">
-                                        <label class="form-check-label fw-bold text-dark" for="chefIsActive">Hiển thị trên web</label>
-                                    </div>
+                                    <input type="hidden" name="is_active" id="chefIsActive" value="1">
                                     <div class="form-check form-switch">
                                         <input class="form-check-input" type="checkbox" name="is_featured" id="chefIsFeatured" value="1">
                                         <label class="form-check-label fw-bold text-dark" for="chefIsFeatured">Ghim nổi bật</label>
@@ -466,12 +466,7 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
                                 </div>
 
                                 <div class="col-12 mt-4">
-                                    <h6 class="fw-bold text-primary border-bottom pb-2"><i class="fas fa-award me-2"></i>Giải thưởng & Món đặc trưng</h6>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label fw-bold text-dark">Giải thưởng & Chuyên môn (Awards & Expertise)</label>
-                                    <textarea class="form-control" name="awards" id="chefAwards" rows="3" placeholder="Định dạng: Tên giải thưởng | Chi tiết giải thưởng | Class icon Bootstrap (Tự chọn)&#10;Mỗi giải thưởng viết trên 1 dòng. Ví dụ:&#10;Sao Michelin | Đạt năm 2022 | trophy&#10;Le Cordon Bleu | Tốt nghiệp xuất sắc | mortarboard"></textarea>
-                                    <small class="text-muted">Nhập mỗi giải thưởng trên 1 dòng, phân tách tên và chi tiết bằng ký tự gạch đứng (|). Icon tùy chọn có thể là: trophy, award, mortarboard, star, etc.</small>
+                                    <h6 class="fw-bold text-primary border-bottom pb-2"><i class="fas fa-utensils me-2"></i>Món ăn đặc trưng (Signature Dishes)</h6>
                                 </div>
                                 
                                 <div class="col-12">
@@ -529,6 +524,42 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
                         </div>
                     </div>
 
+                    <!-- Tab 3: Certificates -->
+                    <div class="tab-pane fade" id="tab-cert" role="tabpanel" aria-labelledby="cert-tab">
+                        <div id="cert-placeholder" class="alert alert-warning m-2">
+                            <i class="fas fa-exclamation-triangle me-2"></i> Vui lòng lưu thông tin cơ bản của đầu bếp trước khi quản lý Chứng Nhận.
+                        </div>
+                        <div id="cert-manager-content" style="display: none;">
+                            <div class="card bg-light mb-4 shadow-sm border-0">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3"><i class="fas fa-plus-circle me-1 text-primary"></i> Thêm Chứng Nhận Mới</h6>
+                                    <div class="row g-2 align-items-end">
+                                        <div class="col-md-3">
+                                            <label class="form-label" style="font-size: 13px;">Tên chứng nhận</label>
+                                            <input type="text" class="form-control form-control-sm" id="certNameInput" placeholder="VD: Sao Michelin">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label" style="font-size: 13px;">Đơn vị cấp</label>
+                                            <input type="text" class="form-control form-control-sm" id="certIssuerInput" placeholder="VD: Michelin Guide">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label" style="font-size: 13px;">File ảnh</label>
+                                            <input type="file" class="form-control form-control-sm" id="certUploadInput" accept="image/*">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button class="btn btn-primary btn-sm w-100" type="button" onclick="uploadCertificate(this)"><i class="fas fa-upload me-1"></i> Tải lên</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <h6 class="fw-bold mb-3"><i class="fas fa-award me-1 text-primary"></i> Danh sách Chứng Nhận</h6>
+                            <div id="certListContainer" class="d-flex flex-wrap gap-3">
+                                <!-- Load động bằng JS -->
+                            </div>
+                        </div>
+                    </div>
+
 
                 </div>
             </div>
@@ -569,9 +600,11 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
             // Hide managers and show placeholders
             document.getElementById('gallery-placeholder').style.display = 'block';
             document.getElementById('gallery-manager-content').style.display = 'none';
+            document.getElementById('cert-placeholder').style.display = 'block';
+            document.getElementById('cert-manager-content').style.display = 'none';
 
             // Default switches
-            document.getElementById('chefIsActive').checked = false;
+
             document.getElementById('chefIsFeatured').checked = false;
             setVal('chefServiceFee', 250000);
         } else {
@@ -582,6 +615,8 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
             // Show managers and hide placeholders
             document.getElementById('gallery-placeholder').style.display = 'none';
             document.getElementById('gallery-manager-content').style.display = 'block';
+            document.getElementById('cert-placeholder').style.display = 'none';
+            document.getElementById('cert-manager-content').style.display = 'block';
 
             document.getElementById('chefId').value = data.id;
             setVal('chefName', data.name);
@@ -616,10 +651,8 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
             setVal('chefSortOrder', data.sort_order);
             setVal('chefServiceFee', data.service_fee || 0);
             
-            document.getElementById('chefIsActive').checked = data.is_active == 1;
             document.getElementById('chefIsFeatured').checked = data.is_featured == 1;
             
-            setVal('chefAwards', data.awards);
             setVal('chefSigProcess', data.signature_technique_process);
             setVal('chefSigFinal', data.signature_technique_final_result);
 
@@ -641,6 +674,7 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
 
             // Load Gallery via AJAX
             fetchChefGallery();
+            fetchChefCertificates();
         }
         
         myModal.show();
@@ -838,6 +872,125 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
             alert(res.message);
             if (res.success) {
                 fetchChefGallery();
+            }
+        });
+    }
+
+    // ===== CERTIFICATES AJAX =====
+    function fetchChefCertificates() {
+        if (!currentChefId) return;
+        const container = document.getElementById('certListContainer');
+        container.innerHTML = '<div class="text-muted w-100 py-3 text-center"><i class="fas fa-spinner fa-spin me-2"></i>Đang tải...</div>';
+        
+        fetch('ajax/ajax_chef_certificates.php?action=fetch&chef_id=' + currentChefId + '&csrf_token=' + csrfToken)
+            .then(res => res.json())
+            .then(res => {
+                if (res.success) {
+                    renderCertificates(res.data);
+                } else {
+                    container.innerHTML = '<div class="alert alert-danger w-100">' + res.message + '</div>';
+                }
+            })
+            .catch(err => {
+                container.innerHTML = '<div class="alert alert-danger w-100">Lỗi tải dữ liệu chứng nhận.</div>';
+            });
+    }
+
+    function renderCertificates(certs) {
+        const container = document.getElementById('certListContainer');
+        container.innerHTML = '';
+        
+        if (certs.length === 0) {
+            container.innerHTML = '<div class="text-muted py-4 text-center w-100"><i class="fas fa-award fa-2x mb-2 d-block opacity-50"></i>Chưa có chứng nhận nào.</div>';
+            return;
+        }
+        
+        certs.forEach(cert => {
+            const card = document.createElement('div');
+            card.className = 'card shadow-sm border p-2 bg-light';
+            card.style.width = '240px';
+            card.innerHTML = `
+                <div class="position-relative w-100 mb-2" style="height: 140px; overflow: hidden; border-radius: 4px; border: 1px solid #ddd; background: #fff;">
+                    <img src="/restaurant-project/public/assets/img/chefs/certificates/${cert.certificate_image}" style="width: 100%; height: 100%; object-fit: contain;" alt="Certificate">
+                </div>
+                <div class="w-100">
+                    <div class="fw-bold text-truncate" style="font-size: 13px;" title="${escapeHtml(cert.certificate_name)}">${escapeHtml(cert.certificate_name)}</div>
+                    <div class="text-muted text-truncate mb-2" style="font-size: 12px;">${escapeHtml(cert.issuer)}</div>
+                    <button type="button" class="btn btn-sm btn-outline-danger w-100" onclick="deleteCertificate(${cert.id})"><i class="fas fa-trash-alt me-1"></i> Xóa</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function uploadCertificate(btn) {
+        const fileInput = document.getElementById('certUploadInput');
+        const nameInput = document.getElementById('certNameInput');
+        const issuerInput = document.getElementById('certIssuerInput');
+
+        if (fileInput.files.length === 0) {
+            alert('Vui lòng chọn 1 file ảnh.');
+            return;
+        }
+        if (!nameInput.value.trim() || !issuerInput.value.trim()) {
+            alert('Vui lòng nhập Tên chứng nhận và Đơn vị cấp.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('action', 'add');
+        formData.append('chef_id', currentChefId);
+        formData.append('certificate_name', nameInput.value.trim());
+        formData.append('issuer', issuerInput.value.trim());
+        formData.append('certificate_image', fileInput.files[0]);
+        formData.append('csrf_token', csrfToken);
+
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>...';
+
+        fetch('ajax/ajax_chef_certificates.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(res => {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+            if (res.success) {
+                fileInput.value = '';
+                nameInput.value = '';
+                issuerInput.value = '';
+                fetchChefCertificates();
+            } else {
+                alert(res.message);
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+            alert('Đã xảy ra lỗi khi tải ảnh lên.');
+        });
+    }
+
+    function deleteCertificate(id) {
+        if (!confirm('Bạn có chắc muốn xóa chứng nhận này?')) return;
+        
+        const formData = new FormData();
+        formData.append('action', 'delete');
+        formData.append('id', id);
+        formData.append('csrf_token', csrfToken);
+
+        fetch('ajax/ajax_chef_certificates.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                fetchChefCertificates();
+            } else {
+                alert(res.message);
             }
         });
     }

@@ -96,14 +96,14 @@ include 'views/client/layouts/header.php';
         padding: 180px 0 100px;
         text-align: center;
         position: relative;
-        background: url('public/assets/img/hero/1776687242_hero-bg.jpg') center center / cover no-repeat fixed;
+        background: url('https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
         border-bottom: 1px solid var(--border-light);
     }
     
     .contact-hero::before {
         content: '';
         position: absolute; inset: 0;
-        background: linear-gradient(0deg, rgba(26, 26, 29, 0.8) 0%, rgba(26, 26, 29, 0.95) 100%);
+        background: rgba(0, 0, 0, 0.65);
     }
 
     .contact-hero .container {

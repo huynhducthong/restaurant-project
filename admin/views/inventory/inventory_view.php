@@ -237,9 +237,6 @@ include '../../public/admin_layout_header.php';
                 <button class="btn btn-menu btn-light w-100 mb-2 py-2 fw-bold" id="btn-suppliers" onclick="switchTab('suppliers')">
                     <i class="fas fa-truck me-2"></i> NHÀ CUNG CẤP
                 </button>
-                <button class="btn btn-menu btn-light w-100 mb-2 py-2 fw-bold" id="btn-chart" onclick="switchTab('chart')">
-                    <i class="fas fa-chart-bar me-2"></i> BIỂU ĐỒ KHO
-                </button>
                 <hr class="my-3 opacity-10">
                 <h6 class="fw-bold text-secondary text-uppercase small mb-3">Cài đặt danh mục</h6>
                 <button class="btn btn-menu btn-outline-secondary w-100 mb-2 py-2 fw-bold" onclick="openTagManager('category')">
@@ -780,35 +777,7 @@ include '../../public/admin_layout_header.php';
                 </div>
             </div>
 
-            <!-- 6. TAB BIỂU ĐỒ & THỐNG KÊ -->
-            <div class="tab-pane" id="tab-chart">
-                <h4 class="fw-bold mb-3 text-uppercase text-success">Biểu Đồ Kho 6 Tháng Gần Nhất</h4>
-                <div class="card shadow-sm border-0 p-4 mb-4">
-                    <canvas id="inventoryChart" height="120"></canvas>
-                </div>
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm p-3 text-center">
-                            <div class="small text-muted">Tổng nhập</div>
-                            <div class="fs-4 fw-bold text-success"><?= number_format($stats['ti'] ?? 0, 1) ?></div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm p-3 text-center">
-                            <div class="small text-muted">Tổng xuất</div>
-                            <div class="fs-4 fw-bold text-primary"><?= number_format($stats['te'] ?? 0, 1) ?></div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm p-3 text-center">
-                            <div class="small text-muted">Tổng hủy</div>
-                            <div class="fs-4 fw-bold text-danger"><?= number_format($stats['tl'] ?? 0, 1) ?></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-        
             <!-- ================= ĐẶT HÀNG (PO) ================= -->
             <div class="tab-pane" id="tab-po">
                 <div class="main-card p-4">
@@ -1416,7 +1385,7 @@ include '../../public/admin_layout_header.php';
     // ================= BIẾN TOÀN CỤC =================
     const categories = <?= json_encode($cats) ?>;
     const units = <?= json_encode($units) ?>;
-    const chartRaw = <?= json_encode($chart_raw) ?>;
+
     const PAGE_SIZE = 15;
     let currentPage = 1;
     let activeFilter = sessionStorage.getItem('activeInventoryFilter') || 'all';
@@ -1517,7 +1486,7 @@ include '../../public/admin_layout_header.php';
         url.searchParams.set('tab', tabId);
         window.history.pushState({}, '', url);
 
-        if (tabId === 'chart') renderChart();
+
     }
 
     // ================= HÀM MỞ MODALS =================
@@ -2124,47 +2093,7 @@ include '../../public/admin_layout_header.php';
         });
     });
 
-    // ================= BIỂU ĐỒ =================
-    let chartInstance = null;
 
-    function renderChart() {
-        if (chartInstance || !chartRaw || chartRaw.length === 0) return;
-        chartInstance = new Chart(document.getElementById('inventoryChart').getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: chartRaw.map(d => d.mo),
-                datasets: [{
-                        label: 'Nhập kho',
-                        data: chartRaw.map(d => parseFloat(d.ti)),
-                        backgroundColor: 'rgba(25,135,84,.7)'
-                    },
-                    {
-                        label: 'Xuất kho',
-                        data: chartRaw.map(d => parseFloat(d.te)),
-                        backgroundColor: 'rgba(13,110,253,.7)'
-                    },
-                    {
-                        label: 'Hủy hàng',
-                        data: chartRaw.map(d => parseFloat(d.tl)),
-                        backgroundColor: 'rgba(220,53,69,.7)'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
 
     // ================= DUYỆT / HỦY CHUYỂN KHO =================
     function approveTransfer(id) {

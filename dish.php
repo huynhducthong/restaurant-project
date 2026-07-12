@@ -97,7 +97,7 @@ include 'views/client/layouts/header.php';
                         
                         <?php if (!empty($fj['certificate_img'])): ?>
                         <div class="mt-4">
-                            <button onclick="openCertModal('<?= htmlspecialchars($fj['certificate_img']) ?>')" class="btn btn-outline-warning btn-sm w-100 text-uppercase rounded-0" style="letter-spacing: 2px; font-family: 'Playfair Display', serif; border-color: var(--c-gold); color: var(--c-gold); transition: 0.3s; padding: 10px;">[ Xem Chứng Nhận ]</button>
+                            <button onclick="openCertModal('<?= htmlspecialchars($fj['certificate_img']) ?>')" class="btn btn-outline-warning btn-sm w-100 text-uppercase rounded-0" style="letter-spacing: 2px; font-family: 'Cormorant Garamond', serif; border-color: var(--c-gold); color: var(--c-gold); transition: 0.3s; padding: 10px;">[ Xem Chứng Nhận ]</button>
                         </div>
                         <?php endif; ?>
                         

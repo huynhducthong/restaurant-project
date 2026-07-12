@@ -52,7 +52,7 @@ unset($it);
 
 $total = 0;
 ?>
-<div style="font-family:'Inter', sans-serif;">
+<div style="font-family:'Source Sans 3', sans-serif;">
     <div style="display:flex; justify-content:space-between; margin-bottom:15px; padding-bottom:15px; border-bottom:1px dashed #e8e2d9;">
         <div>
             <div style="font-size:12px; color:#888;">Mã Đặt Bàn</div>

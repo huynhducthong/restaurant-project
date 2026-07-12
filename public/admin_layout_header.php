@@ -455,13 +455,70 @@ try {
             85% { transform: rotate(-5deg); } 100% { transform: rotate(0); }
         }
         .bell-ring { animation: bellShake 1s ease infinite; }
+        
+        @media (max-width: 992px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .admin-sidebar.show {
+                transform: translateX(0);
+            }
+            .main-wrapper {
+                margin-left: 0;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 999;
+            }
+            .sidebar-overlay.show {
+                display: block;
+            }
+            .mobile-menu-toggle {
+                display: block !important;
+            }
+            .content-area {
+                padding: 15px;
+            }
+            .topbar {
+                padding: 0 15px;
+            }
+            .topbar-title {
+                font-size: 15px;
+            }
+        }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const adminSidebar = document.getElementById('adminSidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            if(mobileMenuToggle && adminSidebar && sidebarOverlay) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    adminSidebar.classList.toggle('show');
+                    sidebarOverlay.classList.toggle('show');
+                });
+
+                sidebarOverlay.addEventListener('click', function() {
+                    adminSidebar.classList.remove('show');
+                    sidebarOverlay.classList.remove('show');
+                });
+            }
+        });
+    </script>
 </head>
 
 <body>
 
+    <!-- SIDEBAR OVERLAY -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- SIDEBAR -->
-    <aside class="admin-sidebar">
+    <aside class="admin-sidebar" id="adminSidebar">
         <!-- Brand -->
         <div class="sidebar-brand">
             <div class="brand-icon"><i class="fas fa-utensils"></i></div>
@@ -761,7 +818,11 @@ try {
     <!-- MAIN WRAPPER -->
     <div class="main-wrapper">
         <header class="topbar">
-            <h4 class="topbar-title">
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="mobile-menu-toggle d-none" id="mobileMenuToggle" style="background:none; border:none; font-size:20px; padding:0; color:var(--text-sidebar); cursor:pointer;">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h4 class="topbar-title">
                 <?php
                 $page_titles = [
                     'admin_dashboard.php'     => 'Bảng Điều Khiển Tổng Quan',
@@ -794,6 +855,7 @@ try {
                 echo $page_titles[$current_page] ?? 'Khu Vực Quản Trị';
                 ?>
             </h4>
+            </div>
 
             <div class="d-flex align-items-center">
                 <!-- NOTIFICATION BELL -->

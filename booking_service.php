@@ -281,8 +281,10 @@ $category_order = [
     'khai vị' => 1,
     'món chính' => 2,
     'món ăn kèm' => 3,
-    'tráng miệng' => 4,
-    'đồ uống' => 5
+    'đồ uống có cồn' => 4,
+    'đồ uống không cồn' => 5,
+    'đồ uống' => 5,
+    'tráng miệng' => 6
 ];
 uksort($grouped_foods, function($a, $b) use ($category_order) {
     $a_lower = mb_strtolower($a, 'UTF-8');
@@ -387,7 +389,13 @@ body {
 
 /* === MAIN BOOKING AREA === */
 .booking-section { position: relative; max-width: 1450px; margin: -80px auto 100px; padding: 0 20px; z-index: 10; display: grid; grid-template-columns: 1fr 450px; gap: 40px; }
-@media (max-width: 992px) { .booking-section { grid-template-columns: 1fr; margin-top: 0; padding-top: 30px; gap: 20px; } }
+@media (max-width: 992px) { 
+    .booking-section { grid-template-columns: 1fr; margin-top: 0; padding-top: 30px; gap: 20px; } 
+    .summary-floating { position: relative !important; top: 0 !important; margin-top: 20px; z-index: 5; }
+}
+
+.combo-grid-lux { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-bottom: 25px; }
+@media (max-width: 450px) { .combo-grid-lux { grid-template-columns: 1fr; } }
 
 .luxury-panel { background: #FFFFFF; border: 1px solid var(--glass-border); border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; }
 .panel-section { padding: 35px 40px; border-bottom: 1px solid var(--glass-border); }
@@ -396,7 +404,7 @@ body {
 
 /* === INPUTS === */
 .row-lux { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-@media(max-width:600px) { .row-lux { grid-template-columns: 1fr; } }
+@media(max-width:768px) { .row-lux { grid-template-columns: 1fr; } }
 .input-group-lux { position: relative; margin-bottom: 20px; }
 .input-lux {
     width: 100%; background: #FFFFFF; border: 1px solid var(--glass-border); padding: 16px 20px;
@@ -506,6 +514,34 @@ select.input-lux {
 .seat-lux.selected .seat-code { color: #fff; }
 .seat-info { font-size: 10px; color: var(--text-muted); display: block; margin-top: 5px;}
 .seat-lux.selected .seat-info { color: rgba(0,0,0,0.7); }
+
+/* === MOBILE RESPONSIVE === */
+@media (max-width: 768px) {
+    .hero-luxury { min-height: 400px; height: 60vh; }
+    .hero-content { padding: 0 15px; }
+    .hero-luxury h1 { font-size: clamp(2.5rem, 8vw, 3.5rem); }
+    .hero-sub { font-size: 0.95rem; margin-bottom: 25px; }
+    .hero-btns { flex-direction: column; width: 100%; }
+    .btn-hero-primary, .btn-hero-secondary { width: 100%; justify-content: center; }
+    
+    .panel-section { padding: 20px 15px; }
+    .wizard-header::before { left: 15px; right: 15px; top: 12px; }
+    .step-circle { width: 26px; height: 26px; font-size: 12px; }
+    .step-label { font-size: 9px; }
+    
+    .map-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .vip-grid { grid-template-columns: 1fr; }
+    .cinematic-map { padding: 15px; }
+    
+    .summary-floating { padding: 20px; position: relative; top: 0; }
+    
+    .menu-item-lux { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .menu-item-lux > div:last-child { width: 100%; display: flex; justify-content: space-between; gap: 10px; }
+    .menu-note-input { width: 100%; flex-grow: 1; }
+    
+    .wizard-nav { flex-direction: column-reverse; gap: 10px; }
+    .btn-wizard-prev, .btn-wizard-next { width: 100%; }
+}
 </style>
 
 <section class="hero-luxury">
@@ -780,7 +816,7 @@ select.input-lux {
                 <p style="font-size:13px; color:var(--accent-burgundy); margin-bottom:10px; font-family:'Cormorant Garamond', serif; text-transform:uppercase; letter-spacing:1px; border-bottom: 1px dashed rgba(212,176,106,0.3); padding-bottom:5px; cursor:pointer;" onclick='showThemeInfo(<?= $themeJson ?>)'>
                     SET MENU TỪ CHỦ ĐỀ: <?= htmlspecialchars($theme_name) ?> <i class="fas fa-info-circle ms-1" style="font-size:11px; opacity:0.7;"></i>
                 </p>
-                <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:15px; margin-bottom: 25px;">
+                <div class="combo-grid-lux">
                     <?php foreach($theme_data['combos'] as $cb): ?>
                         <div class="card-select cc" data-price="<?= (float)$cb['price'] ?>" onclick="selCombo(<?= $cb['id'] ?>,this)">
                             <div style="color:var(--accent-burgundy); font-size:15px; margin-bottom:5px;"><?= htmlspecialchars($cb['name']) ?></div>

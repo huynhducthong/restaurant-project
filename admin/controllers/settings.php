@@ -321,26 +321,17 @@ if (!empty($settings['logo_url'])) {
 include '../../public/admin_layout_header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <title>Cấu hình Website</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <style>
-        body { background-color: #f8f9fa; }
-        .settings-card { border: none; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        .section-title { color: #cda45e; font-weight: 700; border-bottom: 2px solid #cda45e; padding-bottom: 10px; margin-bottom: 25px; }
-        .btn-save { background: #cda45e; color: white; padding: 12px 30px; border-radius: 50px; font-weight: 600; transition: 0.3s; }
-        .btn-save:hover { background: #b89252; transform: translateY(-2px); color: white; }
-        
-        /* FIX: Bootstrap 5 hides .tab-pane only if direct child of .tab-content. Since ours is in a form, we need to manually hide them */
-        .tab-content form .tab-pane { display: none; }
-        .tab-content form .tab-pane.active { display: block; }
-    </style>
-</head>
-<body>
+<style>
+    /* body { background-color: #f8f9fa; }  -- Removed to not override layout body */
+    .settings-card { border: none; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+    .section-title { color: #cda45e; font-weight: 700; border-bottom: 2px solid #cda45e; padding-bottom: 10px; margin-bottom: 25px; }
+    .btn-save { background: #cda45e; color: white; padding: 12px 30px; border-radius: 50px; font-weight: 600; transition: 0.3s; }
+    .btn-save:hover { background: #b89252; transform: translateY(-2px); color: white; }
+    
+    /* FIX: Bootstrap 5 hides .tab-pane only if direct child of .tab-content. Since ours is in a form, we need to manually hide them */
+    .tab-content form .tab-pane { display: none; }
+    .tab-content form .tab-pane.active { display: block; }
+</style>
 
 <div class="container-fluid py-3">
     <div class="row">
@@ -860,5 +851,4 @@ function editLink(id) {
     }, 'json');
 }
 </script>
-</body>
-</html>
+<?php include '../../public/admin_layout_footer.php'; ?>

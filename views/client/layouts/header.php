@@ -151,19 +151,17 @@ if (!empty($logo_path)) {
             --primary-color: #A88746;
         }
 
-        html, body {
+        body {
             margin: 0;
             padding: 0 !important;
             font-family: 'Source Sans 3', sans-serif;
-            background-color: #050505; /* Deep Black for high contrast */
-            color: #FFFFFF; /* Pure White text for better contrast */
             overflow-x: hidden; /* Prevent horizontal scrolling/overflow bugs */
             width: 100%;
             max-width: 100%;
             position: relative;
         }
         @media (max-width: 991px) {
-            html, body, .main-wrapper {
+            body {
                 width: 100vw !important;
                 max-width: 100vw !important;
                 overflow-x: hidden !important;
@@ -283,7 +281,7 @@ if (!empty($logo_path)) {
         .navbar ul {
             display: flex;
             align-items: center;
-            gap: 36px;
+            gap: 55px; /* Tăng khoảng cách giữa các tab */
 
             margin: 0;
             padding: 0;
@@ -298,8 +296,9 @@ if (!empty($logo_path)) {
             color: #fff;
 
             font-family: 'Cormorant Garamond', serif;
-            font-size: 18px;
+            font-size: 22px; /* Tăng kích thước chữ */
             font-weight: 600;
+            letter-spacing: 1px; /* Thêm khoảng cách giữa các chữ cái cho dễ nhìn */
 
             text-transform: uppercase;
 
@@ -573,11 +572,6 @@ if (!empty($logo_path)) {
 </head>
 
 <body>
-    <!-- MOBILE VIEWPORT STRETCH FIX WRAPPER -->
-    <div class="main-wrapper" style="width: 100%; overflow-x: hidden; position: relative;">
-        <!-- Invisible Layout Helper to resolve WebKit viewport init issues -->
-        <div style="height: 0px; width: 100%; clear: both; display: block; overflow: hidden; pointer-events: none; visibility: hidden;"></div>
-
     <!-- PAGE TRANSITION OVERLAY -->
     <div class="page-transition-overlay"></div>
     

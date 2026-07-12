@@ -273,6 +273,9 @@ if (isset($_POST['action'])) {
             // Tạo lô hàng mới
             createBatch($db, $id, $main_warehouse_id, $qty, $_POST['expiry_date'], $price, "Nhập trực tiếp");
 
+            // Đồng bộ lô hàng trước khi lấy HSD
+            syncInventoryBatchesWithStock($db, $id);
+
             // Cập nhật lại HSD tổng (Lấy ngày sớm nhất của các lô còn hàng)
             $stmt_min_hsd = $db->prepare("SELECT MIN(expiry_date) FROM inventory_batches WHERE ingredient_id = ? AND quantity > 0 AND expiry_date IS NOT NULL AND warehouse_id NOT IN (6, 7)");
             $stmt_min_hsd->execute([$id]);
@@ -309,6 +312,12 @@ if (isset($_POST['action'])) {
                ->execute([$virtual_w_id, $id, $qty, $qty]);
 
             $db->prepare("INSERT INTO inventory_history (ingredient_id, warehouse_id, type, quantity, performed_by) VALUES (?, ?, ?, ?, ?)")->execute([$id, $w_id, $_POST['action'], $qty, $current_user]);
+
+            // Đồng bộ lô hàng và cập nhật HSD sau khi xuất/hủy
+            syncInventoryBatchesWithStock($db, $id);
+            $stmt_min_hsd = $db->prepare("SELECT MIN(expiry_date) FROM inventory_batches WHERE ingredient_id = ? AND quantity > 0 AND expiry_date IS NOT NULL AND warehouse_id NOT IN (6, 7)");
+            $stmt_min_hsd->execute([$id]);
+            $db->prepare("UPDATE inventory SET expiry_date = ? WHERE id = ?")->execute([$stmt_min_hsd->fetchColumn() ?: null, $id]);
         } elseif ($_POST['action'] === 'transfer') {
             // Action cũ (giữ cho tương thích nếu còn gọi từ nơi khác)
             $id = (int)$_POST['item_id'];
@@ -657,7 +666,6 @@ $transfers = $db->query("
     ORDER BY t.transfer_date DESC LIMIT 50
 ")->fetchAll(PDO::FETCH_ASSOC);
 $pending_transfers_count = (int)$db->query("SELECT COUNT(*) FROM inventory_transfers WHERE status = 'pending'")->fetchColumn();
-$chart_raw = $db->query("SELECT DATE_FORMAT(created_at, '%Y-%m') as mo, SUM(CASE WHEN type='import' THEN quantity ELSE 0 END) as ti, SUM(CASE WHEN type='export' THEN quantity ELSE 0 END) as te, SUM(CASE WHEN type='loss' THEN quantity ELSE 0 END) as tl FROM inventory_history WHERE created_at >= DATE_SUB(NOW(), INTERVAL 5 MONTH) GROUP BY mo ORDER BY mo ASC")->fetchAll(PDO::FETCH_ASSOC);
 
 // BÁO CÁO GIÁ TRỊ TỒN KHO THEO TỪNG KHO (VALUE PER WAREHOUSE)
 $warehouse_values = $db->query("
