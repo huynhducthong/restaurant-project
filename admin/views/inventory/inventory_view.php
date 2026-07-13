@@ -393,9 +393,8 @@ include '../../public/admin_layout_header.php';
                                         $has_stock = false;
                                         foreach ($warehouses as $w):
                                             if ($w['type'] == 'virtual') continue; // Ẩn kho ảo
-                                            if (isset($i['stocks'][$w['id']])): 
-                                                $qty = $i['stocks'][$w['id']];
-                                                $has_stock = true;
+                                            $qty = $i['stocks'][$w['id']] ?? 0;
+                                            if ($qty > 0): $has_stock = true;
                                                 $badge_color = in_array($w['id'], [1,2,3,4,5]) ? "badge-ghost-wh-".$w['id'] : "badge-ghost-wh-default";
                                         ?>
                                                 <div class="mb-1 wh-badge" data-wh-id="<?= $w['id'] ?>"><span class="badge <?= $badge_color ?> me-1"><?= $w['name'] ?></span> <span class="fw-bold"><?= $qty ?></span> <?= $i['unit_name'] ?></div>
