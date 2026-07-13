@@ -186,7 +186,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                                         <div class="carousel-item <?= $first ? 'active' : '' ?>" style="background: #050505; height: clamp(500px, 75vh, 800px); overflow: hidden;">
           <div class="row g-0 h-100">
                         <!-- Phần chữ (Bên trái) -->
-            <div class="col-lg-5 d-flex flex-column justify-content-center px-4 px-lg-5 py-5" style="z-index: 2; padding-left: clamp(2rem, 8vw, 6rem) !important; min-height: clamp(400px, 60vh, 600px);">
+            <div class="col-lg-5 d-flex flex-column justify-content-center px-4 px-lg-5 py-5" style="z-index: 2; padding-left: clamp(1rem, 5vw, 6rem); padding-right: clamp(1rem, 5vw, 6rem) !important; min-height: clamp(400px, 60vh, 600px);">
               
               <!-- Subtitle nhỏ có đường gạch ngang -->
               <div class="d-flex align-items-center mb-4">
@@ -200,7 +200,7 @@ include __DIR__ . '/views/client/layouts/header.php';
               <h2 style="
                   color: <?= $row['text_color'] ?? '#ffffff' ?>; 
                   font-family: <?= $row['font_family'] ?? "'Oswald', 'Source Sans 3', sans-serif" ?>; 
-                  font-size: clamp(3rem, 6vw, 5.5rem); 
+                  font-size: clamp(2.2rem, 8vw, 5.5rem); word-break: break-word; 
                   font-weight: 800; 
                   font-style: <?= $title_style ?>;
                   text-transform: uppercase;
@@ -218,7 +218,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                   font-weight: 400; 
                   font-style: italic;
                   line-height: 1.8;
-                  max-width: 85%;
+                  max-width: 100%;
                   margin-bottom: 40px;">
                 <?= htmlspecialchars($row['description']) ?>
               </p>
