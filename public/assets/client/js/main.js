@@ -139,4 +139,63 @@ $(document).ready(function() {
     setInterval(updateCountdowns, 1000);
     calculateTotal();
     updateCountdowns();
+
+    // --- 6. LOGIC TỪ TRANG CHỦ (INDEX.PHP) ---
+    // A. Carousel Swipe Logic
+    const carouselSection = document.getElementById('promotions');
+    const myCarousel = document.getElementById('bannerCarousel');
+    if (carouselSection && myCarousel) {
+        let isDown = false;
+        let startX;
+        
+        carouselSection.addEventListener('mousedown', (e) => {
+            isDown = true;
+            carouselSection.style.cursor = 'grabbing';
+            startX = e.pageX;
+            e.preventDefault(); 
+        });
+
+        carouselSection.addEventListener('mouseleave', () => {
+            isDown = false;
+            carouselSection.style.cursor = 'grab';
+        });
+
+        carouselSection.addEventListener('mouseup', (e) => {
+            if(!isDown) return;
+            isDown = false;
+            carouselSection.style.cursor = 'grab';
+            
+            const endX = e.pageX;
+            const diff = startX - endX;
+            
+            if(Math.abs(diff) > 50) { 
+                const bsCarousel = bootstrap.Carousel.getInstance(myCarousel) || new bootstrap.Carousel(myCarousel);
+                if(diff > 0) {
+                    bsCarousel.next();
+                } else {
+                    bsCarousel.prev();
+                }
+            }
+        });
+    }
+
+    // B. Menu Hover Tooltip Logic
+    const tooltip = document.getElementById('hoverImageTooltip');
+    const triggers = document.querySelectorAll('.menu-hover-trigger');
+    if (tooltip && triggers.length > 0) {
+        triggers.forEach(trigger => {
+            trigger.addEventListener('mousemove', function(e) {
+                tooltip.src = this.getAttribute('data-img');
+                tooltip.style.left = e.pageX + 'px';
+                tooltip.style.top = e.pageY + 'px';
+                tooltip.style.opacity = '1';
+                tooltip.style.transform = 'translate(15px, -50%) scale(1)';
+            });
+            trigger.addEventListener('mouseleave', function() {
+                tooltip.style.opacity = '0';
+                tooltip.style.transform = 'translate(15px, -50%) scale(0.95)';
+            });
+        });
+    }
+
 });
