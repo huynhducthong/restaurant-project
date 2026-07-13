@@ -152,15 +152,9 @@ $(document).ready(function() {
             isDown = true;
             carouselSection.style.cursor = 'grabbing';
             startX = e.pageX;
-            e.preventDefault(); 
         });
 
-        carouselSection.addEventListener('mouseleave', () => {
-            isDown = false;
-            carouselSection.style.cursor = 'grab';
-        });
-
-        carouselSection.addEventListener('mouseup', (e) => {
+        const handleDragEnd = (e) => {
             if(!isDown) return;
             isDown = false;
             carouselSection.style.cursor = 'grab';
@@ -169,13 +163,20 @@ $(document).ready(function() {
             const diff = startX - endX;
             
             if(Math.abs(diff) > 50) { 
-                const bsCarousel = bootstrap.Carousel.getInstance(myCarousel) || new bootstrap.Carousel(myCarousel);
+                const bsCarousel = bootstrap.Carousel.getOrCreateInstance(myCarousel);
                 if(diff > 0) {
                     bsCarousel.next();
                 } else {
                     bsCarousel.prev();
                 }
             }
+        };
+
+        carouselSection.addEventListener('mouseleave', handleDragEnd);
+        carouselSection.addEventListener('mouseup', handleDragEnd);
+
+        carouselSection.querySelectorAll('img').forEach(img => {
+            img.addEventListener('dragstart', (e) => e.preventDefault());
         });
     }
 
