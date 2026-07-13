@@ -262,6 +262,53 @@ include __DIR__ . '/views/client/layouts/header.php';
   </div>
   
 
+    <script>
+      (function() {
+        const carouselSection = document.getElementById('promotions');
+        const myCarousel = document.getElementById('bannerCarousel');
+        if (carouselSection && myCarousel) {
+            let isDown = false;
+            let startX;
+            
+            carouselSection.addEventListener('mousedown', (e) => {
+                const targetTag = e.target.tagName.toLowerCase();
+                if (['a', 'button', 'input', 'textarea', 'select'].indexOf(targetTag) === -1) {
+                    e.preventDefault();
+                }
+                isDown = true;
+                carouselSection.style.cursor = 'grabbing';
+                startX = e.pageX;
+            });
+
+            const handleMouseUp = (e) => {
+                if(!isDown) return;
+                isDown = false;
+                carouselSection.style.cursor = 'grab';
+                
+                const endX = e.pageX;
+                const diff = startX - endX;
+                
+                if(Math.abs(diff) > 50) { 
+                    // Use bootstrap from global scope if available
+                    if (typeof bootstrap !== 'undefined') {
+                        const bsCarousel = bootstrap.Carousel.getOrCreateInstance(myCarousel);
+                        if(diff > 0) {
+                            bsCarousel.next();
+                        } else {
+                            bsCarousel.prev();
+                        }
+                    }
+                }
+            };
+
+            document.addEventListener('mouseup', handleMouseUp);
+
+            carouselSection.querySelectorAll('img').forEach(img => {
+                img.addEventListener('dragstart', (e) => e.preventDefault());
+            });
+        }
+      })();
+    </script>
 </section>
 
 <img id="hoverImageTooltip" class="menu-hover-tooltip" src="" alt="">
