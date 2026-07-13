@@ -172,7 +172,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 <main id="main">
 
 <!-- PROMOTIONS (BANNER SLIDER) -->
-<section id="promotions" style="padding: 0; margin: 0; overflow: hidden; cursor: grab; background: #111;">
+<section id="promotions" style="padding: 0; margin: 0; overflow: hidden; cursor: grab; background: #111; user-select: none; -webkit-user-select: none;">
     <div id="bannerCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-touch="true" data-bs-interval="3000" style="width: 100vw;">
     <div class="carousel-inner" id="bannerCarouselInner">
       <?php

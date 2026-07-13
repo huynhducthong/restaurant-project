@@ -148,18 +148,21 @@ $(document).ready(function() {
         let isDown = false;
         let startX;
         
-        carouselSection.addEventListener('mousedown', (e) => {
+        carouselSection.addEventListener('pointerdown', (e) => {
             isDown = true;
             carouselSection.style.cursor = 'grabbing';
-            startX = e.pageX;
+            startX = e.clientX;
+            carouselSection.setPointerCapture(e.pointerId);
         });
 
-        const handleDragEnd = (e) => {
+        const handlePointerEnd = (e) => {
             if(!isDown) return;
             isDown = false;
             carouselSection.style.cursor = 'grab';
             
-            const endX = e.pageX;
+            try { carouselSection.releasePointerCapture(e.pointerId); } catch(err) {}
+            
+            const endX = e.clientX;
             const diff = startX - endX;
             
             if(Math.abs(diff) > 50) { 
@@ -172,8 +175,8 @@ $(document).ready(function() {
             }
         };
 
-        carouselSection.addEventListener('mouseleave', handleDragEnd);
-        carouselSection.addEventListener('mouseup', handleDragEnd);
+        carouselSection.addEventListener('pointerup', handlePointerEnd);
+        carouselSection.addEventListener('pointercancel', handlePointerEnd);
 
         carouselSection.querySelectorAll('img').forEach(img => {
             img.addEventListener('dragstart', (e) => e.preventDefault());
