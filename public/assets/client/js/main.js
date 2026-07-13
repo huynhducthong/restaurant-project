@@ -149,6 +149,10 @@ $(document).ready(function() {
         let startX;
         
         carouselSection.addEventListener('mousedown', (e) => {
+            const targetTag = e.target.tagName.toLowerCase();
+            if (['a', 'button', 'input', 'textarea', 'select'].indexOf(targetTag) === -1) {
+                e.preventDefault();
+            }
             isDown = true;
             carouselSection.style.cursor = 'grabbing';
             startX = e.pageX;
