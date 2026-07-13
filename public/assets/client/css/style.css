@@ -8690,7 +8690,7 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
 .editorial-hero-bg {
   position: absolute;
   inset: 0;
-  background-image: url('public/assets/img/about-bg.jpg'); /* Default hero image */
+  background-image: url('../../img/about-bg.jpg'); /* Default hero image */
   background-size: cover;
   background-position: center;
   filter: grayscale(0.2) opacity(0.8);
