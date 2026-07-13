@@ -8629,7 +8629,28 @@ body{
     .awesome-team-section::before { height: 600px; }
 }
 @media (max-width: 767px) {
-    .awesome-card { width: 100%; max-width: 400px; margin: 0 auto; }
+    .awesome-team-grid {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 20px;
+        gap: 15px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .awesome-team-grid::-webkit-scrollbar {
+        display: none;
+    }
+    .awesome-card { 
+        width: 85%; 
+        min-width: 260px;
+        max-width: none; 
+        flex: 0 0 auto; 
+        margin: 0; 
+        scroll-snap-align: center;
+    }
     .awesome-team-section::before { height: 650px; }
 }
 
