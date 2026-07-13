@@ -9,8 +9,7 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
 .sort-link { font-size: 12px; color: var(--bs-secondary); text-decoration: none; }
 .sort-link.active { color: #212529; font-weight: 600; }
 .sort-link:hover { color: #212529; }
-.food-img { width:60px;height:60px;object-fit:cover;border-radius:10px;border:1px solid #eee; transition:.2s; }
-.food-img:hover { transform:scale(1.08); box-shadow:0 4px 12px rgba(0,0,0,.15); }
+.food-img { width:60px;height:60px;object-fit:cover;border-radius:10px;border:1px solid #eee; }
 tr.inactive-row { opacity: .55; }
 tr.inactive-row td:first-child::after { content:''; }
 .profit-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; }
@@ -157,10 +156,12 @@ tr.inactive-row td:first-child::after { content:''; }
 
                     <!-- Ảnh -->
                     <td class="ps-4">
-                        <img src="../../public/assets/img/menu/<?= htmlspecialchars($row['image']) ?>"
-                             class="food-img"
-                             onerror="this.src='../../public/assets/img/menu/default.jpg'"
-                             alt="<?= htmlspecialchars($row['name']) ?>">
+                        <div style="width: 60px; height: 60px; min-width: 60px; overflow: hidden; border-radius: 10px; border: 1px solid #eee; display: block; margin: 0;">
+                            <img src="../../public/assets/img/menu/<?= htmlspecialchars($row['image']) ?>"
+                                 style="width: 100%; height: 100%; object-fit: cover;"
+                                 onerror="this.src='../../public/assets/img/menu/default.jpg'"
+                                 alt="<?= htmlspecialchars($row['name']) ?>">
+                        </div>
                     </td>
 
                     <!-- Tên -->
