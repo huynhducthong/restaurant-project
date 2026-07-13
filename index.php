@@ -445,9 +445,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                                       <img src="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>" class="minimal-menu-img me-3" style="border: 1px solid rgba(0,0,0,0.1);" alt="">
                                                       <div style="flex: 1;">
                                                           <div class="d-flex justify-content-between align-items-baseline">
-                                                              <h5 style="color: #2A201A; font-family: 'Cormorant Garamond', serif; font-size: 18px; margin: 0; font-weight: 400; text-transform: uppercase;"><?= htmlspecialchars($row['name']) ?> <i class="bi bi-chevron-down ms-1" style="font-size: 12px; color: #C9A66B;"></i></h5>
+                                                              <h5 style="color: #2A201A; font-family: 'Cormorant Garamond', serif; font-size: clamp(15px, 4vw, 18px); margin: 0; font-weight: 600; text-transform: uppercase; line-height: 1.3; max-width: 65%;"><?= htmlspecialchars($row['name']) ?> <i class="bi bi-chevron-down ms-1" style="font-size: 12px; color: #C9A66B;"></i></h5>
                                                               <div style="flex-grow: 1; border-bottom: 1px dashed rgba(255,255,255,0.2); margin: 0 10px; position: relative; top: -4px;"></div>
-                                                              <div style="color: #C9A66B; font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;"><?= number_format($row['price'], 0, ',', '.') ?>đ</div>
+                                                              <div style="color: #C9A66B; font-family: 'Source Sans 3', sans-serif; font-size: clamp(14px, 3.5vw, 16px); font-weight: 600; white-space: nowrap;"><?= number_format($row['price'], 0, ',', '.') ?>đ</div>
                                                           </div>
                                                           <p style="color: #666; font-size: 12px; margin: 5px 0 0 0; line-height: 1.5;"><?= htmlspecialchars($row['description']) ?></p>
                                                           <div style="font-size: 10px; color: #666; font-style: italic; margin-top: 4px;"><i class="bi bi-star-fill me-1" style="color:#C9A66B; font-size:8px;"></i><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></div>
@@ -489,9 +489,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                               <div class="d-flex align-items-center">
                                                   <div style="flex: 1;">
                                                       <div class="d-flex justify-content-between align-items-baseline">
-                                                          <h5 style="color: #2A201A; font-family: 'Cormorant Garamond', serif; font-size: 18px; margin: 0; font-weight: 600; text-transform: uppercase;"><?= htmlspecialchars($f['name']) ?></h5>
+                                                          <h5 style="color: #2A201A; font-family: 'Cormorant Garamond', serif; font-size: clamp(15px, 4vw, 18px); margin: 0; font-weight: 600; text-transform: uppercase; line-height: 1.3; max-width: 65%;"><?= htmlspecialchars($f['name']) ?></h5>
                                                           <div style="flex-grow: 1; border-bottom: 1px dashed rgba(0,0,0,0.2); margin: 0 10px; position: relative; top: -4px;"></div>
-                                                          <div style="color: #E65C00; font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 700;"><?= number_format($f['price'], 0, ',', '.') ?>đ</div>
+                                                          <div style="color: #E65C00; font-family: 'Source Sans 3', sans-serif; font-size: clamp(14px, 3.5vw, 16px); font-weight: 700; white-space: nowrap;"><?= number_format($f['price'], 0, ',', '.') ?>đ</div>
                                                       </div>
                                                       <p style="color: #666; font-size: 12px; margin: 5px 0 0 0; line-height: 1.5;"><?= htmlspecialchars($f['description']) ?></p>
                                                   </div>
