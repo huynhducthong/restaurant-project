@@ -148,21 +148,18 @@ $(document).ready(function() {
         let isDown = false;
         let startX;
         
-        carouselSection.addEventListener('pointerdown', (e) => {
+        carouselSection.addEventListener('mousedown', (e) => {
             isDown = true;
             carouselSection.style.cursor = 'grabbing';
-            startX = e.clientX;
-            carouselSection.setPointerCapture(e.pointerId);
+            startX = e.pageX;
         });
 
-        const handlePointerEnd = (e) => {
+        const handleMouseUp = (e) => {
             if(!isDown) return;
             isDown = false;
             carouselSection.style.cursor = 'grab';
             
-            try { carouselSection.releasePointerCapture(e.pointerId); } catch(err) {}
-            
-            const endX = e.clientX;
+            const endX = e.pageX;
             const diff = startX - endX;
             
             if(Math.abs(diff) > 50) { 
@@ -175,8 +172,7 @@ $(document).ready(function() {
             }
         };
 
-        carouselSection.addEventListener('pointerup', handlePointerEnd);
-        carouselSection.addEventListener('pointercancel', handlePointerEnd);
+        document.addEventListener('mouseup', handleMouseUp);
 
         carouselSection.querySelectorAll('img').forEach(img => {
             img.addEventListener('dragstart', (e) => e.preventDefault());
