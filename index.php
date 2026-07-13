@@ -112,6 +112,9 @@ try {
 // 6. Nhúng Header
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
+<link href="<?= $path_prefix ?>public/assets/client/css/home.css" rel="stylesheet">
+<?php
+?>
 
 <section id="hero-video" class="d-flex align-items-center justify-content-center" style="position: relative; width: 100vw; height: 100vh; overflow: hidden; background: #000; margin: 0; padding: 0;">
   <!-- Video Background -->
