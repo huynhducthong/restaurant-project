@@ -224,13 +224,14 @@ $banners = $db->query(
 $fonts = [
     "'Cormorant Garamond', serif" => "Cormorant Garamond (Tiêu chuẩn - Cổ điển)",
     "'Source Sans 3', sans-serif" => "Source Sans 3 (Văn bản - Hiện đại)",
+    "'Poppins', sans-serif" => "Poppins (Văn bản - Tròn trịa)",
 ];
 $font_sizes = [12,14,16,18,20,22,24,26,28,36,48,56,64,72];
 
 include '../../public/admin_layout_header.php';
 ?>
 
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
     :root {
