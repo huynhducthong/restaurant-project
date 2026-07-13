@@ -8632,3 +8632,8 @@ body{
     .awesome-card { width: 100%; max-width: 400px; margin: 0 auto; }
     .awesome-team-section::before { height: 650px; }
 }
+
+/* GSAP Animations Initial States (Prevent FOUC) */
+.gsap-fade-up, .gsap-fade-in, .gsap-zoom-in {
+    visibility: hidden;
+}

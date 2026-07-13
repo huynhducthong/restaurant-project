@@ -908,6 +908,83 @@ if ($is_logged_in_chat) {
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+<!-- GSAP & ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<!-- Lenis Smooth Scroll -->
+<script src="https://unpkg.com/@studio-freight/lenis@1.0.39/dist/lenis.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Initialize Lenis
+    const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+        direction: 'vertical',
+        gestureDirection: 'vertical',
+        smooth: true,
+        smoothTouch: false,
+    });
+
+    // 2. Sync GSAP ScrollTrigger with Lenis
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => {
+        lenis.raf(time * 1000);
+    });
+    gsap.ticker.lagSmoothing(0);
+
+    // 3. Register GSAP Plugins
+    gsap.registerPlugin(ScrollTrigger);
+
+    // 4. Generic Animations Setup
+    // Fade Up
+    gsap.utils.toArray('.gsap-fade-up').forEach(element => {
+        gsap.fromTo(element, 
+            { autoAlpha: 0, y: 50 },
+            {
+                autoAlpha: 1, y: 0, duration: 1, ease: "power3.out",
+                scrollTrigger: { trigger: element, start: "top 85%", toggleActions: "play none none none" }
+            }
+        );
+    });
+
+    // Fade In
+    gsap.utils.toArray('.gsap-fade-in').forEach(element => {
+        gsap.fromTo(element, 
+            { autoAlpha: 0 },
+            {
+                autoAlpha: 1, duration: 1.2, ease: "power2.inOut",
+                scrollTrigger: { trigger: element, start: "top 80%", toggleActions: "play none none none" }
+            }
+        );
+    });
+
+    // Zoom In
+    gsap.utils.toArray('.gsap-zoom-in').forEach(element => {
+        gsap.fromTo(element, 
+            { autoAlpha: 0, scale: 0.95 },
+            {
+                autoAlpha: 1, scale: 1, duration: 1.2, ease: "power3.out",
+                scrollTrigger: { trigger: element, start: "top 85%", toggleActions: "play none none none" }
+            }
+        );
+    });
+    
+    // Parallax background
+    gsap.utils.toArray('.gsap-parallax-bg').forEach(bg => {
+        gsap.to(bg, {
+            yPercent: 20,
+            ease: "none",
+            scrollTrigger: {
+                trigger: bg.parentElement,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true
+            }
+        });
+    });
+});
+</script>
 
     </div><!-- /.main-wrapper -->
 </body>

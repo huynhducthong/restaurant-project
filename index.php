@@ -417,7 +417,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   <section id="combos" class="minimal-menu-wrapper">
       <div class="container">
-          <div class="section-title text-center mb-5">
+          <div class="section-title text-center mb-5 gsap-fade-up">
               <p style="color: #A88746; font-family: 'Source Sans 3', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Tuyển Chọn Thượng Hạng</p>
               <h2 style="color: #2A201A; font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Bộ Sưu Tập Hương Vị</h2>
           </div>
@@ -427,19 +427,19 @@ document.addEventListener('DOMContentLoaded', function() {
                   <?php if(empty($t['combos']) && empty($t['foods'])) continue; ?>
                   
                   <div class="minimal-menu-theme">
-                      <div class="text-center mb-4">
+                      <div class="text-center mb-4 gsap-fade-up">
                           <h3 style="color: #C9A66B; font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 400; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 10px;"><?= htmlspecialchars($t['name']) ?></h3>
                           <p style="color: #666; font-family: 'Source Sans 3', sans-serif; font-size: 14px; max-width: 600px; margin: 0 auto; font-style: italic;"><?= htmlspecialchars($t['description']) ?></p>
                       </div>
                       
-                      <div class="row g-0 shadow-lg" style="border-radius: 8px; overflow: hidden; background: #FFFFFF;">
+                      <div class="row g-0 shadow-lg gsap-fade-up" style="border-radius: 8px; overflow: hidden; background: #FFFFFF;">
                           <!-- LEFT COLUMN: COMBOS (BLACK) -->
                           <div class="col-lg-6 p-5 minimal-menu-box" style="background: #FFFFFF;">
                               <h4 style="color: #2A201A; font-family: 'Cormorant Garamond', serif; font-size: 24px; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2px; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 15px;">Set Menu Thượng Hạng</h4>
                               <div class="d-flex flex-column gap-4">
                                   <?php if(!empty($t['combos'])): ?>
                                       <?php foreach($t['combos'] as $row): ?>
-                                          <div class="minimal-menu-item">
+                                          <div class="minimal-menu-item gsap-fade-up">
                                               <div style="cursor: pointer;" onclick="const el = document.getElementById('combo-items-<?= $row['id'] ?>'); el.style.display = (el.style.display === 'none') ? 'block' : 'none';">
                                                   <div class="d-flex align-items-center">
                                                       <img src="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>" class="minimal-menu-img me-3" style="border: 1px solid rgba(0,0,0,0.1);" alt="">
@@ -485,7 +485,7 @@ document.addEventListener('DOMContentLoaded', function() {
                               <div class="d-flex flex-column gap-4">
                                   <?php if(!empty($t['foods'])): ?>
                                       <?php foreach($t['foods'] as $f): ?>
-                                          <div class="minimal-menu-item">
+                                          <div class="minimal-menu-item gsap-fade-up">
                                               <div class="d-flex align-items-center">
                                                   <div style="flex: 1;">
                                                       <div class="d-flex justify-content-between align-items-baseline">
@@ -525,7 +525,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="awesome-team-grid">
       <?php if (!empty($home_chefs)): ?>
         <?php foreach ($home_chefs as $chef): ?>
-          <div class="awesome-card" onclick="window.location.href='chefs.php'" style="cursor: pointer;">
+          <div class="awesome-card gsap-fade-up" onclick="window.location.href='chefs.php'" style="cursor: pointer;">
             <div class="awesome-img-wrapper">
                 <img src="public/assets/img/chefs/<?= htmlspecialchars($chef['image']) ?>" alt="<?= htmlspecialchars($chef['name']) ?>" onerror="this.src='public/assets/img/chefs/default-chef.jpg'">
             </div>
@@ -579,7 +579,7 @@ document.addEventListener('DOMContentLoaded', function() {
           $item_class = 1;
           foreach ($home_galleries as $gallery): 
           ?>
-            <div class="atmo-item item-<?= $item_class ?>">
+            <div class="atmo-item item-<?= $item_class ?> gsap-zoom-in">
               <img src="public/assets/img/gallery/<?= htmlspecialchars($gallery['image_url']) ?>" alt="<?= htmlspecialchars($gallery['title'] ?? 'Atmosphere') ?>">
             </div>
           <?php 
