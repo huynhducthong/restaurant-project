@@ -912,18 +912,33 @@ if ($is_logged_in_chat) {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <!-- Lenis Smooth Scroll -->
-<script src="https://unpkg.com/@studio-freight/lenis@1.0.39/dist/lenis.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+
+<style>
+/* Recommended Lenis CSS */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+</style>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     // 1. Initialize Lenis
     const lenis = new Lenis({
-        duration: 1.2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
-        direction: 'vertical',
-        gestureDirection: 'vertical',
-        smooth: true,
-        smoothTouch: false,
+        lerp: 0.08, // Adjust for smoothness (lower is smoother but slower)
+        smoothWheel: true,
     });
 
     // 2. Sync GSAP ScrollTrigger with Lenis
