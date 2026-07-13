@@ -1002,5 +1002,6 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 
     </div><!-- /.main-wrapper -->
+    <script src="<?= $path_prefix ?? '' ?>public/assets/client/js/main.js?v=<?= time() ?>"></script>
 </body>
 </html>
