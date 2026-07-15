@@ -251,4 +251,53 @@ body {
 .section-header h4 {
     font-size: 1.1rem;
 }
-
+
+/* --- MOVED FROM INLINE STYLES --- */
+/* From admin/views/combo/formcombo.php */
+.food-list-box{border:1px solid #dee2e6;padding:15px;max-height:420px;overflow-y:auto;border-radius:10px;background:#fdfdfd}
+.food-check-item{padding:8px 10px;border-bottom:1px solid #f0f0f0;border-radius:6px;transition:.15s}
+.food-check-item:hover{background:#f8f8f8}
+.food-check-item:last-child{border-bottom:none}
+.img-preview-wrap{position:relative;display:inline-block}
+.img-preview-combo{max-height:150px;border-radius:10px;border:2px solid #dee2e6;object-fit:cover;display:block;margin-bottom:8px}
+
+/* From admin/views/combo/listcombo.php */
+.combo-img {
+    width: 80px; height: 60px;
+    object-fit: cover; border-radius: 8px;
+    transition: .2s;
+}
+.combo-img:hover { transform: scale(1.08); box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+tr.inactive-row { opacity: .5; }
+.saving-badge {
+    font-size: 10px; padding: 2px 6px; border-radius: 4px;
+    background: #d1fae5; color: #065f46; display: inline-block; margin-top: 3px;
+}
+.saving-badge.low { background: #fef9c3; color: #713f12; }
+
+/* From admin/views/food/formfood.php */
+.drop-zone{border:2px dashed #cda45e;border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:.2s;background:#fffdf8;position:relative}
+.drop-zone:hover,.drop-zone.dragover{background:#fef6e4;border-color:#a07840}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.img-preview{width:100%;max-height:200px;object-fit:contain;border-radius:10px;display:none;margin-top:10px}
+.img-preview.show{display:block}
+.recipe-row{background:#f8f9fa;border-radius:10px;padding:10px 12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.recipe-row select,.recipe-row input{flex:1;min-width:120px;font-size:13px}
+.topping-card{background:#f8f9fa;border:1px solid #eee;border-radius:10px;cursor:pointer;transition:.2s;padding:10px;}
+.topping-card:hover{background:#fef6e4 !important;border-color:#cda45e;transform:translateY(-2px);box-shadow:0 4px 6px rgba(0,0,0,0.05)}
+.topping-card.active-checked{background:#fef6e4 !important;border:1px solid #cda45e !important}
+
+/* From admin/views/food/listfood.php */
+.sort-link { font-size: 12px; color: var(--bs-secondary); text-decoration: none; }
+.sort-link.active { color: #212529; font-weight: 600; }
+.sort-link:hover { color: #212529; }
+.food-img { width:60px;height:60px;object-fit:cover;border-radius:10px;border:1px solid #eee; }
+tr.inactive-row { opacity: .55; }
+tr.inactive-row td:first-child::after { content:''; }
+.profit-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+.profit-high { background:#d1fae5;color:#065f46; }
+.profit-mid  { background:#fef9c3;color:#713f12; }
+.profit-low  { background:#fee2e2;color:#991b1b; }
+
+
+/* --- MOVED FROM INLINE STYLES --- */

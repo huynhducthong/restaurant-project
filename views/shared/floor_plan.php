@@ -331,8 +331,9 @@ $all_tables = array_merge($t_open, $t_room);
 .fp-legend-box { width: 14px; height: 14px; margin-right: 8px; border-radius: 50%; }
 </style>
 
-<div style="overflow-x: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; background: #e0e0e0;">
-    <div class="fp-container" id="floor-plan-canvas">
+<div class="fp-wrapper" style="overflow: hidden; touch-action: none; padding: 20px; background: #e0e0e0; width: 100%; position: relative;">
+    <div class="d-block d-lg-none text-center mb-2 text-muted small" style="position: absolute; top: 10px; left: 0; right: 0; z-index: 99;"><i class="fas fa-search-plus me-1"></i> Chụm 2 ngón tay để Phóng to / Thu nhỏ & Kéo để di chuyển</div>
+    <div class="fp-container" id="floor-plan-canvas" style="margin: 0 auto; transform-origin: center center;">
         
         <!-- Connected CAD Rooms -->
                 <div class="fp-cad-room cad-v3" data-title="PHÒNG VIP 3">
@@ -532,3 +533,43 @@ $all_tables = array_merge($t_open, $t_room);
         <div class="fp-legend-item"><div class="fp-legend-box" style="background: #f5f5f5; border: 2px solid #aaa;"></div> ĐÃ ĐẶT</div>
     </div>
 </div>
+
+<!-- Thư viện Panzoom cho tính năng Pinch-to-zoom / Drag-to-pan -->
+<script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom/dist/panzoom.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    initPanzoom();
+});
+
+function initPanzoom() {
+    const elem = document.getElementById('floor-plan-canvas');
+    if (elem && typeof Panzoom !== 'undefined') {
+        const isMobile = window.innerWidth < 992;
+        const initialScale = isMobile ? (window.innerWidth / 1250) : 1; // Fit screen width, assuming 1250 is comfortable bounding width
+        
+        const panzoom = Panzoom(elem, {
+            maxScale: 2,
+            minScale: 0.1,
+            startScale: initialScale,
+            canvas: true,
+            cursor: 'grab'
+        });
+        
+        // Enable zooming with mouse wheel
+        elem.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
+        
+        // Tự động thu nhỏ khi mở Modal trên điện thoại
+        document.addEventListener('shown.bs.modal', function (e) {
+            if (e.target.id === 'mapModal') {
+                const isMobileNow = window.innerWidth < 992;
+                if (isMobileNow) {
+                    panzoom.zoom(window.innerWidth / 1250, { animate: true });
+                } else {
+                    panzoom.zoom(1, { animate: true });
+                }
+                panzoom.pan(0, 0); // Đưa về giữa
+            }
+        });
+    }
+}
+</script>

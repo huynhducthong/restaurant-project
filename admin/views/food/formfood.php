@@ -13,18 +13,7 @@ $form_action = $is_edit
 <link rel="stylesheet" href="../../public/assets/admin/css/admin-style.css">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
-<style>
-.drop-zone{border:2px dashed #cda45e;border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:.2s;background:#fffdf8;position:relative}
-.drop-zone:hover,.drop-zone.dragover{background:#fef6e4;border-color:#a07840}
-.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.img-preview{width:100%;max-height:200px;object-fit:contain;border-radius:10px;display:none;margin-top:10px}
-.img-preview.show{display:block}
-.recipe-row{background:#f8f9fa;border-radius:10px;padding:10px 12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.recipe-row select,.recipe-row input{flex:1;min-width:120px;font-size:13px}
-.topping-card{background:#f8f9fa;border:1px solid #eee;border-radius:10px;cursor:pointer;transition:.2s;padding:10px;}
-.topping-card:hover{background:#fef6e4 !important;border-color:#cda45e;transform:translateY(-2px);box-shadow:0 4px 6px rgba(0,0,0,0.05)}
-.topping-card.active-checked{background:#fef6e4 !important;border:1px solid #cda45e !important}
-</style>
+
 
 <div class="content-wrapper p-4">
     <div class="row justify-content-center">

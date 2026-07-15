@@ -43,7 +43,7 @@ $bot_scripts = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="container-fluid pt-4 px-4">
         <?= $message ?>
         
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
             <h4 class="mb-0 text-primary"><i class="fas fa-robot me-2"></i>Quản lý Kịch bản Bot (Bot Training)</h4>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#botModal" onclick="resetForm()">
                 <i class="fas fa-plus me-2"></i>Thêm Kịch Bản Mới
@@ -154,3 +154,4 @@ function editBotScript(id, keywords, answer) {
 </script>
 
 <?php include '../public/admin_layout_footer.php'; ?>
+

@@ -500,7 +500,7 @@ if ($filter != 'pos') {
 
 if ($filter == 'all' || $filter == 'pos') {
     $stmt_pos = $db->prepare("
-        SELECT id, 'pos' as service_type, 'Khách Vãng Lai' as customer_name, '' as customer_phone, created_at as booking_date, guests, status, total_amount, '' as chef_requirements, '' as message, 1 as is_pos, NULL as combo_id, NULL as chef_name
+        SELECT id, 'pos' as service_type, 'Khách Vãng Lai' as customer_name, '' as customer_phone, created_at as booking_date, created_at, guests, status, total_amount, '' as chef_requirements, '' as message, 1 as is_pos, NULL as combo_id, NULL as chef_name
         FROM pos_orders 
         WHERE status IN ('paid', 'open')
     ");
@@ -513,7 +513,10 @@ if ($filter == 'all' || $filter == 'pos') {
     }
     
     usort($services, function($a, $b) {
-        return strtotime($b['booking_date']) - strtotime($a['booking_date']);
+        // Sort by created_at descending (newest bookings first)
+        $timeA = isset($a['created_at']) ? strtotime($a['created_at']) : 0;
+        $timeB = isset($b['created_at']) ? strtotime($b['created_at']) : 0;
+        return $timeB - $timeA;
     });
 }
 
@@ -549,21 +552,21 @@ include '../../public/admin_layout_header.php';
 
     <!-- DANH SÁCH YÊU CẦU -->
     <div class="card card-custom p-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex flex-column flex-xl-row justify-content-between align-items-start align-items-xl-center mb-4 gap-3">
             <h4 class="fw-bold m-0"><i class="fas fa-clipboard-list me-2" style="color: var(--gold);"></i>Danh sách yêu cầu dịch vụ</h4>
-            <div class="d-flex gap-2">
-                <div class="btn-group">
+            <div class="d-flex flex-column flex-md-row gap-2 w-100 w-xl-auto" style="overflow-x: auto; padding-bottom: 5px;">
+                <div class="btn-group flex-shrink-0">
                     <?php foreach (['all' => 'Tất cả', 'table' => 'Đặt bàn', 'chef' => 'Đầu bếp', 'pos' => 'Khách Vãng Lai (POS)', 'bespoke' => '✨ Thiết kế riêng'] as $k => $v): ?>
                         <a href="?filter=<?= $k ?>"
                             class="btn filter-btn <?= $filter == $k ? 'btn-dark' : 'btn-outline-gold' ?>"><?= $v ?></a>
                     <?php endforeach; ?>
                 </div>
-                <a href="export_bookings.php?filter=<?= $filter ?>" class="btn btn-success" style="border-radius: 0; display: flex; align-items: center;"><i class="fas fa-file-excel me-1"></i> Xuất Excel (CSV)</a>
+                <a href="export_bookings.php?filter=<?= $filter ?>" class="btn btn-success flex-shrink-0" style="border-radius: 0; display: flex; align-items: center; justify-content: center;"><i class="fas fa-file-excel me-1"></i> Xuất Excel (CSV)</a>
             </div>
         </div>
 
         <div class="table-responsive">
-            <table class="table align-middle">
+            <table class="table align-middle" style="white-space: nowrap;">
                 <thead class="bg-light">
                     <tr>
                         <th>Khách hàng</th>
@@ -583,7 +586,11 @@ include '../../public/admin_layout_header.php';
                                         <?= htmlspecialchars(strtoupper(substr($s['customer_name'], 0, 1))) ?>
                                     </div>
                                     <div>
-                                        <strong><?= htmlspecialchars($s['customer_name']) ?></strong><br>
+                                        <strong><?= htmlspecialchars($s['customer_name']) ?></strong>
+                                        <?php if (strpos($s['chef_requirements'] ?? '', '[Phản hồi từ khách lúc') !== false && $s['status'] === 'Pending'): ?>
+                                            <span class="badge bg-danger ms-1" style="font-size: 9px; animation: blink 2s infinite;"><i class="fas fa-comment-dots"></i> Có phản hồi</span>
+                                        <?php endif; ?>
+                                        <br>
                                         <small class="text-muted"><?= htmlspecialchars($s['customer_phone']) ?></small>
                                     </div>
                                 </div>
@@ -681,7 +688,7 @@ include '../../public/admin_layout_header.php';
 
 <!-- MODAL DETAIL -->
 <div class="modal fade" id="modalDetail" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content border-0 shadow">
             <div class="modal-header border-bottom-0 pb-0">
                 <h5 class="modal-title fw-bold" style="color: var(--gold);">Chi tiết dịch vụ</h5>
@@ -761,8 +768,11 @@ include '../../public/admin_layout_header.php';
                                 <div class="spinner-border spinner-border-sm" style="color: var(--gold);" role="status"></div>
                                 <span class="small ms-2" style="color: var(--gold);">Đang phân tích DNA Ẩm thực...</span>
                             </div>
-                            <div id="ai-response" style="display:none; font-size: 0.9em; background: #fff; padding: 15px; border: 1px solid #e8e2d9; border-radius: 5px; max-height: 350px; overflow-y: auto;">
-                                <!-- AI output will be here -->
+                            <div id="ai-response-container" style="display:none; margin-top:10px;">
+                                <textarea id="ai-response" class="form-control" style="font-size: 0.9em; padding: 15px; border: 1px solid #e8e2d9; border-radius: 5px; height: 350px;" placeholder="Nhập thực đơn đề xuất hoặc phản hồi cho khách hàng..."></textarea>
+                                <button type="button" id="btn-save-chef-menu" class="btn btn-sm btn-success w-100 fw-bold mt-2" data-booking-id="">
+                                    <i class="fas fa-save me-1"></i> Lưu Thực Đơn & Phản Hồi Cho Khách
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1118,6 +1128,12 @@ include '../../public/admin_layout_header.php';
                         html = html.replace(/Mục đích:\s*(.*?)(?=\s*\||<br>|$)/g, '<span class="fw-bold"><i class="fas fa-glass-cheers me-1 text-info"></i>Mục đích:</span> <strong>$1</strong>');
                         html = html.replace(/--- HỒ SƠ KHẨU VỊ \(CULINARY DNA\) ---/g, '<br><span class="fw-bold"><i class="fas fa-dna me-1 text-secondary"></i>HỒ SƠ KHẨU VỊ (CULINARY DNA)</span><br>');
                         
+                        html = html.replace(/\[Phản hồi từ khách lúc (.*?)\]:<br>([\s\S]*?)(?=(?:<br>)*\[Phản hồi từ khách|$)/g, 
+                            '<div class="mt-3 p-3 rounded" style="background-color: #fff8e1; border-left: 4px solid #ffb300; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">' +
+                            '<strong style="color: #d32f2f; font-size: 13px;"><i class="fas fa-reply me-1"></i> Phản hồi từ Khách ($1):</strong><br>' +
+                            '<span style="color: #333; font-size: 13.5px;">$2</span></div>'
+                        );
+                        
                         return html;
                     }
 
@@ -1136,9 +1152,12 @@ include '../../public/admin_layout_header.php';
                         $('#row-ai-chef').show();
                         $('#btn-ai-suggest').data('booking-id', id);
                         if (data.ai_suggested_menu && data.ai_suggested_menu.trim() !== '') {
-                            $('#ai-response').html(data.ai_suggested_menu).show();
+                            $('#ai-response').val(data.ai_suggested_menu);
+                            $('#ai-response-container').show();
+                            $('#btn-save-chef-menu').data('booking-id', id);
                         } else {
-                            $('#ai-response').hide().empty();
+                            $('#ai-response').val('');
+                            $('#ai-response-container').hide();
                         }
                     } else {
                         $('#row-ai-chef').hide();
@@ -1258,7 +1277,7 @@ include '../../public/admin_layout_header.php';
             if (!bookingId) return;
 
             btn.hide();
-            $('#ai-response').hide();
+            $('#ai-response-container').hide();
             $('#ai-loading').show();
 
             $.ajax({
@@ -1270,14 +1289,10 @@ include '../../public/admin_layout_header.php';
                     $('#ai-loading').hide();
                     btn.show();
                     if (res.status === 'success') {
-                        // Create a formatted HTML output from markdown
-                        let html = res.data;
-                        // Basic markdown to HTML conversion for bold and lists
-                        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-                        html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-                        html = html.replace(/\n/g, '<br>');
-                        
-                        $('#ai-response').html(html).slideDown();
+                        // Put raw markdown in textarea for editing
+                        $('#ai-response').val(res.data);
+                        $('#ai-response-container').slideDown();
+                        $('#btn-save-chef-menu').data('booking-id', bookingId);
                     } else {
                         alert('Lỗi AI: ' + res.message);
                     }
@@ -1286,6 +1301,35 @@ include '../../public/admin_layout_header.php';
                     $('#ai-loading').hide();
                     btn.show();
                     alert('Lỗi kết nối khi gọi AI.');
+                }
+            });
+        });
+
+        // --- LƯU THỰC ĐƠN THỦ CÔNG TỪ BẾP TRƯỞNG ---
+        $(document).on('click', '#btn-save-chef-menu', function() {
+            const btn = $(this);
+            const bookingId = btn.data('booking-id');
+            const menuContent = $('#ai-response').val();
+
+            if (!bookingId) return;
+
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Đang lưu...');
+            $.ajax({
+                url: '../ajax/ajax_save_chef_menu.php',
+                type: 'POST',
+                data: { booking_id: bookingId, menu: menuContent },
+                dataType: 'json',
+                success: function(res) {
+                    btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Lưu Thực Đơn & Phản Hồi Cho Khách');
+                    if (res.status === 'success') {
+                        alert('Đã lưu và gửi phản hồi thành công! Khách hàng sẽ thấy nội dung này khi xem chi tiết.');
+                    } else {
+                        alert('Lỗi: ' + res.message);
+                    }
+                },
+                error: function() {
+                    btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Lưu Thực Đơn & Phản Hồi Cho Khách');
+                    alert('Lỗi kết nối khi lưu thực đơn.');
                 }
             });
         });

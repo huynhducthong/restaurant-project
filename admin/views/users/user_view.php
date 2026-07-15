@@ -1,7 +1,7 @@
 <?php include __DIR__ . '/../../../public/admin_layout_header.php'; ?>
 
 <div class="container-fluid py-4 bg-light min-vh-100">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <h3 class="fw-bold text-uppercase"><i class="fas fa-users-cog me-2 text-primary"></i>Quản Lý Người Dùng</h3>
         <button class="btn btn-primary fw-bold shadow-sm" onclick="openUserModal()"><i class="fas fa-user-plus me-2"></i>Thêm Người Dùng</button>
     </div>

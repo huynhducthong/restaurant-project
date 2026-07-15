@@ -275,6 +275,8 @@ include __DIR__ . '/views/client/layouts/header.php';
         position: relative;
     }
     
+    /* Custom logic moved to end of style tag */
+    
     /* Chữ bên ngoài (Tên, tổng chi tiêu) */
     .profile-wrap h1, .profile-wrap h2, .profile-wrap h3, .profile-wrap h4, .profile-wrap h5, .profile-wrap h6, .hero-account h2.prof-name {
         color: #ffffff !important;
@@ -389,6 +391,25 @@ include __DIR__ . '/views/client/layouts/header.php';
         border: none !important;
         border-radius: 12px;
     }
+
+    <?php if($tab == 'gastronomy'): ?>
+    /* Override for Gastronomy Tab */
+    .prof-card {
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+    .prof-card-body, .prof-card-body label, .prof-card-body div {
+        color: #000000 !important;
+    }
+    .prof-card .text-muted, .prof-card-body .small.fw-bold {
+        color: #555555 !important;
+    }
+    .sec-tip {
+        background: #fff9eb !important;
+        border: 1px solid #d4b06a !important;
+        color: #856404 !important;
+    }
+    <?php endif; ?>
 </style>
 
 <div class="profile-wrap">
@@ -559,7 +580,7 @@ include __DIR__ . '/views/client/layouts/header.php';
             <div class="d-flex gap-2">
               <button type="button" class="btn btn-light rounded-circle" style="width:35px; height:35px; padding:0;" 
                       onclick="openEditAddress(<?= $addr['id'] ?>, '<?= htmlspecialchars($addr['address_type'], ENT_QUOTES) ?>', '<?= htmlspecialchars(str_replace(["\\r", "\\n"], ["\\\\r", "\\\\n"], $addr['address_detail']), ENT_QUOTES) ?>', <?= $addr['is_default'] ?>)">
-                <i class="bi bi-pencil" style="color:var(--accent-burgundy);"></i>
+                <i class="bi bi-pencil" style="color:var(--accent-burgundy) !important;"></i>
               </button>
               <form method="POST" style="margin:0">
                 <input type="hidden" name="address_id" value="<?= $addr['id'] ?>">
@@ -653,7 +674,7 @@ include __DIR__ . '/views/client/layouts/header.php';
         <form method="POST">
           <div class="row g-4">
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-fire me-2"></i>Mức độ chín của Bò (Meat Doneness)</h6>
+              <h6 style="color:var(--accent-burgundy) !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-fire me-2"></i>Mức độ chín của Bò (Meat Doneness)</h6>
               <div class="d-flex flex-wrap mt-3 gap-2">
                 <?php $dopts = ['Rare', 'Medium Rare', 'Medium', 'Medium Well', 'Well Done']; 
                 foreach($dopts as $d): ?>
@@ -665,7 +686,7 @@ include __DIR__ . '/views/client/layouts/header.php';
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-cup-straw me-2"></i>Đồ uống yêu thích (Drink Preferences)</h6>
+              <h6 style="color:var(--accent-burgundy) !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-cup-straw me-2"></i>Đồ uống yêu thích (Drink Preferences)</h6>
               <div class="d-flex flex-wrap mt-3 gap-2">
                 <?php 
                 $drinkopts = ['Rượu Vang (Wine)', 'Cocktail / Mocktail', 'Bia (Beer)', 'Trà / Coffee', 'Nước trái cây (Juice)', 'Có cồn (Alcoholic)', 'Không cồn (Non-alcoholic)']; 
@@ -679,7 +700,7 @@ include __DIR__ . '/views/client/layouts/header.php';
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-palette me-2"></i>Phong cách Hương vị (Flavor Profile)</h6>
+              <h6 style="color:var(--accent-burgundy) !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-palette me-2"></i>Phong cách Hương vị (Flavor Profile)</h6>
               <div class="d-flex flex-wrap mt-3 gap-2">
                 <?php $fopts = ['Đậm vị (Bold/Rich)', 'Thanh nhẹ (Light/Fresh)', 'Umami (Ngọt tự nhiên)', 'Ít béo (Low Fat)', 'Ăn Cay (Spicy)']; 
                 foreach($fopts as $f): ?>
@@ -691,7 +712,7 @@ include __DIR__ . '/views/client/layouts/header.php';
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-star me-2"></i>Nguyên liệu yêu thích (Favorites)</h6>
+              <h6 style="color:var(--accent-burgundy) !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-star me-2"></i>Nguyên liệu yêu thích (Favorites)</h6>
               <div class="d-flex flex-wrap mt-3 gap-2">
                 <?php 
                 $favopts = [
@@ -710,7 +731,7 @@ include __DIR__ . '/views/client/layouts/header.php';
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--accent-burgundy); font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-x-circle me-2"></i>Không thích ăn (Dislikes)</h6>
+              <h6 style="color:var(--accent-burgundy) !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-x-circle me-2"></i>Không thích ăn (Dislikes)</h6>
               <div class="d-flex flex-wrap mt-3 gap-2">
                 <?php 
                 $disopts = ['Hành lá', 'Rau mùi', 'Hành tây', 'Tỏi', 'Ớt chuông', 'Tiêu xanh', 'Thịt mỡ']; 
@@ -727,13 +748,13 @@ include __DIR__ . '/views/client/layouts/header.php';
                 <?php endforeach; ?>
               </div>
               <div class="mt-3" style="padding-right: 15px;">
-                <label class="small fw-bold" style="color:#555;">Không thích khác (nếu có, phân cách bằng dấu phẩy)</label>
+                <label class="small fw-bold" style="color:#555 !important;">Không thích khác (nếu có, phân cách bằng dấu phẩy)</label>
                 <input type="text" name="other_dislikes" class="form-control form-control-sm mt-1" value="<?= htmlspecialchars($other_dislikes_str) ?>" placeholder="Ví dụ: Hành phi, Cà rốt...">
               </div>
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:#d64545; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-exclamation-triangle-fill me-2"></i>Dị ứng Y Tế (Allergies)</h6>
+              <h6 style="color:#d64545 !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-exclamation-triangle-fill me-2"></i>Dị ứng Y Tế (Allergies)</h6>
               <div class="d-flex flex-wrap mt-3 gap-2">
                 <?php 
                 $algopts = ['Sữa', 'Trứng', 'Đậu phộng', 'Đậu nành', 'Lúa mì / Gluten', 'Hải sản', 'Cá', 'Hải sản có vỏ', 'Hải sản thân mềm', 'Mè / Vừng', 'Mù tạt', 'Quả hạch', 'Sulphites', 'Đậu Lupin']; 
@@ -749,7 +770,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                 <?php endforeach; ?>
               </div>
               <div class="mt-3">
-                <label class="small fw-bold" style="color:#d64545;">Dị ứng khác (nếu có, phân cách bằng dấu phẩy)</label>
+                <label class="small fw-bold" style="color:#d64545 !important;">Dị ứng khác (nếu có, phân cách bằng dấu phẩy)</label>
                 <input type="text" name="other_allergies" class="form-control form-control-sm mt-1" value="<?= htmlspecialchars($other_allergies_str) ?>" placeholder="Ví dụ: Dâu tây, Mật ong...">
               </div>
             </div>
@@ -958,7 +979,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 
 <!-- MODAL XEM CHI TIẾT ĐƠN HÀNG -->
 <div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
     <div class="modal-content" style="border:none; border-radius:12px; overflow:hidden;">
       <div class="modal-header" style="background:var(--F); color:#fff; border-bottom:none;">
         <h5 class="modal-title" style="font-family:'Cormorant Garamond', serif;"><i class="bi bi-receipt me-2"></i>Chi Tiết Đơn Đặt Bàn</h5>
@@ -989,6 +1010,55 @@ function viewBookingDetails(id) {
             document.getElementById('bookingDetailsContent').innerHTML = '<div class="text-danger text-center">Lỗi khi tải dữ liệu!</div>';
         });
 }
+
+// Lắng nghe sự kiện click nút gửi phản hồi (Vanilla JS Event Delegation)
+document.addEventListener('click', function(e) {
+    if (e.target && (e.target.id === 'btn-send-reply' || e.target.closest('#btn-send-reply'))) {
+        const btn = e.target.closest('#btn-send-reply');
+        const id = btn.getAttribute('data-id');
+        const textElem = document.getElementById('customer-reply-text');
+        const text = textElem ? textElem.value.trim() : '';
+        
+        if (!text) { 
+            alert('Vui lòng nhập nội dung phản hồi!'); 
+            return; 
+        }
+        
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+        
+        const formData = new URLSearchParams();
+        formData.append('id', id);
+        formData.append('reply', text);
+        
+        fetch('ajax/ajax_customer_reply.php', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === 'success') {
+                alert('Đã gửi phản hồi thành công! Bếp trưởng sẽ xem xét và phản hồi lại sớm nhất.');
+                if (textElem) textElem.value = '';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check me-1"></i> Đã gửi';
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                alert('Lỗi: ' + res.message);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane me-1"></i> Gửi phản hồi';
+            }
+        })
+        .catch(err => {
+            alert('Lỗi kết nối.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane me-1"></i> Gửi phản hồi';
+        });
+    }
+});
 
 function previewImg(input) {
     if (input.files && input.files[0]) {

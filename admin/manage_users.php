@@ -146,7 +146,7 @@ $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </style>
 
 <div class="container-fluid py-4 min-vh-100">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <h4 class="fw-bold m-0"><i class="fas fa-users-cog me-2 text-primary"></i> Quản lý Nhân sự</h4>
         <div>
             <a href="export_employees.php" class="btn btn-success shadow-sm me-2">
@@ -420,3 +420,4 @@ $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 </body>
 </html>
+

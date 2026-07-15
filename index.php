@@ -224,7 +224,9 @@ include __DIR__ . '/views/client/layouts/header.php';
               </p>
 
               <!-- Nút bấm viền (Outline Button) -->
-              <?php if (!empty($row['button_text'])): ?>
+              <?php if (!empty($row['button_text'])): 
+                  $btn_color = $row['button_color'] ?? '#cda45e';
+              ?>
                 <div>
                   <a href="<?= htmlspecialchars($row['button_link'] ?? '#') ?>" class="animate__animated animate__fadeInUp" style="
                     display:inline-block;
@@ -238,9 +240,9 @@ include __DIR__ . '/views/client/layouts/header.php';
                     letter-spacing:2px;
                     background-color: transparent;
                     color: #fff;
-                    border: 1px solid rgba(255,255,255,0.5);
+                    border: 1px solid <?= htmlspecialchars($btn_color) ?>;
                     transition: all 0.3s ease;
-                " onmouseover="this.style.backgroundColor='#fff'; this.style.color='#000';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#fff';">
+                " onmouseover="this.style.backgroundColor='<?= htmlspecialchars($btn_color) ?>'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#fff';">
                     <?= htmlspecialchars($row['button_text']) ?>
                   </a>
                 </div>

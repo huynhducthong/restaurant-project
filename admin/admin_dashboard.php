@@ -301,8 +301,8 @@ try {
         </form>
     </div>
 
-    <!-- ===== 5 STAT CARDS ===== -->
-    <div class="row g-3 mb-4 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-5">
+    <!-- ===== STAT CARDS ===== -->
+    <div class="row g-3 mb-4 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-6">
 
         <!-- Doanh thu -->
         <div class="col">

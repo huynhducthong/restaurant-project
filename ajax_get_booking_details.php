@@ -135,10 +135,33 @@ $total = 0;
         $step4_text = ($is_negotiated && $s_status == 'Pending') ? '4. Thanh toán cọc bổ sung & Chuẩn bị' : '4. Chuẩn bị & Phục vụ';
     ?>
     <div style="margin-top:20px; padding:15px; background:#fffbf5; border:1px solid #e8e2d9; border-radius:8px;">
-        <h6 style="color:var(--accent-burgundy); font-weight:bold; font-size:13px; text-transform:uppercase; margin-bottom:10px;"><i class="fas fa-magic me-1"></i> Trải Nghiệm Thiết Kế Riêng</h6>
+        <h6 style="color:var(--accent-burgundy); font-weight:bold; font-size:15px; text-transform:uppercase; margin-bottom:10px;"><i class="fas fa-magic me-1"></i> Trải Nghiệm Thiết Kế Riêng</h6>
         <?php if (!empty($booking['chef_requirements'])): ?>
-            <div style="font-size:12px; color:#555; margin-bottom:15px; font-style:italic;">
+            <div style="font-size:14px; color:#555; margin-bottom:15px; font-style:italic;">
                 <?= nl2br(htmlspecialchars($booking['chef_requirements'])) ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($booking['ai_suggested_menu'])): ?>
+            <div style="font-size:15px; color:#222; margin-bottom:15px; padding: 15px; border-left: 3px solid var(--gold); background: #fff;">
+                <strong style="color: var(--gold); display: block; margin-bottom: 5px;"><i class="fas fa-utensils me-1"></i> Thực Đơn Đề Xuất / Phản Hồi Từ Bếp Trưởng:</strong>
+                <?php
+                $html_menu = htmlspecialchars($booking['ai_suggested_menu']);
+                $html_menu = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $html_menu);
+                $html_menu = preg_replace('/\*(.*?)\*/', '<em>$1</em>', $html_menu);
+                echo nl2br($html_menu);
+                ?>
+                
+                <?php if ($booking['status'] === 'Pending' && !$step4): ?>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e8e2d9;">
+                    <strong style="font-size: 14px; color: #555; display: block; margin-bottom: 5px;"><i class="fas fa-reply me-1"></i> Gửi yêu cầu chỉnh sửa / Phản hồi lại Bếp trưởng:</strong>
+                    <textarea id="customer-reply-text" class="form-control mb-2" rows="2" style="font-size: 14px; resize: none;" placeholder="Ví dụ: Đổi món khai vị thành món soup, hoặc tôi bị dị ứng với nấm..."></textarea>
+                    <button type="button" class="btn btn-sm" id="btn-send-reply" data-id="<?= $booking_id ?>" style="background-color: #333; color: #fff; font-size: 14px; padding: 6px 15px;">
+                        <i class="fas fa-paper-plane me-1"></i> Gửi phản hồi
+                    </button>
+                </div>
+                
+                <?php endif; ?>
             </div>
         <?php endif; ?>
         
@@ -206,3 +229,4 @@ $total = 0;
         </a>
     </div>
 </div>
+

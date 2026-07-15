@@ -122,7 +122,7 @@ $chefs = $db->query("SELECT id, name FROM chefs ORDER BY name ASC")->fetchAll(PD
 </style>
 
 <div class="container-fluid py-4 min-vh-100">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <h4 class="fw-bold m-0"><i class="fas fa-comments me-2 text-primary"></i> Quản lý Đánh giá Đầu bếp</h4>
         <a href="manage_chefs.php" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left me-2"></i> Quay lại Đầu Bếp
@@ -372,3 +372,4 @@ $chefs = $db->query("SELECT id, name FROM chefs ORDER BY name ASC")->fetchAll(PD
 </div> <!-- Đóng main-wrapper -->
 </body>
 </html>
+

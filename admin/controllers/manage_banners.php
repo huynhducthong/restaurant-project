@@ -276,7 +276,7 @@ include '../../public/admin_layout_header.php';
 </style>
 
 <div class="container-fluid py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
             <h3 class="fw-bold mb-1">Cấu hình Banner</h3>
             <p class="text-muted small mb-0">Quản lý và thiết kế ảnh bìa trang chủ</p>
@@ -346,26 +346,26 @@ include '../../public/admin_layout_header.php';
                         <i class="fas fa-font me-1"></i> Nội dung & Định dạng
                     </div>
                     <div class="card-body p-2">
-                        <div class="mb-2">
+                        <div class="mb-3">
                             <label class="form-label mb-1 small text-muted">Tiêu đề chính</label>
-                            <input type="text" name="title" id="input-title" class="form-control form-control-sm fw-bold mb-1" value="<?= htmlspecialchars($edit_data['title'] ?? '') ?>">
-                            <div class="input-group input-group-sm w-auto">
-                                <span class="input-group-text"><i class="fas fa-text-height"></i></span>
-                                <select name="font_family" id="input-font" class="form-select" style="flex: 0 0 auto; width: 180px;"><?php foreach ($fonts as $v => $l): ?><option value="<?= htmlspecialchars($v) ?>" <?= ($edit_data['font_family'] ?? '') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select>
-                                <select name="title_font_size" id="input-title-size" class="form-select" style="flex: 0 0 auto; width: 85px;"><?php foreach ($font_sizes as $sz): ?><option value="<?= $sz ?>" <?= ($edit_data['title_font_size'] ?? 48) == $sz ? 'selected' : '' ?>><?= $sz ?>px</option><?php endforeach; ?></select>
-                                <select name="font_style" id="input-style" class="form-select" style="flex: 0 0 auto; width: 110px;"><?php foreach (['normal'=>'Thường','bold'=>'Đậm','italic'=>'Nghiêng'] as $v=>$l): ?><option value="<?= $v ?>" <?= ($edit_data['font_style'] ?? 'normal') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select>
-                                <input type="color" name="text_color" id="input-color" class="form-control form-control-color p-0 border-0" style="flex: 0 0 auto; width: 45px; height: auto;" value="<?= htmlspecialchars($edit_data['text_color'] ?? '#ffffff') ?>">
+                            <input type="text" name="title" id="input-title" class="form-control form-control-sm fw-bold mb-2" value="<?= htmlspecialchars($edit_data['title'] ?? '') ?>">
+                            <div class="d-flex flex-wrap gap-2 align-items-center">
+                                <i class="fas fa-text-height text-muted me-1"></i>
+                                <select name="font_family" id="input-font" class="form-select form-select-sm w-auto"><?php foreach ($fonts as $v => $l): ?><option value="<?= htmlspecialchars($v) ?>" <?= ($edit_data['font_family'] ?? '') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select>
+                                <select name="title_font_size" id="input-title-size" class="form-select form-select-sm w-auto"><?php foreach ($font_sizes as $sz): ?><option value="<?= $sz ?>" <?= ($edit_data['title_font_size'] ?? 48) == $sz ? 'selected' : '' ?>><?= $sz ?>px</option><?php endforeach; ?></select>
+                                <select name="font_style" id="input-style" class="form-select form-select-sm w-auto"><?php foreach (['normal'=>'Thường','bold'=>'Đậm','italic'=>'Nghiêng'] as $v=>$l): ?><option value="<?= $v ?>" <?= ($edit_data['font_style'] ?? 'normal') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select>
+                                <input type="color" name="text_color" id="input-color" class="form-control form-control-color form-control-sm p-0 border-0" style="width: 32px; height: 32px; border-radius: 50%;" value="<?= htmlspecialchars($edit_data['text_color'] ?? '#ffffff') ?>">
                             </div>
                         </div>
-                        <div class="mb-0">
+                        <div class="mb-1">
                             <label class="form-label mb-1 small text-muted">Mô tả ngắn</label>
-                            <textarea name="description" id="input-desc" class="form-control form-control-sm mb-1" rows="2"><?= htmlspecialchars($edit_data['description'] ?? '') ?></textarea>
-                            <div class="input-group input-group-sm w-auto">
-                                <span class="input-group-text"><i class="fas fa-align-left"></i></span>
-                                <select name="desc_font_family" id="input-desc-font" class="form-select" style="flex: 0 0 auto; width: 180px;"><?php foreach ($fonts as $v => $l): ?><option value="<?= htmlspecialchars($v) ?>" <?= ($edit_data['desc_font_family'] ?? '') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select>
-                                <select name="desc_font_size" id="input-desc-size" class="form-select" style="flex: 0 0 auto; width: 85px;"><?php foreach ($font_sizes as $sz): ?><option value="<?= $sz ?>" <?= ($edit_data['desc_font_size'] ?? 24) == $sz ? 'selected' : '' ?>><?= $sz ?>px</option><?php endforeach; ?></select>
-                                <select name="desc_font_style" id="input-desc-style" class="form-select" style="flex: 0 0 auto; width: 110px;"><?php foreach (['normal'=>'Thường','bold'=>'Đậm','italic'=>'Nghiêng'] as $v=>$l): ?><option value="<?= $v ?>" <?= ($edit_data['desc_font_style'] ?? 'normal') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select>
-                                <input type="color" name="desc_color" id="input-desc-color" class="form-control form-control-color p-0 border-0" style="flex: 0 0 auto; width: 45px; height: auto;" value="<?= htmlspecialchars($edit_data['desc_color'] ?? '#eeeeee') ?>">
+                            <textarea name="description" id="input-desc" class="form-control form-control-sm mb-2" rows="2"><?= htmlspecialchars($edit_data['description'] ?? '') ?></textarea>
+                            <div class="d-flex flex-wrap gap-2 align-items-center">
+                                <i class="fas fa-align-left text-muted me-1"></i>
+                                <select name="desc_font_family" id="input-desc-font" class="form-select form-select-sm w-auto"><?php foreach ($fonts as $v => $l): ?><option value="<?= htmlspecialchars($v) ?>" <?= ($edit_data['desc_font_family'] ?? '') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select>
+                                <select name="desc_font_size" id="input-desc-size" class="form-select form-select-sm w-auto"><?php foreach ($font_sizes as $sz): ?><option value="<?= $sz ?>" <?= ($edit_data['desc_font_size'] ?? 24) == $sz ? 'selected' : '' ?>><?= $sz ?>px</option><?php endforeach; ?></select>
+                                <select name="desc_font_style" id="input-desc-style" class="form-select form-select-sm w-auto"><?php foreach (['normal'=>'Thường','bold'=>'Đậm','italic'=>'Nghiêng'] as $v=>$l): ?><option value="<?= $v ?>" <?= ($edit_data['desc_font_style'] ?? 'normal') === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select>
+                                <input type="color" name="desc_color" id="input-desc-color" class="form-control form-control-color form-control-sm p-0 border-0" style="width: 32px; height: 32px; border-radius: 50%;" value="<?= htmlspecialchars($edit_data['desc_color'] ?? '#eeeeee') ?>">
                             </div>
                         </div>
                     </div>
@@ -405,9 +405,11 @@ include '../../public/admin_layout_header.php';
                     </div>
                 </div>
 
-                <button type="submit" name="btn_save" class="btn btn-minimal btn-gold w-100 py-3 mb-5">
-                    <i class="fas fa-save me-2"></i><?= $edit_data ? 'CẬP NHẬT BANNER' : 'LƯU BANNER MỚI' ?>
-                </button>
+                <div class="text-end mb-5 mt-2">
+                    <button type="submit" name="btn_save" class="btn btn-minimal btn-gold px-4 py-2" style="border-radius: 8px;">
+                        <i class="fas fa-save me-2"></i><?= $edit_data ? 'CẬP NHẬT BANNER' : 'LƯU BANNER MỚI' ?>
+                    </button>
+                </div>
             </form>
         </div>
 

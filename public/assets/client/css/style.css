@@ -7323,10 +7323,21 @@ select.input-lux {
 @media (max-width:991px) {
   .atmosphere-grid {
     display: flex;
-    flex-direction: column
+    flex-direction: row;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .atmosphere-grid::-webkit-scrollbar {
+    display: none;
   }
   .atmo-item {
-    height: 300px
+    flex: 0 0 85%;
+    height: 350px;
+    scroll-snap-align: center;
   }
 }
 .awesome-team-section {

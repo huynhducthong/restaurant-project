@@ -147,7 +147,7 @@ Chào bạn, tôi là Bếp trưởng của Nhã...
 * **[Tên món lẻ 3]**: [Lý do ngắn gọn]";
 
     // 6. Gọi API Gemini
-    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" . $gemini_api_key;
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=" . $gemini_api_key;
     
     $payload = json_encode([
         "contents" => [
@@ -167,14 +167,22 @@ Chào bạn, tôi là Bếp trưởng của Nhã...
     ]);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     
     $response = curl_exec($ch);
     $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
     if ($httpcode !== 200) {
-        $err = json_decode($response, true);
-        echo json_encode(['status' => 'error', 'message' => 'Lỗi từ hệ thống AI (Gemini).']);
+        $err_msg = 'Lỗi từ hệ thống AI (Gemini).';
+        if ($httpcode == 0) {
+            $err_msg = 'Hệ thống AI phản hồi quá chậm (Timeout). Vui lòng thử lại sau.';
+        } elseif ($httpcode == 503) {
+            $err_msg = 'Hệ thống AI đang bị quá tải hoặc bảo trì. Vui lòng thử lại sau ít phút.';
+        } elseif ($httpcode == 429) {
+            $err_msg = 'Hệ thống AI đã vượt giới hạn truy cập (Rate Limit). Vui lòng thử lại sau.';
+        }
+        echo json_encode(['status' => 'error', 'message' => $err_msg]);
         exit;
     }
 
