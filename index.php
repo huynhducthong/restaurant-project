@@ -112,6 +112,9 @@ try {
 // 6. Nhúng Header
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
+<link href="<?= $path_prefix ?>public/assets/client/css/home.css" rel="stylesheet">
+<?php
+?>
 
 <section id="hero-video" class="d-flex align-items-center justify-content-center" style="position: relative; width: 100vw; height: 100vh; overflow: hidden; background: #000; margin: 0; padding: 0;">
   <!-- Video Background -->
@@ -169,7 +172,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 <main id="main">
 
 <!-- PROMOTIONS (BANNER SLIDER) -->
-<section id="promotions" style="padding: 0; margin: 0; overflow: hidden; cursor: grab; background: #111;">
+<section id="promotions" style="padding: 0; margin: 0; overflow: hidden; cursor: grab; background: #111; user-select: none; -webkit-user-select: none;">
     <div id="bannerCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-touch="true" data-bs-interval="3000" style="width: 100vw;">
     <div class="carousel-inner" id="bannerCarouselInner">
       <?php
@@ -183,7 +186,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                                         <div class="carousel-item <?= $first ? 'active' : '' ?>" style="background: #050505; height: clamp(500px, 75vh, 800px); overflow: hidden;">
           <div class="row g-0 h-100">
                         <!-- Phần chữ (Bên trái) -->
-            <div class="col-lg-5 d-flex flex-column justify-content-center px-4 px-lg-5 py-5" style="z-index: 2; padding-left: clamp(2rem, 8vw, 6rem) !important; min-height: clamp(400px, 60vh, 600px);">
+            <div class="col-lg-5 d-flex flex-column justify-content-center px-4 px-lg-5 py-5" style="z-index: 2; padding-left: clamp(1rem, 5vw, 6rem); padding-right: clamp(1rem, 5vw, 6rem) !important; min-height: clamp(400px, 60vh, 600px);">
               
               <!-- Subtitle nhỏ có đường gạch ngang -->
               <div class="d-flex align-items-center mb-4">
@@ -197,7 +200,7 @@ include __DIR__ . '/views/client/layouts/header.php';
               <h2 style="
                   color: <?= $row['text_color'] ?? '#ffffff' ?>; 
                   font-family: <?= $row['font_family'] ?? "'Oswald', 'Source Sans 3', sans-serif" ?>; 
-                  font-size: clamp(3rem, 6vw, 5.5rem); 
+                  font-size: clamp(2.2rem, 8vw, 5.5rem); word-break: break-word; 
                   font-weight: 800; 
                   font-style: <?= $title_style ?>;
                   text-transform: uppercase;
@@ -215,13 +218,15 @@ include __DIR__ . '/views/client/layouts/header.php';
                   font-weight: 400; 
                   font-style: italic;
                   line-height: 1.8;
-                  max-width: 85%;
+                  max-width: 100%;
                   margin-bottom: 40px;">
                 <?= htmlspecialchars($row['description']) ?>
               </p>
 
               <!-- Nút bấm viền (Outline Button) -->
-              <?php if (!empty($row['button_text'])): ?>
+              <?php if (!empty($row['button_text'])): 
+                  $btn_color = $row['button_color'] ?? '#cda45e';
+              ?>
                 <div>
                   <a href="<?= htmlspecialchars($row['button_link'] ?? '#') ?>" class="animate__animated animate__fadeInUp" style="
                     display:inline-block;
@@ -235,9 +240,9 @@ include __DIR__ . '/views/client/layouts/header.php';
                     letter-spacing:2px;
                     background-color: transparent;
                     color: #fff;
-                    border: 1px solid rgba(255,255,255,0.5);
+                    border: 1px solid <?= htmlspecialchars($btn_color) ?>;
                     transition: all 0.3s ease;
-                " onmouseover="this.style.backgroundColor='#fff'; this.style.color='#000';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#fff';">
+                " onmouseover="this.style.backgroundColor='<?= htmlspecialchars($btn_color) ?>'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#fff';">
                     <?= htmlspecialchars($row['button_text']) ?>
                   </a>
                 </div>
@@ -258,67 +263,58 @@ include __DIR__ . '/views/client/layouts/header.php';
     </div>
   </div>
   
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
+
+    <script>
+      (function() {
         const carouselSection = document.getElementById('promotions');
         const myCarousel = document.getElementById('bannerCarousel');
-        let isDown = false;
-        let startX;
-        
-        carouselSection.addEventListener('mousedown', (e) => {
-            isDown = true;
-            carouselSection.style.cursor = 'grabbing';
-            startX = e.pageX;
-            e.preventDefault(); 
-        });
-
-        carouselSection.addEventListener('mouseleave', () => {
-            isDown = false;
-            carouselSection.style.cursor = 'grab';
-        });
-
-        carouselSection.addEventListener('mouseup', (e) => {
-            if(!isDown) return;
-            isDown = false;
-            carouselSection.style.cursor = 'grab';
+        if (carouselSection && myCarousel) {
+            let isDown = false;
+            let startX;
             
-            const endX = e.pageX;
-            const diff = startX - endX;
-            
-            if(Math.abs(diff) > 50) { 
-                const bsCarousel = bootstrap.Carousel.getInstance(myCarousel) || new bootstrap.Carousel(myCarousel);
-                if(diff > 0) {
-                    bsCarousel.next();
-                } else {
-                    bsCarousel.prev();
+            carouselSection.addEventListener('mousedown', (e) => {
+                const targetTag = e.target.tagName.toLowerCase();
+                if (['a', 'button', 'input', 'textarea', 'select'].indexOf(targetTag) === -1) {
+                    e.preventDefault();
                 }
-            }
-        });
-    });
-  </script>
+                isDown = true;
+                carouselSection.style.cursor = 'grabbing';
+                startX = e.pageX;
+            });
+
+            const handleMouseUp = (e) => {
+                if(!isDown) return;
+                isDown = false;
+                carouselSection.style.cursor = 'grab';
+                
+                const endX = e.pageX;
+                const diff = startX - endX;
+                
+                if(Math.abs(diff) > 50) { 
+                    // Use bootstrap from global scope if available
+                    if (typeof bootstrap !== 'undefined') {
+                        const bsCarousel = bootstrap.Carousel.getOrCreateInstance(myCarousel);
+                        if(diff > 0) {
+                            bsCarousel.next();
+                        } else {
+                            bsCarousel.prev();
+                        }
+                    }
+                }
+            };
+
+            document.addEventListener('mouseup', handleMouseUp);
+
+            carouselSection.querySelectorAll('img').forEach(img => {
+                img.addEventListener('dragstart', (e) => e.preventDefault());
+            });
+        }
+      })();
+    </script>
 </section>
 
 <img id="hoverImageTooltip" class="menu-hover-tooltip" src="" alt="">
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const tooltip = document.getElementById('hoverImageTooltip');
-    const triggers = document.querySelectorAll('.menu-hover-trigger');
-    
-    triggers.forEach(trigger => {
-        trigger.addEventListener('mousemove', function(e) {
-            tooltip.src = this.getAttribute('data-img');
-            tooltip.style.left = e.pageX + 'px';
-            tooltip.style.top = e.pageY + 'px';
-            tooltip.style.opacity = '1';
-            tooltip.style.transform = 'translate(15px, -50%) scale(1)';
-        });
-        trigger.addEventListener('mouseleave', function() {
-            tooltip.style.opacity = '0';
-            tooltip.style.transform = 'translate(15px, -50%) scale(0.95)';
-        });
-    });
-});
-</script>
+
 
 <main id="main">
 
@@ -417,7 +413,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   <section id="combos" class="minimal-menu-wrapper">
       <div class="container">
-          <div class="section-title text-center mb-5">
+          <div class="section-title text-center mb-5 gsap-fade-up">
               <p style="color: #A88746; font-family: 'Source Sans 3', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px;">Tuyển Chọn Thượng Hạng</p>
               <h2 style="color: #2A201A; font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 400; letter-spacing: 1px;">Bộ Sưu Tập Hương Vị</h2>
           </div>
@@ -427,27 +423,27 @@ document.addEventListener('DOMContentLoaded', function() {
                   <?php if(empty($t['combos']) && empty($t['foods'])) continue; ?>
                   
                   <div class="minimal-menu-theme">
-                      <div class="text-center mb-4">
+                      <div class="text-center mb-4 gsap-fade-up">
                           <h3 style="color: #C9A66B; font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 400; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 10px;"><?= htmlspecialchars($t['name']) ?></h3>
                           <p style="color: #666; font-family: 'Source Sans 3', sans-serif; font-size: 14px; max-width: 600px; margin: 0 auto; font-style: italic;"><?= htmlspecialchars($t['description']) ?></p>
                       </div>
                       
-                      <div class="row g-0 shadow-lg" style="border-radius: 8px; overflow: hidden; background: #FFFFFF;">
+                      <div class="row g-0 shadow-lg gsap-fade-up" style="border-radius: 8px; overflow: hidden; background: #FFFFFF;">
                           <!-- LEFT COLUMN: COMBOS (BLACK) -->
                           <div class="col-lg-6 p-5 minimal-menu-box" style="background: #FFFFFF;">
                               <h4 style="color: #2A201A; font-family: 'Cormorant Garamond', serif; font-size: 24px; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2px; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 15px;">Set Menu Thượng Hạng</h4>
                               <div class="d-flex flex-column gap-4">
                                   <?php if(!empty($t['combos'])): ?>
                                       <?php foreach($t['combos'] as $row): ?>
-                                          <div class="minimal-menu-item">
+                                          <div class="minimal-menu-item gsap-fade-up">
                                               <div style="cursor: pointer;" onclick="const el = document.getElementById('combo-items-<?= $row['id'] ?>'); el.style.display = (el.style.display === 'none') ? 'block' : 'none';">
                                                   <div class="d-flex align-items-center">
                                                       <img src="public/assets/img/combos/<?= htmlspecialchars($row['image'] ?: 'default-combo.jpg') ?>" class="minimal-menu-img me-3" style="border: 1px solid rgba(0,0,0,0.1);" alt="">
                                                       <div style="flex: 1;">
                                                           <div class="d-flex justify-content-between align-items-baseline">
-                                                              <h5 style="color: #2A201A; font-family: 'Cormorant Garamond', serif; font-size: 18px; margin: 0; font-weight: 400; text-transform: uppercase;"><?= htmlspecialchars($row['name']) ?> <i class="bi bi-chevron-down ms-1" style="font-size: 12px; color: #C9A66B;"></i></h5>
+                                                              <h5 style="color: #2A201A; font-family: 'Cormorant Garamond', serif; font-size: clamp(15px, 4vw, 18px); margin: 0; font-weight: 600; text-transform: uppercase; line-height: 1.3; max-width: 65%;"><?= htmlspecialchars($row['name']) ?> <i class="bi bi-chevron-down ms-1" style="font-size: 12px; color: #C9A66B;"></i></h5>
                                                               <div style="flex-grow: 1; border-bottom: 1px dashed rgba(255,255,255,0.2); margin: 0 10px; position: relative; top: -4px;"></div>
-                                                              <div style="color: #C9A66B; font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;"><?= number_format($row['price'], 0, ',', '.') ?>đ</div>
+                                                              <div style="color: #C9A66B; font-family: 'Source Sans 3', sans-serif; font-size: clamp(14px, 3.5vw, 16px); font-weight: 600; white-space: nowrap;"><?= number_format($row['price'], 0, ',', '.') ?>đ</div>
                                                           </div>
                                                           <p style="color: #666; font-size: 12px; margin: 5px 0 0 0; line-height: 1.5;"><?= htmlspecialchars($row['description']) ?></p>
                                                           <div style="font-size: 10px; color: #666; font-style: italic; margin-top: 4px;"><i class="bi bi-star-fill me-1" style="color:#C9A66B; font-size:8px;"></i><?= htmlspecialchars(str_replace(',', ' • ', $row['list_foods'])) ?></div>
@@ -485,13 +481,13 @@ document.addEventListener('DOMContentLoaded', function() {
                               <div class="d-flex flex-column gap-4">
                                   <?php if(!empty($t['foods'])): ?>
                                       <?php foreach($t['foods'] as $f): ?>
-                                          <div class="minimal-menu-item">
+                                          <div class="minimal-menu-item gsap-fade-up">
                                               <div class="d-flex align-items-center">
                                                   <div style="flex: 1;">
                                                       <div class="d-flex justify-content-between align-items-baseline">
-                                                          <h5 style="color: #2A201A; font-family: 'Cormorant Garamond', serif; font-size: 18px; margin: 0; font-weight: 600; text-transform: uppercase;"><?= htmlspecialchars($f['name']) ?></h5>
+                                                          <h5 style="color: #2A201A; font-family: 'Cormorant Garamond', serif; font-size: clamp(15px, 4vw, 18px); margin: 0; font-weight: 600; text-transform: uppercase; line-height: 1.3; max-width: 65%;"><?= htmlspecialchars($f['name']) ?></h5>
                                                           <div style="flex-grow: 1; border-bottom: 1px dashed rgba(0,0,0,0.2); margin: 0 10px; position: relative; top: -4px;"></div>
-                                                          <div style="color: #E65C00; font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 700;"><?= number_format($f['price'], 0, ',', '.') ?>đ</div>
+                                                          <div style="color: #E65C00; font-family: 'Source Sans 3', sans-serif; font-size: clamp(14px, 3.5vw, 16px); font-weight: 700; white-space: nowrap;"><?= number_format($f['price'], 0, ',', '.') ?>đ</div>
                                                       </div>
                                                       <p style="color: #666; font-size: 12px; margin: 5px 0 0 0; line-height: 1.5;"><?= htmlspecialchars($f['description']) ?></p>
                                                   </div>
@@ -525,7 +521,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="awesome-team-grid">
       <?php if (!empty($home_chefs)): ?>
         <?php foreach ($home_chefs as $chef): ?>
-          <div class="awesome-card" onclick="window.location.href='chefs.php'" style="cursor: pointer;">
+          <div class="awesome-card gsap-fade-up" onclick="window.location.href='chefs.php'" style="cursor: pointer;">
             <div class="awesome-img-wrapper">
                 <img src="public/assets/img/chefs/<?= htmlspecialchars($chef['image']) ?>" alt="<?= htmlspecialchars($chef['name']) ?>" onerror="this.src='public/assets/img/chefs/default-chef.jpg'">
             </div>
@@ -579,7 +575,7 @@ document.addEventListener('DOMContentLoaded', function() {
           $item_class = 1;
           foreach ($home_galleries as $gallery): 
           ?>
-            <div class="atmo-item item-<?= $item_class ?>">
+            <div class="atmo-item item-<?= $item_class ?> gsap-zoom-in">
               <img src="public/assets/img/gallery/<?= htmlspecialchars($gallery['image_url']) ?>" alt="<?= htmlspecialchars($gallery['title'] ?? 'Atmosphere') ?>">
             </div>
           <?php 

@@ -1,19 +1,6 @@
-<link rel="stylesheet" href="../public/assets/admin/css/admin-style.css">
+<link rel="stylesheet" href="../../public/assets/admin/css/admin-style.css">
 
-<style>
-.combo-img {
-    width: 80px; height: 60px;
-    object-fit: cover; border-radius: 8px;
-    transition: .2s;
-}
-.combo-img:hover { transform: scale(1.08); box-shadow: 0 4px 12px rgba(0,0,0,.15); }
-tr.inactive-row { opacity: .5; }
-.saving-badge {
-    font-size: 10px; padding: 2px 6px; border-radius: 4px;
-    background: #d1fae5; color: #065f46; display: inline-block; margin-top: 3px;
-}
-.saving-badge.low { background: #fef9c3; color: #713f12; }
-</style>
+
 
 <div class="container-fluid py-4">
 

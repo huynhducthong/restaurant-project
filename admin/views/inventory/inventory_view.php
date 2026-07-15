@@ -781,7 +781,7 @@ include '../../public/admin_layout_header.php';
             <!-- ================= ĐẶT HÀNG (PO) ================= -->
             <div class="tab-pane" id="tab-po">
                 <div class="main-card p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
                     <h3 class="fw-bold text-uppercase m-0"><i class="fas fa-file-invoice-dollar me-2 text-primary"></i>Phiếu Đặt Hàng (PO)</h3>
                     <div>
                         <a href="POController.php?export_excel=1" class="btn btn-outline-success shadow-sm fw-bold px-3 me-2">

@@ -61,6 +61,9 @@ try {
     $dna_str = empty($dna) ? "Khách chưa thiết lập DNA Ẩm thực." : implode("\n", $dna);
     $req_str = !empty($data['chef_requirements']) ? $data['chef_requirements'] : "Không có yêu cầu thêm.";
 
+    // Giải phóng session lock để tránh treo hệ thống khi chờ API
+    session_write_close();
+
     // 3. Xây dựng Prompt Gửi Cho Gemini
     $prompt = "Bạn là Bếp trưởng điều hành (Executive Chef) tại nhà hàng Nhã (đạt chứng nhận Food Made Good 3 sao quốc tế), một nhà hàng fine-dining cao cấp tại Việt Nam.
 
@@ -94,8 +97,8 @@ YÊU CẦU CHO THỰC ĐƠN:
 **Gợi ý Rượu Vang:**
 * [Tên rượu] - *Lý do:* ...";
 
-    // 4. Gọi API Gemini (Sử dụng model gemini-flash-latest cho tốc độ nhanh)
-    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" . $gemini_api_key;
+    // 4. Gọi API Gemini (Sử dụng model gemini-flash-lite-latest cho ổn định)
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=" . $gemini_api_key;
     
     $payload = json_encode([
         "contents" => [
@@ -117,6 +120,7 @@ YÊU CẦU CHO THỰC ĐƠN:
     
     // Tắt kiểm tra SSL tạm thời (cho môi trường localhost XAMPP)
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     
     $response = curl_exec($ch);
     $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -130,8 +134,18 @@ YÊU CẦU CHO THỰC ĐƠN:
     curl_close($ch);
 
     if ($httpcode !== 200) {
-        $err = json_decode($response, true);
-        echo json_encode(['status' => 'error', 'message' => 'Lỗi từ Gemini API: ' . ($err['error']['message'] ?? 'Unknown error')]);
+        $err_msg = 'Lỗi từ hệ thống AI (Gemini).';
+        if ($httpcode == 0) {
+            $err_msg = 'Hệ thống AI phản hồi quá chậm (Timeout). Vui lòng thử lại sau.';
+        } elseif ($httpcode == 503) {
+            $err_msg = 'Hệ thống AI đang bị quá tải hoặc bảo trì. Vui lòng thử lại sau ít phút.';
+        } elseif ($httpcode == 429) {
+            $err_msg = 'Hệ thống AI đã vượt giới hạn truy cập (Rate Limit). Vui lòng thử lại sau.';
+        } else {
+            $err = json_decode($response, true);
+            $err_msg = 'Lỗi từ Gemini API: ' . ($err['error']['message'] ?? 'Unknown error');
+        }
+        echo json_encode(['status' => 'error', 'message' => $err_msg]);
         exit;
     }
 

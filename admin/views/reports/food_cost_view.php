@@ -3,7 +3,7 @@
 include __DIR__ . '/../../../public/admin_layout_header.php';
 ?>
 <div class="container-fluid py-4 bg-light min-vh-100">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <h3 class="fw-bold text-uppercase"><i class="fas fa-chart-pie me-2 text-warning"></i>Báo Cáo Lợi Nhuận Món Ăn</h3>
         <button class="btn btn-dark" onclick="window.print()"><i class="fas fa-print me-2"></i>In Báo Cáo</button>
     </div>

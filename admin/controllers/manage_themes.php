@@ -116,7 +116,7 @@ include '../../public/admin_layout_header.php';
 <link rel="stylesheet" href="../../public/assets/admin/css/admin-style.css">
 
 <div class="content-wrapper p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
             <h3 class="fw-bold m-0"><i class="fas fa-layer-group me-2 text-primary"></i>Quản Lý Chủ Đề Thực Đơn</h3>
             <div class="small text-muted mt-1">Các Themed Collections sẽ hiển thị trên trang Thực đơn</div>
@@ -392,3 +392,4 @@ function editTheme(t) {
     editModal.show();
 }
 </script>
+

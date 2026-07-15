@@ -17,14 +17,7 @@ $form_action = $is_edit
     : 'ComboController.php?action=add';
 ?>
 <link rel="stylesheet" href="../../public/assets/admin/css/admin-style.css">
-<style>
-.food-list-box{border:1px solid #dee2e6;padding:15px;max-height:420px;overflow-y:auto;border-radius:10px;background:#fdfdfd}
-.food-check-item{padding:8px 10px;border-bottom:1px solid #f0f0f0;border-radius:6px;transition:.15s}
-.food-check-item:hover{background:#f8f8f8}
-.food-check-item:last-child{border-bottom:none}
-.img-preview-wrap{position:relative;display:inline-block}
-.img-preview-combo{max-height:150px;border-radius:10px;border:2px solid #dee2e6;object-fit:cover;display:block;margin-bottom:8px}
-</style>
+
 
 <div class="container-fluid py-4">
     <div class="row justify-content-center">

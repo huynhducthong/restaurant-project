@@ -2839,12 +2839,8 @@ function generateAIBespokeMenu() {
         
         if (res.status === 'success') {
             var textarea = document.getElementById('creq_detail');
-            // Thêm kết quả AI vào textarea (xuống dòng nếu đã có nội dung)
-            if (textarea.value.trim() !== '') {
-                textarea.value += '\n\n---\n\n' + res.data;
-            } else {
-                textarea.value = res.data;
-            }
+            // Cập nhật kết quả AI vào textarea (Ghi đè hoàn toàn để lấy cái mới nhất)
+            textarea.value = res.data;
             // Kích hoạt sự kiện oninput để cập nhật preview
             textarea.dispatchEvent(new Event('input', { bubbles: true }));
             if (typeof updateChefReq === 'function') updateChefReq();

@@ -151,6 +151,10 @@ if (!empty($logo_path)) {
             --primary-color: #A88746;
         }
 
+        html {
+            background-color: #050505;
+        }
+
         body {
             margin: 0;
             padding: 0 !important;
@@ -166,10 +170,6 @@ if (!empty($logo_path)) {
                 max-width: 100vw !important;
                 overflow-x: hidden !important;
             }
-        }
-        @keyframes fadeInPage {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
         }
 
         /* =======================
@@ -548,32 +548,30 @@ if (!empty($logo_path)) {
             .oriental-trigger i { font-size: 28px; }
         }
 
-        /* =======================
-           PAGE TRANSITION OVERLAY
-        ======================= */
-        .page-transition-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #050505;
-            z-index: 999999;
-            pointer-events: none;
-            animation: fadeOutOverlay 0.8s cubic-bezier(0.8, 0, 0.2, 1) forwards;
-        }
-        @keyframes fadeOutOverlay {
-            0% { opacity: 1; }
-            100% { opacity: 0; visibility: hidden; }
-        }
-
     </style>
-
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const links = document.querySelectorAll('a[href]:not([target="_blank"]):not([href^="mailto:"]):not([href^="tel:"]):not([href^="#"]):not(.notranslate a)');
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (this.hostname === window.location.hostname && !e.ctrlKey && !e.shiftKey && !e.metaKey) {
+                        e.preventDefault();
+                        const href = this.href;
+                        // Add a tiny 300ms delay to give the click/hover effect time to register
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 300);
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 
 <body>
-    <!-- PAGE TRANSITION OVERLAY -->
-    <div class="page-transition-overlay"></div>
+    
+
     
 
     <!-- TOPBAR -->
@@ -614,15 +612,27 @@ if (!empty($logo_path)) {
 
             </div>
 
-            <div class="lang-switcher d-flex align-items-center">
-                <a href="#" onclick="setLanguage('en'); return false;" id="btn-lang-en" style="color: rgba(255,255,255,0.7); text-decoration: none; font-weight: 600; font-size: 14px; letter-spacing: 1px;">EN</a>
+            <div class="lang-switcher d-flex align-items-center notranslate" translate="no">
+                <a href="#" onclick="setLanguage('en'); return false;" id="btn-lang-en" class="lang-btn">EN</a>
                 <span class="mx-2" style="color: rgba(255,255,255,0.5); font-size: 14px;">/</span>
-                <a href="#" onclick="setLanguage('vi'); return false;" id="btn-lang-vn" style="color: #C9A66B; text-decoration: none; font-weight: 600; font-size: 14px; letter-spacing: 1px;">VN</a>
+                <a href="#" onclick="setLanguage('vi'); return false;" id="btn-lang-vn" class="lang-btn">VN</a>
             </div>
 
             <!-- Hidden Google Translate Logic -->
             <div id="google_translate_element" style="display:none;"></div>
             <style>
+                .lang-btn {
+                    color: rgba(255,255,255,0.7);
+                    text-decoration: none;
+                    font-weight: 600;
+                    font-size: 14px;
+                    letter-spacing: 1px;
+                    transition: color 0.3s ease;
+                }
+                .lang-btn:hover {
+                    color: #ffffff !important;
+                }
+                
                 /* Aggressively hide the Google Translate top banner (All versions) */
                 .goog-te-banner-frame,
                 .goog-te-banner-frame.skiptranslate,
@@ -642,48 +652,33 @@ if (!empty($logo_path)) {
                     margin-top: 0px !important;
                 }
                 #goog-gt-tt, .goog-te-balloon-frame { display: none !important; } /* Hide tooltips */
-            
-        
-            100% { opacity: 0; visibility: hidden; }
-        }
-
-    
-        /* =======================
-           PAGE TRANSITION OVERLAY
-        ======================= */
-        .page-transition-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #050505;
-            z-index: 999999;
-            pointer-events: none;
-            animation: fadeOutOverlay 0.8s cubic-bezier(0.8, 0, 0.2, 1) forwards;
-        }
-        @keyframes fadeOutOverlay {
-            0% { opacity: 1; }
-            100% { opacity: 0; visibility: hidden; }
-        }
-
-    </style>
+            </style>
             <script type="text/javascript">
                 function googleTranslateElementInit() {
                     new google.translate.TranslateElement({pageLanguage: 'vi', includedLanguages: 'en,vi', autoDisplay: false}, 'google_translate_element');
                 }
                 
-                document.addEventListener("DOMContentLoaded", function() {
+                function updateLangUI() {
                     let match = document.cookie.match(/(?:^|;)\s*googtrans=([^;]*)/);
-                    let currentLang = match ? decodeURIComponent(match[1]) : '/vi/vi';
-                    if (currentLang === '/vi/en' || currentLang === '/en/en') {
-                        document.getElementById('btn-lang-en').style.color = '#C9A66B';
-                        document.getElementById('btn-lang-vn').style.color = 'rgba(255,255,255,0.7)';
+                    let currentLang = match ? decodeURIComponent(match[1]) : '';
+                    let btnEn = document.getElementById('btn-lang-en');
+                    let btnVn = document.getElementById('btn-lang-vn');
+                    
+                    if (currentLang.indexOf('/en') !== -1 || currentLang === 'en') {
+                        btnEn.style.setProperty('color', '#C9A66B', 'important');
+                        btnVn.style.setProperty('color', 'rgba(255,255,255,0.7)', 'important');
                     } else {
-                        document.getElementById('btn-lang-en').style.color = 'rgba(255,255,255,0.7)';
-                        document.getElementById('btn-lang-vn').style.color = '#C9A66B';
+                        btnEn.style.setProperty('color', 'rgba(255,255,255,0.7)', 'important');
+                        btnVn.style.setProperty('color', '#C9A66B', 'important');
                     }
-                });
+                }
+                
+                document.addEventListener("DOMContentLoaded", updateLangUI);
+                // Also update on load just in case Google Translate messes with it
+                window.addEventListener("load", updateLangUI);
+                // And poll it a few times to be absolutely sure
+                setTimeout(updateLangUI, 500);
+                setTimeout(updateLangUI, 1500);
 
                 function setLanguage(lang) {
                     var domain = window.location.hostname;
@@ -922,8 +917,8 @@ if (!empty($logo_path)) {
                 // Create a custom Toast notification
                 var toastHTML = '<div id="bdToast" style="position:fixed;top:120px;right:20px;z-index:99999;background:rgba(9,30,27,0.98);border:1px solid #A88746;padding:25px;border-radius:12px;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,0.6);transform:translateX(150%);transition:0.6s cubic-bezier(0.34, 1.56, 0.64, 1);max-width:320px;text-align:center;">'+
                 '<i class="fas fa-gift fa-3x mb-3" style="color:#A88746"></i>'+
-                '<h4 style="font-family:\'Source Sans 3\',serif;color:#A88746;margin-bottom:12px;font-size:1.5rem">ChÃºc Má»«ng Sinh Nháº­t!</h4>'+
-                '<p style="font-size:13px;margin:0;line-height:1.6;color:rgba(255,255,255,0.85)">Há»‡ thá»‘ng ghi nháº­n hÃ´m nay lÃ  sinh nháº­t cá»§a QuÃ½ khÃ¡ch. Ná»n táº£ng Ä‘Ã£ chuáº©n bá»‹ sáºµn Ä‘áº·c quyá»n Æ°u Ä‘Ã£i dÃ nh riÃªng cho ÄÆ¡n Ä‘áº·t bÃ n ngÃ y hÃ´m nay!</p>'+
+                '<h4 style="font-family:\'Source Sans 3\',serif;color:#A88746;margin-bottom:12px;font-size:1.5rem">Chúc Mừng Sinh Nhật!</h4>'+
+                '<p style="font-size:13px;margin:0;line-height:1.6;color:rgba(255,255,255,0.85)">Hệ thống ghi nhận hôm nay là sinh nhật của Quý khách. Nền tảng đã chuẩn bị sẵn đặc quyền ưu đãi dành riêng cho Đơn đặt bàn ngày hôm nay!</p>'+
                 '</div>';
                 document.body.insertAdjacentHTML('beforeend', toastHTML);
                 setTimeout(function(){ document.getElementById('bdToast').style.transform = 'translateX(0)'; }, 500);
@@ -944,18 +939,18 @@ if (!empty($logo_path)) {
 
     if ($h_month == '02' && $h_day == '14') {
         $is_holiday = true;
-        $holiday_name = "Lá»… TÃ¬nh NhÃ¢n (Valentine's Day)";
-        $holiday_msg = "ChÃºc QuÃ½ khÃ¡ch má»™t mÃ¹a Valentine áº¥m Ã¡p. Äá»«ng quÃªn thiáº¿t káº¿ má»™t bÃ n tiá»‡c lÃ£ng máº¡n dÃ nh táº·ng ngÆ°á»i thÆ°Æ¡ng nhÃ©!";
+        $holiday_name = "Lễ Tình Nhân (Valentine's Day)";
+        $holiday_msg = "Chúc Quý khách một mùa Valentine ấm áp. Đừng quên thiết kế một bàn tiệc lãng mạn dành tặng người thương nhé!";
         $holiday_icon = "fa-heart text-danger";
     } elseif ($h_month == '03' && $h_day == '08') {
         $is_holiday = true;
-        $holiday_name = "Quá»‘c Táº¿ Phá»¥ Ná»¯ 8/3";
-        $holiday_msg = "TÃ´n vinh phÃ¡i Ä‘áº¹p! HÃ£y Ä‘á»ƒ chÃºng tÃ´i mang Ä‘áº¿n tráº£i nghiá»‡m Fine Dining hoÃ n háº£o nháº¥t cho nhá»¯ng ngÆ°á»i phá»¥ ná»¯ tuyá»‡t vá»i cá»§a báº¡n.";
+        $holiday_name = "Quốc Tế Phụ Nữ 8/3";
+        $holiday_msg = "Tôn vinh phái đẹp! Hãy để chúng tôi mang đến trải nghiệm Fine Dining hoàn hảo nhất cho những người phụ nữ tuyệt vời của bạn.";
         $holiday_icon = "fa-female text-danger";
     } elseif ($h_month == '12' && $h_day == '24' || $h_day == '25') {
         $is_holiday = true;
-        $holiday_name = "GiÃ¡ng Sinh An LÃ nh";
-        $holiday_msg = "Merry Christmas! Há»‡ thá»‘ng Ä‘Ã£ má»Ÿ cÃ¡c GÃ³i thiáº¿t káº¿ KhÃ´ng gian MÃ¹a Ä‘Ã´ng Ä‘á»™c quyá»n. ChÃºc QuÃ½ khÃ¡ch má»™t mÃ¹a lá»… há»™i an lÃ nh!";
+        $holiday_name = "Giáng Sinh An Lành";
+        $holiday_msg = "Merry Christmas! Hệ thống đã mở các Gói thiết kế Không gian Mùa đông độc quyền. Chúc Quý khách một mùa lễ hội an lành!";
         $holiday_icon = "fa-snowflake text-info";
     }
 

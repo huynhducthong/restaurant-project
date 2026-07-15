@@ -81,10 +81,10 @@ $total = 0;
     <?php else: ?>
         <table style="width:100%; font-size:13px; border-collapse:collapse; margin-bottom:20px;">
             <thead>
-                <tr style="background:#f9f9f9;">
-                    <th style="padding:8px; text-align:left; border-bottom:1px solid #ddd;">Tên món</th>
-                    <th style="padding:8px; text-align:center; border-bottom:1px solid #ddd;">SL</th>
-                    <th style="padding:8px; text-align:right; border-bottom:1px solid #ddd;">Thành tiền</th>
+                <tr style="background:rgba(128,128,128,0.1);">
+                    <th style="padding:8px; text-align:left; border-bottom:1px solid rgba(128,128,128,0.2);">Tên món</th>
+                    <th style="padding:8px; text-align:center; border-bottom:1px solid rgba(128,128,128,0.2);">SL</th>
+                    <th style="padding:8px; text-align:right; border-bottom:1px solid rgba(128,128,128,0.2);">Thành tiền</th>
                 </tr>
             </thead>
             <tbody>
@@ -92,28 +92,26 @@ $total = 0;
                     $total += $it['subtotal'];
                 ?>
                 <tr>
-                    <td style="padding:8px; border-bottom:1px solid #f0f0f0;">
-                        <strong style="color:#222;"><?= htmlspecialchars($it['name']) ?></strong>
+                    <td style="padding:8px; border-bottom:1px solid rgba(128,128,128,0.1);">
+                        <strong><?= htmlspecialchars($it['name']) ?></strong>
                         <?php if (!empty($it['toppings_list'])): ?>
-                            <div style="font-size:11px; color:var(--accent-burgundy); margin-top:2px;">
+                            <div style="font-size:11px; opacity:0.8; margin-top:2px;">
                                 <i class="fas fa-plus-circle me-1" style="font-size:10px;"></i>Topping: <?= implode(', ', $it['toppings_list']) ?>
                             </div>
                         <?php endif; ?>
                         <?php if (!empty($it['notes'])): ?>
-                            <div style="font-size:11px; color:#c0392b; margin-top:2px; font-style:italic;">
-                                <i class="fas fa-pen me-1" style="font-size:9px;"></i><?= htmlspecialchars($it['notes']) ?>
-                            </div>
+                            <div style="font-size:11px; font-style:italic; opacity:0.6; margin-top:2px;"><i class="fas fa-comment-dots me-1"></i><?= htmlspecialchars($it['notes']) ?></div>
                         <?php endif; ?>
                     </td>
-                    <td style="padding:8px; border-bottom:1px solid #f0f0f0; text-align:center; vertical-align:top;">x<?= $it['quantity'] ?></td>
-                    <td style="padding:8px; border-bottom:1px solid #f0f0f0; text-align:right; font-weight:500; vertical-align:top;"><?= number_format($it['subtotal']) ?>đ</td>
+                    <td style="padding:8px; text-align:center; border-bottom:1px solid rgba(128,128,128,0.1);"><strong>x<?= $it['quantity'] ?></strong></td>
+                    <td style="padding:8px; text-align:right; border-bottom:1px solid rgba(128,128,128,0.1);"><strong><?= number_format($it['subtotal']) ?>đ</strong></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="2" style="padding:8px; text-align:right; font-weight:bold; color:#555;">TỔNG CỘNG:</td>
-                    <td style="padding:8px; text-align:right; font-weight:bold; color:var(--accent-burgundy); font-size:15px;"><?= number_format($booking['total_amount'] ?? $total) ?>đ</td>
+                    <td colspan="2" style="padding:10px 8px; text-align:right; font-weight:bold; opacity:0.8;">TỔNG CỘNG:</td>
+                    <td style="padding:10px 8px; text-align:right; font-weight:bold; color:#A88746; font-size:14px;"><?= number_format($total) ?>đ</td>
                 </tr>
             </tfoot>
         </table>
@@ -137,10 +135,33 @@ $total = 0;
         $step4_text = ($is_negotiated && $s_status == 'Pending') ? '4. Thanh toán cọc bổ sung & Chuẩn bị' : '4. Chuẩn bị & Phục vụ';
     ?>
     <div style="margin-top:20px; padding:15px; background:#fffbf5; border:1px solid #e8e2d9; border-radius:8px;">
-        <h6 style="color:var(--accent-burgundy); font-weight:bold; font-size:13px; text-transform:uppercase; margin-bottom:10px;"><i class="fas fa-magic me-1"></i> Trải Nghiệm Thiết Kế Riêng</h6>
+        <h6 style="color:var(--accent-burgundy); font-weight:bold; font-size:15px; text-transform:uppercase; margin-bottom:10px;"><i class="fas fa-magic me-1"></i> Trải Nghiệm Thiết Kế Riêng</h6>
         <?php if (!empty($booking['chef_requirements'])): ?>
-            <div style="font-size:12px; color:#555; margin-bottom:15px; font-style:italic;">
+            <div style="font-size:14px; color:#555; margin-bottom:15px; font-style:italic;">
                 <?= nl2br(htmlspecialchars($booking['chef_requirements'])) ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($booking['ai_suggested_menu'])): ?>
+            <div style="font-size:15px; color:#222; margin-bottom:15px; padding: 15px; border-left: 3px solid var(--gold); background: #fff;">
+                <strong style="color: var(--gold); display: block; margin-bottom: 5px;"><i class="fas fa-utensils me-1"></i> Thực Đơn Đề Xuất / Phản Hồi Từ Bếp Trưởng:</strong>
+                <?php
+                $html_menu = htmlspecialchars($booking['ai_suggested_menu']);
+                $html_menu = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $html_menu);
+                $html_menu = preg_replace('/\*(.*?)\*/', '<em>$1</em>', $html_menu);
+                echo nl2br($html_menu);
+                ?>
+                
+                <?php if ($booking['status'] === 'Pending' && !$step4): ?>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e8e2d9;">
+                    <strong style="font-size: 14px; color: #555; display: block; margin-bottom: 5px;"><i class="fas fa-reply me-1"></i> Gửi yêu cầu chỉnh sửa / Phản hồi lại Bếp trưởng:</strong>
+                    <textarea id="customer-reply-text" class="form-control mb-2" rows="2" style="font-size: 14px; resize: none;" placeholder="Ví dụ: Đổi món khai vị thành món soup, hoặc tôi bị dị ứng với nấm..."></textarea>
+                    <button type="button" class="btn btn-sm" id="btn-send-reply" data-id="<?= $booking_id ?>" style="background-color: #333; color: #fff; font-size: 14px; padding: 6px 15px;">
+                        <i class="fas fa-paper-plane me-1"></i> Gửi phản hồi
+                    </button>
+                </div>
+                
+                <?php endif; ?>
             </div>
         <?php endif; ?>
         
@@ -208,3 +229,4 @@ $total = 0;
         </a>
     </div>
 </div>
+

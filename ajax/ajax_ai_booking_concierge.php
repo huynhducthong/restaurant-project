@@ -35,6 +35,9 @@ try {
     
     $dna_str = empty($dna) ? "Khách hàng có khẩu vị chung, dễ ăn, không có dị ứng." : implode("; ", $dna);
 
+    // Giải phóng session lock để người dùng có thể tải trang khác/F5 không bị treo
+    session_write_close();
+
     // Xây dựng Prompt cho Gemini
     $prompt = "Bạn là Bếp trưởng điều hành tại nhà hàng Fine Dining Nhã. Khách hàng đang muốn đặt một bữa tiệc Thiết kế riêng (Bespoke Dining).
     
@@ -56,7 +59,7 @@ YÊU CẦU:
 - Kết thúc bằng một câu mời gọi khách hàng gửi yêu cầu này đi.
 - Độ dài vừa phải, không quá dài dòng (tối đa 150-200 chữ).";
 
-    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" . $gemini_api_key;
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=" . $gemini_api_key;
     
     $payload = json_encode([
         "contents" => [
@@ -74,13 +77,22 @@ YÊU CẦU:
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     
     $response = curl_exec($ch);
     $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
     if ($httpcode !== 200) {
-        echo json_encode(['status' => 'error', 'message' => 'Lỗi từ hệ thống AI (Gemini).']);
+        $err_msg = 'Lỗi từ hệ thống AI (Gemini).';
+        if ($httpcode == 0) {
+            $err_msg = 'Hệ thống AI phản hồi quá chậm (Timeout). Vui lòng thử lại sau.';
+        } elseif ($httpcode == 503) {
+            $err_msg = 'Hệ thống AI đang bị quá tải hoặc bảo trì. Vui lòng thử lại sau ít phút.';
+        } elseif ($httpcode == 429) {
+            $err_msg = 'Hệ thống AI đã vượt giới hạn truy cập (Rate Limit). Vui lòng thử lại sau.';
+        }
+        echo json_encode(['status' => 'error', 'message' => $err_msg]);
         exit;
     }
 

@@ -5,18 +5,7 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
 
 <link rel="stylesheet" href="../../public/assets/admin/css/admin-style.css">
 
-<style>
-.sort-link { font-size: 12px; color: var(--bs-secondary); text-decoration: none; }
-.sort-link.active { color: #212529; font-weight: 600; }
-.sort-link:hover { color: #212529; }
-.food-img { width:60px;height:60px;object-fit:cover;border-radius:10px;border:1px solid #eee; }
-tr.inactive-row { opacity: .55; }
-tr.inactive-row td:first-child::after { content:''; }
-.profit-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; }
-.profit-high { background:#d1fae5;color:#065f46; }
-.profit-mid  { background:#fef9c3;color:#713f12; }
-.profit-low  { background:#fee2e2;color:#991b1b; }
-</style>
+
 
 <div class="content-wrapper p-4">
 

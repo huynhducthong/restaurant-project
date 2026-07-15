@@ -525,6 +525,8 @@ if (!empty($foods)) {
                 WHEN LOWER(r.unit) = 'gram' AND LOWER(i.unit_name) = 'kg' THEN 0.001
                 WHEN LOWER(r.unit) = 'ml' AND LOWER(i.unit_name) = 'lít' THEN 0.001
                 WHEN LOWER(r.unit) = 'ml' AND LOWER(i.unit_name) = 'lit' THEN 0.001
+                WHEN LOWER(r.unit) = 'ml' AND LOWER(i.unit_name) = 'chai' THEN 0.001333 /* Giả định 1 chai trung bình 750ml */
+                WHEN LOWER(r.unit) = 'gram' AND LOWER(i.unit_name) = 'hộp' THEN 0.01 /* Giả định 1 hộp 100g */
                 ELSE 1 
             END
          ) as total_cost
