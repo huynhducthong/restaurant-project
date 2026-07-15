@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Jul 15, 2026 at 04:19 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th7 15, 2026 lúc 06:05 AM
+-- Phiên bản máy phục vụ: 10.4.32-MariaDB
+-- Phiên bản PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `restaurant_db`
+-- Cơ sở dữ liệu: `restaurant_db`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `about_categories`
+-- Cấu trúc bảng cho bảng `about_categories`
 --
 
 DROP TABLE IF EXISTS `about_categories`;
@@ -35,7 +35,7 @@ CREATE TABLE `about_categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `about_categories`
+-- Đang đổ dữ liệu cho bảng `about_categories`
 --
 
 INSERT INTO `about_categories` (`id`, `name`, `slug`) VALUES
@@ -45,7 +45,7 @@ INSERT INTO `about_categories` (`id`, `name`, `slug`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `about_comments`
+-- Cấu trúc bảng cho bảng `about_comments`
 --
 
 DROP TABLE IF EXISTS `about_comments`;
@@ -68,7 +68,7 @@ CREATE TABLE `about_comments` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `about_comment_bans`
+-- Cấu trúc bảng cho bảng `about_comment_bans`
 --
 
 DROP TABLE IF EXISTS `about_comment_bans`;
@@ -86,7 +86,7 @@ CREATE TABLE `about_comment_bans` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `about_comment_likes`
+-- Cấu trúc bảng cho bảng `about_comment_likes`
 --
 
 DROP TABLE IF EXISTS `about_comment_likes`;
@@ -100,7 +100,7 @@ CREATE TABLE `about_comment_likes` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `about_comment_reports`
+-- Cấu trúc bảng cho bảng `about_comment_reports`
 --
 
 DROP TABLE IF EXISTS `about_comment_reports`;
@@ -115,7 +115,7 @@ CREATE TABLE `about_comment_reports` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `about_comment_reports`
+-- Đang đổ dữ liệu cho bảng `about_comment_reports`
 --
 
 INSERT INTO `about_comment_reports` (`id`, `comment_id`, `user_id`, `reason`, `user_ip`, `created_at`, `status`) VALUES
@@ -125,7 +125,7 @@ INSERT INTO `about_comment_reports` (`id`, `comment_id`, `user_id`, `reason`, `u
 -- --------------------------------------------------------
 
 --
--- Table structure for table `about_content`
+-- Cấu trúc bảng cho bảng `about_content`
 --
 
 DROP TABLE IF EXISTS `about_content`;
@@ -145,7 +145,7 @@ CREATE TABLE `about_content` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `about_content`
+-- Đang đổ dữ liệu cho bảng `about_content`
 --
 
 INSERT INTO `about_content` (`id`, `category_id`, `title`, `slug`, `content`, `thumbnail`, `display_order`, `is_pinned`, `status`, `milestone_text`, `created_at`, `publish_date`) VALUES
@@ -163,7 +163,7 @@ INSERT INTO `about_content` (`id`, `category_id`, `title`, `slug`, `content`, `t
 -- --------------------------------------------------------
 
 --
--- Table structure for table `about_likes`
+-- Cấu trúc bảng cho bảng `about_likes`
 --
 
 DROP TABLE IF EXISTS `about_likes`;
@@ -176,7 +176,7 @@ CREATE TABLE `about_likes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `about_likes`
+-- Đang đổ dữ liệu cho bảng `about_likes`
 --
 
 INSERT INTO `about_likes` (`id`, `content_id`, `user_ip`, `user_id`, `created_at`) VALUES
@@ -185,7 +185,7 @@ INSERT INTO `about_likes` (`id`, `content_id`, `user_ip`, `user_id`, `created_at
 -- --------------------------------------------------------
 
 --
--- Table structure for table `about_saved_posts`
+-- Cấu trúc bảng cho bảng `about_saved_posts`
 --
 
 DROP TABLE IF EXISTS `about_saved_posts`;
@@ -199,7 +199,7 @@ CREATE TABLE `about_saved_posts` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `about_shares`
+-- Cấu trúc bảng cho bảng `about_shares`
 --
 
 DROP TABLE IF EXISTS `about_shares`;
@@ -212,7 +212,7 @@ CREATE TABLE `about_shares` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `about_shares`
+-- Đang đổ dữ liệu cho bảng `about_shares`
 --
 
 INSERT INTO `about_shares` (`id`, `content_id`, `platform`, `user_ip`, `created_at`) VALUES
@@ -427,7 +427,7 @@ INSERT INTO `about_shares` (`id`, `content_id`, `platform`, `user_ip`, `created_
 -- --------------------------------------------------------
 
 --
--- Table structure for table `admins`
+-- Cấu trúc bảng cho bảng `admins`
 --
 
 DROP TABLE IF EXISTS `admins`;
@@ -440,7 +440,7 @@ CREATE TABLE `admins` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `banners`
+-- Cấu trúc bảng cho bảng `banners`
 --
 
 DROP TABLE IF EXISTS `banners`;
@@ -469,7 +469,7 @@ CREATE TABLE `banners` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `banners`
+-- Đang đổ dữ liệu cho bảng `banners`
 --
 
 INSERT INTO `banners` (`id`, `image_url`, `title`, `description`, `font_family`, `text_color`, `text_align`, `font_style`, `display_order`, `created_at`, `desc_color`, `desc_font_family`, `desc_font_style`, `title_font_size`, `desc_font_size`, `is_active`, `button_text`, `button_link`, `button_color`, `start_date`, `end_date`) VALUES
@@ -479,7 +479,7 @@ INSERT INTO `banners` (`id`, `image_url`, `title`, `description`, `font_family`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bespoke_budgets`
+-- Cấu trúc bảng cho bảng `bespoke_budgets`
 --
 
 DROP TABLE IF EXISTS `bespoke_budgets`;
@@ -491,7 +491,7 @@ CREATE TABLE `bespoke_budgets` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `bespoke_budgets`
+-- Đang đổ dữ liệu cho bảng `bespoke_budgets`
 --
 
 INSERT INTO `bespoke_budgets` (`id`, `label`, `price_value`, `sort_order`) VALUES
@@ -504,7 +504,7 @@ INSERT INTO `bespoke_budgets` (`id`, `label`, `price_value`, `sort_order`) VALUE
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bespoke_occasions`
+-- Cấu trúc bảng cho bảng `bespoke_occasions`
 --
 
 DROP TABLE IF EXISTS `bespoke_occasions`;
@@ -515,7 +515,7 @@ CREATE TABLE `bespoke_occasions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `bespoke_occasions`
+-- Đang đổ dữ liệu cho bảng `bespoke_occasions`
 --
 
 INSERT INTO `bespoke_occasions` (`id`, `name`, `sort_order`) VALUES
@@ -529,7 +529,7 @@ INSERT INTO `bespoke_occasions` (`id`, `name`, `sort_order`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bespoke_styles`
+-- Cấu trúc bảng cho bảng `bespoke_styles`
 --
 
 DROP TABLE IF EXISTS `bespoke_styles`;
@@ -540,7 +540,7 @@ CREATE TABLE `bespoke_styles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `bespoke_styles`
+-- Đang đổ dữ liệu cho bảng `bespoke_styles`
 --
 
 INSERT INTO `bespoke_styles` (`id`, `name`, `sort_order`) VALUES
@@ -554,7 +554,7 @@ INSERT INTO `bespoke_styles` (`id`, `name`, `sort_order`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bookings`
+-- Cấu trúc bảng cho bảng `bookings`
 --
 
 DROP TABLE IF EXISTS `bookings`;
@@ -574,7 +574,7 @@ CREATE TABLE `bookings` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `booking_details`
+-- Cấu trúc bảng cho bảng `booking_details`
 --
 
 DROP TABLE IF EXISTS `booking_details`;
@@ -593,7 +593,7 @@ CREATE TABLE `booking_details` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `booking_details`
+-- Đang đổ dữ liệu cho bảng `booking_details`
 --
 
 INSERT INTO `booking_details` (`id`, `booking_id`, `menu_id`, `excluded_combo_items`, `toppings_info`, `item_type`, `quantity`, `notes`, `price`, `created_at`, `status`) VALUES
@@ -694,7 +694,7 @@ INSERT INTO `booking_details` (`id`, `booking_id`, `menu_id`, `excluded_combo_it
 -- --------------------------------------------------------
 
 --
--- Table structure for table `booking_inventory_deductions`
+-- Cấu trúc bảng cho bảng `booking_inventory_deductions`
 --
 
 DROP TABLE IF EXISTS `booking_inventory_deductions`;
@@ -708,7 +708,7 @@ CREATE TABLE `booking_inventory_deductions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `booking_inventory_deductions`
+-- Đang đổ dữ liệu cho bảng `booking_inventory_deductions`
 --
 
 INSERT INTO `booking_inventory_deductions` (`id`, `booking_id`, `ingredient_id`, `warehouse_id`, `quantity`, `created_at`) VALUES
@@ -906,7 +906,7 @@ INSERT INTO `booking_inventory_deductions` (`id`, `booking_id`, `ingredient_id`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bot_context_logs`
+-- Cấu trúc bảng cho bảng `bot_context_logs`
 --
 
 DROP TABLE IF EXISTS `bot_context_logs`;
@@ -917,7 +917,7 @@ CREATE TABLE `bot_context_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `bot_context_logs`
+-- Đang đổ dữ liệu cho bảng `bot_context_logs`
 --
 
 INSERT INTO `bot_context_logs` (`id`, `keyword_searched`, `created_at`) VALUES
@@ -938,7 +938,7 @@ INSERT INTO `bot_context_logs` (`id`, `keyword_searched`, `created_at`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bot_responses`
+-- Cấu trúc bảng cho bảng `bot_responses`
 --
 
 DROP TABLE IF EXISTS `bot_responses`;
@@ -949,7 +949,7 @@ CREATE TABLE `bot_responses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `bot_responses`
+-- Đang đổ dữ liệu cho bảng `bot_responses`
 --
 
 INSERT INTO `bot_responses` (`id`, `keywords`, `answer`) VALUES
@@ -968,7 +968,7 @@ INSERT INTO `bot_responses` (`id`, `keywords`, `answer`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `categories`
+-- Cấu trúc bảng cho bảng `categories`
 --
 
 DROP TABLE IF EXISTS `categories`;
@@ -979,7 +979,7 @@ CREATE TABLE `categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `categories`
+-- Đang đổ dữ liệu cho bảng `categories`
 --
 
 INSERT INTO `categories` (`id`, `name`, `sort_order`) VALUES
@@ -993,7 +993,7 @@ INSERT INTO `categories` (`id`, `name`, `sort_order`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chat_messages`
+-- Cấu trúc bảng cho bảng `chat_messages`
 --
 
 DROP TABLE IF EXISTS `chat_messages`;
@@ -1009,7 +1009,7 @@ CREATE TABLE `chat_messages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `chat_messages`
+-- Đang đổ dữ liệu cho bảng `chat_messages`
 --
 
 INSERT INTO `chat_messages` (`id`, `session_id`, `sender_type`, `message_type`, `content`, `is_read`, `created_at`, `is_hidden`) VALUES
@@ -1065,7 +1065,7 @@ INSERT INTO `chat_messages` (`id`, `session_id`, `sender_type`, `message_type`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chat_sessions`
+-- Cấu trúc bảng cho bảng `chat_sessions`
 --
 
 DROP TABLE IF EXISTS `chat_sessions`;
@@ -1080,7 +1080,7 @@ CREATE TABLE `chat_sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `chat_sessions`
+-- Đang đổ dữ liệu cho bảng `chat_sessions`
 --
 
 INSERT INTO `chat_sessions` (`session_id`, `customer_name`, `customer_phone`, `status`, `created_at`, `first_response_at`, `closed_at`) VALUES
@@ -1091,7 +1091,7 @@ INSERT INTO `chat_sessions` (`session_id`, `customer_name`, `customer_phone`, `s
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chefs`
+-- Cấu trúc bảng cho bảng `chefs`
 --
 
 DROP TABLE IF EXISTS `chefs`;
@@ -1123,7 +1123,7 @@ CREATE TABLE `chefs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `chefs`
+-- Đang đổ dữ liệu cho bảng `chefs`
 --
 
 INSERT INTO `chefs` (`id`, `name`, `position`, `image`, `experience`, `specialty`, `description`, `quote`, `facebook`, `instagram`, `email`, `is_active`, `is_featured`, `sort_order`, `awards`, `signature_dishes`, `signature_technique`, `signature_technique_specs`, `signature_technique_process`, `signature_technique_quote`, `signature_technique_difficulty`, `signature_technique_final_result`, `gallery_images`, `service_fee`) VALUES
@@ -1139,7 +1139,7 @@ INSERT INTO `chefs` (`id`, `name`, `position`, `image`, `experience`, `specialty
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chef_certificates`
+-- Cấu trúc bảng cho bảng `chef_certificates`
 --
 
 DROP TABLE IF EXISTS `chef_certificates`;
@@ -1154,7 +1154,7 @@ CREATE TABLE `chef_certificates` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `chef_certificates`
+-- Đang đổ dữ liệu cho bảng `chef_certificates`
 --
 
 INSERT INTO `chef_certificates` (`id`, `chef_id`, `certificate_name`, `issuer`, `issue_date`, `certificate_image`, `created_at`) VALUES
@@ -1179,7 +1179,7 @@ INSERT INTO `chef_certificates` (`id`, `chef_id`, `certificate_name`, `issuer`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chef_gallery`
+-- Cấu trúc bảng cho bảng `chef_gallery`
 --
 
 DROP TABLE IF EXISTS `chef_gallery`;
@@ -1192,7 +1192,7 @@ CREATE TABLE `chef_gallery` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `chef_gallery`
+-- Đang đổ dữ liệu cho bảng `chef_gallery`
 --
 
 INSERT INTO `chef_gallery` (`id`, `chef_id`, `image`, `sort_order`, `created_at`) VALUES
@@ -1248,7 +1248,7 @@ INSERT INTO `chef_gallery` (`id`, `chef_id`, `image`, `sort_order`, `created_at`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chef_reviews`
+-- Cấu trúc bảng cho bảng `chef_reviews`
 --
 
 DROP TABLE IF EXISTS `chef_reviews`;
@@ -1266,7 +1266,7 @@ CREATE TABLE `chef_reviews` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `chef_reviews`
+-- Đang đổ dữ liệu cho bảng `chef_reviews`
 --
 
 INSERT INTO `chef_reviews` (`id`, `chef_id`, `user_id`, `author_name`, `rating`, `comment`, `created_at`, `status`, `experience_type`, `chef_response`) VALUES
@@ -1291,7 +1291,7 @@ INSERT INTO `chef_reviews` (`id`, `chef_id`, `user_id`, `author_name`, `rating`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `combos`
+-- Cấu trúc bảng cho bảng `combos`
 --
 
 DROP TABLE IF EXISTS `combos`;
@@ -1308,7 +1308,7 @@ CREATE TABLE `combos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `combos`
+-- Đang đổ dữ liệu cho bảng `combos`
 --
 
 INSERT INTO `combos` (`id`, `name`, `description`, `price`, `image`, `status`, `is_active`, `created_at`, `theme_id`) VALUES
@@ -1319,7 +1319,7 @@ INSERT INTO `combos` (`id`, `name`, `description`, `price`, `image`, `status`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `combo_items`
+-- Cấu trúc bảng cho bảng `combo_items`
 --
 
 DROP TABLE IF EXISTS `combo_items`;
@@ -1330,7 +1330,7 @@ CREATE TABLE `combo_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `combo_items`
+-- Đang đổ dữ liệu cho bảng `combo_items`
 --
 
 INSERT INTO `combo_items` (`id`, `combo_id`, `food_id`) VALUES
@@ -1347,7 +1347,7 @@ INSERT INTO `combo_items` (`id`, `combo_id`, `food_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `contacts`
+-- Cấu trúc bảng cho bảng `contacts`
 --
 
 DROP TABLE IF EXISTS `contacts`;
@@ -1367,7 +1367,7 @@ CREATE TABLE `contacts` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `decor_packages`
+-- Cấu trúc bảng cho bảng `decor_packages`
 --
 
 DROP TABLE IF EXISTS `decor_packages`;
@@ -1383,7 +1383,7 @@ CREATE TABLE `decor_packages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `decor_packages`
+-- Đang đổ dữ liệu cho bảng `decor_packages`
 --
 
 INSERT INTO `decor_packages` (`id`, `event_type_id`, `name`, `description`, `price`, `image_url`, `status`, `created_at`) VALUES
@@ -1406,7 +1406,7 @@ INSERT INTO `decor_packages` (`id`, `event_type_id`, `name`, `description`, `pri
 -- --------------------------------------------------------
 
 --
--- Table structure for table `employees`
+-- Cấu trúc bảng cho bảng `employees`
 --
 
 DROP TABLE IF EXISTS `employees`;
@@ -1429,7 +1429,7 @@ CREATE TABLE `employees` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `employees`
+-- Đang đổ dữ liệu cho bảng `employees`
 --
 
 INSERT INTO `employees` (`id`, `full_name`, `phone`, `email`, `identity_card`, `address`, `dob`, `gender`, `position`, `salary`, `status`, `avatar`, `avatar_blob`, `avatar_mime`, `created_at`) VALUES
@@ -1448,7 +1448,7 @@ INSERT INTO `employees` (`id`, `full_name`, `phone`, `email`, `identity_card`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `event_types`
+-- Cấu trúc bảng cho bảng `event_types`
 --
 
 DROP TABLE IF EXISTS `event_types`;
@@ -1462,7 +1462,7 @@ CREATE TABLE `event_types` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `event_types`
+-- Đang đổ dữ liệu cho bảng `event_types`
 --
 
 INSERT INTO `event_types` (`id`, `name`, `description`, `image_url`, `status`, `created_at`) VALUES
@@ -1475,7 +1475,7 @@ INSERT INTO `event_types` (`id`, `name`, `description`, `image_url`, `status`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `foods`
+-- Cấu trúc bảng cho bảng `foods`
 --
 
 DROP TABLE IF EXISTS `foods`;
@@ -1500,7 +1500,7 @@ CREATE TABLE `foods` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `foods`
+-- Đang đổ dữ liệu cho bảng `foods`
 --
 
 INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`, `max_toppings`, `is_active`, `is_chef_recommended`, `allergens`, `wine_pairing_id`, `chef_note`, `food_journey`, `cooking_technique`, `theme_id`, `cooking_status`) VALUES
@@ -1516,43 +1516,43 @@ INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description
 (15, 1, 'Seared Hokkaido Scallops', 950000.00, '1780713718_6a2388f69f231.jpg', 'Cồi sò điệp Hokkaido áp chảo dùng kèm sốt bơ chanh vàng béo ngậy.', 1, 4, 1, 0, '', NULL, 'Còi sò điệp Hokkaido to bản chỉ cần áp chảo thật nhanh trên lửa lớn để xém vàng hai mặt. Vị ngọt lịm tự nhiên của hải sản vùng nước lạnh không cần quá nhiều gia vị phô trương.', '{\"origin\":\"Cồi sò điệp Hokkaido được đánh bắt tại vùng biển lạnh giá phía Bắc Nhật Bản, nơi dòng hải lưu Oyashio đi qua, mang lại độ ngọt thịt tự nhiên và chất lượng hảo hạng bậc nhất.\",\"selection\":\"Tuyển chọn khắt khe những cá thể sò điệp trưởng thành đạt chuẩn loại 1 (Jumbo), đánh bắt tự nhiên và cấp đông sâu ngay trên tàu để giữ vẹn nguyên sự tươi mới tinh khiết.\",\"storage\":\"Bảo quản ở nhiệt độ -40 độ C chuẩn sashimi, rã đông chậm tự nhiên trong môi trường lạnh nhằm bảo vệ tuyệt đối kết cấu mô thịt và giữ trọn vị ngọt của biển cả.\",\"prep\":\"Sơ chế tỉ mỉ, làm sạch nhẹ nhàng qua nước muối loãng, sau đó thấm khô hoàn toàn bề mặt bằng giấy chuyên dụng để đảm bảo hiệu ứng caramel hóa khi áp chảo.\",\"cooking_art\":\"Nghệ thuật áp chảo nhanh (Pan-Searing) đỉnh cao trên chảo gang nhiệt độ cao cùng bơ lạt Pháp, tạo lớp vỏ vàng nâu xém cạnh giòn tan ôm trọn phần lõi mọng nước, mềm mịn như bơ.\",\"presentation\":\"Được tôn vinh như một tác phẩm nghệ thuật, điểm xuyết cùng nấm truffle đen, trứng cá tầm Caviar và một lớp xốt bơ chanh vàng óng, kích thích trọn vẹn mọi giác quan.\",\"origin_img\":\"1783316005_6a4b3e254763e.webp\",\"selection_img\":\"1783317272_6a4b4318afd39.webp\",\"storage_img\":\"1783318648_6a4b48785b22d.png\",\"prep_img\":\"scallop_prep_new.png\",\"cooking_art_img\":\"1783320195_6a4b4e83a670f.png\",\"presentation_img\":\"scallop_presentation_new.png\",\"certificate_img\":\"1783317249_6a4b43016f9e9.png\"}', '', NULL, ''),
 (16, 1, 'Burrata & Heirloom Tomato', 350000.00, '1780713742_6a23890e80b50.jpg', 'Phô mai Burrata tươi béo ngậy ăn cùng cà chua Heirloom và sốt dầu giấm balsamic.', 1, 4, 1, 0, '', NULL, 'Tôm sú tươi sống bật nhảy được xóc nhanh qua lửa lớn cùng muối hồng Himalaya và ớt sừng non, lớp vỏ ngoài giòn rụm nhưng thịt bên trong vẫn ngọt lịm.', '{\"origin\":\"Mang trong mình linh hồn của nền ẩm thực đồng quê giao thoa với sự tinh tế của ẩm thực đương đại.\",\"selection\":\"Sử dụng 100% nguyên liệu hữu cơ (Organic) và hải sản\\/thịt cao cấp nhập khẩu trực tiếp.\",\"storage\":\"Kiểm soát nhiệt độ nghiêm ngặt, áp dụng công nghệ Dry-age hoặc ướp đá sinh học để giữ trọn độ mọng nước.\",\"prep\":\"Sơ chế tỉ mỉ, loại bỏ hoàn toàn các phần viền thừa để giữ lại những lát cắt hoàn hảo nhất.\",\"cooking_art\":\"Áp dụng phương pháp nấu chậm (Sous-vide) hoặc áp chảo lửa lớn (Searing) để khóa chặt hương vị cốt lõi.\",\"presentation\":\"Sắp xếp như một tác phẩm nghệ thuật trên đĩa sứ thủ công, rưới thêm một lớp xốt sóng sánh đầy mê hoặc.\",\"origin_img\":\"1783315835_6a4b3d7b79000.webp\",\"selection_img\":\"1783315866_6a4b3d9a8195a.webp\",\"storage_img\":\"1783315599_6a4b3c8f8d075.png\",\"prep_img\":\"1783315892_6a4b3db4c6369.webp\",\"cooking_art_img\":\"1783315599_6a4b3c8f8dcdf.webp\",\"presentation_img\":\"1783315551_6a4b3c5fcf1fb.webp\",\"certificate_img\":\"1783315928_6a4b3dd84ddb9.png\"}', '', NULL, ''),
 (17, 1, 'Tuna Tartare', 400000.00, '1780713767_6a238927e7dd3.jpg', 'Cá ngừ đại dương xắt lựu tẩm ướp tinh tế, dùng kèm quả bơ và bánh quy giòn.', 1, 4, 1, 0, '', NULL, 'Cá ngừ đại dương tươi rói được thái hạt lựu, ướp cùng dầu mè, tương tương và một chút chanh vàng để tôn lên độ thanh mát, tan ngay trong miệng.', '{\"origin\":\"Bắt nguồn từ những mẻ cá ngừ vây xanh (Bluefin Tuna) khổng lồ được đánh bắt tự nhiên ngoài khơi đại dương, mang theo hương vị thuần khiết và tươi mới nhất của biển cả.\",\"selection\":\"Chỉ những phần thăn cá ngừ (Loin) mang sắc đỏ ngọc ruby rực rỡ với tỷ lệ nạc mỡ hoàn hảo mới được các bậc thầy tuyển chọn để đảm bảo chất lượng tuyệt đối.\",\"storage\":\"Lưu trữ nghiêm ngặt trong hệ thống cấp đông sâu -60 độ C chuẩn quốc tế, giúp khóa chặt độ tươi ngon và cấu trúc protein của cá ngay sau khi đánh bắt.\",\"prep\":\"Thực hiện bởi bàn tay tài hoa của bếp trưởng, dùng dao Yanagiba sắc lẹm thái hạt lựu từng thớ cá một cách dứt khoát, giữ nguyên kết cấu đàn hồi nguyên bản.\",\"cooking_art\":\"Pha trộn tinh tế với dầu mè thơm lừng, nước tương hảo hạng và hẹ xắt nhỏ, phối hợp nhịp nhàng để các gia vị quyện chặt vào từng miếng cá mà không làm mất đi vị ngọt tự nhiên.\",\"presentation\":\"Trình bày theo phong cách đương đại: Tartare cá ngừ tươi nguyên bản, dùng kèm xốt kem béo ngậy điểm xuyết trứng cá, ăn cùng các loại vi rau mầm, vụn bánh giòn tan và bánh mì nướng than hoa trên nền đĩa đá phiến mộc mạc.\",\"origin_img\":\"tuna_origin.png\",\"selection_img\":\"tuna_selection.png\",\"storage_img\":\"tuna_storage.png\",\"prep_img\":\"tuna_prep.png\",\"cooking_art_img\":\"tuna_cooking_art.png\",\"presentation_img\":\"tuna_presentation.png\",\"certificate_img\":\"1783315457_6a4b3c01b3987.png\"}', '', NULL, ''),
-(18, 6, 'Signature Truffle Martini', 400000.00, '1781149007_6a2a2d4f3f01a.jpg', 'Sự kết hợp hoàn hảo giữa Gin thượng hạng, dầu Nấm Truffle trắng và một chút Vermouth ủ mộc. Sang trọng, đậm đà và vương giả.', 1, 4, 1, 0, '', NULL, 'Không chỉ là một ly cocktail, đó là một trải nghiệm thị giác và khứu giác. Dầu nấm Truffle đen được nhỏ vài giọt lên bề mặt, mang lại hương vị ngai ngái đầy bí ẩn.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\",\"origin_img\":\"1783331946_6a4b7c6a0e199.webp\",\"cooking_art_img\":\"1783331969_6a4b7c81cf299.webp\",\"presentation_img\":\"1783331985_6a4b7c9184186.webp\"}', '', NULL, ''),
-(19, 6, 'Smoked Rosemary Old Fashioned', 380000.00, '1781148879_6a2a2ccfe97e9.jpg', 'Rượu Bourbon Whiskey ủ lâu năm hòa quyện cùng mật ong nguyên chất rừng sâu, khói hương thảo nướng cháy mang lại hậu vị sâu lắng, rất phù hợp cho những ngày lễ và tiết trời se lạnh mùa này.', 1, 4, 1, 0, '', NULL, 'Khói gỗ hương thảo đốt cháy chậm sẽ quẩn quanh trong ly pha lê, đánh thức hương vị caramel của rượu Bourbon lâu năm. Một ly rượu dành cho những tâm hồn sâu sắc.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\",\"origin_img\":\"1783331897_6a4b7c39b1e2b.webp\",\"prep_img\":\"1783331834_6a4b7bfae3f96.webp\",\"cooking_art_img\":\"1783331855_6a4b7c0f33e27.webp\",\"presentation_img\":\"1783331800_6a4b7bd82fda8.webp\"}', '', NULL, ''),
-(20, 6, 'Margarita hoa hồng lựu', 250000.00, '1781148793_6a2a2c79ba047.webp', 'Margarita lựu hoa hồng là một thức uống thơm ngon và đầy không khí lễ hội, không thể thiếu trong bất kỳ bữa tiệc nào. Vị chua thanh của lựu kết hợp tuyệt vời với vị ngọt dịu từ siro hoa hồng. Viền ly bằng một lớp muối hoa hồng và bạn sẽ thấy mình muốn nhâm nhi thức uống này suốt mùa đông.', 1, 4, 1, 0, '', NULL, 'Sự lãng mạn được rót vào ly với cánh hoa hồng tươi xay nhuyễn và nước lựu ép lạnh. Vành ly viền muối biển sẽ trung hòa độ chua ngọt một cách hoàn hảo.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\",\"origin_img\":\"1783331760_6a4b7bb0574eb.jpg\",\"cooking_art_img\":\"1783331716_6a4b7b846efe6.webp\",\"presentation_img\":\"1783331698_6a4b7b72ac486.webp\"}', '', NULL, ''),
-(21, 6, 'Gold Rush', 450000.00, '1781148667_6a2a2bfb171d5.jpg', 'Vang đỏ Cabernet Sauvignon cao cấp mix cùng trái cây nhiệt đới, điểm xuyết những vảy vàng 24k ăn được. Phù hợp cho những dịp kỷ niệm.', 1, 4, 1, 1, '', NULL, 'Một ly Gold Rush chuẩn vị cần sự cân bằng tuyệt đối giữa vị chua thanh của chanh vàng nguyên bản và độ ngọt sâu của mật ong rừng. Lắc thật mạnh cùng đá viên lớn để ly cocktail đạt độ lạnh sâu mà không bị loãng.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\",\"origin_img\":\"gold_rush_origin_1782720351886.png\",\"selection_img\":\"gold_rush_selection_1782720363687.png\",\"prep_img\":\"gold_rush_prep_1782720378446.png\",\"cooking_art_img\":\"gold_rush_mix_1782720414326.png\",\"presentation_img\":\"gold_rush_presentation_1782720428215.png\",\"certificate_img\":\"gold_rush_cert_1782720444757.png\"}', '', NULL, ''),
-(22, 6, 'Zen Garden Elixir', 180000.00, '1781148509_6a2a2b5da1be3.png', 'Thức uống Zen Garden Elixir là sự kết hợp hài hòa, gói gọn tinh thần thanh bình của một khu vườn trà Nhật Bản. Loại cocktail này làm nổi bật hương vị đất, đậm đà của matcha kết hợp với vị ngọt dịu của vải và vị chua thanh của yuzu. Đây là lựa chọn sảng khoái dành cho những ai tìm kiếm trải nghiệm độc đáo và thư thái.', 1, 4, 1, 0, '', NULL, 'Một thức uống thanh lọc tâm hồn. Trà xanh sương mù kết hợp cùng chanh yuzu Nhật Bản và hương sả, mang lại cảm giác bình yên như đang dạo bước trong một khu vườn thiền.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\",\"origin_img\":\"1783331642_6a4b7b3a67710.webp\",\"storage_img\":\"1783331574_6a4b7af61478b.jpg\",\"presentation_img\":\"1783331516_6a4b7abc32fcf.png\"}', '', NULL, ''),
-(23, 1, 'Bánh Cua', 399000.00, '1782874308_6a4480c443bfb.jpg', '**Bánh Cua (Crab Cakes)** là món khai vị kinh điển của ẩm thực ven biển Bắc Mỹ, nổi bật với phần thịt cua xanh Đại Tây Dương được giữ nguyên từng thớ để tôn vinh vị ngọt tự nhiên của hải sản. Kết hợp cùng bột panko, thảo mộc tươi và các loại gia vị được cân bằng tinh tế, bánh được áp chảo đến khi lớp vỏ ngoài vàng giòn trong khi phần nhân bên trong vẫn mềm, mọng và đậm đà. Khi thưởng thức cùng sốt aioli hoặc tartar, rau mầm và một lát chanh vàng, Crab Cakes mang đến sự hài hòa giữa hương vị thanh lịch và kết cấu hấp dẫn, trở thành món khai vị được yêu thích trong nhiều nhà hàng Fine Dining.', 1, 0, 1, 0, '', NULL, '', '{\"origin\":\"Cua xanh Đại Tây Dương được tuyển chọn từ những vùng biển trù phú dọc bờ Đông Hoa Kỳ, nơi dòng hải lưu trong lành và hệ sinh thái ven biển tạo nên môi trường lý tưởng cho loài cua này phát triển. Sau khi được đánh bắt theo phương pháp bền vững, cua được vận chuyển trong điều kiện kiểm soát nghiêm ngặt nhằm giữ trọn độ tươi và vị ngọt tự nhiên. Phần thịt cua trắng mềm, thanh khiết mang hương vị đặc trưng của đại dương, là nguyên liệu được nhiều nhà hàng Fine Dining trên thế giới tin dùng.\",\"selection\":\"Mỗi mẻ cua đều trải qua quy trình tuyển chọn khắt khe để đảm bảo chất lượng đồng nhất. Chúng tôi chỉ sử dụng phần thịt trắng nguyên khối với kết cấu săn chắc, không lẫn vụn vỏ hay tạp chất. Từng thớ thịt được kiểm tra kỹ lưỡng về màu sắc, hương thơm và độ tươi nhằm đáp ứng những tiêu chuẩn cao nhất trước khi bước vào căn bếp.\",\"storage\":\"Ngay sau khi được tách khỏi vỏ, thịt cua được làm lạnh nhanh và bảo quản trong chuỗi lạnh liên tục nhằm duy trì kết cấu mềm mại cũng như hương vị nguyên bản. Mỗi lô nguyên liệu đều được kiểm soát nghiêm ngặt về thời gian lưu trữ và điều kiện bảo quản, giúp đảm bảo chất lượng tối ưu khi đến tay đội ngũ đầu bếp.\",\"prep\":\"Quá trình sơ chế được thực hiện hoàn toàn thủ công bởi đội ngũ đầu bếp giàu kinh nghiệm. Từng phần thịt cua được nhẹ nhàng tách và làm sạch để giữ nguyên những thớ thịt tự nhiên quý giá. Mỗi mẻ nguyên liệu đều được kiểm tra lần cuối nhằm loại bỏ hoàn toàn những mảnh vỏ nhỏ, mang đến sự tinh tế và an toàn tuyệt đối cho thực khách.\",\"cooking_art\":\"Đội ngũ đầu bếp kết hợp thịt cua với các nguyên liệu được chọn lọc kỹ lưỡng như bột panko, thảo mộc tươi và gia vị cao cấp nhằm tôn lên vị ngọt tự nhiên của hải sản thay vì che lấp nó. Những chiếc Crab Cakes được tạo hình bằng tay, áp chảo đến khi lớp vỏ bên ngoài vàng giòn, trong khi phần nhân vẫn mềm, mọng và giữ trọn hương vị đặc trưng của cua xanh Đại Tây Dương.\",\"presentation\":\"Mỗi phần Crab Cakes được trình bày như một tác phẩm nghệ thuật, nơi sắc vàng óng của bánh hòa quyện cùng màu xanh tươi của rau mầm và điểm nhấn từ các loại thảo mộc hoặc hoa ăn được. Sự kết hợp giữa kết cấu, màu sắc và khoảng trống trên đĩa tạo nên một tổng thể thanh lịch, mang đến trải nghiệm thị giác tinh tế trước khi thực khách thưởng thức hương vị.\",\"origin_img\":\"1782906758_6a44ff86e9391.jpg\",\"selection_img\":\"1782906758_6a44ff86e997a.jpg\",\"storage_img\":\"1782906758_6a44ff86e9cb0.jpg\",\"prep_img\":\"1782906758_6a44ff86e9e97.jpg\",\"cooking_art_img\":\"1782906758_6a44ff86ea0d6.jpg\",\"presentation_img\":\"1782906758_6a44ff86ea2a2.jpg\",\"certificate_img\":\"1782906758_6a44ff86ea470.jpg\"}', '', NULL, ''),
-(24, 1, 'Foie Gras Terrine', 550000.00, 'foie_gras_terrine.png', 'Gan ngỗng béo thượng hạng từ Pháp, mềm tan trong miệng, ăn kèm mứt sung ngọt ngào.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Gan ngỗng (hoặc gan vịt) được lấy từ các trang trại đạt tiêu chuẩn tại Pháp, Hungary hoặc Tây Ban Nha, nơi nổi tiếng về sản xuất foie gras.\",\"selection\":\"Chọn gan có màu kem hồng nhạt, bề mặt mịn, không bầm tím, trọng lượng đồng đều và độ đàn hồi tốt.\",\"storage\":\"Bảo quản ở nhiệt độ 0–4°C, hút chân không để giữ độ tươi và hạn chế oxy hóa trước khi chế biến.\",\"prep\":\"Gan được làm sạch, tách gân (deveining), ngâm hoặc ướp với muối, tiêu, rượu Cognac\\/Port hoặc Sauternes\",\"cooking_art\":\"Gan được xếp vào khuôn terrine, nấu chậm bằng phương pháp bain-marie (nướng cách thủy), sau đó ép nhẹ và ủ lạnh 24–48 giờ để ổn định kết cấu.\",\"presentation\":\"Thái lát terrine, dùng kèm brioche nướng, mứt sung hoặc hành caramel, microgreens và sốt balsamic hoặc trái cây nhằm cân bằng vị béo.\",\"origin_img\":\"1783917935_6a546d6f034ce.jpg\",\"selection_img\":\"1783917935_6a546d6f037be.jpg\",\"storage_img\":\"1783917935_6a546d6f039a8.jpg\",\"prep_img\":\"1783917935_6a546d6f03b56.jpg\",\"cooking_art_img\":\"1783917935_6a546d6f03d26.jpg\",\"presentation_img\":\"1783917935_6a546d6f03f12.jpg\",\"certificate_img\":\"cert_mock_new.jpg\"}', '', NULL, ''),
-(25, 1, 'Truffle Mushroom Bruschetta', 250000.00, 'truffle_mushroom_bruschetta.png', 'Bánh mì nướng giòn rụm với sốt nấm Truffle đen thơm lừng.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Nấm như porcini, shiitake, cremini hoặc button được thu hoạch từ trang trại; nấm truffle thường có nguồn gốc từ Ý hoặc Pháp.\",\"selection\":\"Chọn nấm tươi, mũ săn chắc, không dập nát; truffle thơm đặc trưng; bánh mì sourdough hoặc baguette có ruột đặc và vỏ giòn.\",\"storage\":\"Nấm được giữ ở 2–4°C trong hộp hoặc túi giấy để tránh đọng hơi nước; truffle bọc giấy và bảo quản kín nhằm giữ hương thơm.\",\"prep\":\"Nấm được lau sạch bằng khăn ẩm, cắt lát; bánh mì cắt miếng vừa ăn; tỏi, rau mùi tây và các nguyên liệu khác được chuẩn bị.\",\"cooking_art\":\"Nấm được áp chảo cùng bơ, tỏi và thyme; bánh mì nướng vàng giòn; sau đó phủ hỗn hợp nấm lên bánh và hoàn thiện bằng dầu hoặc lát truffle.\",\"presentation\":\"Bày trên đĩa đá hoặc sứ, trang trí với parmesan bào, microgreens, dầu truffle và tiêu đen xay để tạo điểm nhấn sang trọng.\",\"origin_img\":\"1783918092_6a546e0c66c31.jpg\",\"selection_img\":\"1783918092_6a546e0c66ec2.jpg\",\"storage_img\":\"1783918092_6a546e0c67090.jpg\",\"prep_img\":\"1783918092_6a546e0c67265.jpg\",\"cooking_art_img\":\"1783918092_6a546e0c67462.jpg\",\"presentation_img\":\"1783918092_6a546e0c67663.jpg\",\"certificate_img\":\"cert_mock_new.jpg\"}', '', NULL, ''),
-(26, 2, 'Lobster Thermidor', 1200000.00, 'lobster_thermidor.png', 'Tôm hùm Pháp nướng phô mai béo ngậy, dùng kèm sốt kem cognac.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Tôm hùm được khai thác từ vùng biển lạnh (Canada, Maine, Brittany) hoặc nuôi tại các cơ sở đạt tiêu chuẩn, đảm bảo độ tươi và chất lượng.\",\"selection\":\"Chọn tôm còn sống, khỏe, vỏ cứng, càng chắc, trọng lượng đồng đều và không có dấu hiệu hư hỏng để đảm bảo thịt ngọt, săn chắc.\",\"storage\":\"Trước khi chế biến, tôm được giữ trong bể nước biển tuần hoàn hoặc kho lạnh chuyên dụng ở 4–8°C, duy trì môi trường thích hợp để giữ độ tươi.\",\"prep\":\"Tôm được luộc hoặc hấp sơ, sau đó tách thịt khỏi vỏ, cắt miếng vừa ăn; phần mai được giữ lại để làm khuôn khi trình bày món.\",\"cooking_art\":\"Thịt tôm được xào với bơ, hành tím, nấm, rượu vang trắng, mù tạt Dijon và kem tươi; trộn cùng sốt, cho trở lại mai, phủ phô mai Gruyère hoặc Parmesan rồi nướng vàng.\",\"presentation\":\"Món được phục vụ ngay trong vỏ tôm hùm, trang trí với rau thơm, chanh, microgreens và dùng kèm măng tây hoặc khoai tây nghiền, tạo vẻ sang trọng và hấp dẫn.\",\"origin_img\":\"1783918275_6a546ec363486.jpg\",\"selection_img\":\"1783918275_6a546ec3636d1.jpg\",\"storage_img\":\"1783918275_6a546ec3638b4.jpg\",\"prep_img\":\"1783918275_6a546ec363a90.jpg\",\"cooking_art_img\":\"1783918275_6a546ec363c5e.jpg\",\"presentation_img\":\"1783918275_6a546ec363dfb.jpg\",\"certificate_img\":\"cert_mock_new.jpg\"}', '', NULL, ''),
-(27, 5, 'Truffle Mashed Potatoes', 180000.00, 'truffle_mashed_potatoes.png', 'Khoai tây nghiền mịn với bơ Pháp và dầu nấm Truffle.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Khoai tây (Yukon Gold hoặc Russet) được thu hoạch từ các trang trại chất lượng; nấm truffle hoặc dầu truffle có nguồn gốc từ Ý hoặc Pháp.\",\"selection\":\"Chọn củ khoai tây chắc, vỏ nhẵn, không mọc mầm; truffle tươi có mùi thơm đặc trưng hoặc dầu truffle chất lượng cao.\",\"storage\":\"Khoai tây được giữ ở nơi khô ráo, thoáng mát (8–12°C), tránh ánh sáng; truffle bảo quản trong ngăn mát 2–4°C, bọc giấy và đựng kín để giữ hương thơm.\",\"prep\":\"Khoai được gọt vỏ, cắt khúc đều rồi rửa sạch; truffle được bào mỏng hoặc chuẩn bị dầu truffle, bơ và kem tươi.\",\"cooking_art\":\"Khoai được luộc chín mềm, nghiền mịn cùng bơ và kem tươi, sau đó trộn với truffle bào hoặc dầu truffle, nêm muối và tiêu để tạo kết cấu mịn, béo và thơm.\",\"presentation\":\"Khoai nghiền được tạo hình bằng khuôn hoặc muỗng, phủ lát truffle hoặc vài giọt dầu truffle, trang trí với hẹ cắt nhỏ (chives), microgreens hoặc tiêu đen xay, thường dùng kèm các món bò bít tết hoặc thịt nướng.\",\"origin_img\":\"1783918493_6a546f9deedda.jpg\",\"selection_img\":\"1783918493_6a546f9def152.jpg\",\"storage_img\":\"1783918493_6a546f9def451.jpg\",\"prep_img\":\"1783918493_6a546f9def771.jpg\",\"cooking_art_img\":\"1783918493_6a546f9defa54.jpg\",\"presentation_img\":\"1783918493_6a546f9defd3f.jpg\",\"certificate_img\":\"cert_mock_new.jpg\"}', '', NULL, ''),
-(28, 5, 'Grilled Asparagus', 150000.00, 'grilled_asparagus.png', 'Măng tây xanh nướng than hoa, rắc phô mai Parmesan.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Măng tây xanh được trồng tại các trang trại đạt tiêu chuẩn, thu hoạch khi thân còn non, giòn và giàu dinh dưỡng.\",\"selection\":\"Chọn cọng măng thẳng, màu xanh tươi, đầu búp khép chặt, thân chắc và không bị héo hoặc dập.\",\"storage\":\"Măng tây được giữ ở 2–4°C, dựng đứng hoặc bọc phần gốc bằng khăn giấy ẩm để duy trì độ tươi và độ giòn.\",\"prep\":\"Măng tây được rửa sạch, cắt bỏ phần gốc cứng, lau khô rồi trộn với dầu ô liu, muối và tiêu trước khi nướng.\",\"cooking_art\":\"Măng tây được nướng ở nhiệt độ cao trong thời gian ngắn để giữ độ giòn, tạo các vân cháy đẹp và hương thơm đặc trưng; có thể thêm bơ, tỏi hoặc nước cốt chanh khi hoàn thiện.\",\"presentation\":\"Măng tây được xếp gọn trên đĩa, rưới dầu ô liu hoặc bơ nâu, trang trí với Parmesan bào, microgreens hoặc vỏ chanh bào, thường dùng làm món ăn kèm cho bò bít tết, cá hồi hoặc tôm hùm.\",\"origin_img\":\"1783918597_6a5470050e3e5.jpg\",\"selection_img\":\"1783918597_6a5470050e747.jpg\",\"storage_img\":\"1783918597_6a5470050e9b6.jpg\",\"prep_img\":\"1783918597_6a5470050ec37.jpg\",\"cooking_art_img\":\"1783918597_6a5470050ee18.jpg\",\"presentation_img\":\"1783918597_6a5470050f02f.jpg\",\"certificate_img\":\"cert_mock_new.jpg\"}', '', NULL, ''),
-(29, 5, 'Creamed Spinach', 140000.00, 'creamed_spinach.png', 'Rau bina nấu kem sữa tươi béo ngậy.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Rau bina được thu hoạch từ trang trại đạt tiêu chuẩn, đảm bảo độ tươi và hàm lượng dinh dưỡng.\",\"selection\":\"Chọn lá xanh đậm, không dập, không úa vàng, cuống giòn và còn tươi.\",\"storage\":\"Bảo quản ở 2–4°C, trong hộp hoặc túi có lỗ thoáng khí để giữ độ tươi.\",\"prep\":\"Rau được rửa sạch nhiều lần, cắt nhỏ, chuẩn bị cùng hành, tỏi, bơ và kem.\",\"cooking_art\":\"Rau được xào với bơ, hành, tỏi rồi thêm kem tươi và Parmesan đến khi tạo hỗn hợp sánh mịn.\",\"presentation\":\"Trình bày trên đĩa sứ trắng, rắc Parmesan và tiêu đen, dùng kèm steak hoặc các món nướng.\",\"origin_img\":\"1783918762_6a5470aa433cb.jpg\",\"selection_img\":\"1783918762_6a5470aa435f9.jpg\",\"storage_img\":\"1783918762_6a5470aa4383f.jpg\",\"prep_img\":\"1783918762_6a5470aa43a28.jpg\",\"certificate_img\":\"cert_mock_new.jpg\"}', '', NULL, ''),
-(30, 5, 'Parmesan Fries', 120000.00, '1783915073_6a5462417641c.jpg', 'Khoai tây chiên giòn rắc phô mai Parmesan và lá ngò tây.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Khoai tây (Russet hoặc Yukon Gold) được thu hoạch từ trang trại đạt tiêu chuẩn, thích hợp để làm khoai tây chiên nhờ hàm lượng tinh bột cao.\",\"selection\":\"Chọn củ to, chắc, vỏ nhẵn, không mọc mầm, không dập; Parmesan được chọn là loại ủ chín có hương vị đậm đà.\",\"storage\":\"Khoai được giữ ở nơi khô ráo, thoáng mát (8–12°C), tránh ánh sáng trực tiếp; phô mai Parmesan được bảo quản lạnh ở 2–4°C.\",\"prep\":\"Khoai được gọt vỏ (hoặc để nguyên vỏ tùy công thức), cắt thành thanh đều, ngâm nước lạnh để loại bỏ bớt tinh bột rồi để ráo.\",\"cooking_art\":\"Khoai được chiên hai lần để đạt độ giòn, sau đó trộn với bơ tan chảy, phô mai Parmesan bào mịn, tỏi băm và rau mùi tây (parsley).\",\"presentation\":\"Khoai được xếp trong giỏ hoặc đĩa sứ, phủ thêm Parmesan bào, parsley và dùng kèm các loại sốt như aioli, truffle mayo hoặc garlic mayo.\",\"origin_img\":\"1783919206_6a547266552c0.jpg\",\"selection_img\":\"1783919206_6a547266555cd.jpg\",\"storage_img\":\"1783919206_6a54726655887.jpg\",\"prep_img\":\"1783919206_6a54726655a42.jpg\",\"cooking_art_img\":\"1783919206_6a54726655bf6.jpg\",\"certificate_img\":\"cert_mock_new.jpg\"}', '', NULL, ''),
-(31, 5, 'Roasted Seasonal Vegetables', 160000.00, '1783915061_6a546235e2bb3.jpg', 'Rau củ quả nướng theo mùa, sốt dầu olive thảo mộc.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Rau củ theo mùa như cà rốt, bí ngòi (zucchini), ớt chuông, bông cải xanh, hành tím... được thu hoạch từ các trang trại đạt tiêu chuẩn.\",\"selection\":\"Chọn rau củ có màu sắc tươi sáng, chắc, không dập nát, không héo úa và kích thước đồng đều để chín đều khi nướng.\",\"storage\":\"Rau củ được bảo quản ở 2–5°C trong kho lạnh hoặc tủ mát, sắp xếp theo từng loại để duy trì độ tươi và hạn chế mất nước.\",\"prep\":\"Rau củ được rửa sạch, gọt vỏ (nếu cần), cắt miếng vừa ăn, sau đó trộn với dầu ô liu, muối, tiêu, tỏi và các loại thảo mộc như rosemary hoặc thyme.\",\"cooking_art\":\"Rau củ được nướng ở 190–220°C đến khi chín mềm, bề mặt vàng nhẹ và có mùi thơm đặc trưng, giúp giữ vị ngọt tự nhiên.\",\"presentation\":\"Rau củ được sắp xếp hài hòa trên đĩa, trang trí với microgreens, thảo mộc tươi hoặc một ít balsamic glaze, thường dùng làm món ăn kèm với steak, cá hoặc gà nướng.\",\"certificate_img\":\"cert_mock_new.jpg\"}', '', NULL, ''),
-(32, 3, 'Tiramisu', 160000.00, '1783915051_6a54622b72ce3.jpg', 'Bánh Tiramisu Ý truyền thống, vị cà phê Espresso đậm đà.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Tiramisu là món tráng miệng truyền thống của Ý, sử dụng các nguyên liệu đặc trưng như phô mai Mascarpone, cà phê Espresso, bột cacao và bánh Savoiardi (ladyfinger).\",\"selection\":\"Chọn Mascarpone tươi, trứng đạt chuẩn an toàn thực phẩm, Espresso chất lượng cao, bột cacao nguyên chất và bánh ladyfinger còn giòn.\",\"storage\":\"Phô mai Mascarpone và trứng được bảo quản ở 2–4°C; cacao và bánh ladyfinger được giữ nơi khô ráo, kín khí để tránh ẩm.\",\"prep\":\"Pha cà phê Espresso, đánh hỗn hợp Mascarpone với lòng đỏ trứng, đường và kem tươi (hoặc lòng trắng đánh bông tùy công thức), chuẩn bị bánh để nhúng cà phê.\",\"cooking_art\":\"Bánh ladyfinger được nhúng nhanh vào Espresso, xếp xen kẽ với lớp kem Mascarpone, sau đó làm lạnh nhiều giờ để bánh và kem hòa quyện trước khi phủ bột cacao.\",\"presentation\":\"Tiramisu được cắt hoặc tạo khuôn đẹp mắt, phủ cacao nguyên chất, trang trí bằng chocolate décor, hạt cà phê hoặc lá bạc hà, phục vụ trên đĩa sứ trắng hoặc ly thủy tinh sang trọng.\",\"origin_img\":\"1783919520_6a5473a08f9ee.jpg\",\"selection_img\":\"1783919520_6a5473a08fc8c.jpg\",\"storage_img\":\"1783919520_6a5473a08fede.jpg\",\"prep_img\":\"1783919520_6a5473a0901c8.jpg\",\"cooking_art_img\":\"1783919520_6a5473a09044e.jpg\",\"presentation_img\":\"1783919520_6a5473a090742.jpg\",\"certificate_img\":\"cert_mock_new.jpg\"}', '', NULL, ''),
-(33, 3, 'Crème Brûlée', 150000.00, '1783915042_6a546222a04a1.jpg', 'Bánh flan kiểu Pháp với lớp đường caramel giòn rụm bên trên.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Crème Brûlée là món tráng miệng truyền thống của Pháp, được làm từ kem tươi (heavy cream), lòng đỏ trứng, đường và quả vani tự nhiên.\",\"selection\":\"Chọn trứng tươi, kem tươi có hàm lượng béo cao (35–40%), quả vani chất lượng và đường cát mịn để tạo lớp caramel đẹp.\",\"storage\":\"Trứng và kem tươi được bảo quản ở 2–4°C; quả vani giữ trong hộp kín, khô ráo để bảo toàn hương thơm tự nhiên.\",\"prep\":\"Tách lòng đỏ trứng, đun ấm kem với hạt vani, sau đó trộn cùng đường và lòng đỏ, lọc qua rây để hỗn hợp mịn trước khi rót vào khuôn ramekin.\",\"cooking_art\":\"Hỗn hợp được nướng bain-marie (cách thủy) đến khi đông mịn, làm lạnh hoàn toàn rồi phủ đường và dùng đèn khò tạo lớp caramel giòn đặc trưng.\",\"presentation\":\"Phục vụ trong ramekin sứ, trang trí với quả mọng tươi, lá bạc hà hoặc bánh quy mỏng. Lớp caramel vàng óng, giòn tan là điểm nhấn của món ăn.\",\"origin_img\":\"1783919609_6a5473f99070e.jpg\",\"selection_img\":\"1783919609_6a5473f990a13.jpg\",\"storage_img\":\"1783919609_6a5473f990c60.jpg\",\"prep_img\":\"1783919609_6a5473f990e4f.jpg\",\"cooking_art_img\":\"1783919609_6a5473f991045.jpg\",\"presentation_img\":\"1783919609_6a5473f99120c.jpg\",\"certificate_img\":\"cert_mock_new.jpg\"}', '', NULL, ''),
-(34, 3, 'Chocolate Lava Cake', 180000.00, '1783915031_6a546217ebddc.jpg', 'Bánh socola núi lửa béo ngậy, nhân socola chảy, ăn kèm kem vani.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Chocolate Lava Cake sử dụng chocolate đen chất lượng cao làm nguyên liệu chủ đạo, kết hợp với bơ, trứng, bột mì và đường. Chocolate thường có nguồn gốc từ các vùng trồng cacao như Bỉ, Pháp hoặc các nước Nam Mỹ.\",\"selection\":\"Chọn chocolate có hàm lượng cacao từ 60–70%, bơ không muối, trứng tươi và bột mì chất lượng để tạo phần nhân chảy mịn.\",\"storage\":\"Chocolate được bảo quản nơi khô ráo ở 16–20°C; bơ và trứng được giữ trong kho lạnh 2–4°C để đảm bảo chất lượng.\",\"prep\":\"Chocolate và bơ được đun chảy, sau đó trộn với trứng, đường và bột mì để tạo hỗn hợp mịn; khuôn ramekin được quét bơ và phủ một lớp bột mỏng chống dính.\",\"cooking_art\":\"Hỗn hợp được nướng ở nhiệt độ cao trong thời gian ngắn (khoảng 8–12 phút) để lớp vỏ chín nhưng phần giữa vẫn giữ được kết cấu lỏng, tạo hiệu ứng \\\"lava\\\" khi cắt bánh.\",\"presentation\":\"Bánh được úp ra đĩa, phủ đường bột hoặc cacao, trang trí với kem vani, quả mọng tươi, sốt chocolate và lá bạc hà để tăng tính thẩm mỹ và cân bằng hương vị.\",\"origin_img\":\"1783919715_6a54746300ddf.jpg\",\"selection_img\":\"1783919715_6a547463010da.jpg\",\"storage_img\":\"1783919715_6a5474630135f.jpg\",\"prep_img\":\"1783919715_6a5474630168d.jpg\",\"cooking_art_img\":\"1783919715_6a5474630192e.jpg\",\"certificate_img\":\"cert_mock_new.jpg\"}', '', NULL, ''),
-(35, 3, 'New York Cheesecake', 170000.00, '1783915019_6a54620b91506.jpg', 'Bánh phô mai nướng kiểu New York truyền thống.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"New York Cheesecake có nguồn gốc từ Hoa Kỳ, nổi bật với thành phần chính là cream cheese, kết hợp cùng bánh quy Graham, bơ, trứng và kem chua (sour cream).\",\"selection\":\"Chọn cream cheese chất lượng cao, trứng tươi, sour cream béo mịn, bơ không muối và bánh quy Graham giòn để tạo kết cấu chuẩn.\",\"storage\":\"Cream cheese, trứng và sour cream được bảo quản ở 2–4°C; bánh quy Graham được giữ trong hộp kín, nơi khô ráo để tránh ẩm.\",\"prep\":\"Bánh quy Graham được nghiền mịn, trộn với bơ để tạo đế bánh; cream cheese được đánh mịn cùng đường, trứng, sour cream và vani trước khi đổ lên phần đế.\",\"cooking_art\":\"Bánh được nướng ở nhiệt độ thấp, thường kết hợp nướng cách thủy (water bath) để bánh chín đều, bề mặt mịn và hạn chế nứt. Sau khi nướng, bánh được làm nguội và ủ lạnh nhiều giờ để đạt kết cấu đặc trưng.\",\"presentation\":\"Cheesecake được cắt lát đều, phục vụ trên đĩa sứ trắng, trang trí với sốt dâu hoặc berry coulis, trái cây tươi, lá bạc hà và kem tươi để tăng tính thẩm mỹ.\",\"origin_img\":\"1783919814_6a5474c62c025.jpg\",\"selection_img\":\"1783919814_6a5474c62c2b7.jpg\",\"storage_img\":\"1783919814_6a5474c62c504.jpg\",\"prep_img\":\"1783919814_6a5474c62c72a.jpg\",\"cooking_art_img\":\"1783919814_6a5474c62c9f7.jpg\",\"certificate_img\":\"cert_mock_new.jpg\"}', '', NULL, ''),
-(36, 3, 'Panna Cotta Berry', 140000.00, '1783915004_6a5461fca2d85.jpg', 'Kem sữa kiểu Ý mềm mịn, chua ngọt với sốt quả mọng.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Panna Cotta là món tráng miệng truyền thống của Ý, được làm từ kem tươi (heavy cream), sữa, đường, gelatin và quả mọng như dâu tây, việt quất hoặc mâm xôi.\",\"selection\":\"Chọn kem tươi có hàm lượng béo cao, sữa tươi nguyên kem, quả vani tự nhiên, gelatin chất lượng và các loại berry tươi, không dập nát.\",\"storage\":\"Kem tươi, sữa và berry được bảo quản ở 2–4°C; gelatin và đường được giữ nơi khô ráo, tránh ẩm để đảm bảo chất lượng.\",\"prep\":\"Gelatin được ngâm nở, kem và sữa được đun cùng đường và vani; berry được rửa sạch, một phần dùng để nấu sốt, phần còn lại để trang trí.\",\"cooking_art\":\"Hỗn hợp kem được hòa tan với gelatin, rót vào khuôn và làm lạnh từ 4–6 giờ đến khi đông mịn; sốt berry được nấu sánh nhẹ rồi để nguội.\",\"presentation\":\"Panna Cotta được úp khỏi khuôn hoặc phục vụ trong ly, phủ sốt berry, trang trí với quả mọng tươi, lá bạc hà và có thể thêm bánh quy giòn hoặc chocolate décor để tăng tính thẩm mỹ.\",\"origin_img\":\"1783919947_6a54754b5b061.jpg\",\"selection_img\":\"1783919947_6a54754b5b3e5.jpg\",\"storage_img\":\"1783919947_6a54754b5b6f1.jpg\",\"prep_img\":\"1783919947_6a54754b5b932.jpg\",\"cooking_art_img\":\"1783919947_6a54754b5bb4b.jpg\",\"presentation_img\":\"1783919947_6a54754b5bd8d.jpg\",\"certificate_img\":\"cert_mock_new.jpg\"}', '', NULL, ''),
-(37, 3, 'Vanilla Ice Cream with Berries', 120000.00, '1783914986_6a5461eae3122.jpg', 'Kem vani nguyên chất dùng kèm dâu rừng tươi.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Món được làm từ sữa tươi, kem tươi, quả vani tự nhiên và các loại quả mọng như dâu tây, việt quất, mâm xôi được thu hoạch từ các trang trại đạt tiêu chuẩn.\",\"selection\":\"Chọn sữa nguyên kem, kem tươi có hàm lượng béo cao, quả vani thơm tự nhiên và berry tươi, chín đều, không dập nát.\",\"storage\":\"Sữa và kem tươi được giữ ở 2–4°C trước khi chế biến; kem thành phẩm bảo quản ở -18°C; berry tươi bảo quản trong ngăn mát 2–4°C để giữ độ tươi.\",\"prep\":\"Sữa, kem, đường và vani được phối trộn thành hỗn hợp nền; berry được rửa sạch, để ráo, một phần cắt nhỏ hoặc nấu thành sốt, phần còn lại dùng để trang trí.\",\"cooking_art\":\"Hỗn hợp kem được làm lạnh rồi đưa vào máy làm kem để tạo kết cấu mịn; sau đó cấp đông đến khi đạt độ cứng phù hợp trước khi phục vụ.\",\"presentation\":\"Kem vani được múc thành viên tròn, đặt trên đĩa hoặc ly, dùng kèm berry tươi, sốt berry, lá bạc hà và có thể thêm bánh tuile hoặc chocolate décor để tăng tính thẩm mỹ.\",\"origin_img\":\"1783920111_6a5475efbcf17.jpg\",\"selection_img\":\"1783920111_6a5475efbd294.jpg\",\"storage_img\":\"1783920111_6a5475efbd548.jpg\",\"prep_img\":\"1783920111_6a5475efbd824.jpg\",\"cooking_art_img\":\"1783920111_6a5475efbda57.jpg\",\"certificate_img\":\"cert_mock_new.jpg\"}', '', NULL, ''),
-(38, 3, 'Macaron Selection', 190000.00, '1783914679_6a5460b7400f9.jpg', 'Bộ sưu tập bánh Macaron Pháp đa vị.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Macaron là món bánh nổi tiếng của Pháp, được làm từ bột hạnh nhân (almond flour), lòng trắng trứng, đường bột và nhân kem như ganache, buttercream hoặc mứt trái cây.\",\"selection\":\"Chọn bột hạnh nhân mịn, lòng trắng trứng đạt độ ổn định, bơ chất lượng cao, chocolate hoặc trái cây tươi để làm nhân bánh.\",\"storage\":\"Bột hạnh nhân và đường được bảo quản nơi khô ráo; bơ, kem tươi và nhân ganache được giữ ở 2–4°C để đảm bảo chất lượng.\",\"prep\":\"Lòng trắng trứng được đánh bông với đường, trộn cùng bột hạnh nhân (kỹ thuật macaronage) rồi cho vào túi bắt kem để tạo hình các vỏ bánh đồng đều.\",\"cooking_art\":\"Vỏ bánh được nghỉ cho se mặt rồi nướng đến khi xuất hiện \\\"chân bánh\\\" (macaron feet). Sau khi nguội, bánh được kẹp với ganache, buttercream hoặc mứt trái cây và để ổn định hương vị trước khi phục vụ.\",\"presentation\":\"Các chiếc macaron nhiều màu sắc được sắp xếp trên đĩa sứ hoặc khay tầng, trang trí với hoa ăn được, quả mọng hoặc chocolate décor, tạo vẻ sang trọng và tinh tế.\",\"origin_img\":\"1783920331_6a5476cb6cba0.jpg\",\"selection_img\":\"1783920331_6a5476cb6cf2c.jpg\",\"storage_img\":\"1783920331_6a5476cb6d1d9.jpg\",\"prep_img\":\"1783920331_6a5476cb6d430.jpg\",\"cooking_art_img\":\"1783920331_6a5476cb6d649.jpg\",\"presentation_img\":\"1783920331_6a5476cb6d873.jpg\",\"certificate_img\":\"cert_mock_new.jpg\"}', '', NULL, '');
+(18, 6, 'Signature Truffle Martini', 400000.00, '1781149007_6a2a2d4f3f01a.jpg', 'Sự kết hợp hoàn hảo giữa Gin thượng hạng, dầu Nấm Truffle trắng và một chút Vermouth ủ mộc. Sang trọng, đậm đà và vương giả.', 1, 4, 1, 0, '', NULL, 'Không chỉ là một ly cocktail, đó là một trải nghiệm thị giác và khứu giác. Dầu nấm Truffle đen được nhỏ vài giọt lên bề mặt, mang lại hương vị ngai ngái đầy bí ẩn.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\",\"origin_img\":\"truffle_martini_origin_1782720473638.png\",\"cooking_art_img\":\"1783331969_6a4b7c81cf299.webp\",\"presentation_img\":\"1781149007_6a2a2d4f3f01a.jpg\",\"certificate_img\":\"beverage_excellence_cert.png\"}', '', NULL, ''),
+(19, 6, 'Smoked Rosemary Old Fashioned', 380000.00, '1781148879_6a2a2ccfe97e9.jpg', 'Rượu Bourbon Whiskey ủ lâu năm hòa quyện cùng mật ong nguyên chất rừng sâu, khói hương thảo nướng cháy mang lại hậu vị sâu lắng, rất phù hợp cho những ngày lễ và tiết trời se lạnh mùa này.', 1, 4, 1, 0, '', NULL, 'Khói gỗ hương thảo đốt cháy chậm sẽ quẩn quanh trong ly pha lê, đánh thức hương vị caramel của rượu Bourbon lâu năm. Một ly rượu dành cho những tâm hồn sâu sắc.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\",\"origin_img\":\"american_vintage_origin.png\",\"prep_img\":\"1783331834_6a4b7bfae3f96.webp\",\"cooking_art_img\":\"1783331855_6a4b7c0f33e27.webp\",\"presentation_img\":\"1781148879_6a2a2ccfe97e9.jpg\",\"certificate_img\":\"beverage_excellence_cert.png\"}', '', NULL, ''),
+(20, 6, 'Margarita hoa hồng lựu', 250000.00, '1781148793_6a2a2c79ba047.webp', 'Margarita lựu hoa hồng là một thức uống thơm ngon và đầy không khí lễ hội, không thể thiếu trong bất kỳ bữa tiệc nào. Vị chua thanh của lựu kết hợp tuyệt vời với vị ngọt dịu từ siro hoa hồng. Viền ly bằng một lớp muối hoa hồng và bạn sẽ thấy mình muốn nhâm nhi thức uống này suốt mùa đông.', 1, 4, 1, 0, '', NULL, 'Sự lãng mạn được rót vào ly với cánh hoa hồng tươi xay nhuyễn và nước lựu ép lạnh. Vành ly viền muối biển sẽ trung hòa độ chua ngọt một cách hoàn hảo.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\",\"origin_img\":\"american_vintage_origin.png\",\"cooking_art_img\":\"1783331716_6a4b7b846efe6.webp\",\"presentation_img\":\"1781148793_6a2a2c79ba047.webp\",\"certificate_img\":\"beverage_excellence_cert.png\"}', '', NULL, ''),
+(21, 6, 'Gold Rush', 450000.00, '1781148667_6a2a2bfb171d5.jpg', 'Vang đỏ Cabernet Sauvignon cao cấp mix cùng trái cây nhiệt đới, điểm xuyết những vảy vàng 24k ăn được. Phù hợp cho những dịp kỷ niệm.', 1, 4, 1, 1, '', NULL, 'Một ly Gold Rush chuẩn vị cần sự cân bằng tuyệt đối giữa vị chua thanh của chanh vàng nguyên bản và độ ngọt sâu của mật ong rừng. Lắc thật mạnh cùng đá viên lớn để ly cocktail đạt độ lạnh sâu mà không bị loãng.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\",\"origin_img\":\"gold_rush_origin_1782720351886.png\",\"selection_img\":\"gold_rush_selection_1782720363687.png\",\"prep_img\":\"gold_rush_prep_1782720378446.png\",\"cooking_art_img\":\"gold_rush_mix_1782720414326.png\",\"presentation_img\":\"1781148667_6a2a2bfb171d5.jpg\",\"certificate_img\":\"beverage_excellence_cert.png\"}', '', NULL, ''),
+(22, 6, 'Zen Garden Elixir', 180000.00, '1781148509_6a2a2b5da1be3.png', 'Thức uống Zen Garden Elixir là sự kết hợp hài hòa, gói gọn tinh thần thanh bình của một khu vườn trà Nhật Bản. Loại cocktail này làm nổi bật hương vị đất, đậm đà của matcha kết hợp với vị ngọt dịu của vải và vị chua thanh của yuzu. Đây là lựa chọn sảng khoái dành cho những ai tìm kiếm trải nghiệm độc đáo và thư thái.', 1, 4, 1, 0, '', NULL, 'Một thức uống thanh lọc tâm hồn. Trà xanh sương mù kết hợp cùng chanh yuzu Nhật Bản và hương sả, mang lại cảm giác bình yên như đang dạo bước trong một khu vườn thiền.', '{\"origin\":\"Lấy cảm hứng từ những khu vườn trái cây nhiệt đới tươi mát và nghệ thuật pha chế thủ công lâu đời.\",\"selection\":\"Tuyển chọn những loại nguyên liệu tươi ngon nhất trong ngày, kết hợp cùng các loại rượu vang\\/spirit thượng hạng.\",\"storage\":\"Bảo quản ở nhiệt độ tiêu chuẩn để đảm bảo sự cân bằng hoàn hảo về cấu trúc và hương vị.\",\"prep\":\"Thực hiện kỹ thuật chiết xuất chậm để lấy trọn vẹn tinh chất tự nhiên của nguyên liệu.\",\"cooking_art\":\"Sử dụng kỹ thuật pha chế hiện đại (Mixology) giúp hương vị hòa quyện đa tầng mượt mà.\",\"presentation\":\"Phục vụ trong ly pha lê sang trọng, điểm xuyết bằng một nhánh thảo mộc tươi để đánh thức khứu giác.\",\"origin_img\":\"virgin_mojito_origin.png\",\"storage_img\":\"1783331574_6a4b7af61478b.jpg\",\"presentation_img\":\"1781148509_6a2a2b5da1be3.png\",\"certificate_img\":\"beverage_excellence_cert.png\"}', '', NULL, ''),
+(23, 1, 'Bánh Cua', 399000.00, '1782874308_6a4480c443bfb.jpg', '**Bánh Cua (Crab Cakes)** là món khai vị kinh điển của ẩm thực ven biển Bắc Mỹ, nổi bật với phần thịt cua xanh Đại Tây Dương được giữ nguyên từng thớ để tôn vinh vị ngọt tự nhiên của hải sản. Kết hợp cùng bột panko, thảo mộc tươi và các loại gia vị được cân bằng tinh tế, bánh được áp chảo đến khi lớp vỏ ngoài vàng giòn trong khi phần nhân bên trong vẫn mềm, mọng và đậm đà. Khi thưởng thức cùng sốt aioli hoặc tartar, rau mầm và một lát chanh vàng, Crab Cakes mang đến sự hài hòa giữa hương vị thanh lịch và kết cấu hấp dẫn, trở thành món khai vị được yêu thích trong nhiều nhà hàng Fine Dining.', 1, 0, 1, 0, '', NULL, '', '{\"origin\":\"Cua xanh Đại Tây Dương được tuyển chọn từ những vùng biển trù phú dọc bờ Đông Hoa Kỳ, nơi dòng hải lưu trong lành và hệ sinh thái ven biển tạo nên môi trường lý tưởng cho loài cua này phát triển. Sau khi được đánh bắt theo phương pháp bền vững, cua được vận chuyển trong điều kiện kiểm soát nghiêm ngặt nhằm giữ trọn độ tươi và vị ngọt tự nhiên. Phần thịt cua trắng mềm, thanh khiết mang hương vị đặc trưng của đại dương, là nguyên liệu được nhiều nhà hàng Fine Dining trên thế giới tin dùng.\",\"selection\":\"Mỗi mẻ cua đều trải qua quy trình tuyển chọn khắt khe để đảm bảo chất lượng đồng nhất. Chúng tôi chỉ sử dụng phần thịt trắng nguyên khối với kết cấu săn chắc, không lẫn vụn vỏ hay tạp chất. Từng thớ thịt được kiểm tra kỹ lưỡng về màu sắc, hương thơm và độ tươi nhằm đáp ứng những tiêu chuẩn cao nhất trước khi bước vào căn bếp.\",\"storage\":\"Ngay sau khi được tách khỏi vỏ, thịt cua được làm lạnh nhanh và bảo quản trong chuỗi lạnh liên tục nhằm duy trì kết cấu mềm mại cũng như hương vị nguyên bản. Mỗi lô nguyên liệu đều được kiểm soát nghiêm ngặt về thời gian lưu trữ và điều kiện bảo quản, giúp đảm bảo chất lượng tối ưu khi đến tay đội ngũ đầu bếp.\",\"prep\":\"Quá trình sơ chế được thực hiện hoàn toàn thủ công bởi đội ngũ đầu bếp giàu kinh nghiệm. Từng phần thịt cua được nhẹ nhàng tách và làm sạch để giữ nguyên những thớ thịt tự nhiên quý giá. Mỗi mẻ nguyên liệu đều được kiểm tra lần cuối nhằm loại bỏ hoàn toàn những mảnh vỏ nhỏ, mang đến sự tinh tế và an toàn tuyệt đối cho thực khách.\",\"cooking_art\":\"Đội ngũ đầu bếp kết hợp thịt cua với các nguyên liệu được chọn lọc kỹ lưỡng như bột panko, thảo mộc tươi và gia vị cao cấp nhằm tôn lên vị ngọt tự nhiên của hải sản thay vì che lấp nó. Những chiếc Crab Cakes được tạo hình bằng tay, áp chảo đến khi lớp vỏ bên ngoài vàng giòn, trong khi phần nhân vẫn mềm, mọng và giữ trọn hương vị đặc trưng của cua xanh Đại Tây Dương.\",\"presentation\":\"Mỗi phần Crab Cakes được trình bày như một tác phẩm nghệ thuật, nơi sắc vàng óng của bánh hòa quyện cùng màu xanh tươi của rau mầm và điểm nhấn từ các loại thảo mộc hoặc hoa ăn được. Sự kết hợp giữa kết cấu, màu sắc và khoảng trống trên đĩa tạo nên một tổng thể thanh lịch, mang đến trải nghiệm thị giác tinh tế trước khi thực khách thưởng thức hương vị.\",\"origin_img\":\"american_vintage_origin.png\",\"selection_img\":\"1782906758_6a44ff86e997a.jpg\",\"storage_img\":\"1782906758_6a44ff86e9cb0.jpg\",\"prep_img\":\"1782906758_6a44ff86e9e97.jpg\",\"cooking_art_img\":\"1782906758_6a44ff86ea0d6.jpg\",\"presentation_img\":\"1782874308_6a4480c443bfb.jpg\",\"certificate_img\":\"culinary_excellence_cert.png\"}', '', NULL, ''),
+(24, 1, 'Foie Gras Terrine', 550000.00, 'foie_gras_terrine.png', 'Gan ngỗng béo thượng hạng từ Pháp, mềm tan trong miệng, ăn kèm mứt sung ngọt ngào.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Gan ngỗng (hoặc gan vịt) được lấy từ các trang trại đạt tiêu chuẩn tại Pháp, Hungary hoặc Tây Ban Nha, nơi nổi tiếng về sản xuất foie gras.\",\"selection\":\"Chọn gan có màu kem hồng nhạt, bề mặt mịn, không bầm tím, trọng lượng đồng đều và độ đàn hồi tốt.\",\"storage\":\"Bảo quản ở nhiệt độ 0–4°C, hút chân không để giữ độ tươi và hạn chế oxy hóa trước khi chế biến.\",\"prep\":\"Gan được làm sạch, tách gân (deveining), ngâm hoặc ướp với muối, tiêu, rượu Cognac\\/Port hoặc Sauternes\",\"cooking_art\":\"Gan được xếp vào khuôn terrine, nấu chậm bằng phương pháp bain-marie (nướng cách thủy), sau đó ép nhẹ và ủ lạnh 24–48 giờ để ổn định kết cấu.\",\"presentation\":\"Thái lát terrine, dùng kèm brioche nướng, mứt sung hoặc hành caramel, microgreens và sốt balsamic hoặc trái cây nhằm cân bằng vị béo.\",\"origin_img\":\"french_bistro_origin.png\",\"selection_img\":\"1783917935_6a546d6f037be.jpg\",\"storage_img\":\"1783917935_6a546d6f039a8.jpg\",\"prep_img\":\"1783917935_6a546d6f03b56.jpg\",\"cooking_art_img\":\"1783917935_6a546d6f03d26.jpg\",\"presentation_img\":\"foie_gras_terrine.png\",\"certificate_img\":\"culinary_excellence_cert.png\"}', '', NULL, ''),
+(25, 1, 'Truffle Mushroom Bruschetta', 250000.00, 'truffle_mushroom_bruschetta.png', 'Bánh mì nướng giòn rụm với sốt nấm Truffle đen thơm lừng.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Nấm như porcini, shiitake, cremini hoặc button được thu hoạch từ trang trại; nấm truffle thường có nguồn gốc từ Ý hoặc Pháp.\",\"selection\":\"Chọn nấm tươi, mũ săn chắc, không dập nát; truffle thơm đặc trưng; bánh mì sourdough hoặc baguette có ruột đặc và vỏ giòn.\",\"storage\":\"Nấm được giữ ở 2–4°C trong hộp hoặc túi giấy để tránh đọng hơi nước; truffle bọc giấy và bảo quản kín nhằm giữ hương thơm.\",\"prep\":\"Nấm được lau sạch bằng khăn ẩm, cắt lát; bánh mì cắt miếng vừa ăn; tỏi, rau mùi tây và các nguyên liệu khác được chuẩn bị.\",\"cooking_art\":\"Nấm được áp chảo cùng bơ, tỏi và thyme; bánh mì nướng vàng giòn; sau đó phủ hỗn hợp nấm lên bánh và hoàn thiện bằng dầu hoặc lát truffle.\",\"presentation\":\"Bày trên đĩa đá hoặc sứ, trang trí với parmesan bào, microgreens, dầu truffle và tiêu đen xay để tạo điểm nhấn sang trọng.\",\"origin_img\":\"italian_countryside_origin.png\",\"selection_img\":\"1783918092_6a546e0c66ec2.jpg\",\"storage_img\":\"1783918092_6a546e0c67090.jpg\",\"prep_img\":\"1783918092_6a546e0c67265.jpg\",\"cooking_art_img\":\"1783918092_6a546e0c67462.jpg\",\"presentation_img\":\"truffle_mushroom_bruschetta.png\",\"certificate_img\":\"culinary_excellence_cert.png\"}', '', NULL, ''),
+(26, 2, 'Lobster Thermidor', 1200000.00, 'lobster_thermidor.png', 'Tôm hùm Pháp nướng phô mai béo ngậy, dùng kèm sốt kem cognac.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Tôm hùm được khai thác từ vùng biển lạnh (Canada, Maine, Brittany) hoặc nuôi tại các cơ sở đạt tiêu chuẩn, đảm bảo độ tươi và chất lượng.\",\"selection\":\"Chọn tôm còn sống, khỏe, vỏ cứng, càng chắc, trọng lượng đồng đều và không có dấu hiệu hư hỏng để đảm bảo thịt ngọt, săn chắc.\",\"storage\":\"Trước khi chế biến, tôm được giữ trong bể nước biển tuần hoàn hoặc kho lạnh chuyên dụng ở 4–8°C, duy trì môi trường thích hợp để giữ độ tươi.\",\"prep\":\"Tôm được luộc hoặc hấp sơ, sau đó tách thịt khỏi vỏ, cắt miếng vừa ăn; phần mai được giữ lại để làm khuôn khi trình bày món.\",\"cooking_art\":\"Thịt tôm được xào với bơ, hành tím, nấm, rượu vang trắng, mù tạt Dijon và kem tươi; trộn cùng sốt, cho trở lại mai, phủ phô mai Gruyère hoặc Parmesan rồi nướng vàng.\",\"presentation\":\"Món được phục vụ ngay trong vỏ tôm hùm, trang trí với rau thơm, chanh, microgreens và dùng kèm măng tây hoặc khoai tây nghiền, tạo vẻ sang trọng và hấp dẫn.\",\"origin_img\":\"french_bistro_origin.png\",\"selection_img\":\"1783918275_6a546ec3636d1.jpg\",\"storage_img\":\"1783918275_6a546ec3638b4.jpg\",\"prep_img\":\"1783918275_6a546ec363a90.jpg\",\"cooking_art_img\":\"1783918275_6a546ec363c5e.jpg\",\"presentation_img\":\"lobster_thermidor.png\",\"certificate_img\":\"culinary_excellence_cert.png\"}', '', NULL, ''),
+(27, 5, 'Truffle Mashed Potatoes', 180000.00, 'truffle_mashed_potatoes.png', 'Khoai tây nghiền mịn với bơ Pháp và dầu nấm Truffle.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Khoai tây (Yukon Gold hoặc Russet) được thu hoạch từ các trang trại chất lượng; nấm truffle hoặc dầu truffle có nguồn gốc từ Ý hoặc Pháp.\",\"selection\":\"Chọn củ khoai tây chắc, vỏ nhẵn, không mọc mầm; truffle tươi có mùi thơm đặc trưng hoặc dầu truffle chất lượng cao.\",\"storage\":\"Khoai tây được giữ ở nơi khô ráo, thoáng mát (8–12°C), tránh ánh sáng; truffle bảo quản trong ngăn mát 2–4°C, bọc giấy và đựng kín để giữ hương thơm.\",\"prep\":\"Khoai được gọt vỏ, cắt khúc đều rồi rửa sạch; truffle được bào mỏng hoặc chuẩn bị dầu truffle, bơ và kem tươi.\",\"cooking_art\":\"Khoai được luộc chín mềm, nghiền mịn cùng bơ và kem tươi, sau đó trộn với truffle bào hoặc dầu truffle, nêm muối và tiêu để tạo kết cấu mịn, béo và thơm.\",\"presentation\":\"Khoai nghiền được tạo hình bằng khuôn hoặc muỗng, phủ lát truffle hoặc vài giọt dầu truffle, trang trí với hẹ cắt nhỏ (chives), microgreens hoặc tiêu đen xay, thường dùng kèm các món bò bít tết hoặc thịt nướng.\",\"origin_img\":\"french_bistro_origin.png\",\"selection_img\":\"1783918493_6a546f9def152.jpg\",\"storage_img\":\"1783918493_6a546f9def451.jpg\",\"prep_img\":\"1783918493_6a546f9def771.jpg\",\"cooking_art_img\":\"1783918493_6a546f9defa54.jpg\",\"presentation_img\":\"truffle_mashed_potatoes.png\",\"certificate_img\":\"culinary_excellence_cert.png\"}', '', NULL, ''),
+(28, 5, 'Grilled Asparagus', 150000.00, 'grilled_asparagus.png', 'Măng tây xanh nướng than hoa, rắc phô mai Parmesan.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Măng tây xanh được trồng tại các trang trại đạt tiêu chuẩn, thu hoạch khi thân còn non, giòn và giàu dinh dưỡng.\",\"selection\":\"Chọn cọng măng thẳng, màu xanh tươi, đầu búp khép chặt, thân chắc và không bị héo hoặc dập.\",\"storage\":\"Măng tây được giữ ở 2–4°C, dựng đứng hoặc bọc phần gốc bằng khăn giấy ẩm để duy trì độ tươi và độ giòn.\",\"prep\":\"Măng tây được rửa sạch, cắt bỏ phần gốc cứng, lau khô rồi trộn với dầu ô liu, muối và tiêu trước khi nướng.\",\"cooking_art\":\"Măng tây được nướng ở nhiệt độ cao trong thời gian ngắn để giữ độ giòn, tạo các vân cháy đẹp và hương thơm đặc trưng; có thể thêm bơ, tỏi hoặc nước cốt chanh khi hoàn thiện.\",\"presentation\":\"Măng tây được xếp gọn trên đĩa, rưới dầu ô liu hoặc bơ nâu, trang trí với Parmesan bào, microgreens hoặc vỏ chanh bào, thường dùng làm món ăn kèm cho bò bít tết, cá hồi hoặc tôm hùm.\",\"origin_img\":\"italian_countryside_origin.png\",\"selection_img\":\"1783918597_6a5470050e747.jpg\",\"storage_img\":\"1783918597_6a5470050e9b6.jpg\",\"prep_img\":\"1783918597_6a5470050ec37.jpg\",\"cooking_art_img\":\"1783918597_6a5470050ee18.jpg\",\"presentation_img\":\"grilled_asparagus.png\",\"certificate_img\":\"culinary_excellence_cert.png\"}', '', NULL, ''),
+(29, 5, 'Creamed Spinach', 140000.00, 'creamed_spinach.png', 'Rau bina nấu kem sữa tươi béo ngậy.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Rau bina được thu hoạch từ trang trại đạt tiêu chuẩn, đảm bảo độ tươi và hàm lượng dinh dưỡng.\",\"selection\":\"Chọn lá xanh đậm, không dập, không úa vàng, cuống giòn và còn tươi.\",\"storage\":\"Bảo quản ở 2–4°C, trong hộp hoặc túi có lỗ thoáng khí để giữ độ tươi.\",\"prep\":\"Rau được rửa sạch nhiều lần, cắt nhỏ, chuẩn bị cùng hành, tỏi, bơ và kem.\",\"cooking_art\":\"Rau được xào với bơ, hành, tỏi rồi thêm kem tươi và Parmesan đến khi tạo hỗn hợp sánh mịn.\",\"presentation\":\"Trình bày trên đĩa sứ trắng, rắc Parmesan và tiêu đen, dùng kèm steak hoặc các món nướng.\",\"origin_img\":\"italian_countryside_origin.png\",\"selection_img\":\"1783918762_6a5470aa435f9.jpg\",\"storage_img\":\"1783918762_6a5470aa4383f.jpg\",\"prep_img\":\"1783918762_6a5470aa43a28.jpg\",\"certificate_img\":\"culinary_excellence_cert.png\",\"presentation_img\":\"creamed_spinach.png\"}', '', NULL, ''),
+(30, 5, 'Parmesan Fries', 120000.00, '1783915073_6a5462417641c.jpg', 'Khoai tây chiên giòn rắc phô mai Parmesan và lá ngò tây.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Khoai tây (Russet hoặc Yukon Gold) được thu hoạch từ trang trại đạt tiêu chuẩn, thích hợp để làm khoai tây chiên nhờ hàm lượng tinh bột cao.\",\"selection\":\"Chọn củ to, chắc, vỏ nhẵn, không mọc mầm, không dập; Parmesan được chọn là loại ủ chín có hương vị đậm đà.\",\"storage\":\"Khoai được giữ ở nơi khô ráo, thoáng mát (8–12°C), tránh ánh sáng trực tiếp; phô mai Parmesan được bảo quản lạnh ở 2–4°C.\",\"prep\":\"Khoai được gọt vỏ (hoặc để nguyên vỏ tùy công thức), cắt thành thanh đều, ngâm nước lạnh để loại bỏ bớt tinh bột rồi để ráo.\",\"cooking_art\":\"Khoai được chiên hai lần để đạt độ giòn, sau đó trộn với bơ tan chảy, phô mai Parmesan bào mịn, tỏi băm và rau mùi tây (parsley).\",\"presentation\":\"Khoai được xếp trong giỏ hoặc đĩa sứ, phủ thêm Parmesan bào, parsley và dùng kèm các loại sốt như aioli, truffle mayo hoặc garlic mayo.\",\"origin_img\":\"italian_countryside_origin.png\",\"selection_img\":\"1783919206_6a547266555cd.jpg\",\"storage_img\":\"1783919206_6a54726655887.jpg\",\"prep_img\":\"1783919206_6a54726655a42.jpg\",\"cooking_art_img\":\"1783919206_6a54726655bf6.jpg\",\"certificate_img\":\"culinary_excellence_cert.png\",\"presentation_img\":\"1783915073_6a5462417641c.jpg\"}', '', NULL, ''),
+(31, 5, 'Roasted Seasonal Vegetables', 160000.00, '1783915061_6a546235e2bb3.jpg', 'Rau củ quả nướng theo mùa, sốt dầu olive thảo mộc.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Rau củ theo mùa như cà rốt, bí ngòi (zucchini), ớt chuông, bông cải xanh, hành tím... được thu hoạch từ các trang trại đạt tiêu chuẩn.\",\"selection\":\"Chọn rau củ có màu sắc tươi sáng, chắc, không dập nát, không héo úa và kích thước đồng đều để chín đều khi nướng.\",\"storage\":\"Rau củ được bảo quản ở 2–5°C trong kho lạnh hoặc tủ mát, sắp xếp theo từng loại để duy trì độ tươi và hạn chế mất nước.\",\"prep\":\"Rau củ được rửa sạch, gọt vỏ (nếu cần), cắt miếng vừa ăn, sau đó trộn với dầu ô liu, muối, tiêu, tỏi và các loại thảo mộc như rosemary hoặc thyme.\",\"cooking_art\":\"Rau củ được nướng ở 190–220°C đến khi chín mềm, bề mặt vàng nhẹ và có mùi thơm đặc trưng, giúp giữ vị ngọt tự nhiên.\",\"presentation\":\"Rau củ được sắp xếp hài hòa trên đĩa, trang trí với microgreens, thảo mộc tươi hoặc một ít balsamic glaze, thường dùng làm món ăn kèm với steak, cá hoặc gà nướng.\",\"certificate_img\":\"culinary_excellence_cert.png\",\"origin_img\":\"italian_countryside_origin.png\",\"presentation_img\":\"1783915061_6a546235e2bb3.jpg\"}', '', NULL, ''),
+(32, 3, 'Tiramisu', 160000.00, '1783915051_6a54622b72ce3.jpg', 'Bánh Tiramisu Ý truyền thống, vị cà phê Espresso đậm đà.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Tiramisu là món tráng miệng truyền thống của Ý, sử dụng các nguyên liệu đặc trưng như phô mai Mascarpone, cà phê Espresso, bột cacao và bánh Savoiardi (ladyfinger).\",\"selection\":\"Chọn Mascarpone tươi, trứng đạt chuẩn an toàn thực phẩm, Espresso chất lượng cao, bột cacao nguyên chất và bánh ladyfinger còn giòn.\",\"storage\":\"Phô mai Mascarpone và trứng được bảo quản ở 2–4°C; cacao và bánh ladyfinger được giữ nơi khô ráo, kín khí để tránh ẩm.\",\"prep\":\"Pha cà phê Espresso, đánh hỗn hợp Mascarpone với lòng đỏ trứng, đường và kem tươi (hoặc lòng trắng đánh bông tùy công thức), chuẩn bị bánh để nhúng cà phê.\",\"cooking_art\":\"Bánh ladyfinger được nhúng nhanh vào Espresso, xếp xen kẽ với lớp kem Mascarpone, sau đó làm lạnh nhiều giờ để bánh và kem hòa quyện trước khi phủ bột cacao.\",\"presentation\":\"Tiramisu được cắt hoặc tạo khuôn đẹp mắt, phủ cacao nguyên chất, trang trí bằng chocolate décor, hạt cà phê hoặc lá bạc hà, phục vụ trên đĩa sứ trắng hoặc ly thủy tinh sang trọng.\",\"origin_img\":\"italian_countryside_origin.png\",\"selection_img\":\"1783919520_6a5473a08fc8c.jpg\",\"storage_img\":\"1783919520_6a5473a08fede.jpg\",\"prep_img\":\"1783919520_6a5473a0901c8.jpg\",\"cooking_art_img\":\"1783919520_6a5473a09044e.jpg\",\"presentation_img\":\"1783915051_6a54622b72ce3.jpg\",\"certificate_img\":\"patisserie_excellence_cert.png\"}', '', NULL, ''),
+(33, 3, 'Crème Brûlée', 150000.00, '1783915042_6a546222a04a1.jpg', 'Bánh flan kiểu Pháp với lớp đường caramel giòn rụm bên trên.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Crème Brûlée là món tráng miệng truyền thống của Pháp, được làm từ kem tươi (heavy cream), lòng đỏ trứng, đường và quả vani tự nhiên.\",\"selection\":\"Chọn trứng tươi, kem tươi có hàm lượng béo cao (35–40%), quả vani chất lượng và đường cát mịn để tạo lớp caramel đẹp.\",\"storage\":\"Trứng và kem tươi được bảo quản ở 2–4°C; quả vani giữ trong hộp kín, khô ráo để bảo toàn hương thơm tự nhiên.\",\"prep\":\"Tách lòng đỏ trứng, đun ấm kem với hạt vani, sau đó trộn cùng đường và lòng đỏ, lọc qua rây để hỗn hợp mịn trước khi rót vào khuôn ramekin.\",\"cooking_art\":\"Hỗn hợp được nướng bain-marie (cách thủy) đến khi đông mịn, làm lạnh hoàn toàn rồi phủ đường và dùng đèn khò tạo lớp caramel giòn đặc trưng.\",\"presentation\":\"Phục vụ trong ramekin sứ, trang trí với quả mọng tươi, lá bạc hà hoặc bánh quy mỏng. Lớp caramel vàng óng, giòn tan là điểm nhấn của món ăn.\",\"origin_img\":\"french_bistro_origin.png\",\"selection_img\":\"1783919609_6a5473f990a13.jpg\",\"storage_img\":\"1783919609_6a5473f990c60.jpg\",\"prep_img\":\"1783919609_6a5473f990e4f.jpg\",\"cooking_art_img\":\"1783919609_6a5473f991045.jpg\",\"presentation_img\":\"1783915042_6a546222a04a1.jpg\",\"certificate_img\":\"patisserie_excellence_cert.png\"}', '', NULL, ''),
+(34, 3, 'Chocolate Lava Cake', 180000.00, '1783915031_6a546217ebddc.jpg', 'Bánh socola núi lửa béo ngậy, nhân socola chảy, ăn kèm kem vani.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Chocolate Lava Cake sử dụng chocolate đen chất lượng cao làm nguyên liệu chủ đạo, kết hợp với bơ, trứng, bột mì và đường. Chocolate thường có nguồn gốc từ các vùng trồng cacao như Bỉ, Pháp hoặc các nước Nam Mỹ.\",\"selection\":\"Chọn chocolate có hàm lượng cacao từ 60–70%, bơ không muối, trứng tươi và bột mì chất lượng để tạo phần nhân chảy mịn.\",\"storage\":\"Chocolate được bảo quản nơi khô ráo ở 16–20°C; bơ và trứng được giữ trong kho lạnh 2–4°C để đảm bảo chất lượng.\",\"prep\":\"Chocolate và bơ được đun chảy, sau đó trộn với trứng, đường và bột mì để tạo hỗn hợp mịn; khuôn ramekin được quét bơ và phủ một lớp bột mỏng chống dính.\",\"cooking_art\":\"Hỗn hợp được nướng ở nhiệt độ cao trong thời gian ngắn (khoảng 8–12 phút) để lớp vỏ chín nhưng phần giữa vẫn giữ được kết cấu lỏng, tạo hiệu ứng \\\"lava\\\" khi cắt bánh.\",\"presentation\":\"Bánh được úp ra đĩa, phủ đường bột hoặc cacao, trang trí với kem vani, quả mọng tươi, sốt chocolate và lá bạc hà để tăng tính thẩm mỹ và cân bằng hương vị.\",\"origin_img\":\"french_bistro_origin.png\",\"selection_img\":\"1783919715_6a547463010da.jpg\",\"storage_img\":\"1783919715_6a5474630135f.jpg\",\"prep_img\":\"1783919715_6a5474630168d.jpg\",\"cooking_art_img\":\"1783919715_6a5474630192e.jpg\",\"certificate_img\":\"patisserie_excellence_cert.png\",\"presentation_img\":\"1783915031_6a546217ebddc.jpg\"}', '', NULL, ''),
+(35, 3, 'New York Cheesecake', 170000.00, '1783915019_6a54620b91506.jpg', 'Bánh phô mai nướng kiểu New York truyền thống.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"New York Cheesecake có nguồn gốc từ Hoa Kỳ, nổi bật với thành phần chính là cream cheese, kết hợp cùng bánh quy Graham, bơ, trứng và kem chua (sour cream).\",\"selection\":\"Chọn cream cheese chất lượng cao, trứng tươi, sour cream béo mịn, bơ không muối và bánh quy Graham giòn để tạo kết cấu chuẩn.\",\"storage\":\"Cream cheese, trứng và sour cream được bảo quản ở 2–4°C; bánh quy Graham được giữ trong hộp kín, nơi khô ráo để tránh ẩm.\",\"prep\":\"Bánh quy Graham được nghiền mịn, trộn với bơ để tạo đế bánh; cream cheese được đánh mịn cùng đường, trứng, sour cream và vani trước khi đổ lên phần đế.\",\"cooking_art\":\"Bánh được nướng ở nhiệt độ thấp, thường kết hợp nướng cách thủy (water bath) để bánh chín đều, bề mặt mịn và hạn chế nứt. Sau khi nướng, bánh được làm nguội và ủ lạnh nhiều giờ để đạt kết cấu đặc trưng.\",\"presentation\":\"Cheesecake được cắt lát đều, phục vụ trên đĩa sứ trắng, trang trí với sốt dâu hoặc berry coulis, trái cây tươi, lá bạc hà và kem tươi để tăng tính thẩm mỹ.\",\"origin_img\":\"american_vintage_origin.png\",\"selection_img\":\"1783919814_6a5474c62c2b7.jpg\",\"storage_img\":\"1783919814_6a5474c62c504.jpg\",\"prep_img\":\"1783919814_6a5474c62c72a.jpg\",\"cooking_art_img\":\"1783919814_6a5474c62c9f7.jpg\",\"certificate_img\":\"patisserie_excellence_cert.png\",\"presentation_img\":\"1783915019_6a54620b91506.jpg\"}', '', NULL, ''),
+(36, 3, 'Panna Cotta Berry', 140000.00, '1783915004_6a5461fca2d85.jpg', 'Kem sữa kiểu Ý mềm mịn, chua ngọt với sốt quả mọng.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Panna Cotta là món tráng miệng truyền thống của Ý, được làm từ kem tươi (heavy cream), sữa, đường, gelatin và quả mọng như dâu tây, việt quất hoặc mâm xôi.\",\"selection\":\"Chọn kem tươi có hàm lượng béo cao, sữa tươi nguyên kem, quả vani tự nhiên, gelatin chất lượng và các loại berry tươi, không dập nát.\",\"storage\":\"Kem tươi, sữa và berry được bảo quản ở 2–4°C; gelatin và đường được giữ nơi khô ráo, tránh ẩm để đảm bảo chất lượng.\",\"prep\":\"Gelatin được ngâm nở, kem và sữa được đun cùng đường và vani; berry được rửa sạch, một phần dùng để nấu sốt, phần còn lại để trang trí.\",\"cooking_art\":\"Hỗn hợp kem được hòa tan với gelatin, rót vào khuôn và làm lạnh từ 4–6 giờ đến khi đông mịn; sốt berry được nấu sánh nhẹ rồi để nguội.\",\"presentation\":\"Panna Cotta được úp khỏi khuôn hoặc phục vụ trong ly, phủ sốt berry, trang trí với quả mọng tươi, lá bạc hà và có thể thêm bánh quy giòn hoặc chocolate décor để tăng tính thẩm mỹ.\",\"origin_img\":\"italian_countryside_origin.png\",\"selection_img\":\"1783919947_6a54754b5b3e5.jpg\",\"storage_img\":\"1783919947_6a54754b5b6f1.jpg\",\"prep_img\":\"1783919947_6a54754b5b932.jpg\",\"cooking_art_img\":\"1783919947_6a54754b5bb4b.jpg\",\"presentation_img\":\"1783915004_6a5461fca2d85.jpg\",\"certificate_img\":\"patisserie_excellence_cert.png\"}', '', NULL, ''),
+(37, 3, 'Vanilla Ice Cream with Berries', 120000.00, '1783914986_6a5461eae3122.jpg', 'Kem vani nguyên chất dùng kèm dâu rừng tươi.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Món được làm từ sữa tươi, kem tươi, quả vani tự nhiên và các loại quả mọng như dâu tây, việt quất, mâm xôi được thu hoạch từ các trang trại đạt tiêu chuẩn.\",\"selection\":\"Chọn sữa nguyên kem, kem tươi có hàm lượng béo cao, quả vani thơm tự nhiên và berry tươi, chín đều, không dập nát.\",\"storage\":\"Sữa và kem tươi được giữ ở 2–4°C trước khi chế biến; kem thành phẩm bảo quản ở -18°C; berry tươi bảo quản trong ngăn mát 2–4°C để giữ độ tươi.\",\"prep\":\"Sữa, kem, đường và vani được phối trộn thành hỗn hợp nền; berry được rửa sạch, để ráo, một phần cắt nhỏ hoặc nấu thành sốt, phần còn lại dùng để trang trí.\",\"cooking_art\":\"Hỗn hợp kem được làm lạnh rồi đưa vào máy làm kem để tạo kết cấu mịn; sau đó cấp đông đến khi đạt độ cứng phù hợp trước khi phục vụ.\",\"presentation\":\"Kem vani được múc thành viên tròn, đặt trên đĩa hoặc ly, dùng kèm berry tươi, sốt berry, lá bạc hà và có thể thêm bánh tuile hoặc chocolate décor để tăng tính thẩm mỹ.\",\"origin_img\":\"italian_countryside_origin.png\",\"selection_img\":\"1783920111_6a5475efbd294.jpg\",\"storage_img\":\"1783920111_6a5475efbd548.jpg\",\"prep_img\":\"1783920111_6a5475efbd824.jpg\",\"cooking_art_img\":\"1783920111_6a5475efbda57.jpg\",\"certificate_img\":\"patisserie_excellence_cert.png\",\"presentation_img\":\"1783914986_6a5461eae3122.jpg\"}', '', NULL, '');
 INSERT INTO `foods` (`id`, `category_id`, `name`, `price`, `image`, `description`, `status`, `max_toppings`, `is_active`, `is_chef_recommended`, `allergens`, `wine_pairing_id`, `chef_note`, `food_journey`, `cooking_technique`, `theme_id`, `cooking_status`) VALUES
-(39, 6, 'French 75', 320000.00, 'french75.png', 'Cocktail cổ điển Pháp với Gin, Champagne và chanh', 1, 4, 1, 0, NULL, NULL, NULL, '{\"origin\":\"Ra đời tại Paris năm 1915, tên gọi French 75 được đặt theo khẩu pháo 75mm của quân đội Pháp – biểu tượng cho sức mạnh thanh lịch trong từng ngụm.\",\"selection\":\"London Dry Gin hảo hạng kết hợp cùng Champagne Brut nhập khẩu trực tiếp từ vùng Champagne, Pháp. Chanh tươi Eureka được chọn lọc từng quả.\",\"storage\":\"Champagne được bảo quản ở 6-8°C trong hầm rượu chuyên dụng. Gin và syrup được lưu trữ ở nhiệt độ phòng, tránh ánh sáng trực tiếp.\",\"prep\":\"Chanh tươi được vắt và lọc kỹ. Syrup đường được nấu theo tỷ lệ 1:1 với nước tinh khiết. Ly champagne flute được làm lạnh trước 15 phút.\",\"cooking_art\":\"Gin, nước cốt chanh và syrup được lắc mạnh với đá trong Boston shaker 12 giây. Lọc gấp đôi vào ly, sau đó rót nhẹ nhàng Champagne lên trên.\",\"presentation\":\"Phục vụ trong ly champagne flute sang trọng, sủi bọt tinh tế. Trang trí bằng dải vỏ chanh xoắn nghệ thuật trên miệng ly.\",\"origin_img\":\"french75_origin.png\",\"selection_img\":\"french75_selection.png\",\"storage_img\":\"french75_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"french75_presentation.png\"}', NULL, NULL, NULL),
-(40, 6, 'Negroni', 280000.00, 'negroni.png', 'Cocktail Ý cổ điển với Gin, Campari và Sweet Vermouth', 1, 4, 1, 0, NULL, NULL, NULL, '{\"origin\":\"Sinh ra tại Florence, Ý năm 1919 khi Bá tước Camillo Negroni yêu cầu thay Soda bằng Gin trong ly Americano tại quán Caffè Casoni huyền thoại.\",\"selection\":\"Campari Ý chính hãng, London Dry Gin cao cấp và Sweet Vermouth Carpano Antica Formula – bộ ba kinh điển tạo nên linh hồn của Negroni.\",\"storage\":\"Vermouth được bảo quản lạnh sau khi mở nắp để giữ nguyên hương vị thảo mộc. Campari và Gin được lưu trữ ở nhiệt độ phòng ổn định.\",\"prep\":\"Đá trong suốt được cắt thủ công thành khối vuông hoàn hảo. Cam tươi được gọt vỏ mỏng, loại bỏ phần trắng đắng để lấy tinh dầu thơm.\",\"cooking_art\":\"Ba thành phần được rót đều tay theo tỷ lệ vàng 1:1:1 trực tiếp vào ly rocks chứa đá. Khuấy nhẹ nhàng 20 vòng bằng thìa bar dài.\",\"presentation\":\"Phục vụ trong ly rocks pha lê với viên đá trong suốt. Vỏ cam được vắt nhẹ phía trên ly để giải phóng tinh dầu, tạo hương thơm quyến rũ.\",\"origin_img\":\"negroni_origin.png\",\"selection_img\":\"negroni_selection.png\",\"storage_img\":\"negroni_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"negroni.png\"}', NULL, NULL, NULL),
-(41, 4, 'Virgin Mojito', 120000.00, 'virgin_mojito.png', 'Mojito không cồn tươi mát với bạc hà và chanh', 1, 4, 1, 0, NULL, NULL, NULL, '{\"origin\":\"Lấy cảm hứng từ Mojito huyền thoại của Cuba, phiên bản Virgin mang đến sự tươi mát thuần khiết không cồn nhưng vẫn giữ trọn vẹn tinh thần Caribbean.\",\"selection\":\"Bạc hà tươi được hái từ vườn thảo mộc hữu cơ ngay sáng sớm. Chanh xanh giống Tahiti thơm ngát, Soda premium nhập khẩu có bọt mịn đều.\",\"storage\":\"Bạc hà và chanh được bảo quản tươi trong ngăn mát 4°C, sử dụng trong ngày. Soda được giữ lạnh ở 2°C để đảm bảo gas sủi bọt tối đa.\",\"prep\":\"Lá bạc hà được vỗ nhẹ bằng lòng bàn tay để giải phóng tinh dầu mà không bị đắng. Chanh được cắt múi cau, muddled nhẹ nhàng trong ly.\",\"cooking_art\":\"Bạc hà và chanh được muddle cùng syrup đường. Thêm đá crushed rồi rót Soda lạnh chầm chậm theo thành ly để giữ ga. Khuấy nhẹ từ dưới lên.\",\"presentation\":\"Phục vụ trong ly highball cao thanh lịch, tràn ngập lá bạc hà xanh mướt và đá crushed lấp lánh. Cắm ống hút kim loại thân thiện môi trường.\",\"origin_img\":\"french75_origin.png\",\"selection_img\":\"french75_selection.png\",\"storage_img\":\"french75_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"virgin_mojito.png\"}', NULL, NULL, NULL),
-(42, 4, 'Passion Fruit Sparkling', 110000.00, 'passion_fruit_sparkling.png', 'Nước chanh dây soda tươi mát', 1, 4, 1, 0, NULL, NULL, NULL, '{\"origin\":\"Chanh dây vùng nhiệt đới Đà Lạt, nơi khí hậu mát mẻ quanh năm tạo nên những trái chanh dây thơm ngát, chua ngọt hài hòa tự nhiên.\",\"selection\":\"Chỉ chọn những quả chanh dây chín tự nhiên trên cây, da nhăn nhẹ – dấu hiệu của độ ngọt hoàn hảo. Soda premium có bọt mịn li ti.\",\"storage\":\"Chanh dây tươi được bảo quản ở 8-10°C, sử dụng trong 48 giờ. Ruột chanh dây được tách và lọc hạt ngay trước khi pha chế.\",\"prep\":\"Chanh dây được cắt đôi, múc ruột. Syrup đường tự nấu theo tỷ lệ chuẩn. Ly được chilling trước với đá viên trong suốt.\",\"cooking_art\":\"Ruột chanh dây được muddle nhẹ với syrup, thêm đá, rồi rót Soda lạnh từ từ. Khuấy đều một lượt để hòa quyện hương vị.\",\"presentation\":\"Ly cao trong suốt để lộ màu vàng cam rực rỡ đặc trưng, hạt chanh dây nổi bật bên trong. Trang trí lá bạc hà và nửa quả chanh dây trên miệng ly.\",\"origin_img\":\"negroni_origin.png\",\"selection_img\":\"negroni_selection.png\",\"storage_img\":\"french75_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"passion_fruit_sparkling.png\"}', NULL, NULL, NULL),
-(43, 4, 'Fresh Orange Juice', 90000.00, 'fresh_orange_juice.png', 'Nước cam tươi vắt nguyên chất', 1, 4, 1, 0, NULL, NULL, NULL, '{\"origin\":\"Cam Navel California nhập khẩu, được trồng dưới ánh nắng ấm áp của thung lũng San Joaquin – vùng đất vàng cho những trái cam ngọt nhất thế giới.\",\"selection\":\"Chọn cam chín mọng tự nhiên, vỏ căng bóng, nặng tay – đảm bảo lượng nước ép tối đa. Mỗi ly sử dụng 2 quả cam tươi nguyên chất.\",\"storage\":\"Cam tươi được bảo quản ở 4-6°C trong kho lạnh chuyên dụng. Không bảo quản nước ép – chỉ vắt tại chỗ khi khách gọi để giữ trọn vitamin C.\",\"prep\":\"Cam được rửa sạch, cắt đôi. Máy vắt cam chuyên dụng đảm bảo ép kiệt nước nhưng không đắng từ vỏ trắng. Lọc qua rây mịn.\",\"cooking_art\":\"Cam được vắt tươi 100% ngay khi nhận order. Không thêm đường, không chất bảo quản – hoàn toàn tự nhiên từ quả cam tươi.\",\"presentation\":\"Phục vụ ngay lập tức trong ly thủy tinh trong suốt, tôn lên màu cam tươi rực rỡ tự nhiên. Trang trí lát cam tươi trên miệng ly.\",\"origin_img\":\"french75_origin.png\",\"selection_img\":\"negroni_selection.png\",\"storage_img\":\"french75_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"fresh_orange_juice.png\"}', NULL, NULL, NULL),
-(44, 4, 'Mixed Berry Smoothie', 130000.00, 'mixed_berry_smoothie.png', 'Sinh tố hỗn hợp quả mọng tươi mát bổ dưỡng', 1, 4, 1, 0, NULL, NULL, NULL, '{\"origin\":\"Hội tụ tinh hoa quả mọng từ 3 châu lục: Dâu tây Hàn Quốc, Việt quất Oregon và Mâm xôi từ vùng đồi Scotland – mỗi loại mang một hương vị độc đáo.\",\"selection\":\"Quả mọng được chọn ở độ chín hoàn hảo, màu sắc đậm đà tự nhiên. Sữa chua Hy Lạp giàu protein, mật ong nguyên chất từ vùng cao.\",\"storage\":\"Quả mọng tươi được IQF (cấp đông riêng lẻ) ngay sau thu hoạch để khóa chặt dinh dưỡng và hương vị tự nhiên. Rã đông nhẹ trước khi xay.\",\"prep\":\"Quả mọng được rã đông 5 phút ở nhiệt độ phòng. Sữa chua và mật ong được cân đo chính xác. Máy xay công suất cao được làm sạch.\",\"cooking_art\":\"Tất cả nguyên liệu được xay mịn trong máy blender công suất cao trong 45 giây. Kết cấu đặc mịn như velvet, không thêm đá để giữ nguyên hương vị đậm đà.\",\"presentation\":\"Phục vụ trong ly cao thủy tinh, màu tím hồng đẹp mắt. Trang trí bằng quả mọng tươi và lá bạc hà trên bề mặt, cắm ống hút kim loại.\",\"origin_img\":\"negroni_origin.png\",\"selection_img\":\"french75_selection.png\",\"storage_img\":\"french75_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"mixed_berry_smoothie.png\"}', NULL, NULL, NULL),
-(45, 4, 'Lychee Jasmine Tea', 100000.00, 'lychee_jasmine_tea.png', 'Trà nhài vải thanh mát hương hoa', 1, 4, 1, 0, NULL, NULL, NULL, '{\"origin\":\"Trà nhài Phúc Kiến kết hợp vải thiều Lục Ngạn – cuộc gặp gỡ tuyệt vời giữa hương hoa nhài thanh khiết và vị ngọt lịm của vải chín mọng.\",\"selection\":\"Trà nhài hảo hạng ướp hoa tự nhiên 7 lần. Vải thiều Lục Ngạn mùa vụ, quả to tròn, cùi dày, nước trong và ngọt thanh.\",\"storage\":\"Trà nhài được bảo quản trong hũ kín tránh ẩm. Vải tươi giữ ở 2-4°C, sử dụng trong ngày. Syrup vải tự nấu được giữ lạnh.\",\"prep\":\"Trà nhài được pha ở 85°C trong 3 phút – đủ để hương hoa bung tỏa mà không bị đắng chát. Vải được bóc vỏ, bỏ hạt cẩn thận.\",\"cooking_art\":\"Trà nhài nóng được làm lạnh nhanh bằng đá. Syrup vải được khuấy đều vào trà. Quả vải nguyên cùi được thả nhẹ vào ly tạo điểm nhấn.\",\"presentation\":\"Phục vụ trong ly thủy tinh thanh lịch, trà vàng nhạt trong suốt lấp lánh với quả vải nổi bên trong. Hương nhài thơm nhẹ bay lên khi mở nắp.\",\"origin_img\":\"french75_origin.png\",\"selection_img\":\"negroni_selection.png\",\"storage_img\":\"negroni_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"lychee_jasmine_tea.png\"}', NULL, NULL, NULL),
-(46, 4, 'Cucumber Mint Cooler', 100000.00, 'cucumber_mint_cooler.png', 'Đồ uống dưa leo bạc hà mát lạnh', 1, 4, 1, 0, NULL, NULL, NULL, '{\"origin\":\"Lấy cảm hứng từ truyền thống spa thượng lưu châu Âu, nơi nước dưa leo bạc hà là thức uống detox được giới quý tộc ưa chuộng suốt hàng thế kỷ.\",\"selection\":\"Dưa leo baby Nhật Bản giòn ngọt, giàu nước. Bạc hà tươi từ vườn thảo mộc hữu cơ, hái ngay sáng sớm khi hàm lượng tinh dầu cao nhất.\",\"storage\":\"Dưa leo và bạc hà tươi được bảo quản ở 4°C, bọc trong khăn ẩm để giữ độ giòn tối đa. Sử dụng trong ngày thu hoạch.\",\"prep\":\"Dưa leo được thái lát mỏng ribbon bằng mandoline. Bạc hà được vỗ nhẹ để giải phóng tinh dầu. Chanh được vắt tươi lọc hạt.\",\"cooking_art\":\"Dưa leo và bạc hà được muddle nhẹ với syrup và nước cốt chanh. Thêm đá crushed, rót Soda lạnh từ từ. Khuấy nhẹ nhàng từ dưới lên.\",\"presentation\":\"Ly highball trong suốt để lộ vẻ đẹp của lát dưa leo xanh mướt và lá bạc hà nổi bên trong. Cảm giác tươi mát, thanh khiết ngay từ cái nhìn đầu tiên.\",\"origin_img\":\"negroni_origin.png\",\"selection_img\":\"french75_selection.png\",\"storage_img\":\"french75_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"cucumber_mint_cooler.png\"}', NULL, NULL, NULL),
-(47, 4, 'Sparkling Mineral Water', 140000.00, 'sparkling_water.png', 'Nước khoáng có gas cao cấp', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Nguồn nước khoáng thiên nhiên từ những mạch ngầm sâu trong lòng dãy Alps, được thiên nhiên lọc qua hàng triệu năm qua các tầng đá vôite.\",\"selection\":\"Chọn thương hiệu nước khoáng cao cấp với hàm lượng khoáng chất cân đối, bọt ga tự nhiên mịn đều, vị thanh mát tinh khiết.\",\"storage\":\"Chai nước khoáng được bảo quản ở 4-6°C, tránh ánh sáng trực tiếp. Chai thủy tinh cao cấp giữ nguyên chất lượng gas tốt hơn chai nhựa.\",\"prep\":\"Ly pha lê được làm lạnh sẵn. Chanh tươi được thái lát mỏng đều, chỉ sử dụng phần giữa quả để đảm bảo tính thẩm mỹ hoàn hảo.\",\"cooking_art\":\"Nước khoáng được rót nhẹ nhàng theo thành ly để giữ trọn vẹn bọt ga tinh tế. Không khuấy, để dòng bọt tự nhiên tỏa ra.\",\"presentation\":\"Phục vụ trong ly pha lê cao cấp cùng chai nước khoáng bên cạnh. Lát chanh tươi nằm thanh lịch trên miệng ly, đơn giản nhưng sang trọng tuyệt đối.\",\"origin_img\":\"french75_origin.png\",\"selection_img\":\"negroni_selection.png\",\"storage_img\":\"negroni_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"sparkling_water.png\"}', '', NULL, ''),
-(48, 1, 'Oysters Rockefeller', 480000.00, '1783926004_6a548cf49a7e8.jpg', 'Hàu nướng phô mai và rau chân vịt trứ danh vùng New Orleans.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Ra đời năm 1899 tại nhà hàng Antoine\'s ở New Orleans, được đặt tên theo người giàu nhất thời bấy giờ - John D. Rockefeller vì hương vị cực kỳ phong phú và \\\"giàu có\\\".\",\"selection\":\"Những con hàu tươi sống nguyên vỏ được tuyển chọn kỹ lưỡng, mập mạp và đẫm vị biển khơi. Các loại thảo mộc và rau chân vịt đạt độ tươi non nhất.\",\"storage\":\"Hàu được giữ sống ở 4°C trong môi trường đặc biệt để duy trì độ tươi hoàn hảo cho đến tận lúc chế biến.\",\"prep\":\"Hàu được tách vỏ khéo léo để giữ lại phần nước ngọt tự nhiên. Rau chân vịt được xay nhuyễn mịn cùng bơ, kem tươi và các loại thảo mộc bí truyền.\",\"cooking_art\":\"Hàu được phủ đầy hỗn hợp bơ, rau chân vịt và vụn bánh mì, phô mai Parmesan, sau đó đút lò ở nhiệt độ cao đến khi bề mặt xém vàng, tỏa hương thơm lừng.\",\"presentation\":\"Phục vụ nóng hổi ngay khi vừa ra lò trên một lớp muối hạt to để giữ nhiệt, kèm theo vài lát chanh vàng tươi mát.\",\"origin_img\":\"1783926055_6a548d2763f04.jpg\",\"selection_img\":\"1783926055_6a548d2764833.jpg\",\"storage_img\":\"1783926055_6a548d276507c.jpg\",\"prep_img\":\"1783926055_6a548d27656ea.jpg\",\"cooking_art_img\":\"1783926055_6a548d27659a7.jpg\",\"presentation_img\":\"1783926055_6a548d2765f72.jpg\"}', '', NULL, '');
+(38, 3, 'Macaron Selection', 190000.00, '1783914679_6a5460b7400f9.jpg', 'Bộ sưu tập bánh Macaron Pháp đa vị.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Macaron là món bánh nổi tiếng của Pháp, được làm từ bột hạnh nhân (almond flour), lòng trắng trứng, đường bột và nhân kem như ganache, buttercream hoặc mứt trái cây.\",\"selection\":\"Chọn bột hạnh nhân mịn, lòng trắng trứng đạt độ ổn định, bơ chất lượng cao, chocolate hoặc trái cây tươi để làm nhân bánh.\",\"storage\":\"Bột hạnh nhân và đường được bảo quản nơi khô ráo; bơ, kem tươi và nhân ganache được giữ ở 2–4°C để đảm bảo chất lượng.\",\"prep\":\"Lòng trắng trứng được đánh bông với đường, trộn cùng bột hạnh nhân (kỹ thuật macaronage) rồi cho vào túi bắt kem để tạo hình các vỏ bánh đồng đều.\",\"cooking_art\":\"Vỏ bánh được nghỉ cho se mặt rồi nướng đến khi xuất hiện \\\"chân bánh\\\" (macaron feet). Sau khi nguội, bánh được kẹp với ganache, buttercream hoặc mứt trái cây và để ổn định hương vị trước khi phục vụ.\",\"presentation\":\"Các chiếc macaron nhiều màu sắc được sắp xếp trên đĩa sứ hoặc khay tầng, trang trí với hoa ăn được, quả mọng hoặc chocolate décor, tạo vẻ sang trọng và tinh tế.\",\"origin_img\":\"french_bistro_origin.png\",\"selection_img\":\"1783920331_6a5476cb6cf2c.jpg\",\"storage_img\":\"1783920331_6a5476cb6d1d9.jpg\",\"prep_img\":\"1783920331_6a5476cb6d430.jpg\",\"cooking_art_img\":\"1783920331_6a5476cb6d649.jpg\",\"presentation_img\":\"1783914679_6a5460b7400f9.jpg\",\"certificate_img\":\"patisserie_excellence_cert.png\"}', '', NULL, ''),
+(39, 6, 'French 75', 320000.00, 'french75.png', 'Cocktail cổ điển Pháp với Gin, Champagne và chanh', 1, 4, 1, 0, NULL, NULL, NULL, '{\"origin\":\"Ra đời tại Paris năm 1915, tên gọi French 75 được đặt theo khẩu pháo 75mm của quân đội Pháp – biểu tượng cho sức mạnh thanh lịch trong từng ngụm.\",\"selection\":\"London Dry Gin hảo hạng kết hợp cùng Champagne Brut nhập khẩu trực tiếp từ vùng Champagne, Pháp. Chanh tươi Eureka được chọn lọc từng quả.\",\"storage\":\"Champagne được bảo quản ở 6-8°C trong hầm rượu chuyên dụng. Gin và syrup được lưu trữ ở nhiệt độ phòng, tránh ánh sáng trực tiếp.\",\"prep\":\"Chanh tươi được vắt và lọc kỹ. Syrup đường được nấu theo tỷ lệ 1:1 với nước tinh khiết. Ly champagne flute được làm lạnh trước 15 phút.\",\"cooking_art\":\"Gin, nước cốt chanh và syrup được lắc mạnh với đá trong Boston shaker 12 giây. Lọc gấp đôi vào ly, sau đó rót nhẹ nhàng Champagne lên trên.\",\"presentation\":\"Phục vụ trong ly champagne flute sang trọng, sủi bọt tinh tế. Trang trí bằng dải vỏ chanh xoắn nghệ thuật trên miệng ly.\",\"origin_img\":\"french75_origin_new.png\",\"selection_img\":\"french75_selection.png\",\"storage_img\":\"french75_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"french75.png\",\"certificate_img\":\"beverage_excellence_cert.png\"}', NULL, NULL, NULL),
+(40, 6, 'Negroni', 280000.00, 'negroni.png', 'Cocktail Ý cổ điển với Gin, Campari và Sweet Vermouth', 1, 4, 1, 0, NULL, NULL, NULL, '{\"origin\":\"Sinh ra tại Florence, Ý năm 1919 khi Bá tước Camillo Negroni yêu cầu thay Soda bằng Gin trong ly Americano tại quán Caffè Casoni huyền thoại.\",\"selection\":\"Campari Ý chính hãng, London Dry Gin cao cấp và Sweet Vermouth Carpano Antica Formula – bộ ba kinh điển tạo nên linh hồn của Negroni.\",\"storage\":\"Vermouth được bảo quản lạnh sau khi mở nắp để giữ nguyên hương vị thảo mộc. Campari và Gin được lưu trữ ở nhiệt độ phòng ổn định.\",\"prep\":\"Đá trong suốt được cắt thủ công thành khối vuông hoàn hảo. Cam tươi được gọt vỏ mỏng, loại bỏ phần trắng đắng để lấy tinh dầu thơm.\",\"cooking_art\":\"Ba thành phần được rót đều tay theo tỷ lệ vàng 1:1:1 trực tiếp vào ly rocks chứa đá. Khuấy nhẹ nhàng 20 vòng bằng thìa bar dài.\",\"presentation\":\"Phục vụ trong ly rocks pha lê với viên đá trong suốt. Vỏ cam được vắt nhẹ phía trên ly để giải phóng tinh dầu, tạo hương thơm quyến rũ.\",\"origin_img\":\"negroni_origin_new.png\",\"selection_img\":\"negroni_selection.png\",\"storage_img\":\"negroni_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"negroni.png\",\"certificate_img\":\"beverage_excellence_cert.png\"}', NULL, NULL, NULL),
+(41, 4, 'Virgin Mojito', 120000.00, 'virgin_mojito.png', 'Mojito không cồn tươi mát với bạc hà và chanh', 1, 4, 1, 0, NULL, NULL, NULL, '{\"origin\":\"Lấy cảm hứng từ Mojito huyền thoại của Cuba, phiên bản Virgin mang đến sự tươi mát thuần khiết không cồn nhưng vẫn giữ trọn vẹn tinh thần Caribbean.\",\"selection\":\"Bạc hà tươi được hái từ vườn thảo mộc hữu cơ ngay sáng sớm. Chanh xanh giống Tahiti thơm ngát, Soda premium nhập khẩu có bọt mịn đều.\",\"storage\":\"Bạc hà và chanh được bảo quản tươi trong ngăn mát 4°C, sử dụng trong ngày. Soda được giữ lạnh ở 2°C để đảm bảo gas sủi bọt tối đa.\",\"prep\":\"Lá bạc hà được vỗ nhẹ bằng lòng bàn tay để giải phóng tinh dầu mà không bị đắng. Chanh được cắt múi cau, muddled nhẹ nhàng trong ly.\",\"cooking_art\":\"Bạc hà và chanh được muddle cùng syrup đường. Thêm đá crushed rồi rót Soda lạnh chầm chậm theo thành ly để giữ ga. Khuấy nhẹ từ dưới lên.\",\"presentation\":\"Phục vụ trong ly highball cao thanh lịch, tràn ngập lá bạc hà xanh mướt và đá crushed lấp lánh. Cắm ống hút kim loại thân thiện môi trường.\",\"origin_img\":\"virgin_mojito_origin.png\",\"selection_img\":\"french75_selection.png\",\"storage_img\":\"french75_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"virgin_mojito.png\",\"certificate_img\":\"beverage_excellence_cert.png\"}', NULL, NULL, NULL),
+(42, 4, 'Passion Fruit Sparkling', 110000.00, 'passion_fruit_sparkling.png', 'Nước chanh dây soda tươi mát', 1, 4, 1, 0, NULL, NULL, NULL, '{\"origin\":\"Chanh dây vùng nhiệt đới Đà Lạt, nơi khí hậu mát mẻ quanh năm tạo nên những trái chanh dây thơm ngát, chua ngọt hài hòa tự nhiên.\",\"selection\":\"Chỉ chọn những quả chanh dây chín tự nhiên trên cây, da nhăn nhẹ – dấu hiệu của độ ngọt hoàn hảo. Soda premium có bọt mịn li ti.\",\"storage\":\"Chanh dây tươi được bảo quản ở 8-10°C, sử dụng trong 48 giờ. Ruột chanh dây được tách và lọc hạt ngay trước khi pha chế.\",\"prep\":\"Chanh dây được cắt đôi, múc ruột. Syrup đường tự nấu theo tỷ lệ chuẩn. Ly được chilling trước với đá viên trong suốt.\",\"cooking_art\":\"Ruột chanh dây được muddle nhẹ với syrup, thêm đá, rồi rót Soda lạnh từ từ. Khuấy đều một lượt để hòa quyện hương vị.\",\"presentation\":\"Ly cao trong suốt để lộ màu vàng cam rực rỡ đặc trưng, hạt chanh dây nổi bật bên trong. Trang trí lá bạc hà và nửa quả chanh dây trên miệng ly.\",\"origin_img\":\"passion_fruit_origin.png\",\"selection_img\":\"negroni_selection.png\",\"storage_img\":\"french75_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"passion_fruit_sparkling.png\",\"certificate_img\":\"beverage_excellence_cert.png\"}', NULL, NULL, NULL),
+(43, 4, 'Fresh Orange Juice', 90000.00, 'fresh_orange_juice.png', 'Nước cam tươi vắt nguyên chất', 1, 4, 1, 0, NULL, NULL, NULL, '{\"origin\":\"Cam Navel California nhập khẩu, được trồng dưới ánh nắng ấm áp của thung lũng San Joaquin – vùng đất vàng cho những trái cam ngọt nhất thế giới.\",\"selection\":\"Chọn cam chín mọng tự nhiên, vỏ căng bóng, nặng tay – đảm bảo lượng nước ép tối đa. Mỗi ly sử dụng 2 quả cam tươi nguyên chất.\",\"storage\":\"Cam tươi được bảo quản ở 4-6°C trong kho lạnh chuyên dụng. Không bảo quản nước ép – chỉ vắt tại chỗ khi khách gọi để giữ trọn vitamin C.\",\"prep\":\"Cam được rửa sạch, cắt đôi. Máy vắt cam chuyên dụng đảm bảo ép kiệt nước nhưng không đắng từ vỏ trắng. Lọc qua rây mịn.\",\"cooking_art\":\"Cam được vắt tươi 100% ngay khi nhận order. Không thêm đường, không chất bảo quản – hoàn toàn tự nhiên từ quả cam tươi.\",\"presentation\":\"Phục vụ ngay lập tức trong ly thủy tinh trong suốt, tôn lên màu cam tươi rực rỡ tự nhiên. Trang trí lát cam tươi trên miệng ly.\",\"origin_img\":\"orange_juice_origin.png\",\"selection_img\":\"negroni_selection.png\",\"storage_img\":\"french75_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"fresh_orange_juice.png\",\"certificate_img\":\"beverage_excellence_cert.png\"}', NULL, NULL, NULL),
+(44, 4, 'Mixed Berry Smoothie', 130000.00, 'mixed_berry_smoothie.png', 'Sinh tố hỗn hợp quả mọng tươi mát bổ dưỡng', 1, 4, 1, 0, NULL, NULL, NULL, '{\"origin\":\"Hội tụ tinh hoa quả mọng từ 3 châu lục: Dâu tây Hàn Quốc, Việt quất Oregon và Mâm xôi từ vùng đồi Scotland – mỗi loại mang một hương vị độc đáo.\",\"selection\":\"Quả mọng được chọn ở độ chín hoàn hảo, màu sắc đậm đà tự nhiên. Sữa chua Hy Lạp giàu protein, mật ong nguyên chất từ vùng cao.\",\"storage\":\"Quả mọng tươi được IQF (cấp đông riêng lẻ) ngay sau thu hoạch để khóa chặt dinh dưỡng và hương vị tự nhiên. Rã đông nhẹ trước khi xay.\",\"prep\":\"Quả mọng được rã đông 5 phút ở nhiệt độ phòng. Sữa chua và mật ong được cân đo chính xác. Máy xay công suất cao được làm sạch.\",\"cooking_art\":\"Tất cả nguyên liệu được xay mịn trong máy blender công suất cao trong 45 giây. Kết cấu đặc mịn như velvet, không thêm đá để giữ nguyên hương vị đậm đà.\",\"presentation\":\"Phục vụ trong ly cao thủy tinh, màu tím hồng đẹp mắt. Trang trí bằng quả mọng tươi và lá bạc hà trên bề mặt, cắm ống hút kim loại.\",\"origin_img\":\"berry_smoothie_origin.png\",\"selection_img\":\"french75_selection.png\",\"storage_img\":\"french75_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"mixed_berry_smoothie.png\",\"certificate_img\":\"beverage_excellence_cert.png\"}', NULL, NULL, NULL),
+(45, 4, 'Lychee Jasmine Tea', 100000.00, 'lychee_jasmine_tea.png', 'Trà nhài vải thanh mát hương hoa', 1, 4, 1, 0, NULL, NULL, NULL, '{\"origin\":\"Trà nhài Phúc Kiến kết hợp vải thiều Lục Ngạn – cuộc gặp gỡ tuyệt vời giữa hương hoa nhài thanh khiết và vị ngọt lịm của vải chín mọng.\",\"selection\":\"Trà nhài hảo hạng ướp hoa tự nhiên 7 lần. Vải thiều Lục Ngạn mùa vụ, quả to tròn, cùi dày, nước trong và ngọt thanh.\",\"storage\":\"Trà nhài được bảo quản trong hũ kín tránh ẩm. Vải tươi giữ ở 2-4°C, sử dụng trong ngày. Syrup vải tự nấu được giữ lạnh.\",\"prep\":\"Trà nhài được pha ở 85°C trong 3 phút – đủ để hương hoa bung tỏa mà không bị đắng chát. Vải được bóc vỏ, bỏ hạt cẩn thận.\",\"cooking_art\":\"Trà nhài nóng được làm lạnh nhanh bằng đá. Syrup vải được khuấy đều vào trà. Quả vải nguyên cùi được thả nhẹ vào ly tạo điểm nhấn.\",\"presentation\":\"Phục vụ trong ly thủy tinh thanh lịch, trà vàng nhạt trong suốt lấp lánh với quả vải nổi bên trong. Hương nhài thơm nhẹ bay lên khi mở nắp.\",\"origin_img\":\"lychee_tea_origin.png\",\"selection_img\":\"negroni_selection.png\",\"storage_img\":\"negroni_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"lychee_jasmine_tea.png\",\"certificate_img\":\"beverage_excellence_cert.png\"}', NULL, NULL, NULL),
+(46, 4, 'Cucumber Mint Cooler', 100000.00, 'cucumber_mint_cooler.png', 'Đồ uống dưa leo bạc hà mát lạnh', 1, 4, 1, 0, NULL, NULL, NULL, '{\"origin\":\"Lấy cảm hứng từ truyền thống spa thượng lưu châu Âu, nơi nước dưa leo bạc hà là thức uống detox được giới quý tộc ưa chuộng suốt hàng thế kỷ.\",\"selection\":\"Dưa leo baby Nhật Bản giòn ngọt, giàu nước. Bạc hà tươi từ vườn thảo mộc hữu cơ, hái ngay sáng sớm khi hàm lượng tinh dầu cao nhất.\",\"storage\":\"Dưa leo và bạc hà tươi được bảo quản ở 4°C, bọc trong khăn ẩm để giữ độ giòn tối đa. Sử dụng trong ngày thu hoạch.\",\"prep\":\"Dưa leo được thái lát mỏng ribbon bằng mandoline. Bạc hà được vỗ nhẹ để giải phóng tinh dầu. Chanh được vắt tươi lọc hạt.\",\"cooking_art\":\"Dưa leo và bạc hà được muddle nhẹ với syrup và nước cốt chanh. Thêm đá crushed, rót Soda lạnh từ từ. Khuấy nhẹ nhàng từ dưới lên.\",\"presentation\":\"Ly highball trong suốt để lộ vẻ đẹp của lát dưa leo xanh mướt và lá bạc hà nổi bên trong. Cảm giác tươi mát, thanh khiết ngay từ cái nhìn đầu tiên.\",\"origin_img\":\"cucumber_cooler_origin.png\",\"selection_img\":\"french75_selection.png\",\"storage_img\":\"french75_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"cucumber_mint_cooler.png\",\"certificate_img\":\"beverage_excellence_cert.png\"}', NULL, NULL, NULL),
+(47, 4, 'Sparkling Mineral Water', 140000.00, 'sparkling_water.png', 'Nước khoáng có gas cao cấp', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Nguồn nước khoáng thiên nhiên từ những mạch ngầm sâu trong lòng dãy Alps, được thiên nhiên lọc qua hàng triệu năm qua các tầng đá vôite.\",\"selection\":\"Chọn thương hiệu nước khoáng cao cấp với hàm lượng khoáng chất cân đối, bọt ga tự nhiên mịn đều, vị thanh mát tinh khiết.\",\"storage\":\"Chai nước khoáng được bảo quản ở 4-6°C, tránh ánh sáng trực tiếp. Chai thủy tinh cao cấp giữ nguyên chất lượng gas tốt hơn chai nhựa.\",\"prep\":\"Ly pha lê được làm lạnh sẵn. Chanh tươi được thái lát mỏng đều, chỉ sử dụng phần giữa quả để đảm bảo tính thẩm mỹ hoàn hảo.\",\"cooking_art\":\"Nước khoáng được rót nhẹ nhàng theo thành ly để giữ trọn vẹn bọt ga tinh tế. Không khuấy, để dòng bọt tự nhiên tỏa ra.\",\"presentation\":\"Phục vụ trong ly pha lê cao cấp cùng chai nước khoáng bên cạnh. Lát chanh tươi nằm thanh lịch trên miệng ly, đơn giản nhưng sang trọng tuyệt đối.\",\"origin_img\":\"sparkling_water_origin.png\",\"selection_img\":\"negroni_selection.png\",\"storage_img\":\"negroni_storage.png\",\"prep_img\":\"french75_prep.png\",\"cooking_art_img\":\"french75_cooking.png\",\"presentation_img\":\"sparkling_water.png\",\"certificate_img\":\"beverage_excellence_cert.png\"}', '', NULL, ''),
+(48, 1, 'Oysters Rockefeller', 480000.00, '1783926004_6a548cf49a7e8.jpg', 'Hàu nướng phô mai và rau chân vịt trứ danh vùng New Orleans.', 1, 4, 1, 0, '', NULL, '', '{\"origin\":\"Ra đời năm 1899 tại nhà hàng Antoine\'s ở New Orleans, được đặt tên theo người giàu nhất thời bấy giờ - John D. Rockefeller vì hương vị cực kỳ phong phú và \\\"giàu có\\\".\",\"selection\":\"Những con hàu tươi sống nguyên vỏ được tuyển chọn kỹ lưỡng, mập mạp và đẫm vị biển khơi. Các loại thảo mộc và rau chân vịt đạt độ tươi non nhất.\",\"storage\":\"Hàu được giữ sống ở 4°C trong môi trường đặc biệt để duy trì độ tươi hoàn hảo cho đến tận lúc chế biến.\",\"prep\":\"Hàu được tách vỏ khéo léo để giữ lại phần nước ngọt tự nhiên. Rau chân vịt được xay nhuyễn mịn cùng bơ, kem tươi và các loại thảo mộc bí truyền.\",\"cooking_art\":\"Hàu được phủ đầy hỗn hợp bơ, rau chân vịt và vụn bánh mì, phô mai Parmesan, sau đó đút lò ở nhiệt độ cao đến khi bề mặt xém vàng, tỏa hương thơm lừng.\",\"presentation\":\"Phục vụ nóng hổi ngay khi vừa ra lò trên một lớp muối hạt to để giữ nhiệt, kèm theo vài lát chanh vàng tươi mát.\",\"origin_img\":\"oysters_rockefeller_origin.png\",\"selection_img\":\"1783926055_6a548d2764833.jpg\",\"storage_img\":\"1783926055_6a548d276507c.jpg\",\"prep_img\":\"1783926055_6a548d27656ea.jpg\",\"cooking_art_img\":\"1783926055_6a548d27659a7.jpg\",\"presentation_img\":\"1783926004_6a548cf49a7e8.jpg\",\"certificate_img\":\"oysters_rockefeller_cert.png\"}', '', NULL, '');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `food_recipes`
+-- Cấu trúc bảng cho bảng `food_recipes`
 --
 
 DROP TABLE IF EXISTS `food_recipes`;
@@ -1565,7 +1565,7 @@ CREATE TABLE `food_recipes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `food_recipes`
+-- Đang đổ dữ liệu cho bảng `food_recipes`
 --
 
 INSERT INTO `food_recipes` (`id`, `food_id`, `ingredient_id`, `quantity_required`, `unit`) VALUES
@@ -1865,7 +1865,7 @@ INSERT INTO `food_recipes` (`id`, `food_id`, `ingredient_id`, `quantity_required
 -- --------------------------------------------------------
 
 --
--- Table structure for table `food_toppings`
+-- Cấu trúc bảng cho bảng `food_toppings`
 --
 
 DROP TABLE IF EXISTS `food_toppings`;
@@ -1876,7 +1876,7 @@ CREATE TABLE `food_toppings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `food_toppings`
+-- Đang đổ dữ liệu cho bảng `food_toppings`
 --
 
 INSERT INTO `food_toppings` (`id`, `food_id`, `topping_id`) VALUES
@@ -1952,7 +1952,7 @@ INSERT INTO `food_toppings` (`id`, `food_id`, `topping_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `footer_links`
+-- Cấu trúc bảng cho bảng `footer_links`
 --
 
 DROP TABLE IF EXISTS `footer_links`;
@@ -1964,7 +1964,7 @@ CREATE TABLE `footer_links` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `footer_links`
+-- Đang đổ dữ liệu cho bảng `footer_links`
 --
 
 INSERT INTO `footer_links` (`id`, `title`, `url`, `priority`) VALUES
@@ -1976,7 +1976,7 @@ INSERT INTO `footer_links` (`id`, `title`, `url`, `priority`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `footer_settings`
+-- Cấu trúc bảng cho bảng `footer_settings`
 --
 
 DROP TABLE IF EXISTS `footer_settings`;
@@ -1986,7 +1986,7 @@ CREATE TABLE `footer_settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `footer_settings`
+-- Đang đổ dữ liệu cho bảng `footer_settings`
 --
 
 INSERT INTO `footer_settings` (`setting_key`, `setting_value`) VALUES
@@ -2328,7 +2328,7 @@ INSERT INTO `footer_settings` (`setting_key`, `setting_value`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `galleries`
+-- Cấu trúc bảng cho bảng `galleries`
 --
 
 DROP TABLE IF EXISTS `galleries`;
@@ -2342,7 +2342,7 @@ CREATE TABLE `galleries` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `galleries`
+-- Đang đổ dữ liệu cho bảng `galleries`
 --
 
 INSERT INTO `galleries` (`id`, `image_url`, `title`, `sort_order`, `is_active`, `created_at`) VALUES
@@ -2357,7 +2357,7 @@ INSERT INTO `galleries` (`id`, `image_url`, `title`, `sort_order`, `is_active`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory`
+-- Cấu trúc bảng cho bảng `inventory`
 --
 
 DROP TABLE IF EXISTS `inventory`;
@@ -2380,7 +2380,7 @@ CREATE TABLE `inventory` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `inventory`
+-- Đang đổ dữ liệu cho bảng `inventory`
 --
 
 INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `cost_price`, `supplier_id`, `entry_date`, `expiry_date`, `revenue`, `updated_at`, `min_stock`, `is_active`, `storage_zone`, `storage_temperature`, `allergens`) VALUES
@@ -2574,7 +2574,7 @@ INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `cost_price
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory_audits`
+-- Cấu trúc bảng cho bảng `inventory_audits`
 --
 
 DROP TABLE IF EXISTS `inventory_audits`;
@@ -2586,7 +2586,7 @@ CREATE TABLE `inventory_audits` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `inventory_audits`
+-- Đang đổ dữ liệu cho bảng `inventory_audits`
 --
 
 INSERT INTO `inventory_audits` (`id`, `audit_date`, `performed_by`, `notes`) VALUES
@@ -2599,7 +2599,7 @@ INSERT INTO `inventory_audits` (`id`, `audit_date`, `performed_by`, `notes`) VAL
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory_audit_details`
+-- Cấu trúc bảng cho bảng `inventory_audit_details`
 --
 
 DROP TABLE IF EXISTS `inventory_audit_details`;
@@ -2613,7 +2613,7 @@ CREATE TABLE `inventory_audit_details` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `inventory_audit_details`
+-- Đang đổ dữ liệu cho bảng `inventory_audit_details`
 --
 
 INSERT INTO `inventory_audit_details` (`id`, `audit_id`, `ingredient_id`, `system_qty`, `physical_qty`, `variance`) VALUES
@@ -2633,7 +2633,7 @@ INSERT INTO `inventory_audit_details` (`id`, `audit_id`, `ingredient_id`, `syste
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory_batches`
+-- Cấu trúc bảng cho bảng `inventory_batches`
 --
 
 DROP TABLE IF EXISTS `inventory_batches`;
@@ -2651,7 +2651,7 @@ CREATE TABLE `inventory_batches` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `inventory_batches`
+-- Đang đổ dữ liệu cho bảng `inventory_batches`
 --
 
 INSERT INTO `inventory_batches` (`id`, `ingredient_id`, `warehouse_id`, `batch_code`, `quantity`, `expiry_date`, `cost_price`, `receiving_temperature`, `created_at`, `supplier_batch_number`) VALUES
@@ -3195,7 +3195,7 @@ INSERT INTO `inventory_batches` (`id`, `ingredient_id`, `warehouse_id`, `batch_c
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory_categories`
+-- Cấu trúc bảng cho bảng `inventory_categories`
 --
 
 DROP TABLE IF EXISTS `inventory_categories`;
@@ -3206,7 +3206,7 @@ CREATE TABLE `inventory_categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `inventory_categories`
+-- Đang đổ dữ liệu cho bảng `inventory_categories`
 --
 
 INSERT INTO `inventory_categories` (`id`, `name`, `default_warehouse_id`) VALUES
@@ -3224,7 +3224,7 @@ INSERT INTO `inventory_categories` (`id`, `name`, `default_warehouse_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory_history`
+-- Cấu trúc bảng cho bảng `inventory_history`
 --
 
 DROP TABLE IF EXISTS `inventory_history`;
@@ -3239,7 +3239,7 @@ CREATE TABLE `inventory_history` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `inventory_history`
+-- Đang đổ dữ liệu cho bảng `inventory_history`
 --
 
 INSERT INTO `inventory_history` (`id`, `ingredient_id`, `warehouse_id`, `type`, `quantity`, `created_at`, `performed_by`) VALUES
@@ -4007,7 +4007,7 @@ INSERT INTO `inventory_history` (`id`, `ingredient_id`, `warehouse_id`, `type`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory_receipts`
+-- Cấu trúc bảng cho bảng `inventory_receipts`
 --
 
 DROP TABLE IF EXISTS `inventory_receipts`;
@@ -4023,7 +4023,7 @@ CREATE TABLE `inventory_receipts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `inventory_receipts`
+-- Đang đổ dữ liệu cho bảng `inventory_receipts`
 --
 
 INSERT INTO `inventory_receipts` (`id`, `ingredient_id`, `supplier_id`, `quantity`, `import_price`, `entry_date`, `expiry_date`, `note`) VALUES
@@ -4038,7 +4038,7 @@ INSERT INTO `inventory_receipts` (`id`, `ingredient_id`, `supplier_id`, `quantit
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory_stocks`
+-- Cấu trúc bảng cho bảng `inventory_stocks`
 --
 
 DROP TABLE IF EXISTS `inventory_stocks`;
@@ -4051,7 +4051,7 @@ CREATE TABLE `inventory_stocks` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `inventory_stocks`
+-- Đang đổ dữ liệu cho bảng `inventory_stocks`
 --
 
 INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity`, `last_updated`) VALUES
@@ -4393,7 +4393,7 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory_transfers`
+-- Cấu trúc bảng cho bảng `inventory_transfers`
 --
 
 DROP TABLE IF EXISTS `inventory_transfers`;
@@ -4410,7 +4410,7 @@ CREATE TABLE `inventory_transfers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `inventory_transfers`
+-- Đang đổ dữ liệu cho bảng `inventory_transfers`
 --
 
 INSERT INTO `inventory_transfers` (`id`, `from_warehouse_id`, `to_warehouse_id`, `performed_by`, `transfer_date`, `note`, `status`, `approved_by`, `approved_at`) VALUES
@@ -4544,7 +4544,7 @@ INSERT INTO `inventory_transfers` (`id`, `from_warehouse_id`, `to_warehouse_id`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory_units`
+-- Cấu trúc bảng cho bảng `inventory_units`
 --
 
 DROP TABLE IF EXISTS `inventory_units`;
@@ -4554,7 +4554,7 @@ CREATE TABLE `inventory_units` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `inventory_units`
+-- Đang đổ dữ liệu cho bảng `inventory_units`
 --
 
 INSERT INTO `inventory_units` (`id`, `name`) VALUES
@@ -4579,7 +4579,7 @@ INSERT INTO `inventory_units` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `milestones`
+-- Cấu trúc bảng cho bảng `milestones`
 --
 
 DROP TABLE IF EXISTS `milestones`;
@@ -4594,7 +4594,7 @@ CREATE TABLE `milestones` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `milestones`
+-- Đang đổ dữ liệu cho bảng `milestones`
 --
 
 INSERT INTO `milestones` (`id`, `type`, `threshold`, `reward_title`, `reward_desc`, `discount_percent`, `created_at`) VALUES
@@ -4621,7 +4621,7 @@ INSERT INTO `milestones` (`id`, `type`, `threshold`, `reward_title`, `reward_des
 -- --------------------------------------------------------
 
 --
--- Table structure for table `navigation_menu`
+-- Cấu trúc bảng cho bảng `navigation_menu`
 --
 
 DROP TABLE IF EXISTS `navigation_menu`;
@@ -4633,7 +4633,7 @@ CREATE TABLE `navigation_menu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `navigation_menu`
+-- Đang đổ dữ liệu cho bảng `navigation_menu`
 --
 
 INSERT INTO `navigation_menu` (`id`, `title`, `url`, `position`) VALUES
@@ -4646,7 +4646,7 @@ INSERT INTO `navigation_menu` (`id`, `title`, `url`, `position`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `newsletters`
+-- Cấu trúc bảng cho bảng `newsletters`
 --
 
 DROP TABLE IF EXISTS `newsletters`;
@@ -4659,7 +4659,7 @@ CREATE TABLE `newsletters` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `notifications`
+-- Cấu trúc bảng cho bảng `notifications`
 --
 
 DROP TABLE IF EXISTS `notifications`;
@@ -4676,7 +4676,7 @@ CREATE TABLE `notifications` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `order_items`
+-- Cấu trúc bảng cho bảng `order_items`
 --
 
 DROP TABLE IF EXISTS `order_items`;
@@ -4692,7 +4692,7 @@ CREATE TABLE `order_items` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `order_item_toppings`
+-- Cấu trúc bảng cho bảng `order_item_toppings`
 --
 
 DROP TABLE IF EXISTS `order_item_toppings`;
@@ -4704,7 +4704,7 @@ CREATE TABLE `order_item_toppings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `order_item_toppings`
+-- Đang đổ dữ liệu cho bảng `order_item_toppings`
 --
 
 INSERT INTO `order_item_toppings` (`id`, `order_item_id`, `topping_id`, `price`) VALUES
@@ -4726,7 +4726,7 @@ INSERT INTO `order_item_toppings` (`id`, `order_item_id`, `topping_id`, `price`)
 -- --------------------------------------------------------
 
 --
--- Table structure for table `positions`
+-- Cấu trúc bảng cho bảng `positions`
 --
 
 DROP TABLE IF EXISTS `positions`;
@@ -4737,7 +4737,7 @@ CREATE TABLE `positions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `positions`
+-- Đang đổ dữ liệu cho bảng `positions`
 --
 
 INSERT INTO `positions` (`id`, `position_name`, `base_salary`) VALUES
@@ -4753,7 +4753,7 @@ INSERT INTO `positions` (`id`, `position_name`, `base_salary`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pos_orders`
+-- Cấu trúc bảng cho bảng `pos_orders`
 --
 
 DROP TABLE IF EXISTS `pos_orders`;
@@ -4771,7 +4771,7 @@ CREATE TABLE `pos_orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `pos_orders`
+-- Đang đổ dữ liệu cho bảng `pos_orders`
 --
 
 INSERT INTO `pos_orders` (`id`, `table_id`, `status`, `total_amount`, `created_at`, `updated_at`, `payment_method`, `booking_id`, `deposit_amount`, `guests`) VALUES
@@ -4822,7 +4822,7 @@ INSERT INTO `pos_orders` (`id`, `table_id`, `status`, `total_amount`, `created_a
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pos_order_items`
+-- Cấu trúc bảng cho bảng `pos_order_items`
 --
 
 DROP TABLE IF EXISTS `pos_order_items`;
@@ -4840,7 +4840,7 @@ CREATE TABLE `pos_order_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `pos_order_items`
+-- Đang đổ dữ liệu cho bảng `pos_order_items`
 --
 
 INSERT INTO `pos_order_items` (`id`, `pos_order_id`, `item_type`, `item_id`, `quantity`, `price`, `notes`, `status`, `created_at`, `updated_at`) VALUES
@@ -4873,7 +4873,7 @@ INSERT INTO `pos_order_items` (`id`, `pos_order_id`, `item_type`, `item_id`, `qu
 -- --------------------------------------------------------
 
 --
--- Table structure for table `po_receipt_inspections`
+-- Cấu trúc bảng cho bảng `po_receipt_inspections`
 --
 
 DROP TABLE IF EXISTS `po_receipt_inspections`;
@@ -4893,7 +4893,7 @@ CREATE TABLE `po_receipt_inspections` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `po_receipt_inspections`
+-- Đang đổ dữ liệu cho bảng `po_receipt_inspections`
 --
 
 INSERT INTO `po_receipt_inspections` (`id`, `po_id`, `ingredient_id`, `image_path`, `check_packaging`, `check_color`, `check_odor`, `check_freshness`, `check_size`, `check_weight`, `notes`, `created_at`) VALUES
@@ -4918,7 +4918,7 @@ INSERT INTO `po_receipt_inspections` (`id`, `po_id`, `ingredient_id`, `image_pat
 -- --------------------------------------------------------
 
 --
--- Table structure for table `purchase_orders`
+-- Cấu trúc bảng cho bảng `purchase_orders`
 --
 
 DROP TABLE IF EXISTS `purchase_orders`;
@@ -4935,7 +4935,7 @@ CREATE TABLE `purchase_orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `purchase_orders`
+-- Đang đổ dữ liệu cho bảng `purchase_orders`
 --
 
 INSERT INTO `purchase_orders` (`id`, `po_code`, `supplier_id`, `created_by`, `created_at`, `status`, `total_amount`, `notes`, `batch_cert_file`) VALUES
@@ -4979,7 +4979,7 @@ INSERT INTO `purchase_orders` (`id`, `po_code`, `supplier_id`, `created_by`, `cr
 -- --------------------------------------------------------
 
 --
--- Table structure for table `purchase_order_details`
+-- Cấu trúc bảng cho bảng `purchase_order_details`
 --
 
 DROP TABLE IF EXISTS `purchase_order_details`;
@@ -4992,7 +4992,7 @@ CREATE TABLE `purchase_order_details` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `purchase_order_details`
+-- Đang đổ dữ liệu cho bảng `purchase_order_details`
 --
 
 INSERT INTO `purchase_order_details` (`id`, `po_id`, `ingredient_id`, `expected_qty`, `expected_price`) VALUES
@@ -5265,7 +5265,7 @@ INSERT INTO `purchase_order_details` (`id`, `po_id`, `ingredient_id`, `expected_
 -- --------------------------------------------------------
 
 --
--- Table structure for table `restaurant_expenses`
+-- Cấu trúc bảng cho bảng `restaurant_expenses`
 --
 
 DROP TABLE IF EXISTS `restaurant_expenses`;
@@ -5280,7 +5280,7 @@ CREATE TABLE `restaurant_expenses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `restaurant_expenses`
+-- Đang đổ dữ liệu cho bảng `restaurant_expenses`
 --
 
 INSERT INTO `restaurant_expenses` (`id`, `category`, `amount`, `expense_date`, `note`, `created_at`, `updated_at`) VALUES
@@ -5292,7 +5292,7 @@ INSERT INTO `restaurant_expenses` (`id`, `category`, `amount`, `expense_date`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `restaurant_tables`
+-- Cấu trúc bảng cho bảng `restaurant_tables`
 --
 
 DROP TABLE IF EXISTS `restaurant_tables`;
@@ -5311,7 +5311,7 @@ CREATE TABLE `restaurant_tables` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `restaurant_tables`
+-- Đang đổ dữ liệu cho bảng `restaurant_tables`
 --
 
 INSERT INTO `restaurant_tables` (`id`, `table_code`, `table_number`, `room_type`, `category`, `capacity`, `price`, `status`, `is_available`, `pos_x`, `pos_y`) VALUES
@@ -5335,7 +5335,7 @@ INSERT INTO `restaurant_tables` (`id`, `table_code`, `table_number`, `room_type`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `services`
+-- Cấu trúc bảng cho bảng `services`
 --
 
 DROP TABLE IF EXISTS `services`;
@@ -5346,7 +5346,7 @@ CREATE TABLE `services` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `services`
+-- Đang đổ dữ liệu cho bảng `services`
 --
 
 INSERT INTO `services` (`id`, `service_name`, `price`) VALUES
@@ -5357,7 +5357,7 @@ INSERT INTO `services` (`id`, `service_name`, `price`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `service_bookings`
+-- Cấu trúc bảng cho bảng `service_bookings`
 --
 
 DROP TABLE IF EXISTS `service_bookings`;
@@ -5395,7 +5395,7 @@ CREATE TABLE `service_bookings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `service_bookings`
+-- Đang đổ dữ liệu cho bảng `service_bookings`
 --
 
 INSERT INTO `service_bookings` (`id`, `user_id`, `customer_name`, `customer_phone`, `booking_date`, `service_type`, `table_id`, `chef_id`, `combo_id`, `guests`, `message`, `total_amount`, `deposit_amount`, `status`, `event_type`, `decor_package`, `has_cake`, `has_flower`, `is_archived`, `created_at`, `has_candle`, `has_handwritten_card`, `card_message`, `flower_preference`, `music_playlist`, `light_tone`, `chef_requirements`, `is_reminded`, `decor_id`, `ai_suggested_menu`) VALUES
@@ -5537,7 +5537,7 @@ INSERT INTO `service_bookings` (`id`, `user_id`, `customer_name`, `customer_phon
 -- --------------------------------------------------------
 
 --
--- Table structure for table `settings`
+-- Cấu trúc bảng cho bảng `settings`
 --
 
 DROP TABLE IF EXISTS `settings`;
@@ -5547,7 +5547,7 @@ CREATE TABLE `settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `settings`
+-- Đang đổ dữ liệu cho bảng `settings`
 --
 
 INSERT INTO `settings` (`key_name`, `key_value`) VALUES
@@ -5589,7 +5589,7 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `suppliers`
+-- Cấu trúc bảng cho bảng `suppliers`
 --
 
 DROP TABLE IF EXISTS `suppliers`;
@@ -5606,7 +5606,7 @@ CREATE TABLE `suppliers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `suppliers`
+-- Đang đổ dữ liệu cho bảng `suppliers`
 --
 
 INSERT INTO `suppliers` (`id`, `name`, `phone`, `address`, `created_at`, `email`, `contact_person`, `origin_country`, `transport_conditions`) VALUES
@@ -5620,7 +5620,7 @@ INSERT INTO `suppliers` (`id`, `name`, `phone`, `address`, `created_at`, `email`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `supplier_certificates`
+-- Cấu trúc bảng cho bảng `supplier_certificates`
 --
 
 DROP TABLE IF EXISTS `supplier_certificates`;
@@ -5637,7 +5637,7 @@ CREATE TABLE `supplier_certificates` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `supplier_certificates`
+-- Đang đổ dữ liệu cho bảng `supplier_certificates`
 --
 
 INSERT INTO `supplier_certificates` (`id`, `supplier_id`, `cert_type`, `cert_name`, `cert_number`, `issue_date`, `expiry_date`, `file_path`, `created_at`) VALUES
@@ -5655,7 +5655,7 @@ INSERT INTO `supplier_certificates` (`id`, `supplier_id`, `cert_type`, `cert_nam
 -- --------------------------------------------------------
 
 --
--- Table structure for table `themes`
+-- Cấu trúc bảng cho bảng `themes`
 --
 
 DROP TABLE IF EXISTS `themes`;
@@ -5671,7 +5671,7 @@ CREATE TABLE `themes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `themes`
+-- Đang đổ dữ liệu cho bảng `themes`
 --
 
 INSERT INTO `themes` (`id`, `name`, `description`, `start_date`, `end_date`, `image`, `is_active`, `created_at`) VALUES
@@ -5680,7 +5680,7 @@ INSERT INTO `themes` (`id`, `name`, `description`, `start_date`, `end_date`, `im
 -- --------------------------------------------------------
 
 --
--- Table structure for table `toppings`
+-- Cấu trúc bảng cho bảng `toppings`
 --
 
 DROP TABLE IF EXISTS `toppings`;
@@ -5696,7 +5696,7 @@ CREATE TABLE `toppings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `toppings`
+-- Đang đổ dữ liệu cho bảng `toppings`
 --
 
 INSERT INTO `toppings` (`id`, `name`, `description`, `price`, `image`, `selection_type`, `topping_group`, `status`) VALUES
@@ -5745,7 +5745,7 @@ INSERT INTO `toppings` (`id`, `name`, `description`, `price`, `image`, `selectio
 -- --------------------------------------------------------
 
 --
--- Table structure for table `topping_recipes`
+-- Cấu trúc bảng cho bảng `topping_recipes`
 --
 
 DROP TABLE IF EXISTS `topping_recipes`;
@@ -5758,7 +5758,7 @@ CREATE TABLE `topping_recipes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `topping_recipes`
+-- Đang đổ dữ liệu cho bảng `topping_recipes`
 --
 
 INSERT INTO `topping_recipes` (`id`, `topping_id`, `item_id`, `quantity_required`, `created_at`) VALUES
@@ -5796,7 +5796,7 @@ INSERT INTO `topping_recipes` (`id`, `topping_id`, `item_id`, `quantity_required
 -- --------------------------------------------------------
 
 --
--- Table structure for table `transfer_details`
+-- Cấu trúc bảng cho bảng `transfer_details`
 --
 
 DROP TABLE IF EXISTS `transfer_details`;
@@ -5808,7 +5808,7 @@ CREATE TABLE `transfer_details` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `transfer_details`
+-- Đang đổ dữ liệu cho bảng `transfer_details`
 --
 
 INSERT INTO `transfer_details` (`id`, `transfer_id`, `ingredient_id`, `quantity`) VALUES
@@ -5976,7 +5976,7 @@ INSERT INTO `transfer_details` (`id`, `transfer_id`, `ingredient_id`, `quantity`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Cấu trúc bảng cho bảng `users`
 --
 
 DROP TABLE IF EXISTS `users`;
@@ -6007,7 +6007,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `users`
+-- Đang đổ dữ liệu cho bảng `users`
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `avatar`, `avatar_blob`, `avatar_mime`, `phone`, `birthday`, `email`, `google_id`, `role`, `is_active`, `created_at`, `employee_id`, `doneness`, `flavor_profile`, `fav_ingredients`, `disliked_ingredients`, `allergies`, `visit_count`, `total_spent`, `drink_preferences`) VALUES
@@ -6055,7 +6055,7 @@ INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `avatar`, `avata
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_addresses`
+-- Cấu trúc bảng cho bảng `user_addresses`
 --
 
 DROP TABLE IF EXISTS `user_addresses`;
@@ -6069,7 +6069,7 @@ CREATE TABLE `user_addresses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `user_addresses`
+-- Đang đổ dữ liệu cho bảng `user_addresses`
 --
 
 INSERT INTO `user_addresses` (`id`, `user_id`, `address_type`, `address_detail`, `is_default`, `created_at`) VALUES
@@ -6079,7 +6079,7 @@ INSERT INTO `user_addresses` (`id`, `user_id`, `address_type`, `address_detail`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_milestones`
+-- Cấu trúc bảng cho bảng `user_milestones`
 --
 
 DROP TABLE IF EXISTS `user_milestones`;
@@ -6093,7 +6093,7 @@ CREATE TABLE `user_milestones` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `user_milestones`
+-- Đang đổ dữ liệu cho bảng `user_milestones`
 --
 
 INSERT INTO `user_milestones` (`id`, `user_id`, `milestone_id`, `achieved_at`, `is_redeemed`, `redeemed_at`) VALUES
@@ -6114,7 +6114,7 @@ INSERT INTO `user_milestones` (`id`, `user_id`, `milestone_id`, `achieved_at`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_vip`
+-- Cấu trúc bảng cho bảng `user_vip`
 --
 
 DROP TABLE IF EXISTS `user_vip`;
@@ -6128,7 +6128,7 @@ CREATE TABLE `user_vip` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `user_vip`
+-- Đang đổ dữ liệu cho bảng `user_vip`
 --
 
 INSERT INTO `user_vip` (`id`, `user_id`, `plan_id`, `start_date`, `end_date`, `status`) VALUES
@@ -6140,7 +6140,7 @@ INSERT INTO `user_vip` (`id`, `user_id`, `plan_id`, `start_date`, `end_date`, `s
 -- --------------------------------------------------------
 
 --
--- Table structure for table `videos`
+-- Cấu trúc bảng cho bảng `videos`
 --
 
 DROP TABLE IF EXISTS `videos`;
@@ -6155,7 +6155,7 @@ CREATE TABLE `videos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `videos`
+-- Đang đổ dữ liệu cho bảng `videos`
 --
 
 INSERT INTO `videos` (`id`, `video_type`, `video_url`, `file_path`, `created_at`, `title`, `description`) VALUES
@@ -6164,7 +6164,7 @@ INSERT INTO `videos` (`id`, `video_type`, `video_url`, `file_path`, `created_at`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `vip_plans`
+-- Cấu trúc bảng cho bảng `vip_plans`
 --
 
 DROP TABLE IF EXISTS `vip_plans`;
@@ -6178,7 +6178,7 @@ CREATE TABLE `vip_plans` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `vip_plans`
+-- Đang đổ dữ liệu cho bảng `vip_plans`
 --
 
 INSERT INTO `vip_plans` (`id`, `name`, `discount_percent`, `duration_days`, `price`, `description`) VALUES
@@ -6187,7 +6187,7 @@ INSERT INTO `vip_plans` (`id`, `name`, `discount_percent`, `duration_days`, `pri
 -- --------------------------------------------------------
 
 --
--- Table structure for table `warehouses`
+-- Cấu trúc bảng cho bảng `warehouses`
 --
 
 DROP TABLE IF EXISTS `warehouses`;
@@ -6199,7 +6199,7 @@ CREATE TABLE `warehouses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `warehouses`
+-- Đang đổ dữ liệu cho bảng `warehouses`
 --
 
 INSERT INTO `warehouses` (`id`, `name`, `type`, `status`) VALUES
@@ -6214,17 +6214,17 @@ INSERT INTO `warehouses` (`id`, `name`, `type`, `status`) VALUES
 (9, 'Kho Nguyên Liệu Khô (Gia vị, đồ khô)', '', 1);
 
 --
--- Indexes for dumped tables
+-- Chỉ mục cho các bảng đã đổ
 --
 
 --
--- Indexes for table `about_categories`
+-- Chỉ mục cho bảng `about_categories`
 --
 ALTER TABLE `about_categories`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `about_comments`
+-- Chỉ mục cho bảng `about_comments`
 --
 ALTER TABLE `about_comments`
   ADD PRIMARY KEY (`id`),
@@ -6232,7 +6232,7 @@ ALTER TABLE `about_comments`
   ADD KEY `idx_author_ip` (`author_ip`);
 
 --
--- Indexes for table `about_comment_bans`
+-- Chỉ mục cho bảng `about_comment_bans`
 --
 ALTER TABLE `about_comment_bans`
   ADD PRIMARY KEY (`id`),
@@ -6240,204 +6240,204 @@ ALTER TABLE `about_comment_bans`
   ADD UNIQUE KEY `unique_user_ban` (`user_id`);
 
 --
--- Indexes for table `about_comment_likes`
+-- Chỉ mục cho bảng `about_comment_likes`
 --
 ALTER TABLE `about_comment_likes`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_like` (`comment_id`,`user_id`);
 
 --
--- Indexes for table `about_comment_reports`
+-- Chỉ mục cho bảng `about_comment_reports`
 --
 ALTER TABLE `about_comment_reports`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `about_content`
+-- Chỉ mục cho bảng `about_content`
 --
 ALTER TABLE `about_content`
   ADD PRIMARY KEY (`id`),
   ADD KEY `category_id` (`category_id`);
 
 --
--- Indexes for table `about_likes`
+-- Chỉ mục cho bảng `about_likes`
 --
 ALTER TABLE `about_likes`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_like` (`content_id`,`user_ip`);
 
 --
--- Indexes for table `about_saved_posts`
+-- Chỉ mục cho bảng `about_saved_posts`
 --
 ALTER TABLE `about_saved_posts`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `user_id` (`user_id`,`post_id`);
 
 --
--- Indexes for table `about_shares`
+-- Chỉ mục cho bảng `about_shares`
 --
 ALTER TABLE `about_shares`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_content` (`content_id`);
 
 --
--- Indexes for table `admins`
+-- Chỉ mục cho bảng `admins`
 --
 ALTER TABLE `admins`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `banners`
+-- Chỉ mục cho bảng `banners`
 --
 ALTER TABLE `banners`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `bespoke_budgets`
+-- Chỉ mục cho bảng `bespoke_budgets`
 --
 ALTER TABLE `bespoke_budgets`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `bespoke_occasions`
+-- Chỉ mục cho bảng `bespoke_occasions`
 --
 ALTER TABLE `bespoke_occasions`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `bespoke_styles`
+-- Chỉ mục cho bảng `bespoke_styles`
 --
 ALTER TABLE `bespoke_styles`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `bookings`
+-- Chỉ mục cho bảng `bookings`
 --
 ALTER TABLE `bookings`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `booking_details`
+-- Chỉ mục cho bảng `booking_details`
 --
 ALTER TABLE `booking_details`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `booking_inventory_deductions`
+-- Chỉ mục cho bảng `booking_inventory_deductions`
 --
 ALTER TABLE `booking_inventory_deductions`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `bot_context_logs`
+-- Chỉ mục cho bảng `bot_context_logs`
 --
 ALTER TABLE `bot_context_logs`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `bot_responses`
+-- Chỉ mục cho bảng `bot_responses`
 --
 ALTER TABLE `bot_responses`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `categories`
+-- Chỉ mục cho bảng `categories`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `chat_messages`
+-- Chỉ mục cho bảng `chat_messages`
 --
 ALTER TABLE `chat_messages`
   ADD PRIMARY KEY (`id`),
   ADD KEY `session_id` (`session_id`);
 
 --
--- Indexes for table `chat_sessions`
+-- Chỉ mục cho bảng `chat_sessions`
 --
 ALTER TABLE `chat_sessions`
   ADD PRIMARY KEY (`session_id`);
 
 --
--- Indexes for table `chefs`
+-- Chỉ mục cho bảng `chefs`
 --
 ALTER TABLE `chefs`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `chef_certificates`
+-- Chỉ mục cho bảng `chef_certificates`
 --
 ALTER TABLE `chef_certificates`
   ADD PRIMARY KEY (`id`),
   ADD KEY `chef_id` (`chef_id`);
 
 --
--- Indexes for table `chef_gallery`
+-- Chỉ mục cho bảng `chef_gallery`
 --
 ALTER TABLE `chef_gallery`
   ADD PRIMARY KEY (`id`),
   ADD KEY `chef_id` (`chef_id`);
 
 --
--- Indexes for table `chef_reviews`
+-- Chỉ mục cho bảng `chef_reviews`
 --
 ALTER TABLE `chef_reviews`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `combos`
+-- Chỉ mục cho bảng `combos`
 --
 ALTER TABLE `combos`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_combo_theme` (`theme_id`);
 
 --
--- Indexes for table `combo_items`
+-- Chỉ mục cho bảng `combo_items`
 --
 ALTER TABLE `combo_items`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `contacts`
+-- Chỉ mục cho bảng `contacts`
 --
 ALTER TABLE `contacts`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `decor_packages`
+-- Chỉ mục cho bảng `decor_packages`
 --
 ALTER TABLE `decor_packages`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_decor_event` (`event_type_id`);
 
 --
--- Indexes for table `employees`
+-- Chỉ mục cho bảng `employees`
 --
 ALTER TABLE `employees`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `event_types`
+-- Chỉ mục cho bảng `event_types`
 --
 ALTER TABLE `event_types`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `foods`
+-- Chỉ mục cho bảng `foods`
 --
 ALTER TABLE `foods`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_food_theme` (`theme_id`);
 
 --
--- Indexes for table `food_recipes`
+-- Chỉ mục cho bảng `food_recipes`
 --
 ALTER TABLE `food_recipes`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `food_toppings`
+-- Chỉ mục cho bảng `food_toppings`
 --
 ALTER TABLE `food_toppings`
   ADD PRIMARY KEY (`id`),
@@ -6445,37 +6445,37 @@ ALTER TABLE `food_toppings`
   ADD KEY `topping_id` (`topping_id`);
 
 --
--- Indexes for table `footer_links`
+-- Chỉ mục cho bảng `footer_links`
 --
 ALTER TABLE `footer_links`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `galleries`
+-- Chỉ mục cho bảng `galleries`
 --
 ALTER TABLE `galleries`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `inventory`
+-- Chỉ mục cho bảng `inventory`
 --
 ALTER TABLE `inventory`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `inventory_audits`
+-- Chỉ mục cho bảng `inventory_audits`
 --
 ALTER TABLE `inventory_audits`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `inventory_audit_details`
+-- Chỉ mục cho bảng `inventory_audit_details`
 --
 ALTER TABLE `inventory_audit_details`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `inventory_batches`
+-- Chỉ mục cho bảng `inventory_batches`
 --
 ALTER TABLE `inventory_batches`
   ADD PRIMARY KEY (`id`),
@@ -6484,74 +6484,74 @@ ALTER TABLE `inventory_batches`
   ADD KEY `expiry_date` (`expiry_date`);
 
 --
--- Indexes for table `inventory_categories`
+-- Chỉ mục cho bảng `inventory_categories`
 --
 ALTER TABLE `inventory_categories`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `inventory_history`
+-- Chỉ mục cho bảng `inventory_history`
 --
 ALTER TABLE `inventory_history`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `inventory_receipts`
+-- Chỉ mục cho bảng `inventory_receipts`
 --
 ALTER TABLE `inventory_receipts`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `inventory_stocks`
+-- Chỉ mục cho bảng `inventory_stocks`
 --
 ALTER TABLE `inventory_stocks`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `idx_wh_ing` (`warehouse_id`,`ingredient_id`);
 
 --
--- Indexes for table `inventory_transfers`
+-- Chỉ mục cho bảng `inventory_transfers`
 --
 ALTER TABLE `inventory_transfers`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `inventory_units`
+-- Chỉ mục cho bảng `inventory_units`
 --
 ALTER TABLE `inventory_units`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `milestones`
+-- Chỉ mục cho bảng `milestones`
 --
 ALTER TABLE `milestones`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `navigation_menu`
+-- Chỉ mục cho bảng `navigation_menu`
 --
 ALTER TABLE `navigation_menu`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `newsletters`
+-- Chỉ mục cho bảng `newsletters`
 --
 ALTER TABLE `newsletters`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `notifications`
+-- Chỉ mục cho bảng `notifications`
 --
 ALTER TABLE `notifications`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `order_items`
+-- Chỉ mục cho bảng `order_items`
 --
 ALTER TABLE `order_items`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `order_item_toppings`
+-- Chỉ mục cho bảng `order_item_toppings`
 --
 ALTER TABLE `order_item_toppings`
   ADD PRIMARY KEY (`id`),
@@ -6559,26 +6559,26 @@ ALTER TABLE `order_item_toppings`
   ADD KEY `topping_id` (`topping_id`);
 
 --
--- Indexes for table `positions`
+-- Chỉ mục cho bảng `positions`
 --
 ALTER TABLE `positions`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `pos_orders`
+-- Chỉ mục cho bảng `pos_orders`
 --
 ALTER TABLE `pos_orders`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `pos_order_items`
+-- Chỉ mục cho bảng `pos_order_items`
 --
 ALTER TABLE `pos_order_items`
   ADD PRIMARY KEY (`id`),
   ADD KEY `pos_order_id` (`pos_order_id`);
 
 --
--- Indexes for table `po_receipt_inspections`
+-- Chỉ mục cho bảng `po_receipt_inspections`
 --
 ALTER TABLE `po_receipt_inspections`
   ADD PRIMARY KEY (`id`),
@@ -6586,37 +6586,37 @@ ALTER TABLE `po_receipt_inspections`
   ADD KEY `ingredient_id` (`ingredient_id`);
 
 --
--- Indexes for table `purchase_orders`
+-- Chỉ mục cho bảng `purchase_orders`
 --
 ALTER TABLE `purchase_orders`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `purchase_order_details`
+-- Chỉ mục cho bảng `purchase_order_details`
 --
 ALTER TABLE `purchase_order_details`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `restaurant_expenses`
+-- Chỉ mục cho bảng `restaurant_expenses`
 --
 ALTER TABLE `restaurant_expenses`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `restaurant_tables`
+-- Chỉ mục cho bảng `restaurant_tables`
 --
 ALTER TABLE `restaurant_tables`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `services`
+-- Chỉ mục cho bảng `services`
 --
 ALTER TABLE `services`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `service_bookings`
+-- Chỉ mục cho bảng `service_bookings`
 --
 ALTER TABLE `service_bookings`
   ADD PRIMARY KEY (`id`),
@@ -6624,38 +6624,38 @@ ALTER TABLE `service_bookings`
   ADD KEY `fk_sb_chef` (`chef_id`);
 
 --
--- Indexes for table `settings`
+-- Chỉ mục cho bảng `settings`
 --
 ALTER TABLE `settings`
   ADD PRIMARY KEY (`key_name`);
 
 --
--- Indexes for table `suppliers`
+-- Chỉ mục cho bảng `suppliers`
 --
 ALTER TABLE `suppliers`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `supplier_certificates`
+-- Chỉ mục cho bảng `supplier_certificates`
 --
 ALTER TABLE `supplier_certificates`
   ADD PRIMARY KEY (`id`),
   ADD KEY `supplier_id` (`supplier_id`);
 
 --
--- Indexes for table `themes`
+-- Chỉ mục cho bảng `themes`
 --
 ALTER TABLE `themes`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `toppings`
+-- Chỉ mục cho bảng `toppings`
 --
 ALTER TABLE `toppings`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `topping_recipes`
+-- Chỉ mục cho bảng `topping_recipes`
 --
 ALTER TABLE `topping_recipes`
   ADD PRIMARY KEY (`id`),
@@ -6663,27 +6663,27 @@ ALTER TABLE `topping_recipes`
   ADD KEY `item_id` (`item_id`);
 
 --
--- Indexes for table `transfer_details`
+-- Chỉ mục cho bảng `transfer_details`
 --
 ALTER TABLE `transfer_details`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `users`
+-- Chỉ mục cho bảng `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD KEY `employee_id` (`employee_id`);
 
 --
--- Indexes for table `user_addresses`
+-- Chỉ mục cho bảng `user_addresses`
 --
 ALTER TABLE `user_addresses`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `user_milestones`
+-- Chỉ mục cho bảng `user_milestones`
 --
 ALTER TABLE `user_milestones`
   ADD PRIMARY KEY (`id`),
@@ -6691,7 +6691,7 @@ ALTER TABLE `user_milestones`
   ADD KEY `milestone_id` (`milestone_id`);
 
 --
--- Indexes for table `user_vip`
+-- Chỉ mục cho bảng `user_vip`
 --
 ALTER TABLE `user_vip`
   ADD PRIMARY KEY (`id`),
@@ -6699,585 +6699,585 @@ ALTER TABLE `user_vip`
   ADD KEY `fk_user_vip_plan_id` (`plan_id`);
 
 --
--- Indexes for table `videos`
+-- Chỉ mục cho bảng `videos`
 --
 ALTER TABLE `videos`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `vip_plans`
+-- Chỉ mục cho bảng `vip_plans`
 --
 ALTER TABLE `vip_plans`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `warehouses`
+-- Chỉ mục cho bảng `warehouses`
 --
 ALTER TABLE `warehouses`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT cho các bảng đã đổ
 --
 
 --
--- AUTO_INCREMENT for table `about_categories`
+-- AUTO_INCREMENT cho bảng `about_categories`
 --
 ALTER TABLE `about_categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `about_comments`
+-- AUTO_INCREMENT cho bảng `about_comments`
 --
 ALTER TABLE `about_comments`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
--- AUTO_INCREMENT for table `about_comment_bans`
+-- AUTO_INCREMENT cho bảng `about_comment_bans`
 --
 ALTER TABLE `about_comment_bans`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `about_comment_likes`
+-- AUTO_INCREMENT cho bảng `about_comment_likes`
 --
 ALTER TABLE `about_comment_likes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `about_comment_reports`
+-- AUTO_INCREMENT cho bảng `about_comment_reports`
 --
 ALTER TABLE `about_comment_reports`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `about_content`
+-- AUTO_INCREMENT cho bảng `about_content`
 --
 ALTER TABLE `about_content`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `about_likes`
+-- AUTO_INCREMENT cho bảng `about_likes`
 --
 ALTER TABLE `about_likes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
--- AUTO_INCREMENT for table `about_saved_posts`
+-- AUTO_INCREMENT cho bảng `about_saved_posts`
 --
 ALTER TABLE `about_saved_posts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `about_shares`
+-- AUTO_INCREMENT cho bảng `about_shares`
 --
 ALTER TABLE `about_shares`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=208;
 
 --
--- AUTO_INCREMENT for table `admins`
+-- AUTO_INCREMENT cho bảng `admins`
 --
 ALTER TABLE `admins`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `banners`
+-- AUTO_INCREMENT cho bảng `banners`
 --
 ALTER TABLE `banners`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `bespoke_budgets`
+-- AUTO_INCREMENT cho bảng `bespoke_budgets`
 --
 ALTER TABLE `bespoke_budgets`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `bespoke_occasions`
+-- AUTO_INCREMENT cho bảng `bespoke_occasions`
 --
 ALTER TABLE `bespoke_occasions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `bespoke_styles`
+-- AUTO_INCREMENT cho bảng `bespoke_styles`
 --
 ALTER TABLE `bespoke_styles`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `bookings`
+-- AUTO_INCREMENT cho bảng `bookings`
 --
 ALTER TABLE `bookings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `booking_details`
+-- AUTO_INCREMENT cho bảng `booking_details`
 --
 ALTER TABLE `booking_details`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1090;
 
 --
--- AUTO_INCREMENT for table `booking_inventory_deductions`
+-- AUTO_INCREMENT cho bảng `booking_inventory_deductions`
 --
 ALTER TABLE `booking_inventory_deductions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=331;
 
 --
--- AUTO_INCREMENT for table `bot_context_logs`
+-- AUTO_INCREMENT cho bảng `bot_context_logs`
 --
 ALTER TABLE `bot_context_logs`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
--- AUTO_INCREMENT for table `bot_responses`
+-- AUTO_INCREMENT cho bảng `bot_responses`
 --
 ALTER TABLE `bot_responses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
--- AUTO_INCREMENT for table `categories`
+-- AUTO_INCREMENT cho bảng `categories`
 --
 ALTER TABLE `categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `chat_messages`
+-- AUTO_INCREMENT cho bảng `chat_messages`
 --
 ALTER TABLE `chat_messages`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
--- AUTO_INCREMENT for table `chefs`
+-- AUTO_INCREMENT cho bảng `chefs`
 --
 ALTER TABLE `chefs`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- AUTO_INCREMENT for table `chef_certificates`
+-- AUTO_INCREMENT cho bảng `chef_certificates`
 --
 ALTER TABLE `chef_certificates`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
--- AUTO_INCREMENT for table `chef_gallery`
+-- AUTO_INCREMENT cho bảng `chef_gallery`
 --
 ALTER TABLE `chef_gallery`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=113;
 
 --
--- AUTO_INCREMENT for table `chef_reviews`
+-- AUTO_INCREMENT cho bảng `chef_reviews`
 --
 ALTER TABLE `chef_reviews`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
--- AUTO_INCREMENT for table `combos`
+-- AUTO_INCREMENT cho bảng `combos`
 --
 ALTER TABLE `combos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `combo_items`
+-- AUTO_INCREMENT cho bảng `combo_items`
 --
 ALTER TABLE `combo_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
--- AUTO_INCREMENT for table `contacts`
+-- AUTO_INCREMENT cho bảng `contacts`
 --
 ALTER TABLE `contacts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `decor_packages`
+-- AUTO_INCREMENT cho bảng `decor_packages`
 --
 ALTER TABLE `decor_packages`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
--- AUTO_INCREMENT for table `employees`
+-- AUTO_INCREMENT cho bảng `employees`
 --
 ALTER TABLE `employees`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- AUTO_INCREMENT for table `event_types`
+-- AUTO_INCREMENT cho bảng `event_types`
 --
 ALTER TABLE `event_types`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `foods`
+-- AUTO_INCREMENT cho bảng `foods`
 --
 ALTER TABLE `foods`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
--- AUTO_INCREMENT for table `food_recipes`
+-- AUTO_INCREMENT cho bảng `food_recipes`
 --
 ALTER TABLE `food_recipes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=691;
 
 --
--- AUTO_INCREMENT for table `food_toppings`
+-- AUTO_INCREMENT cho bảng `food_toppings`
 --
 ALTER TABLE `food_toppings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=326;
 
 --
--- AUTO_INCREMENT for table `footer_links`
+-- AUTO_INCREMENT cho bảng `footer_links`
 --
 ALTER TABLE `footer_links`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `galleries`
+-- AUTO_INCREMENT cho bảng `galleries`
 --
 ALTER TABLE `galleries`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT for table `inventory`
+-- AUTO_INCREMENT cho bảng `inventory`
 --
 ALTER TABLE `inventory`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=228;
 
 --
--- AUTO_INCREMENT for table `inventory_audits`
+-- AUTO_INCREMENT cho bảng `inventory_audits`
 --
 ALTER TABLE `inventory_audits`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `inventory_audit_details`
+-- AUTO_INCREMENT cho bảng `inventory_audit_details`
 --
 ALTER TABLE `inventory_audit_details`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT for table `inventory_batches`
+-- AUTO_INCREMENT cho bảng `inventory_batches`
 --
 ALTER TABLE `inventory_batches`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=614;
 
 --
--- AUTO_INCREMENT for table `inventory_categories`
+-- AUTO_INCREMENT cho bảng `inventory_categories`
 --
 ALTER TABLE `inventory_categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `inventory_history`
+-- AUTO_INCREMENT cho bảng `inventory_history`
 --
 ALTER TABLE `inventory_history`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1005;
 
 --
--- AUTO_INCREMENT for table `inventory_receipts`
+-- AUTO_INCREMENT cho bảng `inventory_receipts`
 --
 ALTER TABLE `inventory_receipts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `inventory_stocks`
+-- AUTO_INCREMENT cho bảng `inventory_stocks`
 --
 ALTER TABLE `inventory_stocks`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=830;
 
 --
--- AUTO_INCREMENT for table `inventory_transfers`
+-- AUTO_INCREMENT cho bảng `inventory_transfers`
 --
 ALTER TABLE `inventory_transfers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
 
 --
--- AUTO_INCREMENT for table `inventory_units`
+-- AUTO_INCREMENT cho bảng `inventory_units`
 --
 ALTER TABLE `inventory_units`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
--- AUTO_INCREMENT for table `milestones`
+-- AUTO_INCREMENT cho bảng `milestones`
 --
 ALTER TABLE `milestones`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
--- AUTO_INCREMENT for table `navigation_menu`
+-- AUTO_INCREMENT cho bảng `navigation_menu`
 --
 ALTER TABLE `navigation_menu`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `newsletters`
+-- AUTO_INCREMENT cho bảng `newsletters`
 --
 ALTER TABLE `newsletters`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `notifications`
+-- AUTO_INCREMENT cho bảng `notifications`
 --
 ALTER TABLE `notifications`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `order_items`
+-- AUTO_INCREMENT cho bảng `order_items`
 --
 ALTER TABLE `order_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `order_item_toppings`
+-- AUTO_INCREMENT cho bảng `order_item_toppings`
 --
 ALTER TABLE `order_item_toppings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1016;
 
 --
--- AUTO_INCREMENT for table `positions`
+-- AUTO_INCREMENT cho bảng `positions`
 --
 ALTER TABLE `positions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- AUTO_INCREMENT for table `pos_orders`
+-- AUTO_INCREMENT cho bảng `pos_orders`
 --
 ALTER TABLE `pos_orders`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1036;
 
 --
--- AUTO_INCREMENT for table `pos_order_items`
+-- AUTO_INCREMENT cho bảng `pos_order_items`
 --
 ALTER TABLE `pos_order_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
--- AUTO_INCREMENT for table `po_receipt_inspections`
+-- AUTO_INCREMENT cho bảng `po_receipt_inspections`
 --
 ALTER TABLE `po_receipt_inspections`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
--- AUTO_INCREMENT for table `purchase_orders`
+-- AUTO_INCREMENT cho bảng `purchase_orders`
 --
 ALTER TABLE `purchase_orders`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
--- AUTO_INCREMENT for table `purchase_order_details`
+-- AUTO_INCREMENT cho bảng `purchase_order_details`
 --
 ALTER TABLE `purchase_order_details`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=280;
 
 --
--- AUTO_INCREMENT for table `restaurant_expenses`
+-- AUTO_INCREMENT cho bảng `restaurant_expenses`
 --
 ALTER TABLE `restaurant_expenses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `restaurant_tables`
+-- AUTO_INCREMENT cho bảng `restaurant_tables`
 --
 ALTER TABLE `restaurant_tables`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT for table `services`
+-- AUTO_INCREMENT cho bảng `services`
 --
 ALTER TABLE `services`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `service_bookings`
+-- AUTO_INCREMENT cho bảng `service_bookings`
 --
 ALTER TABLE `service_bookings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1132;
 
 --
--- AUTO_INCREMENT for table `suppliers`
+-- AUTO_INCREMENT cho bảng `suppliers`
 --
 ALTER TABLE `suppliers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `supplier_certificates`
+-- AUTO_INCREMENT cho bảng `supplier_certificates`
 --
 ALTER TABLE `supplier_certificates`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
--- AUTO_INCREMENT for table `themes`
+-- AUTO_INCREMENT cho bảng `themes`
 --
 ALTER TABLE `themes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `toppings`
+-- AUTO_INCREMENT cho bảng `toppings`
 --
 ALTER TABLE `toppings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
--- AUTO_INCREMENT for table `topping_recipes`
+-- AUTO_INCREMENT cho bảng `topping_recipes`
 --
 ALTER TABLE `topping_recipes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
--- AUTO_INCREMENT for table `transfer_details`
+-- AUTO_INCREMENT cho bảng `transfer_details`
 --
 ALTER TABLE `transfer_details`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=165;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
--- AUTO_INCREMENT for table `user_addresses`
+-- AUTO_INCREMENT cho bảng `user_addresses`
 --
 ALTER TABLE `user_addresses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `user_milestones`
+-- AUTO_INCREMENT cho bảng `user_milestones`
 --
 ALTER TABLE `user_milestones`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
--- AUTO_INCREMENT for table `user_vip`
+-- AUTO_INCREMENT cho bảng `user_vip`
 --
 ALTER TABLE `user_vip`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `videos`
+-- AUTO_INCREMENT cho bảng `videos`
 --
 ALTER TABLE `videos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `vip_plans`
+-- AUTO_INCREMENT cho bảng `vip_plans`
 --
 ALTER TABLE `vip_plans`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `warehouses`
+-- AUTO_INCREMENT cho bảng `warehouses`
 --
 ALTER TABLE `warehouses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- Constraints for dumped tables
+-- Các ràng buộc cho các bảng đã đổ
 --
 
 --
--- Constraints for table `chat_messages`
+-- Các ràng buộc cho bảng `chat_messages`
 --
 ALTER TABLE `chat_messages`
   ADD CONSTRAINT `chat_messages_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `chat_sessions` (`session_id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `chef_certificates`
+-- Các ràng buộc cho bảng `chef_certificates`
 --
 ALTER TABLE `chef_certificates`
   ADD CONSTRAINT `chef_certificates_ibfk_1` FOREIGN KEY (`chef_id`) REFERENCES `chefs` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `chef_gallery`
+-- Các ràng buộc cho bảng `chef_gallery`
 --
 ALTER TABLE `chef_gallery`
   ADD CONSTRAINT `chef_gallery_ibfk_1` FOREIGN KEY (`chef_id`) REFERENCES `chefs` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `combos`
+-- Các ràng buộc cho bảng `combos`
 --
 ALTER TABLE `combos`
   ADD CONSTRAINT `fk_combo_theme` FOREIGN KEY (`theme_id`) REFERENCES `themes` (`id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `decor_packages`
+-- Các ràng buộc cho bảng `decor_packages`
 --
 ALTER TABLE `decor_packages`
   ADD CONSTRAINT `fk_decor_event` FOREIGN KEY (`event_type_id`) REFERENCES `event_types` (`id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `foods`
+-- Các ràng buộc cho bảng `foods`
 --
 ALTER TABLE `foods`
   ADD CONSTRAINT `fk_food_theme` FOREIGN KEY (`theme_id`) REFERENCES `themes` (`id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `food_toppings`
+-- Các ràng buộc cho bảng `food_toppings`
 --
 ALTER TABLE `food_toppings`
   ADD CONSTRAINT `fk_food_toppings_food` FOREIGN KEY (`food_id`) REFERENCES `foods` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_food_toppings_topping` FOREIGN KEY (`topping_id`) REFERENCES `toppings` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `order_item_toppings`
+-- Các ràng buộc cho bảng `order_item_toppings`
 --
 ALTER TABLE `order_item_toppings`
   ADD CONSTRAINT `fk_order_item_toppings_order_item` FOREIGN KEY (`order_item_id`) REFERENCES `booking_details` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_order_item_toppings_topping` FOREIGN KEY (`topping_id`) REFERENCES `toppings` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `pos_order_items`
+-- Các ràng buộc cho bảng `pos_order_items`
 --
 ALTER TABLE `pos_order_items`
   ADD CONSTRAINT `pos_order_items_ibfk_1` FOREIGN KEY (`pos_order_id`) REFERENCES `pos_orders` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `po_receipt_inspections`
+-- Các ràng buộc cho bảng `po_receipt_inspections`
 --
 ALTER TABLE `po_receipt_inspections`
   ADD CONSTRAINT `po_receipt_inspections_ibfk_1` FOREIGN KEY (`po_id`) REFERENCES `purchase_orders` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `po_receipt_inspections_ibfk_2` FOREIGN KEY (`ingredient_id`) REFERENCES `inventory` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `service_bookings`
+-- Các ràng buộc cho bảng `service_bookings`
 --
 ALTER TABLE `service_bookings`
   ADD CONSTRAINT `fk_booking_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_sb_chef` FOREIGN KEY (`chef_id`) REFERENCES `chefs` (`id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `supplier_certificates`
+-- Các ràng buộc cho bảng `supplier_certificates`
 --
 ALTER TABLE `supplier_certificates`
   ADD CONSTRAINT `supplier_certificates_ibfk_1` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `topping_recipes`
+-- Các ràng buộc cho bảng `topping_recipes`
 --
 ALTER TABLE `topping_recipes`
   ADD CONSTRAINT `fk_topping_recipes_item` FOREIGN KEY (`item_id`) REFERENCES `inventory` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_topping_recipes_topping` FOREIGN KEY (`topping_id`) REFERENCES `toppings` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `users`
+-- Các ràng buộc cho bảng `users`
 --
 ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `user_addresses`
+-- Các ràng buộc cho bảng `user_addresses`
 --
 ALTER TABLE `user_addresses`
   ADD CONSTRAINT `user_addresses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `user_milestones`
+-- Các ràng buộc cho bảng `user_milestones`
 --
 ALTER TABLE `user_milestones`
   ADD CONSTRAINT `user_milestones_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `user_milestones_ibfk_2` FOREIGN KEY (`milestone_id`) REFERENCES `milestones` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `user_vip`
+-- Các ràng buộc cho bảng `user_vip`
 --
 ALTER TABLE `user_vip`
   ADD CONSTRAINT `fk_user_vip_plan_id` FOREIGN KEY (`plan_id`) REFERENCES `vip_plans` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
