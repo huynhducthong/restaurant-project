@@ -112,28 +112,22 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
 /* WRAP + GRID */
 .ch-wrap { max-width: 1200px; margin: 0 auto; padding: 100px 20px; }
 .ch-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 30px;
-}
-@media(max-width: 991px){
-  .ch-grid { grid-template-columns: repeat(2, 1fr); gap: 30px; }
-}
-@media(max-width: 576px){
-  .ch-grid { grid-template-columns: 1fr; gap: 40px; }
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
 }
 @media(max-width: 768px){
   .ch-strip { gap: 30px; padding: 30px 20px; }
   .strip-num { font-size: 2rem; }
   .ch-hero { padding: 120px 0 60px; }
-  .ch-wrap { padding: 60px 20px; }
+  .ch-wrap { padding: 60px 20px; gap: 50px; }
 }
 
 /* PAGINATION */
 .ch-pagination-wrap {
   display: flex;
   justify-content: center;
-  margin-top: 50px;
+  margin-top: 80px;
 }
 .ch-pagination {
   display: flex;
@@ -173,71 +167,118 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
   pointer-events: none;
 }
 
-/* CARD */
+/* HORIZONTAL CARD LAYOUT */
 .ch-card {
+  display: flex;
+  flex-direction: row;
   background: var(--card-bg);
   border: 1px solid var(--border-light);
-  border-top: 3px solid var(--accent-burgundy);
-  display: flex; flex-direction: column;
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  position: relative;
+  overflow: hidden;
+  align-items: stretch;
+}
+.ch-card:nth-child(even) {
+  flex-direction: row-reverse;
 }
 .ch-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
 }
 
 /* Ảnh */
-.ch-img { width: 100%; aspect-ratio: 3/4; overflow: hidden; position: relative; border-bottom: 1px solid var(--border-light); }
+.ch-img { 
+  width: 45%; 
+  position: relative; 
+}
 .ch-img img {
   width: 100%; height: 100%; object-fit: cover;
-  filter: grayscale(0.2) contrast(1.05);
-  transition: transform 0.65s var(--ease), filter 0.5s var(--ease);
+  transition: transform 0.8s var(--ease);
 }
 .ch-card:hover .ch-img img {
   transform: scale(1.05);
-  filter: grayscale(0) contrast(1.1);
 }
 
 /* THÔNG TIN PUBLIC BÊN DƯỚI */
 .ch-info {
-  padding: 35px 30px;
-  display: flex; flex-direction: column; flex: 1;
+  width: 55%;
+  padding: 50px 60px;
+  display: flex; flex-direction: column; justify-content: center;
 }
 .ch-position {
-  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--accent-burgundy); margin-bottom: 10px; font-weight: 600;
+  font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--accent-burgundy); margin-bottom: 15px; font-weight: 600;
 }
 .ch-name {
   font-family: 'Cormorant Garamond', serif; font-weight: 700;
-  font-size: 2rem; color: var(--text-main); line-height: 1.1; margin-bottom: 20px;
+  font-size: 3rem; color: var(--text-main); line-height: 1.1; margin-bottom: 20px;
 }
 .ch-exp-spec {
-  display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;
-  font-size: 12px; color: var(--text-muted);
+  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 25px;
+  font-size: 13px; color: var(--text-muted);
+  background: rgba(168, 135, 70, 0.1);
+  padding: 6px 15px;
+  border-radius: 20px;
+  width: fit-content;
 }
-.ch-exp-spec i { color: var(--accent-burgundy); margin-right: 6px; font-size: 14px; }
+.ch-exp-spec i { color: var(--accent-burgundy); margin-right: 2px; font-size: 15px; }
 
 .ch-desc {
-  font-size: 13px; color: var(--text-muted); line-height: 1.8;
-  margin-bottom: 25px; flex: 1;
+  font-size: 15px; color: var(--text-muted); line-height: 1.8;
+  margin-bottom: 30px;
+  max-width: 90%;
 }
 
 .ch-quote {
   font-family: 'Cormorant Garamond', serif; font-style: italic;
-  font-size: 1.1rem; color: var(--accent-burgundy);
+  font-size: 1.25rem; color: var(--accent-burgundy);
   border-left: 2px solid var(--accent-burgundy);
-  padding-left: 15px; margin-bottom: 25px;
+  padding-left: 20px; margin-bottom: 30px;
   line-height: 1.6;
 }
 
-.ch-social { display: flex; gap: 12px; border-top: 1px solid var(--border-light); padding-top: 20px; }
-.ch-social a {
-  width: 36px; height: 36px; border: 1px solid var(--border-light);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--text-muted); font-size: 14px; text-decoration: none;
-  transition: 0.3s;
+.ch-action-btn {
+  background: var(--bg-color);
+  color: var(--text-main);
+  border: 1px solid var(--border-light);
+  padding: 12px 25px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  width: fit-content;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.ch-social a:hover { background: var(--accent-burgundy); color: #fff; border-color: var(--accent-burgundy); }
+.ch-action-btn:hover {
+  background: var(--accent-burgundy);
+  color: #fff;
+  border-color: var(--accent-burgundy);
+}
+
+@media(max-width: 991px) {
+  .ch-card { flex-direction: row !important; align-items: stretch; }
+  .ch-card:nth-child(even) { flex-direction: row !important; } /* No alternating on mobile */
+  .ch-img { width: 40%; }
+  .ch-info { width: 60%; padding: 25px 20px; }
+  .ch-name { font-size: 1.8rem; margin-bottom: 10px; }
+  .ch-position { margin-bottom: 8px; font-size: 9px; }
+  .ch-quote { font-size: 1rem; margin-bottom: 15px; padding-left: 10px; }
+  .ch-desc { font-size: 13px; margin-bottom: 20px; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .ch-exp-spec { padding: 4px 10px; font-size: 11px; margin-bottom: 15px; }
+  .ch-action-btn { padding: 8px 15px; font-size: 10px; }
+}
+@media(max-width: 576px) {
+  .ch-img { width: 35%; }
+  .ch-info { width: 65%; padding: 20px 15px; }
+  .ch-name { font-size: 1.5rem; }
+  .ch-desc { -webkit-line-clamp: 2; line-clamp: 2; font-size: 12px; }
+  .ch-quote { display: none; } /* Hide quote on very small screens to save space */
+  .ch-exp-spec span { display: block; margin-left: 0 !important; margin-bottom: 4px; }
+}
 
 /* EMPTY */
 .ch-empty { text-align: center; padding: 100px 20px; color: var(--text-muted); }
@@ -946,7 +987,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
       $hasSocial = !empty($chef['facebook']) || !empty($chef['instagram']) || !empty($chef['email']);
       $chef_json = htmlspecialchars(json_encode($chef, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8');
     ?>
-    <div class="ch-card" style="cursor: pointer;" onclick="window.location.href='chef_detail.php?id=<?= $chef['id'] ?>'">
+    <div class="ch-card">
       <div class="ch-img">
         <img src="<?= $img ?>"
              alt="<?= htmlspecialchars($chef['name']) ?>"
@@ -957,13 +998,30 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
         <div class="ch-position"><?= htmlspecialchars($chef['position'] ?? 'Đầu Bếp') ?></div>
         <div class="ch-name"><?= htmlspecialchars($chef['name']) ?></div>
 
-        <div class="ch-exp-spec" style="margin-bottom: 0;">
+        <div class="ch-exp-spec">
             <?php if(!empty($chef['experience'])): ?>
-            <div><i class="bi bi-clock-history"></i> <?= (int)$chef['experience'] ?> năm kinh nghiệm</div>
+            <span><i class="bi bi-clock-history"></i> <?= (int)$chef['experience'] ?> năm kinh nghiệm</span>
+            <?php endif; ?>
+            <?php if(!empty($chef['specialty'])): ?>
+            <span style="margin-left: 10px;"><i class="bi bi-star"></i> <?= htmlspecialchars($chef['specialty']) ?></span>
             <?php endif; ?>
         </div>
-      </div>
 
+        <?php if(!empty($chef['quote'])): ?>
+        <div class="ch-quote">"<?= htmlspecialchars($chef['quote']) ?>"</div>
+        <?php endif; ?>
+
+        <div class="ch-desc">
+            <?php 
+                $bio = strip_tags($chef['bio'] ?? 'Với niềm đam mê ẩm thực mãnh liệt, Bếp trưởng luôn trân trọng từng nguyên liệu và mang đến những trải nghiệm hương vị tuyệt vời nhất cho thực khách.');
+                echo mb_strlen($bio, 'UTF-8') > 150 ? mb_substr($bio, 0, 150, 'UTF-8') . '...' : $bio;
+            ?>
+        </div>
+        
+        <a href="chef_detail.php?id=<?= $chef['id'] ?>" class="ch-action-btn">
+            Khám phá Hồ Sơ <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
     </div>
     <?php endforeach; ?>
   </div>

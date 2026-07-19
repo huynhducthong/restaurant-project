@@ -21,29 +21,41 @@ if (isset($_SESSION["user_id"])) {
 
 function hasAllergen($food, $user_allergies) {
     if (empty($user_allergies)) return false;
-    $all_food_ingredients = ($food["allergens"] ?? "") . "," . ($food["recipe_ingredients"] ?? "") . "," . ($food["cat_name"] ?? "") . "," . ($food["name"] ?? "");
-    $food_allergens = array_map("trim", explode(",", mb_strtolower($all_food_ingredients, "UTF-8")));
+    $all_food_ingredients = ($food['allergens'] ?? '') . ',' . ($food['recipe_ingredients'] ?? '') . ',' . ($food['cat_name'] ?? '') . ',' . ($food['name'] ?? '');
+    $food_allergens = array_map('trim', explode(',', mb_strtolower($all_food_ingredients, 'UTF-8')));
     
     $aliases = [
-        "hải sản" => ["tôm", "cua", "ghẹ", "cá", "mực", "bạch tuộc", "ốc", "hàu", "sò", "nghêu", "tuna", "salmon", "scallop"],
-        "sữa" => ["bò", "phô mai", "cheese", "cream", "sữa tươi", "sữa đặc", "yoghurt", "sữa chua"],
-        "đậu phộng" => ["lạc", "peanut"],
-        "gluten" => ["lúa mì", "bột mì", "wheat", "bread", "bánh mì", "pasta", "pizza"],
-        "trứng" => ["egg", "trứng gà", "trứng vịt", "trứng cút"]
+        'hải sản' => ['tôm', 'cua', 'ghẹ', 'cá', 'mực', 'bạch tuộc', 'ốc', 'hàu', 'sò', 'nghêu', 'tuna', 'salmon', 'scallop'],
+        'sữa' => ['bơ', 'phô mai', 'cheese', 'cream', 'sữa tươi', 'sữa đặc', 'yoghurt', 'sữa chua'],
+        'đậu phộng' => ['lạc', 'peanut'],
+        'gluten' => ['lúa mì', 'bột mì', 'wheat', 'bread', 'bánh mì', 'pasta', 'pizza'],
+        'trứng' => ['egg', 'trứng gà', 'trứng vịt', 'trứng cút']
     ];
 
     foreach ($user_allergies as $ua) {
         if (empty($ua)) continue;
         
         $check_terms = [$ua];
-        if (isset($aliases[$ua])) {
-            $check_terms = array_merge($check_terms, $aliases[$ua]);
+        foreach ($aliases as $key => $values) {
+            if (mb_strpos($ua, $key, 0, 'UTF-8') !== false) {
+                $check_terms = array_merge($check_terms, $values);
+                $check_terms[] = $key;
+            }
         }
         
         foreach($food_allergens as $fa) {
             if (empty($fa)) continue;
             foreach ($check_terms as $term) {
-                if (strpos($fa, $term) !== false) return true;
+                if (mb_strpos($fa, $term, 0, 'UTF-8') !== false) {
+                    return true;
+                }
+                
+                if (mb_strlen($fa, 'UTF-8') > 1) {
+                    $pattern = '/(?<=^|\s)' . preg_quote($fa, '/') . '(?=\s|$|[.,!?])/iu';
+                    if (preg_match($pattern, $term)) {
+                        return true;
+                    }
+                }
             }
         }
     }

@@ -284,7 +284,7 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
                             </td>
                             <td>
                                 <?php if ($chef['is_featured']): ?>
-                                    <span class="badge bg-warning text-dark badge-status"><i class="fas fa-star text-warning"></i> Nổi bật</span>
+                                    <span style="color: #d4b06a; font-weight: bold;">Nổi bật</span>
                                 <?php else: ?>
                                     <span class="text-muted">-</span>
                                 <?php endif; ?>

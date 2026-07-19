@@ -179,7 +179,7 @@ include '../../public/admin_layout_header.php';
                                 <span class="badge bg-secondary">Ẩn</span>
                             <?php endif; ?>
                         </td>
-                        <td class="text-end">
+                        <td class="text-end text-nowrap">
                             <button class="btn btn-sm btn-outline-success me-1" onclick="openRecipeModal(<?= htmlspecialchars(json_encode($t)) ?>)" title="Định lượng nguyên liệu">
                                 <i class="fas fa-balance-scale"></i>
                             </button>

@@ -21,6 +21,8 @@ if (!$booking) {
     exit;
 }
 
+$has_agreed = (strpos($booking['chef_requirements'] ?? '', '[Khách hàng ĐÃ ĐỒNG Ý thực đơn]') !== false);
+
 // Fetch items
 $detail_stmt = $db->prepare("SELECT f.name, bd.quantity, f.price, bd.notes, bd.toppings_info FROM booking_details bd JOIN foods f ON bd.menu_id = f.id WHERE bd.booking_id = ?");
 $detail_stmt->execute([$booking_id]);
@@ -138,7 +140,60 @@ $total = 0;
         <h6 style="color:var(--accent-burgundy); font-weight:bold; font-size:15px; text-transform:uppercase; margin-bottom:10px;"><i class="fas fa-magic me-1"></i> Trải Nghiệm Thiết Kế Riêng</h6>
         <?php if (!empty($booking['chef_requirements'])): ?>
             <div style="font-size:14px; color:#555; margin-bottom:15px; font-style:italic;">
-                <?= nl2br(htmlspecialchars($booking['chef_requirements'])) ?>
+                <?php
+                    $display_req = $booking['chef_requirements'];
+                    $reply_part = '';
+                    
+                    // Nếu có phản hồi từ khách, tách nó ra để giữ lại
+                    if (($pos2 = strpos($display_req, '[Phản hồi từ khách')) !== false) {
+                        $reply_part = substr($display_req, $pos2);
+                        $display_req = substr($display_req, 0, $pos2);
+                    }
+                    
+                    // Loại bỏ phần DNA Ẩm thực khỏi phần chính
+                    if (($pos = strpos($display_req, '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---')) !== false) {
+                        $display_req = substr($display_req, 0, $pos);
+                    }
+                    
+                    $display_req = trim($display_req);
+                    
+                    // Ghép lại
+                    $final_display = $display_req . (!empty($reply_part) ? "\n\n" . $reply_part : "");
+                    
+                                        if (!empty($final_display)) {
+                        $lines = explode("\n", trim($final_display));
+                        $formatted_html = '<div style="background:#fff; border:1px solid #eee; border-radius:6px; padding:15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">';
+                        $details_text = '';
+                        $in_details = false;
+                        
+                        foreach ($lines as $line) {
+                            $l = trim($line);
+                            if (strpos($l, 'Dịp:') === 0 || strpos($l, 'Ngân sách:') === 0 || strpos($l, 'Phong cách:') === 0) {
+                                $parts = explode(':', $l, 2);
+                                if (count($parts) == 2) {
+                                    $formatted_html .= '<div style="margin-bottom:8px; display:flex; align-items:flex-start;"><strong style="color:#222; min-width:100px; display:inline-block;">' . htmlspecialchars(trim($parts[0])) . ':</strong> <span style="color:#555; flex:1;">' . htmlspecialchars(trim($parts[1])) . '</span></div>';
+                                }
+                            } elseif (strpos($l, 'Chi tiết:') === 0) {
+                                $in_details = true;
+                                $details_text .= substr($l, strlen('Chi tiết:')) . "\n";
+                            } else {
+                                if ($in_details || (!empty($l) && !preg_match('/^(Dịp|Ngân sách|Phong cách)/', $l))) {
+                                    $details_text .= $l . "\n";
+                                }
+                            }
+                        }
+                        
+                        if (!empty(trim($details_text))) {
+                            $formatted_html .= '<div style="margin-top:12px; padding-top:12px; border-top:1px dashed #ddd; font-style:normal; color:#444; line-height:1.6;">
+                                <strong style="color:#222; display:block; margin-bottom:8px;"><i class="fas fa-magic text-warning me-2" style="font-size:13px;"></i>Tuyển chọn riêng:</strong>
+                                <div style="padding:10px 12px; background:#fefcf9; border-left:3px solid var(--accent-burgundy); border-radius:0 4px 4px 0; font-size:13.5px; color:#444;">' . nl2br(htmlspecialchars(trim($details_text))) . '</div>
+                            </div>';
+                        }
+                        
+                        $formatted_html .= '</div>';
+                        echo $formatted_html;
+                    }
+                ?>
             </div>
         <?php endif; ?>
 
@@ -152,15 +207,25 @@ $total = 0;
                 echo nl2br($html_menu);
                 ?>
                 
-                <?php if ($booking['status'] === 'Pending' && !$step4): ?>
+                <?php 
+                if ($booking['status'] === 'Pending' && !$step4 && !$has_agreed): 
+                ?>
                 <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e8e2d9;">
                     <strong style="font-size: 14px; color: #555; display: block; margin-bottom: 5px;"><i class="fas fa-reply me-1"></i> Gửi yêu cầu chỉnh sửa / Phản hồi lại Bếp trưởng:</strong>
                     <textarea id="customer-reply-text" class="form-control mb-2" rows="2" style="font-size: 14px; resize: none;" placeholder="Ví dụ: Đổi món khai vị thành món soup, hoặc tôi bị dị ứng với nấm..."></textarea>
-                    <button type="button" class="btn btn-sm" id="btn-send-reply" data-id="<?= $booking_id ?>" style="background-color: #333; color: #fff; font-size: 14px; padding: 6px 15px;">
-                        <i class="fas fa-paper-plane me-1"></i> Gửi phản hồi
-                    </button>
+                    <div style="display:flex; gap:10px; margin-top:5px;">
+                        <button type="button" class="btn btn-sm" id="btn-send-reply" data-id="<?= $booking_id ?>" style="background-color: #333; color: #fff; font-size: 14px; padding: 6px 15px;">
+                            <i class="fas fa-paper-plane me-1"></i> Gửi phản hồi
+                        </button>
+                        <button type="button" class="btn btn-sm" id="btn-accept-menu" data-id="<?= $booking_id ?>" style="background-color: #28a745; border-color: #28a745; color: #fff; font-size: 14px; padding: 6px 15px;">
+                            <i class="fas fa-check-circle me-1"></i> Đồng ý thực đơn
+                        </button>
+                    </div>
                 </div>
-                
+                <?php elseif ($has_agreed && $booking['status'] === 'Pending'): ?>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e8e2d9; color: #28a745; font-size: 14px; font-weight: 500;">
+                    <i class="fas fa-check-circle me-1"></i> Bạn đã xác nhận đồng ý với thực đơn này.
+                </div>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
@@ -207,8 +272,8 @@ $total = 0;
 
     <?php 
     // Nút thanh toán cọc bổ sung cho khách hàng
-    // Chỉ hiển thị khi đơn đang chờ duyệt (Pending), vì khi Admin bấm Xác nhận (Confirmed) tức là đã nhận được cọc
-    if ($is_negotiated && $booking['deposit_amount'] > 0 && !$step4 && $booking['status'] === 'Pending'): 
+    // Chỉ hiển thị khi đơn đang chờ duyệt (Pending) VÀ khách hàng ĐÃ bấm đồng ý thực đơn
+    if ($is_negotiated && $booking['deposit_amount'] > 0 && !$step4 && $booking['status'] === 'Pending' && $has_agreed): 
     ?>
     <div style="text-align:center; margin-top:15px; margin-bottom:5px;">
         <a href="booking_payment.php?id=<?= $booking_id ?>" class="btn btn-sm" style="background-color: var(--accent-burgundy); border-color: var(--accent-burgundy); color: #fff; font-size: 13px; font-weight: 500; padding: 6px 15px; border-radius: 6px;">

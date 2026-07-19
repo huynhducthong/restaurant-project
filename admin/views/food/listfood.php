@@ -182,14 +182,14 @@ include __DIR__ . '/../../../public/admin_layout_header.php';
                         <?php if (empty($recipes)): ?>
                             <small class="text-muted fst-italic">Chưa có định mức</small>
                         <?php else: ?>
-                            <div class="d-flex flex-wrap gap-1">
-                                <?php foreach($recipes as $rcp): ?>
-                                <span class="badge bg-warning-subtle border-0 shadow-sm"
-                                      style="font-size:10px;color:#856404;">
-                                    <?= htmlspecialchars($rcp['item_name']) ?>:
-                                    <?= (float)$rcp['quantity_required'] ?><?= htmlspecialchars($rcp['unit']) ?>
-                                </span>
-                                <?php endforeach; ?>
+                            <div class="text-dark" style="font-size:13px; line-height:1.6;">
+                                <?php 
+                                    $recipe_strings = [];
+                                    foreach($recipes as $rcp) {
+                                        $recipe_strings[] = '<span class="fw-medium">' . htmlspecialchars($rcp['item_name']) . '</span>: ' . (float)$rcp['quantity_required'] . htmlspecialchars($rcp['unit']);
+                                    }
+                                    echo implode(' <span class="text-muted mx-1">•</span> ', $recipe_strings);
+                                ?>
                             </div>
                         <?php endif; ?>
                     </td>

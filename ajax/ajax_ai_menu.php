@@ -58,14 +58,25 @@ try {
             if (empty($ua)) continue;
             
             $check_terms = [$ua];
-            if (isset($aliases[$ua])) {
-                $check_terms = array_merge($check_terms, $aliases[$ua]);
+            foreach ($aliases as $key => $values) {
+                if (mb_strpos($ua, $key, 0, 'UTF-8') !== false) {
+                    $check_terms = array_merge($check_terms, $values);
+                    $check_terms[] = $key;
+                }
             }
             
             foreach($food_allergens as $fa) {
                 if (empty($fa)) continue;
                 foreach ($check_terms as $term) {
-                    if (strpos($fa, $term) !== false) return true;
+                    if (mb_strpos($fa, $term, 0, 'UTF-8') !== false) {
+                        return true;
+                    }
+                    if (mb_strlen($fa, 'UTF-8') > 1) {
+                        $pattern = '/(?<=^|\s)' . preg_quote($fa, '/') . '(?=\s|$|[.,!?])/iu';
+                        if (preg_match($pattern, $term)) {
+                            return true;
+                        }
+                    }
                 }
             }
         }
@@ -134,17 +145,18 @@ $combo_str
 NHIỆM VỤ:
 - Hãy chọn ra đúng 1 Set Menu và 3 món ăn lẻ phù hợp nhất với khẩu vị và sở thích của khách từ danh sách trên.
 - Nếu khách không có sở thích đặc biệt nào, hãy chọn ngẫu nhiên các món Signature ngon nhất.
-- Viết 1 đoạn văn ngắn gọn, thân thiện (khoảng 3-4 câu) giới thiệu bản thân là Bếp trưởng Nhã, sau đó đề xuất các món này và giải thích ngắn gọn vì sao nó hợp với khách.
+- Viết 1 câu duy nhất giới thiệu bản thân là Bếp trưởng Nhã, sau đó đề xuất các món này.
+- Bắt buộc giải thích CỰC KỲ NGẮN GỌN (dưới 15 chữ) vì sao món này hợp với khách. KHÔNG VIẾT DÀI.
 - Xưng hô 'Tôi' (Bếp trưởng) và 'Bạn' (Thực khách).
 - Trả về kết quả trực tiếp dưới định dạng Markdown để in ra HTML.
 
 ĐỊNH DẠNG YÊU CẦU:
-Chào bạn, tôi là Bếp trưởng của Nhã...
-...
-* **[Tên Set Menu]**: [Lý do ngắn gọn]
-* **[Tên món lẻ 1]**: [Lý do ngắn gọn]
-* **[Tên món lẻ 2]**: [Lý do ngắn gọn]
-* **[Tên món lẻ 3]**: [Lý do ngắn gọn]";
+Chào bạn, tôi là Bếp trưởng của Nhã. Dựa trên khẩu vị của bạn, tôi đề xuất:
+
+* **[Tên Set Menu]**: [Lý do ngắn dưới 15 chữ]
+* **[Tên món lẻ 1]**: [Lý do ngắn dưới 15 chữ]
+* **[Tên món lẻ 2]**: [Lý do ngắn dưới 15 chữ]
+* **[Tên món lẻ 3]**: [Lý do ngắn dưới 15 chữ]";
 
     // 6. Gọi API Gemini
     $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=" . $gemini_api_key;

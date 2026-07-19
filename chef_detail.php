@@ -315,9 +315,13 @@ function renderReviewsChunk(reviewsToRender, append = false) {
     reviewsToRender.forEach(rev => {
         let div = document.createElement('div');
         div.className = 'review-card';
-        
-        let avatarSrc = rev.user_avatar ? 'public/assets/img/avatars/' + rev.user_avatar : 'https://placehold.co/50x50/F6F2E9/4F5B3A?text=' + rev.author_name.charAt(0);
-        
+        let avatarSrc = 'https://placehold.co/50x50/F6F2E9/4F5B3A?text=' + rev.author_name.charAt(0);
+        if (rev.has_avatar_blob == 1 || rev.has_avatar_blob === true) {
+            avatarSrc = 'ajax/get_avatar.php?user_id=' + rev.user_id;
+        } else if (rev.user_avatar) {
+            avatarSrc = rev.user_avatar.startsWith('http') ? rev.user_avatar : 'public/assets/img/avatars/' + rev.user_avatar;
+        }
+
         let starsHtml = '';
         for (let j = 1; j <= 5; j++) {
             starsHtml += j <= rev.rating ? '<i class="bi bi-star-fill text-warning"></i>' : '<i class="bi bi-star text-muted"></i>';
@@ -487,9 +491,13 @@ function renderReviewsChunk(reviewsToRender, append = false) {
         let div = document.createElement('div');
         div.className = 'luxury-review-card';
         div.style.animationDelay = (index * 0.1) + 's';
-        
-        let avatarSrc = rev.user_avatar ? 'public/assets/img/avatars/' + rev.user_avatar : 'https://placehold.co/100x100/F6F2E9/A88746?text=' + rev.author_name.charAt(0);
-        let chefAvatar = '<?= $img ?>';
+        let avatarSrc = 'https://placehold.co/100x100/F6F2E9/A88746?text=' + rev.author_name.charAt(0);
+        if (rev.has_avatar_blob == 1 || rev.has_avatar_blob === true) {
+            avatarSrc = 'ajax/get_avatar.php?user_id=' + rev.user_id;
+        } else if (rev.user_avatar) {
+            avatarSrc = rev.user_avatar.startsWith('http') ? rev.user_avatar : 'public/assets/img/avatars/' + rev.user_avatar;
+        }
+let chefAvatar = '<?= $img ?>';
         
         let starsHtml = '';
         for (let j = 1; j <= 5; j++) {

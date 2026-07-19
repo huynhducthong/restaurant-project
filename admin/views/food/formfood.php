@@ -75,7 +75,24 @@ $form_action = $is_edit
                         <input type="hidden" name="food_id" value="<?= $id ?>">
                         <?php endif; ?>
 
-                        <!-- Thông tin cơ bản -->
+                        
+                        <!-- Nav Tabs -->
+                        <ul class="nav nav-pills mb-4 gap-2" id="foodFormTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active rounded-pill fw-bold px-4" id="basic-tab" data-bs-toggle="pill" data-bs-target="#basic" type="button" role="tab" style="font-size:14px;"><i class="fas fa-info-circle me-1"></i> Cơ bản</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link rounded-pill fw-bold px-4" id="fine-dining-tab" data-bs-toggle="pill" data-bs-target="#fine-dining" type="button" role="tab" style="font-size:14px;"><i class="fas fa-glass-cheers me-1"></i> Trải nghiệm</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link rounded-pill fw-bold px-4" id="recipe-tab" data-bs-toggle="pill" data-bs-target="#recipe" type="button" role="tab" style="font-size:14px;"><i class="fas fa-balance-scale me-1"></i> Thành phần</button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="foodFormTabsContent">
+                            <!-- TAB: CƠ BẢN -->
+                            <div class="tab-pane fade show active" id="basic" role="tabpanel">
+<!-- Thông tin cơ bản -->
                         <p class="fw-bold small text-uppercase text-muted mb-3 border-bottom pb-2">
                             <i class="fas fa-info-circle me-1 text-warning"></i>Thông tin món ăn
                         </p>
@@ -91,7 +108,7 @@ $form_action = $is_edit
                         </div>
 
                         <div class="row g-3 mb-3">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label fw-bold small text-muted">
                                     Danh mục <span class="text-danger">*</span>
                                 </label>
@@ -105,7 +122,7 @@ $form_action = $is_edit
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label fw-bold small text-muted">Chủ đề (Tùy chọn)</label>
                                 <select name="theme_id" class="form-select bg-light border-0 py-2">
                                     <option value="">-- Không thuộc chủ đề nào --</option>
@@ -116,7 +133,7 @@ $form_action = $is_edit
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label fw-bold small text-muted">
                                     Giá bán (VNĐ) <span class="text-danger">*</span>
                                 </label>
@@ -128,10 +145,7 @@ $form_action = $is_edit
                                 </div>
                                 <div class="form-text small" id="price-display"></div>
                             </div>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <label class="form-label fw-bold small text-muted">Giới hạn Toppings tối đa</label>
                                 <div class="input-group">
                                     <input type="number" name="max_toppings" class="form-control bg-light border-0 py-2"
@@ -149,7 +163,49 @@ $form_action = $is_edit
                                       placeholder="Hương vị, thành phần chính..."><?= htmlspecialchars($old['description']) ?></textarea>
                         </div>
                         
+                        <!-- Ảnh -->
+                        <p class="fw-bold small text-uppercase text-muted mb-3 border-bottom pb-2">
+                            <i class="fas fa-image me-1 text-warning"></i>Ảnh món ăn
+                            <?php if (!$is_edit): ?><span class="text-danger">*</span><?php endif; ?>
+                        </p>
+
+                        <?php if ($is_edit && !empty($food['image'])): ?>
+                        <div class="mb-2">
+                            <div class="small text-muted mb-1">Ảnh hiện tại:</div>
+                            <img src="../../public/assets/img/menu/<?= htmlspecialchars($food['image']) ?>"
+                                 id="imgCurrent"
+                                 style="max-height:140px;border-radius:10px;border:2px solid #f0f0f0;object-fit:cover"
+                                 onerror="this.src='../../public/assets/img/menu/default.jpg'"
+                                 alt="Ảnh hiện tại">
+                        </div>
+                        <?php endif; ?>
+
                         <div class="mb-4">
+                            <div class="drop-zone" id="dropZone">
+                                <input type="file" name="image" id="imageInput"
+                                       accept=".jpg,.jpeg,.png,.webp,.gif"
+                                       <?= !$is_edit ? 'required' : '' ?>>
+                                <div id="drop-placeholder">
+                                    <i class="fas fa-cloud-upload-alt fa-2x text-warning mb-2"></i>
+                                    <div class="fw-bold text-muted small">
+                                        <?= $is_edit ? 'Thay ảnh mới (kéo thả hoặc click)' : 'Kéo thả ảnh vào đây' ?>
+                                    </div>
+                                    <div class="text-muted" style="font-size:12px">JPG, PNG, WEBP, GIF — tối đa 5MB
+                                        <?= $is_edit ? ' · Để trống nếu không đổi ảnh' : '' ?>
+                                    </div>
+                                </div>
+                                <img id="imgPreview" class="img-preview" src="#" alt="Preview">
+                            </div>
+                            <div class="d-flex justify-content-between mt-1">
+                                <small id="file-info" class="text-muted"></small>
+                                <small id="file-error" class="text-danger fw-bold"></small>
+                            </div>
+                        </div>
+
+                                                    </div>
+                            <!-- TAB: TRẢI NGHIỆM -->
+                            <div class="tab-pane fade" id="fine-dining" role="tabpanel">
+<div class="mb-4">
                             <label class="form-label fw-bold small text-muted">Chất gây dị ứng (FDA Standard) <span class="badge bg-light text-muted border ms-1" style="font-size:10px;font-weight:400">Tùy chọn</span></label>
                             <div class="d-flex flex-wrap gap-2 p-3 bg-light rounded" style="border: 1px solid #f0f0f0;">
                                 <?php 
@@ -286,46 +342,10 @@ $form_action = $is_edit
                             </div>
                         </div>
 
-                        <!-- Ảnh -->
-                        <p class="fw-bold small text-uppercase text-muted mb-3 border-bottom pb-2">
-                            <i class="fas fa-image me-1 text-warning"></i>Ảnh món ăn
-                            <?php if (!$is_edit): ?><span class="text-danger">*</span><?php endif; ?>
-                        </p>
-
-                        <?php if ($is_edit && !empty($food['image'])): ?>
-                        <div class="mb-2">
-                            <div class="small text-muted mb-1">Ảnh hiện tại:</div>
-                            <img src="../../public/assets/img/menu/<?= htmlspecialchars($food['image']) ?>"
-                                 id="imgCurrent"
-                                 style="max-height:140px;border-radius:10px;border:2px solid #f0f0f0;object-fit:cover"
-                                 onerror="this.src='../../public/assets/img/menu/default.jpg'"
-                                 alt="Ảnh hiện tại">
-                        </div>
-                        <?php endif; ?>
-
-                        <div class="mb-4">
-                            <div class="drop-zone" id="dropZone">
-                                <input type="file" name="image" id="imageInput"
-                                       accept=".jpg,.jpeg,.png,.webp,.gif"
-                                       <?= !$is_edit ? 'required' : '' ?>>
-                                <div id="drop-placeholder">
-                                    <i class="fas fa-cloud-upload-alt fa-2x text-warning mb-2"></i>
-                                    <div class="fw-bold text-muted small">
-                                        <?= $is_edit ? 'Thay ảnh mới (kéo thả hoặc click)' : 'Kéo thả ảnh vào đây' ?>
-                                    </div>
-                                    <div class="text-muted" style="font-size:12px">JPG, PNG, WEBP, GIF — tối đa 5MB
-                                        <?= $is_edit ? ' · Để trống nếu không đổi ảnh' : '' ?>
-                                    </div>
-                                </div>
-                                <img id="imgPreview" class="img-preview" src="#" alt="Preview">
-                            </div>
-                            <div class="d-flex justify-content-between mt-1">
-                                <small id="file-info" class="text-muted"></small>
-                                <small id="file-error" class="text-danger fw-bold"></small>
-                            </div>
-                        </div>
-
-                        <!-- Định mức nguyên liệu -->
+                                                    </div>
+                            <!-- TAB: THÀNH PHẦN -->
+                            <div class="tab-pane fade" id="recipe" role="tabpanel">
+<!-- Định mức nguyên liệu -->
                         <p class="fw-bold small text-uppercase text-muted mb-3 border-bottom pb-2">
                             <i class="fas fa-balance-scale me-1 text-warning"></i>Định mức nguyên liệu
                             <span class="badge bg-light text-muted border ms-1" style="font-size:10px;font-weight:400">Tùy chọn</span>
@@ -456,7 +476,9 @@ $form_action = $is_edit
                         </div>
                         <?php endif; ?>
 
-                        <!-- Nút submit -->
+                                                    </div>
+                        </div> <!-- end tab-content -->
+<!-- Nút submit -->
                         <div class="d-grid gap-2 mt-4">
                             <button type="submit" class="btn btn-warning py-3 rounded-pill fw-bold text-white shadow-sm"
                                     style="background:#cda45e;border:none;" id="btn-submit">

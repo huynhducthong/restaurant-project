@@ -78,6 +78,9 @@ $total = 0;
         <div><span style="color:#888;">Thời gian:</span> <strong><?= date('H:i - d/m/Y', strtotime($booking['booking_date'])) ?></strong></div>
         <div><span style="color:#888;">Khách:</span> <strong><?= $booking['guests'] ?> người</strong></div>
         <div><span style="color:#888;">Cọc:</span> <strong class="text-danger"><?= number_format($booking['deposit_amount']) ?>đ</strong></div>
+        <?php if (!empty($booking['table_fee']) && $booking['table_fee'] > 0): ?>
+            <div><span style="color:#888;">Phụ phí bàn/phòng VIP:</span> <strong><?= number_format($booking['table_fee']) ?>đ</strong></div>
+        <?php endif; ?>
     </div>
 
     <h6 style="font-size:13px; font-weight:bold; text-transform:uppercase; color:#888; border-bottom:1px solid #eee; padding-bottom:5px;">Thực Đơn Chi Tiết</h6>

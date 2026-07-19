@@ -208,8 +208,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $drink_arr = isset($_POST['drink_preferences']) ? $_POST['drink_preferences'] : [];
         $drink_preferences = implode(', ', array_unique(array_filter($drink_arr)));
         
-        $db->prepare("UPDATE users SET doneness=?, flavor_profile=?, fav_ingredients=?, disliked_ingredients=?, allergies=?, drink_preferences=? WHERE id=?")
-           ->execute([$doneness, $flavor_profile, $fav_ingredients, $disliked_ingredients, $allergies, $drink_preferences, $user_id]);
+        $ng_arr = isset($_POST['nutrition_goals']) ? $_POST['nutrition_goals'] : [];
+        $nutrition_goals = implode(', ', array_unique(array_filter($ng_arr)));
+        
+        $db->prepare("UPDATE users SET doneness=?, flavor_profile=?, fav_ingredients=?, disliked_ingredients=?, allergies=?, drink_preferences=?, nutrition_goals=? WHERE id=?")
+           ->execute([$doneness, $flavor_profile, $fav_ingredients, $disliked_ingredients, $allergies, $drink_preferences, $nutrition_goals, $user_id]);
         $message = "Đã cập nhật Hồ sơ Khẩu vị (Culinary DNA)!";
 
         // Gửi thông báo Telegram cho nhà hàng
@@ -223,6 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($disliked_ingredients) $msg_tele .= "- Không thích: $disliked_ingredients\n";
         if ($allergies) $msg_tele .= "- <b>DỊ ỨNG: $allergies</b>\n";
         if ($drink_preferences) $msg_tele .= "- Đồ uống: $drink_preferences\n";
+        if ($nutrition_goals) $msg_tele .= "- Dinh dưỡng: $nutrition_goals\n";
         @sendTelegramNotification($msg_tele);
     }
     // 6. Tính năng Nâng cấp VIP được chuyển sang vip_checkout.php
@@ -502,7 +506,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 
   <!-- ══ MAIN CONTENT ══ -->
   <div class="row justify-content-center">
-    <div class="col-lg-8 col-md-10">
+    <div class="col-lg-10 col-md-11">
       <div class="prof-card" style="border:none; box-shadow: 0 10px 40px rgba(0,0,0,0.08); background: #fff;">
         <div class="prof-card-body p-4 p-md-5">
 
@@ -672,10 +676,10 @@ include __DIR__ . '/views/client/layouts/header.php';
           <div>Thiết lập DNA Ẩm thực để nhà hàng phục vụ cá nhân hóa nhất. Các món chứa thành phần dị ứng sẽ hiển thị cảnh báo đỏ trên menu!</div>
         </div>
         <form method="POST">
-          <div class="row g-4">
+          <div class="row g-3">
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--accent-burgundy) !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-fire me-2"></i>Mức độ chín của Bò (Meat Doneness)</h6>
-              <div class="d-flex flex-wrap mt-3 gap-2">
+              <h6 style="color:var(--accent-burgundy) !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:6px;"><i class="bi bi-fire me-2"></i>Mức độ chín của Bò (Meat Doneness)</h6>
+              <div class="d-flex flex-wrap mt-2 gap-2">
                 <?php $dopts = ['Rare', 'Medium Rare', 'Medium', 'Medium Well', 'Well Done']; 
                 foreach($dopts as $d): ?>
                 <label class="d-flex align-items-center gap-2 mb-2" style="cursor:pointer; font-size:14px; width:45%;">
@@ -686,8 +690,8 @@ include __DIR__ . '/views/client/layouts/header.php';
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--accent-burgundy) !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-cup-straw me-2"></i>Đồ uống yêu thích (Drink Preferences)</h6>
-              <div class="d-flex flex-wrap mt-3 gap-2">
+              <h6 style="color:var(--accent-burgundy) !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:6px;"><i class="bi bi-cup-straw me-2"></i>Đồ uống yêu thích (Drink Preferences)</h6>
+              <div class="d-flex flex-wrap mt-2 gap-2">
                 <?php 
                 $drinkopts = ['Rượu Vang (Wine)', 'Cocktail / Mocktail', 'Bia (Beer)', 'Trà / Coffee', 'Nước trái cây (Juice)', 'Có cồn (Alcoholic)', 'Không cồn (Non-alcoholic)']; 
                 $my_drinks = array_map('trim', explode(',', $current_user['drink_preferences'] ?? ''));
@@ -700,8 +704,8 @@ include __DIR__ . '/views/client/layouts/header.php';
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--accent-burgundy) !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-palette me-2"></i>Phong cách Hương vị (Flavor Profile)</h6>
-              <div class="d-flex flex-wrap mt-3 gap-2">
+              <h6 style="color:var(--accent-burgundy) !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:6px;"><i class="bi bi-palette me-2"></i>Phong cách Hương vị (Flavor Profile)</h6>
+              <div class="d-flex flex-wrap mt-2 gap-2">
                 <?php $fopts = ['Đậm vị (Bold/Rich)', 'Thanh nhẹ (Light/Fresh)', 'Umami (Ngọt tự nhiên)', 'Ít béo (Low Fat)', 'Ăn Cay (Spicy)']; 
                 foreach($fopts as $f): ?>
                 <label class="d-flex align-items-center gap-2 mb-2" style="cursor:pointer; font-size:14px; width:45%;">
@@ -712,8 +716,8 @@ include __DIR__ . '/views/client/layouts/header.php';
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--accent-burgundy) !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-star me-2"></i>Nguyên liệu yêu thích (Favorites)</h6>
-              <div class="d-flex flex-wrap mt-3 gap-2">
+              <h6 style="color:var(--accent-burgundy) !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:6px;"><i class="bi bi-star me-2"></i>Nguyên liệu yêu thích (Favorites)</h6>
+              <div class="d-flex flex-wrap mt-2 gap-2">
                 <?php 
                 $favopts = [
                     'Bò' => 'Các loại Bò', 
@@ -731,8 +735,8 @@ include __DIR__ . '/views/client/layouts/header.php';
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:var(--accent-burgundy) !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-x-circle me-2"></i>Không thích ăn (Dislikes)</h6>
-              <div class="d-flex flex-wrap mt-3 gap-2">
+              <h6 style="color:var(--accent-burgundy) !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:6px;"><i class="bi bi-x-circle me-2"></i>Không thích ăn (Dislikes)</h6>
+              <div class="d-flex flex-wrap mt-2 gap-2">
                 <?php 
                 $disopts = ['Hành lá', 'Rau mùi', 'Hành tây', 'Tỏi', 'Ớt chuông', 'Tiêu xanh', 'Thịt mỡ']; 
                 $my_dislikes_arr = array_map('trim', explode(',', $current_user['disliked_ingredients'] ?? ''));
@@ -754,8 +758,22 @@ include __DIR__ . '/views/client/layouts/header.php';
             </div>
 
             <div class="col-md-6 mb-2">
-              <h6 style="color:#d64545 !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:10px;"><i class="bi bi-exclamation-triangle-fill me-2"></i>Dị ứng Y Tế (Allergies)</h6>
-              <div class="d-flex flex-wrap mt-3 gap-2">
+              <h6 style="color:var(--accent-burgundy) !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:6px;"><i class="bi bi-heart-pulse me-2"></i>Mục tiêu Dinh dưỡng (Nutrition Goals)</h6>
+              <div class="d-flex flex-wrap mt-2 gap-2">
+                <?php 
+                $ngopts = ['Eat Clean', 'Keto (Low Carb)', 'Ít Calo (Low Calorie)', 'Tăng cơ (High Protein)', 'Ít béo (Low Fat)', 'Thuần chay (Vegan)', 'Ăn chay (Vegetarian)']; 
+                $my_ngs = array_map('trim', explode(',', $current_user['nutrition_goals'] ?? ''));
+                foreach($ngopts as $ng): ?>
+                <label class="d-flex align-items-center gap-2 mb-2" style="cursor:pointer; font-size:14px; width:45%;">
+                  <input type="checkbox" name="nutrition_goals[]" value="<?= $ng ?>" <?= in_array($ng, $my_ngs) ? 'checked' : '' ?> style="accent-color:var(--F);"> <?= $ng ?>
+                </label>
+                <?php endforeach; ?>
+              </div>
+            </div>
+
+            <div class="col-md-12 mb-2 mt-3">
+              <h6 style="color:#d64545 !important; font-family:'Cormorant Garamond', serif; font-size:1.1rem; border-bottom:1px dashed var(--border); padding-bottom:6px;"><i class="bi bi-exclamation-triangle-fill me-2"></i>Dị ứng Y Tế (Allergies)</h6>
+              <div class="d-flex flex-wrap mt-2 gap-2">
                 <?php 
                 $algopts = ['Sữa', 'Trứng', 'Đậu phộng', 'Đậu nành', 'Lúa mì / Gluten', 'Hải sản', 'Cá', 'Hải sản có vỏ', 'Hải sản thân mềm', 'Mè / Vừng', 'Mù tạt', 'Quả hạch', 'Sulphites', 'Đậu Lupin']; 
                 $my_allergies = array_map('trim', explode(',', $current_user['allergies'] ?? ''));
@@ -1056,6 +1074,47 @@ document.addEventListener('click', function(e) {
             alert('Lỗi kết nối.');
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-paper-plane me-1"></i> Gửi phản hồi';
+        });
+    }
+    
+    // Xử lý nút Đồng ý thực đơn
+    if (e.target && (e.target.id === 'btn-accept-menu' || e.target.closest('#btn-accept-menu'))) {
+        if(!confirm('Bạn xác nhận ĐỒNG Ý với thực đơn này?')) return;
+        
+        const btn = e.target.closest('#btn-accept-menu');
+        const id = btn.getAttribute('data-id');
+        
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+        
+        const formData = new URLSearchParams();
+        formData.append('id', id);
+        formData.append('reply', '[Khách hàng ĐÃ ĐỒNG Ý thực đơn]');
+        
+        fetch('ajax/ajax_customer_reply.php', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === 'success') {
+                alert('Cảm ơn bạn! Chúng tôi đã ghi nhận và sẽ chuẩn bị thực đơn tuyệt vời này cho bạn.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check me-1"></i> Đã đồng ý';
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                alert('Lỗi: ' + res.message);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check-circle me-1"></i> Đồng ý thực đơn';
+            }
+        })
+        .catch(err => {
+            alert('Lỗi kết nối.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check-circle me-1"></i> Đồng ý thực đơn';
         });
     }
 });

@@ -19,12 +19,15 @@ if (isset($_GET['delete'])) {
     
     if ($event) {
         $db->prepare("DELETE FROM event_types WHERE id = ?")->execute([$id]);
-        $message = '<div class="alert alert-success">Đã xóa Loại hình Sự kiện.</div>';
+        $_SESSION['flash_success'] = "Đã xóa Loại hình Sự kiện.";
+        echo "<script>window.location.href='manage_events.php';</script>";
+        exit;
     }
 }
 
 // Xử lý Thêm/Sửa
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_POST['action'] ?? '';
     $id = $_POST['id'] ?? '';
     $name = $_POST['name'] ?? '';
     $description = $_POST['description'] ?? '';
@@ -43,129 +46,193 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if ($id) {
+    if ($action === 'edit' && $id) {
         // Update
         $stmt = $db->prepare("UPDATE event_types SET name=?, description=?, image_url=?, status=? WHERE id=?");
         $stmt->execute([$name, $description, $image_url, $status, $id]);
-        $message = '<div class="alert alert-success">Cập nhật thành công.</div>';
-    } else {
+        $_SESSION['flash_success'] = "Cập nhật thành công.";
+    } else if ($action === 'add') {
         // Insert
         $stmt = $db->prepare("INSERT INTO event_types (name, description, image_url, status) VALUES (?, ?, ?, ?)");
         $stmt->execute([$name, $description, $image_url, $status]);
-        $message = '<div class="alert alert-success">Thêm mới thành công.</div>';
+        $_SESSION['flash_success'] = "Thêm mới thành công.";
     }
+    echo "<script>window.location.href='manage_events.php';</script>";
+    exit;
 }
 
 // Lấy danh sách
 $stmt = $db->query("SELECT * FROM event_types ORDER BY id ASC");
 $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Nếu đang Sửa
-$edit_event = null;
-if (isset($_GET['edit'])) {
-    $stmt = $db->prepare("SELECT * FROM event_types WHERE id = ?");
-    $stmt->execute([(int)$_GET['edit']]);
-    $edit_event = $stmt->fetch(PDO::FETCH_ASSOC);
-}
 ?>
-    <div class="container-fluid py-4">
 
-    <div class="main-content p-4">
-        <h2 class="mb-4">Quản Lý Loại Hình Sự Kiện (Event Types)</h2>
-        <?= $message ?>
-
-        <div class="row">
-            <!-- Form Thêm/Sửa -->
-            <div class="col-md-4">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-dark text-white">
-                        <h5 class="card-title mb-0"><?= $edit_event ? 'Sửa Sự Kiện' : 'Thêm Sự Kiện Mới' ?></h5>
-                    </div>
-                    <div class="card-body">
-                        <form action="manage_events.php" method="POST" enctype="multipart/form-data">
-                            <input type="hidden" name="id" value="<?= $edit_event['id'] ?? '' ?>">
-                            <input type="hidden" name="existing_image" value="<?= $edit_event['image_url'] ?? '' ?>">
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Tên Sự Kiện</label>
-                                <input type="text" class="form-control" name="name" value="<?= htmlspecialchars($edit_event['name'] ?? '') ?>" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Mô tả ngắn</label>
-                                <textarea class="form-control" name="description" rows="3" required><?= htmlspecialchars($edit_event['description'] ?? '') ?></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Hình ảnh minh họa</label>
-                                <input type="file" class="form-control mb-2" name="image" accept="image/*" <?= $edit_event ? '' : 'required' ?>>
-                                <?php if($edit_event && $edit_event['image_url']): ?>
-                                    <img src="../<?= $edit_event['image_url'] ?>" style="height: 60px; object-fit: cover; border-radius: 4px;">
-                                <?php endif; ?>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Trạng thái</label>
-                                <select name="status" class="form-select">
-                                    <option value="active" <?= ($edit_event['status']??'') == 'active' ? 'selected' : '' ?>>Hiển thị (Active)</option>
-                                    <option value="inactive" <?= ($edit_event['status']??'') == 'inactive' ? 'selected' : '' ?>>Đang ẩn (Inactive)</option>
-                                </select>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-success w-100">
-                                <i class="fas fa-save me-2"></i> Lưu Sự Kiện
-                            </button>
-                            <?php if($edit_event): ?>
-                                <a href="manage_events.php" class="btn btn-secondary w-100 mt-2">Hủy Sửa</a>
-                            <?php endif; ?>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Danh sách -->
-            <div class="col-md-8">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-white">
-                        <h5 class="card-title mb-0">Danh Sách Sự Kiện Hiện Có</h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Ảnh</th>
-                                        <th>Tên Sự Kiện</th>
-                                        <th>Trạng thái</th>
-                                        <th class="text-end">Hành động</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach($events as $e): ?>
-                                        <tr>
-                                            <td>
-                                                <img src="../<?= $e['image_url'] ?>" style="width: 80px; height: 50px; object-fit: cover; border-radius: 4px;">
-                                            </td>
-                                            <td>
-                                                <strong><?= htmlspecialchars($e['name']) ?></strong><br>
-                                                <small class="text-muted" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"><?= htmlspecialchars($e['description']) ?></small>
-                                            </td>
-                                            <td>
-                                                <?php if($e['status'] == 'active'): ?>
-                                                    <span class="badge bg-success">Đang hiển thị</span>
-                                                <?php else: ?>
-                                                    <span class="badge bg-secondary">Đang ẩn</span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td class="text-end">
-                                                <a href="?edit=<?= $e['id'] ?>" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></a>
-                                                <a href="?delete=<?= $e['id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc muốn xóa sự kiện này?');"><i class="fas fa-trash"></i></a>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-1 fw-bold text-dark"><i class="fas fa-glass-cheers text-primary me-2"></i>Quản Lý Loại Hình Sự Kiện</h4>
+            <p class="text-muted mb-0 small">Cài đặt phân loại và hiển thị các sự kiện</p>
+        </div>
+        <div>
+            <button class="btn btn-primary px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#addModal">
+                <i class="fas fa-plus me-2"></i>Thêm Sự Kiện
+            </button>
         </div>
     </div>
+
+    <?php if(isset($_SESSION['flash_success'])): ?>
+        <div class="alert alert-success alert-dismissible fade show shadow-sm border-0">
+            <i class="fas fa-check-circle me-2"></i><?= $_SESSION['flash_success']; unset($_SESSION['flash_success']); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
+
+    <div class="card border-0 shadow-sm" style="border-radius:14px; overflow:hidden;">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th width="80" class="text-center">ID</th>
+                        <th width="120">Hình Ảnh</th>
+                        <th>Tên Sự Kiện & Mô tả</th>
+                        <th>Trạng Thái</th>
+                        <th width="120" class="text-end">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach($events as $e): ?>
+                    <tr>
+                        <td class="text-center fw-bold text-muted">#<?= $e['id'] ?></td>
+                        <td>
+                            <?php if($e['image_url']): ?>
+                                <img src="../<?= $e['image_url'] ?>" style="width: 80px; height: 50px; object-fit: cover; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <?php else: ?>
+                                <div style="width: 80px; height: 50px; background: #eee; border-radius: 6px; display:flex; align-items:center; justify-content:center; color:#999;"><i class="fas fa-image"></i></div>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <h6 class="mb-1 fw-bold"><?= htmlspecialchars($e['name']) ?></h6>
+                            <small class="text-muted" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"><?= htmlspecialchars($e['description']) ?></small>
+                        </td>
+                        <td>
+                            <?php if($e['status'] == 'active'): ?>
+                                <span class="badge bg-success">Đang hiển thị</span>
+                            <?php else: ?>
+                                <span class="badge bg-secondary">Đang ẩn</span>
+                            <?php endif; ?>
+                        </td>
+                        <td class="text-end text-nowrap">
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editEvent(<?= htmlspecialchars(json_encode($e)) ?>)" title="Sửa">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <a href="?delete=<?= $e['id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa sự kiện này?');" title="Xóa">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                    <?php if(empty($events)): ?>
+                        <tr><td colspan="5" class="text-center py-4 text-muted">Chưa có sự kiện nào.</td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
+</div>
+
+<!-- Modal Add -->
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow" style="border-radius:14px;">
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="add">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title fw-bold">Thêm Sự Kiện Mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Tên Sự Kiện</label>
+                        <input type="text" name="name" class="form-control" required placeholder="VD: Sinh nhật">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Mô tả ngắn</label>
+                        <textarea name="description" class="form-control" rows="3" required placeholder="Nhập mô tả sự kiện..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Hình ảnh minh họa</label>
+                        <input type="file" name="image" class="form-control" accept="image/*" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Trạng Thái</label>
+                        <select name="status" class="form-select">
+                            <option value="active">Hiển thị (Active)</option>
+                            <option value="inactive">Đang ẩn (Inactive)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 bg-light">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary px-4">Lưu lại</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow" style="border-radius:14px;">
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="edit">
+                <input type="hidden" name="id" id="edit_id">
+                <input type="hidden" name="existing_image" id="edit_existing_image">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title fw-bold">Chỉnh Sửa Sự Kiện</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Tên Sự Kiện</label>
+                        <input type="text" name="name" id="edit_name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Mô tả ngắn</label>
+                        <textarea name="description" id="edit_description" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Hình ảnh minh họa</label>
+                        <input type="file" name="image" class="form-control" accept="image/*">
+                        <small class="text-muted">Bỏ trống nếu không muốn thay đổi ảnh.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Trạng Thái</label>
+                        <select name="status" id="edit_status" class="form-select">
+                            <option value="active">Hiển thị (Active)</option>
+                            <option value="inactive">Đang ẩn (Inactive)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 bg-light">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary px-4">Cập nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editEvent(event) {
+    document.getElementById('edit_id').value = event.id;
+    document.getElementById('edit_name').value = event.name;
+    document.getElementById('edit_description').value = event.description;
+    document.getElementById('edit_status').value = event.status;
+    document.getElementById('edit_existing_image').value = event.image_url;
+    
+    var editModal = new bootstrap.Modal(document.getElementById('editModal'));
+    editModal.show();
+}
+</script>
+
+<?php include '../public/admin_layout_footer.php'; ?>

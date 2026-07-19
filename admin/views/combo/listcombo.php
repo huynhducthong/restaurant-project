@@ -142,17 +142,17 @@
 
                     <!-- Giá / Tiết kiệm -->
                     <td>
-                        <span class="badge bg-success-subtle text-success fs-6 fw-bold">
+                        <span class="text-success fs-6 fw-bold">
                             <?= number_format($combo_price) ?>đ
                         </span>
                         <?php if ($saving_pct !== null): ?>
-                        <div class="saving-badge <?= $saving_pct < 10 ? 'low' : '' ?>">
+                        <div class="text-success" style="font-size:12px; margin-top:3px; font-weight:500;">
                             <i class="fas fa-tag me-1"></i>
                             Tiết kiệm <?= $saving_pct ?>%
                             (<?= number_format($saving_amt) ?>đ)
                         </div>
                         <?php elseif ($total_food_price > 0): ?>
-                        <div class="text-muted" style="font-size:10px;margin-top:3px">
+                        <div class="text-muted" style="font-size:11px;margin-top:3px">
                             Giá gốc: <?= number_format($total_food_price) ?>đ
                         </div>
                         <?php endif; ?>
@@ -161,11 +161,12 @@
                     <!-- Món trong combo -->
                     <td>
                         <?php if ($row['list_foods']): ?>
-                        <div class="d-flex flex-wrap gap-1">
-                            <?php foreach (explode('||', $row['list_foods']) as $fn): ?>
-                            <span class="badge bg-info-subtle text-dark border-0"
-                                  style="font-size:11px;">
+                        <div class="d-flex flex-wrap align-items-center" style="gap: 6px; line-height: 1.6;">
+                            <?php $foods = explode('||', $row['list_foods']); foreach ($foods as $i => $fn): ?>
+                            <span class="text-dark"
+                                  style="font-size:13.5px; font-weight:500;">
                                 <?= htmlspecialchars($fn) ?>
+                                <?= $i < count($foods) - 1 ? '<span class="text-muted ms-1" style="font-size:10px; opacity:0.5;">•</span>' : '' ?>
                             </span>
                             <?php endforeach; ?>
                         </div>

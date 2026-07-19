@@ -67,7 +67,7 @@ try {
     // 3. Xây dựng Prompt Gửi Cho Gemini
     $prompt = "Bạn là Bếp trưởng điều hành (Executive Chef) tại nhà hàng Nhã (đạt chứng nhận Food Made Good 3 sao quốc tế), một nhà hàng fine-dining cao cấp tại Việt Nam.
 
-Một khách hàng vừa đặt bàn với 'Trải nghiệm thiết kế riêng' (Bespoke Dining). Hãy giúp tôi tạo ra một thực đơn Tasting Menu gồm 5 món (Amuse-Bouche, Khai vị, Món phụ, Món chính, Tráng miệng) bằng tiếng Việt cho khách hàng này.
+Một khách hàng vừa đặt bàn với 'Trải nghiệm thiết kế riêng' (Bespoke Dining). Hãy giúp tôi tạo ra một thực đơn Tasting Menu gồm 5 phần (Khai vị, Món chính, Món ăn kèm, Đồ uống, Tráng miệng) bằng tiếng Việt cho khách hàng này.
 
 DỮ LIỆU KHÁCH HÀNG:
 Hồ sơ ẩm thực (DNA):
@@ -78,24 +78,19 @@ $req_str
 
 YÊU CẦU CHO THỰC ĐƠN:
 1. TUYỆT ĐỐI tuân thủ phần DỊ ỨNG và KHÔNG THÍCH ĂN. Nếu khách dị ứng thành phần nào, tuyệt đối không đưa vào thực đơn.
-2. Tận dụng thông tin 'Món yêu thích' và 'Khẩu vị' để sáng tạo. Món chính (Main Course) ưu tiên dùng 'Độ chín thịt bò' nếu có.
-3. Vì là nhà hàng fine-dining bền vững, hãy sáng tạo tên món ăn thật kêu, sang trọng, mang âm hưởng Việt Nam kết hợp hiện đại.
-4. Mỗi món ăn, hãy viết một dòng mô tả ngắn về thành phần và vì sao món này phù hợp với DNA của khách.
-5. Gợi ý 1 loại rượu vang (Wine pairing) ăn kèm.
+2. Tận dụng thông tin 'Món yêu thích' và 'Khẩu vị' để sáng tạo. Món chính ưu tiên dùng 'Độ chín thịt bò' nếu có.
+3. Tên món ăn sang trọng, ngắn gọn.
+4. CHỈ viết MỘT CÂU DUY NHẤT để mô tả mỗi món ăn, càng ngắn gọn càng tốt (dưới 20 chữ). KHÔNG giải thích dông dài.
+5. VIẾT LIỀN MẠCH, KHÔNG cách dòng giữa các món ăn để tiết kiệm không gian hiển thị.
+6. TUYỆT ĐỐI KHÔNG dùng bất kỳ ký tự đặc biệt hay định dạng Markdown nào (không dùng dấu *, **, #).
 
-ĐỊNH DẠNG ĐẦU RA (Trả về định dạng Markdown, không cần chào hỏi, đi thẳng vào menu):
-**TÊN THỰC ĐƠN: [Tự nghĩ một cái tên bay bổng]**
-
-**1. Khai vị nhỏ (Amuse-Bouche)**
-* [Tên món]
-* *Mô tả:* ...
-
-**2. Khai vị (Appetizer)**
-...
-(Và tiếp tục cho đến món thứ 5)
-
-**Gợi ý Rượu Vang:**
-* [Tên rượu] - *Lý do:* ...";
+ĐỊNH DẠNG ĐẦU RA (Trả về văn bản thuần túy, không cần chào hỏi, đi thẳng vào menu, VIẾT LIỀN KHÔNG CÁCH DÒNG):
+THỰC ĐƠN: [Tên thực đơn ngắn gọn]
+1. Khai vị (Appetizer): [Tên món] - [Mô tả dưới 20 chữ]
+2. Món chính (Main Course): [Tên món] - [Mô tả dưới 20 chữ]
+3. Món ăn kèm (Side Dish): [Tên món] - [Mô tả dưới 20 chữ]
+4. Đồ uống (Drink): [Tên đồ uống] - [Mô tả dưới 20 chữ]
+5. Tráng miệng (Dessert): [Tên món] - [Mô tả dưới 20 chữ]";
 
     // 4. Gọi API Gemini (Sử dụng model gemini-flash-lite-latest cho ổn định)
     $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=" . $gemini_api_key;

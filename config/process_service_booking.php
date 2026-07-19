@@ -356,6 +356,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             else $total_amount += 1200000;
         }
 
+        // Tính phụ phí Bàn VIP (Table Fee)
+        $table_fee = 0;
+        if ($table_id > 0) {
+            $stmt_tf = $db->prepare("SELECT price FROM restaurant_tables WHERE id = ?");
+            $stmt_tf->execute([$table_id]);
+            $table_fee = (float)$stmt_tf->fetchColumn();
+            $total_amount += $table_fee;
+        }
+
         // --- TÍNH GIẢM GIÁ TỪ CỘT MỐC (MILESTONES) ---
         $milestone_id_to_redeem = null;
         if (isset($_SESSION['user_id'])) {
@@ -399,8 +408,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $deposit_amount = $total_amount * 0.3;
 
         // 2. Lưu đơn đặt bàn chính vào service_bookings (Bổ sung user_id, deposit_amount, chef_id)
-        $stmt_booking = $db->prepare("INSERT INTO service_bookings (user_id, service_type, customer_name, customer_phone, booking_date, guests, message, table_id, combo_id, total_amount, deposit_amount, status, event_type, decor_package, decor_id, has_cake, has_flower, has_candle, has_handwritten_card, card_message, flower_preference, music_playlist, light_tone, chef_requirements, chef_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt_booking->execute([$user_id, $type, $name, $phone, $date, $guests, $msg, $table_id, $combo_id, $total_amount, $deposit_amount, $event_type, $decor_package, $decor_id, $has_cake, $has_flower, $has_candle, $has_handwritten_card, $card_message, $flower_preference, $music_playlist, $light_tone, $chef_requirements, $chef_id_val]);
+        $stmt_booking = $db->prepare("INSERT INTO service_bookings (user_id, service_type, customer_name, customer_phone, booking_date, guests, message, table_id, combo_id, total_amount, table_fee, deposit_amount, status, event_type, decor_package, decor_id, has_cake, has_flower, has_candle, has_handwritten_card, card_message, flower_preference, music_playlist, light_tone, chef_requirements, chef_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt_booking->execute([$user_id, $type, $name, $phone, $date, $guests, $msg, $table_id, $combo_id, $total_amount, $table_fee, $deposit_amount, $event_type, $decor_package, $decor_id, $has_cake, $has_flower, $has_candle, $has_handwritten_card, $card_message, $flower_preference, $music_playlist, $light_tone, $chef_requirements, $chef_id_val]);
         $last_id = $db->lastInsertId();
 
         // 3. Lưu chi tiết các món ăn khách chọn lẻ và toppings

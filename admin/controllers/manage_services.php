@@ -755,6 +755,12 @@ include '../../public/admin_layout_header.php';
                             <div id="m-chef-req" style="font-size: 0.9em; line-height: 1.5; color: #333;"></div>
                         </div>
                     </div>
+                    <div class="row border-bottom py-2" id="row-dna" style="display:none;">
+                        <div class="col-5 text-muted fw-bold"><i class="fas fa-dna me-1 text-secondary"></i>HỒ SƠ KHẨU VỊ:</div>
+                        <div class="col-7">
+                            <div id="m-dna-req" style="font-size: 0.9em; line-height: 1.5; color: #333;"></div>
+                        </div>
+                    </div>
                     
                     <!-- AI CHEF ASSISTANT SECTION -->
                     <div class="row border-bottom py-2" id="row-ai-chef" style="display:none; background: #fffcf5; border-radius: 8px; margin: 10px 0; border: 1px solid #c8933a;">
@@ -1119,14 +1125,69 @@ include '../../public/admin_layout_header.php';
 
                     function formatNotes(text) {
                         if (!text) return '';
-                        let html = text.replace(/\n/g, '<br>');
+                        
+                        let html = text;
+                        let bespokePart = '';
+                        let restPart = html;
+                        
+                        // Parse Bespoke section
+                        if (html.indexOf('Dịp:') !== -1 && html.indexOf('Chi tiết:') !== -1) {
+                            let parts = html.split(/\n/);
+                            let newHtml = '<div style="background:#fff; border:1px solid #e8e2d9; border-radius:6px; padding:15px; margin-bottom:15px; margin-top:5px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">';
+                            let details = '';
+                            let inDetails = false;
+                            let remainingLines = [];
+                            
+                            for (let line of parts) {
+                                let l = line.trim();
+                                if (!l) {
+                                    if(inDetails) details += '\n';
+                                    continue;
+                                }
+                                
+                                if (l.startsWith('Địa điểm phục vụ:') || l.startsWith('Bếp trưởng chỉ định:')) {
+                                    let p = l.split(':');
+                                    newHtml += `<div style="margin-bottom:8px; display:flex;"><strong style="min-width:120px; color:#555;">${p.shift().trim()}:</strong> <span style="color:#222;">${p.join(':').trim()}</span></div>`;
+                                }
+                                else if (l.startsWith('Dịp:') || l.startsWith('Ngân sách:') || l.startsWith('Phong cách:')) {
+                                    let p = l.split(':');
+                                    newHtml += `<div style="margin-bottom:8px; display:flex;"><strong style="min-width:120px; color:#555;">${p.shift().trim()}:</strong> <span style="color:#222;">${p.join(':').trim()}</span></div>`;
+                                } else if (l.startsWith('Chi tiết:')) {
+                                    inDetails = true;
+                                    details += l.substring(9).trim() + '\n';
+                                } else if (l.startsWith('--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---') || l.startsWith('[Phản hồi từ khách')) {
+                                    inDetails = false;
+                                    remainingLines.push(line);
+                                } else {
+                                    if (inDetails) {
+                                        details += l + '\n';
+                                    } else {
+                                        remainingLines.push(line);
+                                    }
+                                }
+                            }
+                            
+                            if (details.trim()) {
+                                newHtml += `<div style="margin-top:12px; padding-top:12px; border-top:1px dashed #ddd;">
+                                    <strong style="color:#222; display:block; margin-bottom:8px;"><i class="fas fa-magic text-warning me-1"></i>Tuyển chọn riêng:</strong>
+                                    <div style="padding:10px 12px; background:#fefcf9; border-left:3px solid #7c1a22; font-size:13.5px; white-space:pre-line; color:#444;">${details.trim()}</div>
+                                </div>`;
+                            }
+                            newHtml += '</div>';
+                            
+                            html = newHtml + (remainingLines.length > 0 ? remainingLines.join('\n') : '');
+                        }
+                        
+                        html = html.replace(/\n/g, '<br>');
+                        
                         html = html.replace(/- Độ chín:/g, '<span class="fw-bold">- Độ chín:</span>');
                         html = html.replace(/- Hương vị:/g, '<span class="fw-bold">- Hương vị:</span>');
+                        html = html.replace(/- Yêu thích:/g, '<span class="fw-bold">- Yêu thích:</span>');
                         
-                        html = html.replace(/(?:-\s*)?DỊ ỨNG:\s*(.*?)(?=\s*\||<br>|$)/g, '<span class="badge bg-danger text-white" style="font-size: 11px;"><i class="fas fa-exclamation-triangle me-1"></i>DỊ ỨNG</span> <strong class="text-danger">$1</strong>');
+                        html = html.replace(/(?:-\s*)?DỊ ỨNG:\s*(.*?)(?=\s*\||<br>|$)/g, '<span class="badge bg-danger text-white" style="font-size: 11px; margin-top:5px;"><i class="fas fa-exclamation-triangle me-1"></i>DỊ ỨNG</span> <strong class="text-danger">$1</strong>');
                         html = html.replace(/Chế độ ăn:\s*(.*?)(?=\s*\||<br>|$)/g, '<span class="fw-bold"><i class="fas fa-leaf me-1 text-success"></i>Chế độ ăn:</span> <strong>$1</strong>');
                         html = html.replace(/Mục đích:\s*(.*?)(?=\s*\||<br>|$)/g, '<span class="fw-bold"><i class="fas fa-glass-cheers me-1 text-info"></i>Mục đích:</span> <strong>$1</strong>');
-                        html = html.replace(/--- HỒ SƠ KHẨU VỊ \(CULINARY DNA\) ---/g, '<br><span class="fw-bold"><i class="fas fa-dna me-1 text-secondary"></i>HỒ SƠ KHẨU VỊ (CULINARY DNA)</span><br>');
+                        html = html.replace(/--- HỒ SƠ KHẨU VỊ \(CULINARY DNA\) ---/g, '<div class="mt-2 mb-2 pb-1 border-bottom"><span class="fw-bold text-secondary" style="font-size:12px; letter-spacing:0.5px;"><i class="fas fa-dna me-1"></i>HỒ SƠ KHẨU VỊ (CULINARY DNA)</span></div>');
                         
                         html = html.replace(/\[Phản hồi từ khách lúc (.*?)\]:<br>([\s\S]*?)(?=(?:<br>)*\[Phản hồi từ khách|$)/g, 
                             '<div class="mt-3 p-3 rounded" style="background-color: #fff8e1; border-left: 4px solid #ffb300; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">' +
@@ -1139,12 +1200,35 @@ include '../../public/admin_layout_header.php';
 
                     $('#m-msg').html(data.message ? formatNotes(data.message) : '<span class="text-muted">Không có ghi chú.</span>');
                     
-                    // --- YÊU CẦU BẾP TRƯỞNG ---
+                    // --- YÊU CẦU BẾP TRƯỞNG & DNA ---
                     if (data.chef_requirements) {
                         $('#row-chef-req').show();
-                        $('#m-chef-req').html(formatNotes(data.chef_requirements));
+                        
+                        let reqText = data.chef_requirements;
+                        let dnaIdx = reqText.indexOf('--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---');
+                        let customerReplyIdx = reqText.indexOf('[Phản hồi từ khách');
+                        
+                        let dnaText = '';
+                        
+                        if (dnaIdx !== -1) {
+                            if (customerReplyIdx !== -1 && customerReplyIdx > dnaIdx) {
+                                dnaText = reqText.substring(dnaIdx + 36, customerReplyIdx);
+                                reqText = reqText.substring(0, dnaIdx) + "\n\n" + reqText.substring(customerReplyIdx);
+                            } else {
+                                dnaText = reqText.substring(dnaIdx + 36);
+                                reqText = reqText.substring(0, dnaIdx);
+                            }
+                            
+                            $('#row-dna').show();
+                            $('#m-dna-req').html(formatNotes(dnaText.trim()));
+                        } else {
+                            $('#row-dna').hide();
+                        }
+                        
+                        $('#m-chef-req').html(formatNotes(reqText.trim()));
                     } else {
                         $('#row-chef-req').hide();
+                        $('#row-dna').hide();
                     }
 
                     // --- AI CHEF ASSISTANT ---
