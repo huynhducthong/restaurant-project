@@ -126,6 +126,14 @@ if ($action === 'add') {
         $old['allergens'] = trim($_POST['allergens'] ?? '');
         $old['wine_pairing_id'] = !empty($_POST['wine_pairing_id']) ? (int)$_POST['wine_pairing_id'] : null;
         $old['chef_note'] = trim($_POST['chef_note'] ?? '');
+        $nf = [
+            'calories' => trim($_POST['nutrition_calories'] ?? ''),
+            'protein' => trim($_POST['nutrition_protein'] ?? ''),
+            'carbs' => trim($_POST['nutrition_carbs'] ?? ''),
+            'fat' => trim($_POST['nutrition_fat'] ?? ''),
+            'fiber' => trim($_POST['nutrition_fiber'] ?? '')
+        ];
+        $old['nutrition_facts'] = array_filter($nf, function($v) { return $v !== ''; }) ? json_encode($nf, JSON_UNESCAPED_UNICODE) : null;
         $fj_data = [
             'origin' => trim($_POST['fj_origin'] ?? ''),
             'selection' => trim($_POST['fj_selection'] ?? ''),
@@ -174,8 +182,6 @@ if ($action === 'add') {
         // Only save if at least one has content
         $fj_json = array_filter($fj_data) ? json_encode($fj_data, JSON_UNESCAPED_UNICODE) : '';
         $old['food_journey'] = $fj_json;
-        $old['cooking_technique'] = '';
-        $old['cooking_status'] = trim($_POST['cooking_status'] ?? '');
         $old['max_toppings'] = isset($_POST['max_toppings']) ? (int)$_POST['max_toppings'] : 4;
         $theme_id = !empty($_POST['theme_id']) ? (int)$_POST['theme_id'] : null;
 
@@ -200,8 +206,8 @@ if ($action === 'add') {
             $db->beginTransaction();
             try {
                 $db->prepare(
-                    "INSERT INTO foods (name, category_id, price, description, allergens, wine_pairing_id, chef_note, cooking_status, food_journey, cooking_technique, image, is_active, is_chef_recommended, theme_id, max_toppings)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?)"
+                    "INSERT INTO foods (name, category_id, price, description, allergens, wine_pairing_id, chef_note, food_journey, image, is_active, is_chef_recommended, theme_id, max_toppings, nutrition_facts)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?)"
                 )->execute([
                             $old['name'],
                             (int) $old['category_id'],
@@ -210,13 +216,12 @@ if ($action === 'add') {
                             $old['allergens'],
                             $old['wine_pairing_id'],
                             $old['chef_note'],
-                            $old['cooking_status'],
                             $old['food_journey'],
-                            $old['cooking_technique'],
                             $image_name,
                             isset($_POST['is_chef_recommended']) ? 1 : 0,
                             $theme_id,
-                            $old['max_toppings']
+                            $old['max_toppings'],
+                            $old['nutrition_facts']
                         ]);
                 $new_food_id = (int)$db->lastInsertId();
                 saveRecipes($db, $new_food_id);
@@ -286,11 +291,10 @@ if ($action === 'edit') {
         'wine_pairing_id' => $food['wine_pairing_id'],
         'chef_note' => $food['chef_note'],
         'food_journey' => $food['food_journey'] ?? '',
-        'cooking_technique' => $food['cooking_technique'] ?? '',
-        'cooking_status' => $food['cooking_status'],
         'is_chef_recommended' => $food['is_chef_recommended'],
         'theme_id' => $food['theme_id'],
         'max_toppings' => $food['max_toppings'] ?? 4,
+        'nutrition_facts' => $food['nutrition_facts']
     ];
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -300,6 +304,16 @@ if ($action === 'edit') {
         $old['description'] = trim($_POST['description'] ?? '');
         $old['wine_pairing_id'] = !empty($_POST['wine_pairing_id']) ? (int)$_POST['wine_pairing_id'] : null;
         $old['chef_note'] = trim($_POST['chef_note'] ?? '');
+        
+        $nf = [
+            'calories' => trim($_POST['nutrition_calories'] ?? ''),
+            'protein' => trim($_POST['nutrition_protein'] ?? ''),
+            'carbs' => trim($_POST['nutrition_carbs'] ?? ''),
+            'fat' => trim($_POST['nutrition_fat'] ?? ''),
+            'fiber' => trim($_POST['nutrition_fiber'] ?? '')
+        ];
+        $old['nutrition_facts'] = array_filter($nf, function($v) { return $v !== ''; }) ? json_encode($nf, JSON_UNESCAPED_UNICODE) : null;
+
         $fj_data = [
             'origin' => trim($_POST['fj_origin'] ?? ''),
             'selection' => trim($_POST['fj_selection'] ?? ''),
@@ -348,8 +362,6 @@ if ($action === 'edit') {
         // Only save if at least one has content
         $fj_json = array_filter($fj_data) ? json_encode($fj_data, JSON_UNESCAPED_UNICODE) : '';
         $old['food_journey'] = $fj_json;
-        $old['cooking_technique'] = '';
-        $old['cooking_status'] = trim($_POST['cooking_status'] ?? '');
         $old['max_toppings'] = isset($_POST['max_toppings']) ? (int)$_POST['max_toppings'] : 4;
         $theme_id = !empty($_POST['theme_id']) ? (int)$_POST['theme_id'] : null;
         $old['theme_id'] = $theme_id;
@@ -373,7 +385,7 @@ if ($action === 'edit') {
             $db->beginTransaction();
             try {
                 $db->prepare(
-                    "UPDATE foods SET name=?, category_id=?, price=?, description=?, allergens=?, wine_pairing_id=?, chef_note=?, cooking_status=?, food_journey=?, cooking_technique=?, image=?, is_chef_recommended=?, theme_id=?, max_toppings=? WHERE id=?"
+                    "UPDATE foods SET name=?, category_id=?, price=?, description=?, allergens=?, wine_pairing_id=?, chef_note=?, food_journey=?, image=?, is_chef_recommended=?, theme_id=?, max_toppings=?, nutrition_facts=? WHERE id=?"
                 )->execute([
                             $old['name'],
                             (int) $old['category_id'],
@@ -382,13 +394,12 @@ if ($action === 'edit') {
                             $old['allergens'],
                             $old['wine_pairing_id'],
                             $old['chef_note'],
-                            $old['cooking_status'],
                             $old['food_journey'],
-                            $old['cooking_technique'],
                             $final_image,
                             isset($_POST['is_chef_recommended']) ? 1 : 0,
                             $theme_id,
                             $old['max_toppings'],
+                            $old['nutrition_facts'],
                             $id
                         ]);
                 saveRecipes($db, $id);
@@ -412,9 +423,7 @@ if ($action === 'edit') {
                     'wine_pairing_id' => $food['wine_pairing_id'],
                     'chef_note' => $food['chef_note'],
         'food_journey' => $food['food_journey'] ?? '',
-        'cooking_technique' => $food['cooking_technique'] ?? '',
-                    'cooking_status' => $food['cooking_status'],
-                    'theme_id' => $food['theme_id'],
+        'theme_id' => $food['theme_id'],
                     'max_toppings' => $food['max_toppings'] ?? 4,
                 ];
             } catch (Exception $e) {

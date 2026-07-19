@@ -28,10 +28,11 @@ $user_allergies = [];
 $user_flavor = [];
 $user_fav = [];
 $user_dislikes = [];
+$user_nutrition_goals = [];
 $user_history_counts = [];
 
 if (isset($_SESSION['user_id'])) {
-    $stmt = $db->prepare("SELECT allergies, flavor_profile, fav_ingredients, disliked_ingredients FROM users WHERE id = ?");
+    $stmt = $db->prepare("SELECT allergies, flavor_profile, fav_ingredients, disliked_ingredients, nutrition_goals FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
     $u = $stmt->fetch();
     if ($u) {
@@ -39,6 +40,7 @@ if (isset($_SESSION['user_id'])) {
         if ($u['flavor_profile']) $user_flavor = array_map('trim', explode(',', mb_strtolower($u['flavor_profile'], 'UTF-8')));
         if ($u['fav_ingredients']) $user_fav = array_map('trim', explode(',', mb_strtolower($u['fav_ingredients'], 'UTF-8')));
         if ($u['disliked_ingredients']) $user_dislikes = array_map('trim', explode(',', mb_strtolower($u['disliked_ingredients'], 'UTF-8')));
+        if (!empty($u['nutrition_goals'])) $user_nutrition_goals = array_map('trim', explode(',', $u['nutrition_goals']));
     }
 
     $h_stmt = $db->prepare("
@@ -69,14 +71,28 @@ function hasAllergen($food, $user_allergies) {
         if (empty($ua)) continue;
         
         $check_terms = [$ua];
-        if (isset($aliases[$ua])) {
-            $check_terms = array_merge($check_terms, $aliases[$ua]);
+        
+        // Expand aliases if the user's sentence contains an alias keyword
+        foreach ($aliases as $key => $values) {
+            if (mb_strpos($ua, $key, 0, 'UTF-8') !== false) {
+                $check_terms = array_merge($check_terms, $values);
+                $check_terms[] = $key;
+            }
         }
         
         foreach($food_allergens as $fa) {
             if (empty($fa)) continue;
             foreach ($check_terms as $term) {
-                if (strpos($fa, $term) !== false) return true;
+                if (mb_strpos($fa, $term, 0, 'UTF-8') !== false) {
+                    return true;
+                }
+                
+                if (mb_strlen($fa, 'UTF-8') > 1) {
+                    $pattern = '/(?<=^|\s)' . preg_quote($fa, '/') . '(?=\s|$|[.,!?])/iu';
+                    if (preg_match($pattern, $term)) {
+                        return true;
+                    }
+                }
             }
         }
     }
@@ -132,6 +148,42 @@ foreach ($all_foods as &$f) {
         $score += $history_score;
     }
 
+    // Khớp mục tiêu dinh dưỡng
+    $matched_nutrition = null;
+    $nf = json_decode($f['nutrition_facts'] ?? '{}', true);
+    if (!empty($user_nutrition_goals) && is_array($nf)) {
+        foreach ($user_nutrition_goals as $goal) {
+            $goal_lower = mb_strtolower($goal, 'UTF-8');
+            $cal = isset($nf['calories']) ? floatval($nf['calories']) : 0;
+            $carbs = isset($nf['carbs']) ? floatval($nf['carbs']) : 0;
+            $pro = isset($nf['protein']) ? floatval($nf['protein']) : 0;
+            $fat = isset($nf['fat']) ? floatval($nf['fat']) : 0;
+            
+            if (strpos($goal_lower, 'eat clean') !== false && $cal > 0 && $cal < 500 && $fat < 15) {
+                $matched_nutrition = 'Eat Clean'; $score += 3; break;
+            }
+            if (strpos($goal_lower, 'keto') !== false && $carbs > 0 && $carbs < 15) {
+                $matched_nutrition = 'Keto (Low Carb)'; $score += 3; break;
+            }
+            if (strpos($goal_lower, 'ít calo') !== false && $cal > 0 && $cal < 350) {
+                $matched_nutrition = 'Ít Calo'; $score += 3; break;
+            }
+            if (strpos($goal_lower, 'tăng cơ') !== false && $pro > 25) {
+                $matched_nutrition = 'Tăng cơ'; $score += 3; break;
+            }
+            if (strpos($goal_lower, 'ít béo') !== false && $fat > 0 && $fat < 10) {
+                $matched_nutrition = 'Ít béo'; $score += 3; break;
+            }
+            if (strpos($goal_lower, 'chay') !== false) {
+                $f_ingr_str = strtolower($f_name . ' ' . $f_ingr . ' ' . $f_tags);
+                if (strpos($f_ingr_str, 'bò') === false && strpos($f_ingr_str, 'thịt') === false && strpos($f_ingr_str, 'gà') === false && strpos($f_ingr_str, 'cá') === false && strpos($f_ingr_str, 'hải sản') === false) {
+                    $matched_nutrition = 'Ăn chay'; $score += 3; break;
+                }
+            }
+        }
+    }
+    
+    $f['matched_nutrition'] = $matched_nutrition;
     $f['ai_score'] = $score;
 }
 unset($f);
@@ -232,7 +284,8 @@ include __DIR__ . '/views/client/layouts/header.php';
                                             'img' => 'public/assets/img/menu/' . ($f['image'] ?: 'default.jpg'),
                                             'cat' => "Món tự chọn",
                                             'chef_note' => $f['chef_note'] ?? '',
-                                            'toppings' => $f['list_toppings'] ?? ''
+                                            'toppings' => $f['list_toppings'] ?? '',
+                                            'allergens' => $f['allergens'] ?? ''
                                         ]));
                                     ?>
                                     <div class="menu-item menu-hover-trigger <?= $has_al ? 'allergy-item' : '' ?>" 
@@ -246,7 +299,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                                         <p class="menu-item-desc">
                                             <?= htmlspecialchars($f['description']) ?>
                                         </p>
-                                        <div style="margin-top:5px;">
+                                        <div style="margin-top:5px; display: flex; flex-wrap: wrap; align-items: center;">
                                             <?php if($has_al): ?>
                                             <span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block;">* Chứa thành phần dị ứng với bạn</span>
                                             <?php elseif($has_dl): ?>
@@ -332,7 +385,8 @@ include __DIR__ . '/views/client/layouts/header.php';
                             'img' => 'public/assets/img/menu/' . ($f['image'] ?: 'default.jpg'),
                             'cat' => "Chef's Choice",
                             'chef_note' => $f['chef_note'] ?? '',
-                            'toppings' => $f['list_toppings'] ?? ''
+                            'toppings' => $f['list_toppings'] ?? '',
+                            'allergens' => $f['allergens'] ?? ''
                         ]));
                     ?>
                     <div class="menu-item menu-hover-trigger <?= $has_al ? 'allergy-item' : '' ?>" 
@@ -347,11 +401,14 @@ include __DIR__ . '/views/client/layouts/header.php';
                         <p class="menu-item-desc">
                             <?= htmlspecialchars($f['description']) ?>
                         </p>
-                        <div style="margin-top:5px;">
+                        <div style="margin-top:5px; display: flex; flex-wrap: wrap; align-items: center;">
                             <?php if($has_al): ?>
-                            <span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block;">* Chứa thành phần dị ứng với bạn</span>
+                            <span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block; margin-right: 12px; margin-top: 4px;">* Chứa thành phần dị ứng với bạn</span>
                             <?php elseif($has_dl): ?>
-                            <span style="color:#e67e22; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block;">* Có chứa nguyên liệu bạn không thích</span>
+                            <span style="color:#e67e22; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block; margin-right: 12px; margin-top: 4px;">* Có chứa nguyên liệu bạn không thích</span>
+                            <?php endif; ?>
+                            <?php if(!empty($f['matched_nutrition'])): ?>
+                            <span style="color:#28a745; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block; margin-right: 12px; margin-top: 4px;"><i class="fas fa-leaf"></i> Phù hợp chế độ <?= htmlspecialchars($f['matched_nutrition']) ?></span>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -401,7 +458,8 @@ include __DIR__ . '/views/client/layouts/header.php';
                             'img' => 'public/assets/img/menu/' . ($f['image'] ?: 'default.jpg'),
                             'cat' => $cat['name'],
                             'chef_note' => $f['chef_note'] ?? '',
-                            'toppings' => $f['list_toppings'] ?? ''
+                            'toppings' => $f['list_toppings'] ?? '',
+                            'allergens' => $f['allergens'] ?? ''
                         ]));
                     ?>
                     <div class="menu-item <?= $has_al ? 'allergy-item' : '' ?>" 
@@ -415,11 +473,14 @@ include __DIR__ . '/views/client/layouts/header.php';
                         <p class="menu-item-desc">
                             <?= htmlspecialchars($f['description']) ?>
                         </p>
-                        <div style="margin-top:5px;">
+                        <div style="margin-top:5px; display: flex; flex-wrap: wrap; align-items: center;">
                             <?php if($has_al): ?>
-                            <span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block;">* Chứa thành phần dị ứng với bạn</span>
+                            <span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block; margin-right: 12px; margin-top: 4px;">* Chứa thành phần dị ứng với bạn</span>
                             <?php elseif($has_dl): ?>
-                            <span style="color:#e67e22; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block;">* Có chứa nguyên liệu bạn không thích</span>
+                            <span style="color:#e67e22; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block; margin-right: 12px; margin-top: 4px;">* Có chứa nguyên liệu bạn không thích</span>
+                            <?php endif; ?>
+                            <?php if(!empty($f['matched_nutrition'])): ?>
+                            <span style="color:#28a745; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block; margin-right: 12px; margin-top: 4px;"><i class="fas fa-leaf"></i> Phù hợp chế độ <?= htmlspecialchars($f['matched_nutrition']) ?></span>
                             <?php endif; ?>
                             <?php 
                                 $is_hist = isset($user_history_counts[$f['id']]);
@@ -480,6 +541,7 @@ include __DIR__ . '/views/client/layouts/header.php';
       </div>
       
       <div class="ed-m-price" id="ed-m-price"></div>
+      <div id="ed-m-allergens" style="font-size:13px; color:var(--accent-burgundy, #800020); margin-bottom:5px; font-weight: 500; display:none;"></div>
       <div class="ed-m-toppings" id="ed-m-toppings" style="font-size:12px; color:var(--text-muted); margin-bottom:15px; font-style:italic;"></div>
       <a href="booking_service.php" class="btn-reserve-solid" style="width: fit-content;">ĐẶT BÀN NGAY</a>
     </div>
@@ -632,6 +694,15 @@ function openEdModal(data) {
     var topEl = document.getElementById('ed-m-toppings');
     topEl.style.display = 'none';
     topEl.innerHTML = '';
+    
+    var algEl = document.getElementById('ed-m-allergens');
+    if (data.allergens && data.allergens.trim() !== '') {
+        algEl.style.display = 'block';
+        algEl.innerHTML = '<i class="fas fa-exclamation-circle" style="margin-right:5px;"></i>Chứa thành phần: ' + data.allergens;
+    } else {
+        algEl.style.display = 'none';
+        algEl.innerHTML = '';
+    }
     
     document.getElementById('edModal').classList.add('open');
     document.body.style.overflow = 'hidden';

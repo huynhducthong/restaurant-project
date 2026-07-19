@@ -265,6 +265,15 @@ if ($s['service_type'] === 'chef') {
             </tr>';
 }
 
+// TÍNH PHỤ PHÍ BÀN VIP
+if (isset($s['table_fee']) && $s['table_fee'] > 0) {
+    $html .= '
+            <tr>
+                <td colspan="3" style="padding:10px 15px; border-bottom:1px solid #eee; text-align:right; color:#143B36; font-style:italic;">Phụ phí Bàn/Phòng VIP:</td>
+                <td style="padding:10px 15px; border-bottom:1px solid #eee; text-align:right; font-weight:bold; color:#143B36;">' . number_format($s['table_fee'], 0, ',', '.') . 'đ</td>
+            </tr>';
+}
+
 $html .= '
         </tbody>
         <tfoot>

@@ -609,7 +609,7 @@ try {
 
                 <?php if (checkMenuAccess($user_role, ['waiter', 'cashier'])): ?>
                 <?php 
-                    $isServiceMenu = isActive('manage_services.php') || isActive('manage_events.php') || isActive('manage_decors.php') || isActive('manage_bespoke.php');
+                    $isServiceMenu = isActive('manage_services.php') || isActive('manage_events.php') || isActive('manage_decors.php') || isActive('manage_bespoke.php') || isActive('manage_tables.php');
                 ?>
                 <li class="<?= $isServiceMenu ? 'active' : '' ?>">
                     <a href="javascript:void(0)" data-bs-target="#servicesSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isServiceMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
@@ -628,6 +628,11 @@ try {
                         <li class="<?= isActive('manage_services.php') ?>">
                             <a href="/restaurant-project/admin/controllers/manage_services.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-list-ul" style="font-size: 12px; margin-right: 6px;"></i> Danh sách Đơn đặt
+                            </a>
+                        </li>
+                        <li class="<?= isActive('manage_tables.php') ?>">
+                            <a href="/restaurant-project/admin/controllers/manage_tables.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-chair" style="font-size: 12px; margin-right: 6px;"></i> Quản lý Bàn
                             </a>
                         </li>
                         <li class="<?= isActive('manage_events.php') ?>">
@@ -711,7 +716,7 @@ try {
                 </li>
                 
                 <?php 
-                    $isChatMenu = isActive('chat_console.php') || isActive('bot_training.php');
+                    $isChatMenu = isActive('chat_console.php') || isActive('bot_training.php') || isActive('chat_analytics.php');
                 ?>
                 <li class="<?= $isChatMenu ? 'active' : '' ?>">
                     <a href="javascript:void(0)" data-bs-target="#chatSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isChatMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
@@ -735,18 +740,17 @@ try {
                                 <i class="fas fa-robot" style="font-size: 12px; margin-right: 6px;"></i> Quản lý kịch bản Bot
                             </a>
                         </li>
+                        <li class="<?= isActive('chat_analytics.php') ?>">
+                            <a href="/restaurant-project/admin/chat_analytics.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-chart-bar" style="font-size: 12px; margin-right: 6px;"></i> Thống kê Chat
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <?php endif; ?>
 
                 <?php if ($is_admin): ?>
                 <div class="menu-header">Cấu hình</div>
-
-                <li class="<?= isActive('chat_analytics.php') ?>">
-                    <a href="/restaurant-project/admin/chat_analytics.php">
-                        <i class="fas fa-chart-bar"></i> Thống kê Chat
-                    </a>
-                </li>
 
 
 

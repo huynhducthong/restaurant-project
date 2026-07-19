@@ -25,30 +25,38 @@ function sendTelegramNotification($message) {
         return false;
     }
 
-    $url = "https://api.telegram.org/bot$token/sendMessage";
-    $data = [
-        'chat_id' => $chat_id,
-        'text' => $message,
-        'parse_mode' => 'HTML'
-    ];
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+    // TẠO TIẾN TRÌNH CHẠY NGẦM ĐỂ KHÔNG LÀM LAG TRANG WEB
+    $tmp_dir = sys_get_temp_dir();
+    $tmp_file = $tmp_dir . '/telegram_msg_' . md5(uniqid('', true)) . '.txt';
+    file_put_contents($tmp_file, $message);
     
-    // Tắt kiểm tra SSL trên localhost XAMPP để tránh lỗi HTTPS
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    $runner = __DIR__ . '/telegram_bg_runner.php';
+    if (!file_exists($runner)) {
+        $runner_code = "<?php\n"
+        . "\$file = \$argv[1] ?? '';\n"
+        . "if (!file_exists(\$file)) exit;\n"
+        . "\$msg = file_get_contents(\$file);\n"
+        . "unlink(\$file);\n"
+        . "\$token = \$argv[2] ?? '';\n"
+        . "\$chat_id = \$argv[3] ?? '';\n"
+        . "if (\$token && \$chat_id) {\n"
+        . "    \$ch = curl_init(\"https://api.telegram.org/bot\$token/sendMessage\");\n"
+        . "    curl_setopt(\$ch, CURLOPT_RETURNTRANSFER, true);\n"
+        . "    curl_setopt(\$ch, CURLOPT_POST, true);\n"
+        . "    curl_setopt(\$ch, CURLOPT_POSTFIELDS, http_build_query(['chat_id' => \$chat_id, 'text' => \$msg, 'parse_mode' => 'HTML']));\n"
+        . "    curl_setopt(\$ch, CURLOPT_SSL_VERIFYPEER, false);\n"
+        . "    curl_setopt(\$ch, CURLOPT_SSL_VERIFYHOST, false);\n"
+        . "    curl_exec(\$ch);\n"
+        . "    curl_close(\$ch);\n"
+        . "}\n";
+        file_put_contents($runner, $runner_code);
+    }
     
-    // Giới hạn thời gian kết nối & thực thi (Tránh đơ web)
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 2);
-
-    $result = curl_exec($ch);
-    $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
+    // Gọi PHP chạy ngầm qua cmd (Dành riêng cho XAMPP Windows)
+    $cmd = "start /B php " . escapeshellarg($runner) . " " . escapeshellarg($tmp_file) . " " . escapeshellarg($token) . " " . escapeshellarg($chat_id);
+    pclose(popen($cmd, "r"));
     
-    return ($result !== false) && ($httpCode >= 200 && $httpCode < 300);
+    return true;
 }
 
 /**

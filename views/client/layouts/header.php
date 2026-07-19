@@ -55,7 +55,7 @@ $settings['open_time']       = $settings['open_time'] ?? '11:00 - 23:00';
 $settings['address']         = $settings['address'] ?? '';
 $settings['logo_url']        = $settings['logo_url'] ?? '';
 $settings['logo_ver']        = $settings['logo_ver'] ?? '1';
-$settings['logo_position']   = $settings['name_position'] ?? 'left';
+
 
 /* =========================================================
    PAGE
@@ -713,16 +713,8 @@ if (!empty($logo_path)) {
 
             <h1 class="logo">
 
-                <a href="<?= safe_url('index.php', $path_prefix ?? '') ?>"
-                    class="<?= ($settings['logo_position'] == 'right') ? 'logo-container-right' : '' ?>">
+                <a href="<?= safe_url('index.php', $path_prefix ?? '') ?>">
 
-                    <?php if (!empty($final_logo_src)): ?>
-
-                        <img
-                            src="<?= ($path_prefix ?? '') ?><?= htmlspecialchars($final_logo_src) ?>?v=<?= htmlspecialchars($settings['logo_ver']) ?>"
-                            alt="Logo">
-
-                    <?php endif; ?>
 
                     <span class="notranslate">
                         <?= htmlspecialchars($settings['restaurant_name']) ?>
@@ -934,6 +926,7 @@ if (!empty($logo_path)) {
     $is_holiday = false;
     $holiday_name = "";
     $holiday_msg = "";
+    $holiday_icon = "";
     $h_month = date('m');
     $h_day = date('d');
 

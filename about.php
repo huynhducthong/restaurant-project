@@ -7,17 +7,7 @@ $db = $database->getConnection();
 
 // Self-healing / auto-migration for comments like, dislike and reports
 try {
-    $db->exec("ALTER TABLE about_comments ADD COLUMN IF NOT EXISTS likes INT DEFAULT 0");
-    $db->exec("ALTER TABLE about_comments ADD COLUMN IF NOT EXISTS dislikes INT DEFAULT 0");
-    $db->exec("CREATE TABLE IF NOT EXISTS about_comment_reports (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        comment_id INT NOT NULL,
-        user_id INT DEFAULT NULL,
-        reason TEXT NOT NULL,
-        user_ip VARCHAR(50) DEFAULT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )");
-} catch (Exception $e) {}
+            } catch (Exception $e) {}
 
 $user_ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 $current_user = null;
@@ -54,6 +44,7 @@ function get_category_icon($slug) {
 // Check if we are viewing a specific article
 $article_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $article = null;
+$related_posts = [];
 
 if ($article_id > 0) {
     // 1. Fetch details of this article
@@ -62,35 +53,7 @@ if ($article_id > 0) {
     $article = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if ($article) {
-        // Track the view count by inserting a view action
-        try {
-            $db->prepare("INSERT INTO about_shares (content_id, platform, user_ip) VALUES (?, 'view', ?)")->execute([$article_id, $user_ip]);
-        } catch (Exception $e) {}
-
-        // Fetch likes, saves, views, and comments details
-        $pid = $article['id'];
-        $s=$db->prepare("SELECT COUNT(*) FROM about_likes WHERE content_id=?"); $s->execute([$pid]); $article['like_count']=(int)$s->fetchColumn();
-        $s=$db->prepare("SELECT COUNT(*) FROM about_likes WHERE content_id=? AND user_ip=?"); $s->execute([$pid,$user_ip]); $article['user_liked']=(int)$s->fetchColumn()>0;
-        $s=$db->prepare("SELECT COUNT(*) FROM about_shares WHERE content_id=? AND platform!='view'"); $s->execute([$pid]); $article['share_count']=(int)$s->fetchColumn();
-        $s=$db->prepare("SELECT COUNT(*) FROM about_shares WHERE content_id=? AND platform='view'"); $s->execute([$pid]); $article['view_count']=(int)$s->fetchColumn();
-        $s=$db->prepare("SELECT COUNT(*) FROM about_comments WHERE content_id=? AND status='approved'"); $s->execute([$pid]); $article['comment_count']=(int)$s->fetchColumn();
         
-        $uid = $_SESSION['user_id'] ?? 0;
-        $article['user_saved'] = false;
-        if ($uid) {
-            $save_check = $db->prepare("SELECT id FROM about_saved_posts WHERE user_id = ? AND post_id = ?");
-            $save_check->execute([$uid, $pid]);
-            $article['user_saved'] = !!$save_check->fetch();
-        }
-        
-        // Fetch comments
-        $s=$db->prepare("SELECT c.*, u.avatar as user_avatar, u.full_name as current_full_name 
-                         FROM about_comments c 
-                         LEFT JOIN users u ON c.user_id = u.id 
-                         WHERE c.content_id=? AND c.status='approved' 
-                         ORDER BY c.created_at DESC LIMIT 100"); 
-        $s->execute([$pid]); 
-        $article_comments = $s->fetchAll(PDO::FETCH_ASSOC);
 
         // Fetch related articles (same category, different id)
         $stmt = $db->prepare("SELECT a.*, c.name as cat_name FROM about_content a JOIN about_categories c ON a.category_id=c.id WHERE a.category_id=? AND a.id != ? AND a.status=1 ORDER BY a.created_at DESC LIMIT 3");
@@ -114,22 +77,15 @@ if ($article_id > 0) {
 $cat_id = isset($_GET['cat_id']) ? (int)$_GET['cat_id'] : 0;
 
 if ($cat_id > 0) {
-    $stmt = $db->prepare("SELECT a.*, c.name as cat_name FROM about_content a JOIN about_categories c ON a.category_id=c.id WHERE a.status=1 AND a.category_id=? ORDER BY a.is_pinned DESC, a.display_order ASC, a.id DESC");
+    $stmt = $db->prepare("SELECT a.*, c.name as cat_name FROM about_content a JOIN about_categories c ON a.category_id=c.id WHERE a.status=1 AND a.category_id=? ORDER BY a.display_order ASC, a.id DESC");
     $stmt->execute([$cat_id]);
 } else {
-    $stmt = $db->prepare("SELECT a.*, c.name as cat_name FROM about_content a JOIN about_categories c ON a.category_id=c.id WHERE a.status=1 ORDER BY a.is_pinned DESC, a.display_order ASC, a.id DESC");
+    $stmt = $db->prepare("SELECT a.*, c.name as cat_name FROM about_content a JOIN about_categories c ON a.category_id=c.id WHERE a.status=1 ORDER BY a.display_order ASC, a.id DESC");
     $stmt->execute();
 }
 $all_posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Populate stats for list posts
-foreach ($all_posts as &$post) {
-    $pid = $post['id'];
-    $s=$db->prepare("SELECT COUNT(*) FROM about_likes WHERE content_id=?"); $s->execute([$pid]); $post['like_count']=(int)$s->fetchColumn();
-    $s=$db->prepare("SELECT COUNT(*) FROM about_comments WHERE content_id=? AND status='approved'"); $s->execute([$pid]); $post['comment_count']=(int)$s->fetchColumn();
-    $s=$db->prepare("SELECT COUNT(*) FROM about_shares WHERE content_id=? AND platform='view'"); $s->execute([$pid]); $post['view_count']=(int)$s->fetchColumn();
-}
-unset($post);
+
 
 // Partition posts for editorial magazine layout
 $hero_post = !empty($all_posts) ? $all_posts[0] : null;
@@ -142,33 +98,17 @@ if (count($all_posts) > 3) {
     $standard_posts = array_slice($all_posts, 3);
 }
 
-// Popular Articles for Sidebar (computed from actual views in about_shares)
+// Popular Articles for Sidebar (Now just latest articles)
 $popular_stmt = $db->prepare("
-    SELECT a.id, a.title, a.thumbnail, a.created_at, COUNT(s.id) as view_count, c.name as cat_name
+    SELECT a.id, a.title, a.thumbnail, a.created_at, c.name as cat_name
     FROM about_content a
     JOIN about_categories c ON a.category_id=c.id
-    LEFT JOIN about_shares s ON a.id = s.content_id AND s.platform = 'view'
     WHERE a.status = 1
-    GROUP BY a.id
-    ORDER BY view_count DESC, a.created_at DESC
+    ORDER BY a.created_at DESC
     LIMIT 5
 ");
 $popular_stmt->execute();
 $popular_posts = $popular_stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// If no views recorded yet, fallback to recent posts
-if (empty($popular_posts) || $popular_posts[0]['view_count'] == 0) {
-    $popular_stmt = $db->prepare("
-        SELECT a.id, a.title, a.thumbnail, a.created_at, 0 as view_count, c.name as cat_name
-        FROM about_content a
-        JOIN about_categories c ON a.category_id=c.id
-        WHERE a.status = 1
-        ORDER BY a.created_at DESC
-        LIMIT 5
-    ");
-    $popular_stmt->execute();
-    $popular_posts = $popular_stmt->fetchAll(PDO::FETCH_ASSOC);
-}
 
 // Fetch active categories
 $cat_stmt = $db->prepare("
@@ -211,7 +151,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                  ARTICLE READING VIEW (DETAILS)
                  ========================================== -->
             <div class="news-breadcrumbs" style="max-width: 900px; margin: 0 auto 25px;">
-                <a href="../index.php">Trang chủ</a>
+                <a href="index.php">Trang chủ</a>
                 <span>&gt;</span>
                 <a href="about.php">Về chúng tôi</a>
                 <span>&gt;</span>
@@ -392,195 +332,6 @@ include __DIR__ . '/views/client/layouts/header.php';
 
 <script>
 const BASE = '<?= rtrim((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']==='on'?'https':'http').'://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']),'/') ?>';
-
-// Toggle Anon state for comments
-function toggleAnonInput(formPrefix) {
-    const isAnon = document.getElementById(formPrefix + '-anon').checked;
-    const authorInp = document.getElementById(formPrefix + '-author');
-    if (authorInp) {
-        if (isAnon) {
-            authorInp.value = 'Người dùng ẩn danh';
-            authorInp.disabled = true;
-        } else {
-            authorInp.value = '<?= htmlspecialchars($_SESSION['user_name'] ?? '') ?>';
-            authorInp.disabled = false;
-        }
-    }
-}
-
-// Post a comment or reply
-function submitComment(parentId = 0) {
-    let text = '';
-    let name = '';
-    let isAnon = 0;
-    
-    if (parentId === 0) {
-        text = document.getElementById('main-comment-text').value.trim();
-        isAnon = document.getElementById('main-comment-anon').checked ? 1 : 0;
-        name = document.getElementById('main-comment-author').value.trim();
-    } else {
-        text = document.getElementById('inline-reply-text-' + parentId).value.trim();
-        isAnon = document.getElementById('inline-reply-anon-' + parentId).checked ? 1 : 0;
-        name = document.getElementById('inline-reply-author-' + parentId).value.trim();
-    }
-
-    if (!text) {
-        showToast('Vui lòng nhập nội dung ý kiến!', '#f33e58');
-        return;
-    }
-    if (!name) {
-        name = 'Ẩn danh';
-    }
-
-    const body = new URLSearchParams({
-        content_id: <?= $article_id ?>,
-        author_name: name,
-        comment: text,
-        is_anonymous: isAnon,
-        parent_id: parentId
-    });
-
-    fetch(BASE + '/../ajax/ajax_about_comment.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: body.toString()
-    })
-    .then(r => r.json())
-    .then(d => {
-        if (d.status === 'success') {
-            showToast('✅ Đã gửi ý kiến thành công!');
-            
-            // Build new comment HTML dynamically
-            const newC = d.comment;
-            const initial = (newC.author_name || 'A').charAt(0).toUpperCase();
-            const avatarUrl = newC.user_avatar ? ('/restaurant-project/../ajax/get_avatar.php?user_id=' + newC.user_id) : '';
-            
-            let avatarHtml = `<div class="vne-comment-avatar">${initial}</div>`;
-            if (newC.is_anonymous == 1) {
-                avatarHtml = `<div class="vne-comment-avatar" style="background:#2a2824; color:#777;"><i class="bi bi-person-fill"></i></div>`;
-            } else if (newC.user_avatar) {
-                avatarHtml = `<div class="vne-comment-avatar"><img src="${avatarUrl}" alt=""></div>`;
-            }
-            
-            const newCommentHtml = `
-                <div class="vne-comment-item">
-                    <div class="vne-comment-avatar" ${parentId > 0 ? 'style="width: 28px; height: 28px; font-size: 11px;"' : ''}>
-                        ${avatarHtml}
-                    </div>
-                    <div class="vne-comment-bubble">
-                        <div class="vne-comment-meta-top">
-                            <span class="vne-comment-author">${newC.author_name}</span>
-                            <span style="font-size:11px; color:#555;">⏰ Vừa xong</span>
-                        </div>
-                        <div class="vne-comment-text">${escapeHtml(newC.comment)}</div>
-                        <div class="vne-comment-actions" ${parentId > 0 ? 'style="margin-top: 4px;"' : ''}>
-                            <span class="vne-comment-action-link" onclick="showReplyForm(${parentId > 0 ? parentId : newC.id}, '${newC.author_name}', '${parentId > 0 ? newC.author_name : ''}')">
-                                <i class="bi bi-reply"></i> Trả lời
-                            </span>
-                            <span class="vne-comment-action-sep">•</span>
-                            <span class="vne-comment-action-link" onclick="commentReact(${newC.id}, 'like')">
-                                <i class="bi bi-hand-thumbs-up"></i> Thích (<span id="cmt-likes-${newC.id}">0</span>)
-                            </span>
-                            <span class="vne-comment-action-sep">•</span>
-                            <span class="vne-comment-action-link" onclick="commentReact(${newC.id}, 'dislike')">
-                                <i class="bi bi-hand-thumbs-down"></i> Không thích (<span id="cmt-dislikes-${newC.id}">0</span>)
-                            </span>
-                            <span class="vne-comment-action-sep">•</span>
-                            <span class="vne-comment-action-link text-danger" onclick="openReportModal(${newC.id})">
-                                <i class="bi bi-flag"></i> Báo cáo
-                            </span>
-                        </div>
-                        ${parentId === 0 ? `
-                        <div class="vne-replies-list" id="replies-list-${newC.id}"></div>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
-            
-            if (parentId === 0) {
-                const list = document.getElementById('comments-container');
-                const placeholder = document.getElementById('no-comments-placeholder');
-                if (placeholder) placeholder.style.display = 'none';
-                
-                const blockHtml = `
-                    <div class="vne-comment-block" id="comment-block-${newC.id}">
-                        ${newCommentHtml}
-                    </div>
-                `;
-                list.insertAdjacentHTML('afterbegin', blockHtml);
-                
-                document.getElementById('main-comment-text').value = '';
-            } else {
-                const replyList = document.getElementById('replies-list-' + parentId);
-                replyList.insertAdjacentHTML('beforeend', newCommentHtml);
-                
-                // Remove the inline reply box after sending
-                const replyBox = document.getElementById('inline-reply-box-' + parentId);
-                if (replyBox) replyBox.remove();
-            }
-            
-            // Update comments counters
-            const currentCount = parseInt(document.getElementById('vne-cmt-count').textContent) + 1;
-            document.getElementById('vne-cmt-count').textContent = currentCount;
-            document.getElementById('vne-header-cmt-count').textContent = currentCount;
-        } else {
-            showToast('⚠️ ' + (d.message || 'Lỗi không xác định'), '#f33e58');
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        showToast('⚠️ Có lỗi xảy ra trong quá trình gửi bình luận.', '#f33e58');
-    });
-}
-
-// Show inline reply form (VnExpress style)
-function showReplyForm(commentId, authorName, replyToName = '') {
-    // If reply form already exists, just focus it
-    const existing = document.getElementById('inline-reply-box-' + commentId);
-    if (existing) {
-        const textEl = document.getElementById('inline-reply-text-' + commentId);
-        if (replyToName && !textEl.value.includes('@' + replyToName)) {
-            textEl.value = '@' + replyToName + ' ' + textEl.value;
-        }
-        textEl.focus();
-        return;
-    }
-    
-    // Close other open reply forms first
-    document.querySelectorAll('.vne-inline-reply-box').forEach(el => el.remove());
-    
-    const block = document.getElementById('comment-block-' + commentId);
-    const bubble = block.querySelector('.vne-comment-bubble');
-    
-    const replyFormHtml = `
-        <div class="vne-inline-reply-box animate__animated animate__fadeIn" id="inline-reply-box-${commentId}">
-            <textarea id="inline-reply-text-${commentId}" class="vne-inline-reply-textarea" placeholder="Phản hồi ý kiến của ${authorName}..."></textarea>
-            <div class="vne-inline-reply-footer">
-                <div class="vne-comment-user-box">
-                    <label>
-                        <input type="checkbox" id="inline-reply-anon-${commentId}" onchange="toggleAnonInput('inline-reply-${commentId}')">
-                        Ẩn danh
-                    </label>
-                    <input type="text" id="inline-reply-author-${commentId}" class="vne-comment-inp-name" style="width: 105px;" placeholder="Tên" value="<?= htmlspecialchars($_SESSION['user_name'] ?? '') ?>">
-                </div>
-                <div>
-                    <button class="vne-comment-btn" style="padding: 4px 12px; font-size: 11px;" onclick="submitComment(${commentId})">Gửi</button>
-                    <button class="article-action-btn" style="display:inline-block; padding: 4px 10px; font-size: 11px;" onclick="document.getElementById('inline-reply-box-${commentId}').remove()">Hủy</button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = replyFormHtml;
-    bubble.insertBefore(tempDiv.firstElementChild, bubble.querySelector('.vne-replies-list'));
-    
-    const textarea = document.getElementById('inline-reply-text-' + commentId);
-    if (replyToName) {
-        textarea.value = '@' + replyToName + ' ';
-    }
-    textarea.focus();
-}
 
 // Like article action
 function articleLike(id) {
@@ -784,88 +535,6 @@ function escapeHtml(str) {
     return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
-// Comment reactions (likes/dislikes)
-function commentReact(commentId, type) {
-    fetch(BASE + '/../ajax/ajax_about_comment_reaction.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'comment_id=' + commentId + '&type=' + type
-    })
-    .then(r => r.json())
-    .then(d => {
-        if (d.status === 'success') {
-            const likesEl = document.getElementById('cmt-likes-' + commentId);
-            const dislikesEl = document.getElementById('cmt-dislikes-' + commentId);
-            if (likesEl) likesEl.textContent = d.likes;
-            if (dislikesEl) dislikesEl.textContent = d.dislikes;
-            
-            let emoji = '✨';
-            if (d.message.includes('Đã thích bình luận')) emoji = '👍';
-            else if (d.message.includes('Đã không thích bình luận')) emoji = '👎';
-            else if (d.message.includes('hủy')) emoji = '↩️';
-            else if (d.message.includes('đổi thành thích')) emoji = '🔄 👍';
-            else if (d.message.includes('đổi thành không thích')) emoji = '🔄 👎';
-            
-            showToast(emoji + ' ' + (d.message || 'Thao tác thành công!'));
-        } else {
-            showToast('⚠️ ' + (d.message || 'Có lỗi xảy ra'), '#f33e58');
-        }
-    })
-    .catch(() => {
-        showToast('⚠️ Lỗi kết nối máy chủ.', '#f33e58');
-    });
-}
-
-// Comment reporting
-function openReportModal(commentId) {
-    const overlay = document.getElementById('report-modal-overlay');
-    const input = document.getElementById('report-comment-id');
-    const textarea = document.getElementById('report-reason-text');
-    if (!overlay || !input || !textarea) return;
-    
-    input.value = commentId;
-    textarea.value = '';
-    overlay.classList.add('active');
-    setTimeout(() => { textarea.focus(); }, 150);
-}
-
-function closeReportModal() {
-    const overlay = document.getElementById('report-modal-overlay');
-    if (overlay) overlay.classList.remove('active');
-}
-
-function closeReportModalOutside(e) {
-    if (e.target === document.getElementById('report-modal-overlay')) closeReportModal();
-}
-
-function submitReport() {
-    const commentId = document.getElementById('report-comment-id').value;
-    const reason = document.getElementById('report-reason-text').value.trim();
-    
-    if (reason.length < 5) {
-        showToast('⚠️ Lý do quá ngắn (tối thiểu 5 ký tự).', '#f33e58');
-        return;
-    }
-    
-    fetch(BASE + '/../ajax/ajax_about_comment_report.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'comment_id=' + commentId + '&reason=' + encodeURIComponent(reason)
-    })
-    .then(r => r.json())
-    .then(d => {
-        if (d.status === 'success') {
-            showToast('✅ Báo cáo bình luận thành công!');
-            closeReportModal();
-        } else {
-            showToast('⚠️ ' + (d.message || 'Lỗi gửi báo cáo'), '#f33e58');
-        }
-    })
-    .catch(() => {
-        showToast('⚠️ Lỗi kết nối máy chủ khi báo cáo.', '#f33e58');
-    });
-}
-
 // Intersection Observer for scroll reveal animations
 document.addEventListener('DOMContentLoaded', () => {
     const observerOptions = {
@@ -895,10 +564,7 @@ document.addEventListener('keydown', e => {
         if (overlay && overlay.classList.contains('active')) {
             closeLikers();
         }
-        const reportOverlay = document.getElementById('report-modal-overlay');
-        if (reportOverlay && reportOverlay.classList.contains('active')) {
-            closeReportModal();
-        }
+        
     }
 });
 </script>

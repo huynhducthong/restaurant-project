@@ -23,9 +23,7 @@ try {
 } catch (Exception $e) {
 }
 
-// Thiết lập căn lề chữ dựa trên settings (left, center, right)
-$pos = $settings['name_position'] ?? 'center';
-$align_class = ($pos == 'left') ? 'text-start' : (($pos == 'right') ? 'text-end' : 'text-center');
+
 
 // 4. Xử lý logic đặt bàn
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_GET['action']) && $_GET['action'] == 'book') {
@@ -100,7 +98,7 @@ try {
   $stmt_home_chefs->execute();
   $home_chefs = $stmt_home_chefs->fetchAll(PDO::FETCH_ASSOC);
   // 5.5 Lấy danh sách ảnh Gallery cho trang chủ (7 ảnh)
-  $stmt_galleries = $db->prepare("SELECT * FROM galleries WHERE is_active = 1 ORDER BY sort_order ASC, id DESC LIMIT 7");
+  $stmt_galleries = $db->prepare("SELECT * FROM galleries WHERE is_active = 1 ORDER BY sort_order ASC, id DESC LIMIT 8");
   $stmt_galleries->execute();
   $home_galleries = $stmt_galleries->fetchAll(PDO::FETCH_ASSOC);
 
@@ -112,7 +110,7 @@ try {
 // 6. Nhúng Header
 include __DIR__ . '/views/client/layouts/header.php';
 ?>
-<link href="<?= $path_prefix ?>public/assets/client/css/home.css" rel="stylesheet">
+<link href="<?= $path_prefix ?? '' ?>public/assets/client/css/home.css" rel="stylesheet">
 <?php
 ?>
 
@@ -184,9 +182,21 @@ include __DIR__ . '/views/client/layouts/header.php';
         $desc_style   = (($row['desc_font_style'] ?? 'normal') == 'italic') ? 'italic' : 'normal';
       ?>
                                         <div class="carousel-item <?= $first ? 'active' : '' ?>" style="background: #050505; height: clamp(500px, 75vh, 800px); overflow: hidden;">
-          <div class="row g-0 h-100">
-                        <!-- Phần chữ (Bên trái) -->
-            <div class="col-lg-5 d-flex flex-column justify-content-center px-4 px-lg-5 py-5" style="z-index: 2; padding-left: clamp(1rem, 5vw, 6rem); padding-right: clamp(1rem, 5vw, 6rem) !important; min-height: clamp(400px, 60vh, 600px);">
+          <div class="row g-0 h-100 position-relative">
+            
+            <!-- Phần ảnh (Bên phải trên Desktop, Absolute Background trên Mobile) -->
+            <div class="col-lg-7 position-absolute top-0 end-0 h-100" style="z-index: 0; padding: 0; width: 100%;">
+              <img src="public/assets/img/hero/<?= $row['image_url'] ?>" alt="<?= htmlspecialchars($row['title']) ?>" class="d-none d-lg-block" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none; filter: brightness(0.9);">
+              <img src="public/assets/img/hero/<?= $row['image_url'] ?>" alt="<?= htmlspecialchars($row['title']) ?>" class="d-block d-lg-none" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none; filter: brightness(0.8);">
+            </div>
+            
+            <!-- Gradient Layer (Để chữ nổi bật) -->
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-none d-lg-block" style="z-index: 1; pointer-events: none; background: linear-gradient(to right, rgba(5,5,5,1) 0%, rgba(5,5,5,0.8) 40%, transparent 100%);"></div>
+            <!-- Gradient Mobile (Đen mờ toàn bộ) -->
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-block d-lg-none" style="z-index: 1; pointer-events: none; background: linear-gradient(to top, rgba(5,5,5,0.9) 0%, rgba(5,5,5,0.4) 50%, rgba(5,5,5,0.2) 100%);"></div>
+
+            <!-- Phần chữ (Bên trái) -->
+            <div class="col-lg-5 d-flex flex-column justify-content-center px-4 px-lg-5 py-5 position-relative" style="z-index: 2; padding-left: clamp(1rem, 5vw, 6rem) !important; padding-right: clamp(1rem, 5vw, 6rem) !important; height: 100%;">
               
               <!-- Subtitle nhỏ có đường gạch ngang -->
               <div class="d-flex align-items-center mb-4">
@@ -200,12 +210,12 @@ include __DIR__ . '/views/client/layouts/header.php';
               <h2 style="
                   color: <?= $row['text_color'] ?? '#ffffff' ?>; 
                   font-family: <?= $row['font_family'] ?? "'Oswald', 'Source Sans 3', sans-serif" ?>; 
-                  font-size: clamp(2.2rem, 8vw, 5.5rem); word-break: break-word; 
+                  font-size: clamp(2rem, 8vw, 5.5rem); word-break: break-word; 
                   font-weight: 800; 
                   font-style: <?= $title_style ?>;
                   text-transform: uppercase;
                   line-height: 1.1;
-                  margin-bottom: 30px;
+                  margin-bottom: 20px;
                   letter-spacing: 1px;">
                 <?= nl2br(htmlspecialchars($row['title'])) ?>
               </h2>
@@ -214,12 +224,12 @@ include __DIR__ . '/views/client/layouts/header.php';
               <p style="
                   color: <?= $row['desc_color'] ?? '#cccccc' ?>; 
                   font-family: 'Cormorant Garamond', serif; 
-                  font-size: clamp(1.1rem, 2vw, 1.4rem); 
+                  font-size: clamp(1rem, 2vw, 1.4rem); 
                   font-weight: 400; 
                   font-style: italic;
-                  line-height: 1.8;
+                  line-height: 1.6;
                   max-width: 100%;
-                  margin-bottom: 40px;">
+                  margin-bottom: 30px;">
                 <?= htmlspecialchars($row['description']) ?>
               </p>
 
@@ -230,7 +240,7 @@ include __DIR__ . '/views/client/layouts/header.php';
                 <div>
                   <a href="<?= htmlspecialchars($row['button_link'] ?? '#') ?>" class="animate__animated animate__fadeInUp" style="
                     display:inline-block;
-                    padding:14px 40px;
+                    padding:12px 30px;
                     border-radius:0px;
                     text-transform:uppercase;
                     text-decoration:none;
@@ -249,14 +259,6 @@ include __DIR__ . '/views/client/layouts/header.php';
               <?php endif; ?>
             </div>
 
-                                    <!-- Phần ảnh (Bên phải) -->
-            <div class="col-lg-7 h-100 position-relative">
-              <img src="public/assets/img/hero/<?= $row['image_url'] ?>" alt="<?= htmlspecialchars($row['title']) ?>" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none; filter: brightness(0.9);">
-              <!-- Gradient mờ từ trái sang để hòa trộn 2 khối -->
-              <div class="d-none d-lg-block" style="position: absolute; top: 0; left: 0; bottom: 0; width: 250px; background: linear-gradient(to right, #050505 0%, rgba(5,5,5,0.7) 30%, transparent 100%); pointer-events: none;"></div>
-              <!-- Gradient mờ từ dưới lên cho Mobile -->
-              <div class="d-block d-lg-none" style="position: absolute; top: -1px; left: 0; right: 0; height: 150px; background: linear-gradient(to bottom, #050505 0%, transparent 100%); pointer-events: none;"></div>
-            </div>
           </div>
         </div>
       <?php $first = false; endforeach; ?>
@@ -272,26 +274,25 @@ include __DIR__ . '/views/client/layouts/header.php';
             let isDown = false;
             let startX;
             
-            carouselSection.addEventListener('mousedown', (e) => {
+            const handleStart = (e) => {
                 const targetTag = e.target.tagName.toLowerCase();
                 if (['a', 'button', 'input', 'textarea', 'select'].indexOf(targetTag) === -1) {
-                    e.preventDefault();
+                    if(e.type === 'mousedown') e.preventDefault();
                 }
                 isDown = true;
                 carouselSection.style.cursor = 'grabbing';
-                startX = e.pageX;
-            });
+                startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+            };
 
-            const handleMouseUp = (e) => {
+            const handleEnd = (e) => {
                 if(!isDown) return;
                 isDown = false;
                 carouselSection.style.cursor = 'grab';
                 
-                const endX = e.pageX;
+                const endX = e.type.includes('mouse') ? e.pageX : e.changedTouches[0].pageX;
                 const diff = startX - endX;
                 
                 if(Math.abs(diff) > 50) { 
-                    // Use bootstrap from global scope if available
                     if (typeof bootstrap !== 'undefined') {
                         const bsCarousel = bootstrap.Carousel.getOrCreateInstance(myCarousel);
                         if(diff > 0) {
@@ -303,7 +304,10 @@ include __DIR__ . '/views/client/layouts/header.php';
                 }
             };
 
-            document.addEventListener('mouseup', handleMouseUp);
+            carouselSection.addEventListener('mousedown', handleStart);
+            carouselSection.addEventListener('touchstart', handleStart, {passive: true});
+            document.addEventListener('mouseup', handleEnd);
+            document.addEventListener('touchend', handleEnd);
 
             carouselSection.querySelectorAll('img').forEach(img => {
                 img.addEventListener('dragstart', (e) => e.preventDefault());
@@ -529,7 +533,7 @@ include __DIR__ . '/views/client/layouts/header.php';
             <div class="awesome-role"><?= htmlspecialchars($chef['position']) ?></div>
             <div class="awesome-desc">
                 <?php
-                   $desc = $chef['signature_dishes'] ?? 'Đam mê ẩm thực và sáng tạo không ngừng nghỉ để mang đến những món ăn tuyệt hảo nhất.';
+                   $desc = !empty($chef['quote']) ? $chef['quote'] : 'Đam mê ẩm thực và sáng tạo không ngừng nghỉ để mang đến những món ăn tuyệt hảo nhất.';
                    echo htmlspecialchars($desc);
                 ?>
             </div>
@@ -572,16 +576,12 @@ include __DIR__ . '/views/client/layouts/header.php';
       <div class="atmosphere-grid">
         <?php if (!empty($home_galleries)): ?>
           <?php 
-          $item_class = 1;
           foreach ($home_galleries as $gallery): 
           ?>
-            <div class="atmo-item item-<?= $item_class ?> gsap-zoom-in">
+            <div class="atmo-item gsap-zoom-in">
               <img src="public/assets/img/gallery/<?= htmlspecialchars($gallery['image_url']) ?>" alt="<?= htmlspecialchars($gallery['title'] ?? 'Atmosphere') ?>">
             </div>
           <?php 
-            $item_class++;
-            // Nếu có hơn 7 ảnh, từ ảnh thứ 8 trở đi sẽ bị ẩn
-            if ($item_class > 8) $item_class = 8;
           endforeach; 
           ?>
         <?php else: ?>

@@ -14,7 +14,7 @@ $db = (new Database())->getConnection();
 
 // Fetch reviews
 $stmt = $db->prepare("
-    SELECT r.id, r.author_name, r.rating, r.comment, r.created_at, r.experience_type, r.chef_response, u.avatar as user_avatar
+    SELECT r.id, r.author_name, r.rating, r.comment, r.created_at, r.experience_type, r.chef_response, u.avatar as user_avatar, u.id as user_id, (u.avatar_blob IS NOT NULL) as has_avatar_blob
     FROM chef_reviews r
     LEFT JOIN users u ON r.user_id = u.id
     WHERE r.chef_id = ? AND r.status = 'approved'

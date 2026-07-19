@@ -59,6 +59,62 @@ include 'views/client/layouts/header.php';
                 <div class="editorial-text drop-cap">
                     <?= nl2br(htmlspecialchars($dish['description'])) ?>
                 </div>
+
+                <?php if (!empty(trim($dish['allergens'] ?? ''))): ?>
+                <div class="mt-4 pt-4 border-top" style="border-color: rgba(0,0,0,0.08) !important;">
+                    <h5 style="color: var(--c-burgundy); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; margin-bottom: 10px;">
+                        <i class="fas fa-exclamation-circle me-2"></i>Lưu ý Dị ứng
+                    </h5>
+                    <p style="font-size: 0.95rem; color: #666; font-style: italic; margin-bottom: 0;">
+                        Món ăn có chứa thành phần: <strong style="color: #333; font-weight: 600;"><?= htmlspecialchars($dish['allergens']) ?></strong>
+                    </p>
+                </div>
+                <?php endif; ?>
+
+                <?php
+                $nf = json_decode($dish['nutrition_facts'] ?? '{}', true);
+                if (is_array($nf) && !empty(array_filter($nf))): 
+                ?>
+                <div class="mt-4 pt-4 border-top" style="border-color: rgba(0,0,0,0.08) !important;">
+                    <h5 style="color: var(--c-gold); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; margin-bottom: 15px;">
+                        <i class="fas fa-leaf me-2"></i>Thông tin Dinh dưỡng
+                    </h5>
+                    <div class="d-flex flex-wrap gap-4">
+                        <?php if(!empty($nf['calories'])): ?>
+                        <div class="text-center">
+                            <div style="font-size: 1.6rem; color: var(--c-burgundy); font-weight: 400; font-family: 'Cormorant Garamond', serif; line-height: 1;"><?= htmlspecialchars($nf['calories']) ?></div>
+                            <div style="font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 6px;">Kcal</div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if(!empty($nf['protein'])): ?>
+                        <div class="text-center">
+                            <div style="font-size: 1.6rem; color: var(--c-burgundy); font-weight: 400; font-family: 'Cormorant Garamond', serif; line-height: 1;"><?= htmlspecialchars($nf['protein']) ?></div>
+                            <div style="font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 6px;">Protein (g)</div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if(!empty($nf['carbs'])): ?>
+                        <div class="text-center">
+                            <div style="font-size: 1.6rem; color: var(--c-burgundy); font-weight: 400; font-family: 'Cormorant Garamond', serif; line-height: 1;"><?= htmlspecialchars($nf['carbs']) ?></div>
+                            <div style="font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 6px;">Carbs (g)</div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if(!empty($nf['fat'])): ?>
+                        <div class="text-center">
+                            <div style="font-size: 1.6rem; color: var(--c-burgundy); font-weight: 400; font-family: 'Cormorant Garamond', serif; line-height: 1;"><?= htmlspecialchars($nf['fat']) ?></div>
+                            <div style="font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 6px;">Béo (g)</div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if(!empty($nf['fiber'])): ?>
+                        <div class="text-center">
+                            <div style="font-size: 1.6rem; color: var(--c-burgundy); font-weight: 400; font-family: 'Cormorant Garamond', serif; line-height: 1;"><?= htmlspecialchars($nf['fiber']) ?></div>
+                            <div style="font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 6px;">Xơ (g)</div>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+
             </div>
             
             <?php if (!empty(trim($dish['chef_note']))): ?>

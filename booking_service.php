@@ -191,10 +191,12 @@ if (isset($_SESSION['user_id'])) {
 $user_flavor = [];
 $user_fav = [];
 $user_allergies = [];
+$user_nutrition_goals = [];
 if ($user_info) {
     if ($user_info['flavor_profile']) $user_flavor = array_map('trim', explode(',', mb_strtolower($user_info['flavor_profile'], 'UTF-8')));
     if ($user_info['fav_ingredients']) $user_fav = array_map('trim', explode(',', mb_strtolower($user_info['fav_ingredients'], 'UTF-8')));
     if (!empty($user_info['allergies'])) $user_allergies = array_map('trim', explode(',', mb_strtolower($user_info['allergies'], 'UTF-8')));
+    if (!empty($user_info['nutrition_goals'])) $user_nutrition_goals = array_map('trim', explode(',', $user_info['nutrition_goals']));
 }
 
 function hasAllergenBooking($food, $user_allergies) {
@@ -214,14 +216,30 @@ function hasAllergenBooking($food, $user_allergies) {
         if (empty($ua)) continue;
         
         $check_terms = [$ua];
-        if (isset($aliases[$ua])) {
-            $check_terms = array_merge($check_terms, $aliases[$ua]);
+        
+        // Expand aliases if the user's sentence contains an alias keyword
+        foreach ($aliases as $key => $values) {
+            if (mb_strpos($ua, $key, 0, 'UTF-8') !== false) {
+                $check_terms = array_merge($check_terms, $values);
+                $check_terms[] = $key;
+            }
         }
         
         foreach($food_allergens as $fa) {
             if (empty($fa)) continue;
             foreach ($check_terms as $term) {
-                if (strpos($fa, $term) !== false) return true;
+                // If food ingredient contains user's term (e.g. food="cá hồi", user="cá")
+                if (mb_strpos($fa, $term, 0, 'UTF-8') !== false) {
+                    return true;
+                }
+                
+                // If user's term contains food ingredient as a whole word (e.g. user="tôi không ăn cá", food="cá")
+                if (mb_strlen($fa, 'UTF-8') > 1) {
+                    $pattern = '/(?<=^|\s)' . preg_quote($fa, '/') . '(?=\s|$|[.,!?])/iu';
+                    if (preg_match($pattern, $term)) {
+                        return true;
+                    }
+                }
             }
         }
     }
@@ -262,6 +280,42 @@ foreach ($foods_raw as &$f) {
         $score += $history_score;
     }
 
+    // Khớp mục tiêu dinh dưỡng
+    $matched_nutrition = null;
+    $nf = json_decode($f['nutrition_facts'] ?? '{}', true);
+    if (!empty($user_nutrition_goals) && is_array($nf)) {
+        foreach ($user_nutrition_goals as $goal) {
+            $goal_lower = mb_strtolower($goal, 'UTF-8');
+            $cal = isset($nf['calories']) ? floatval($nf['calories']) : 0;
+            $carbs = isset($nf['carbs']) ? floatval($nf['carbs']) : 0;
+            $pro = isset($nf['protein']) ? floatval($nf['protein']) : 0;
+            $fat = isset($nf['fat']) ? floatval($nf['fat']) : 0;
+            
+            if (strpos($goal_lower, 'eat clean') !== false && $cal > 0 && $cal < 500 && $fat < 15) {
+                $matched_nutrition = 'Eat Clean'; $score += 3; break;
+            }
+            if (strpos($goal_lower, 'keto') !== false && $carbs > 0 && $carbs < 15) {
+                $matched_nutrition = 'Keto (Low Carb)'; $score += 3; break;
+            }
+            if (strpos($goal_lower, 'ít calo') !== false && $cal > 0 && $cal < 350) {
+                $matched_nutrition = 'Ít Calo'; $score += 3; break;
+            }
+            if (strpos($goal_lower, 'tăng cơ') !== false && $pro > 25) {
+                $matched_nutrition = 'Tăng cơ'; $score += 3; break;
+            }
+            if (strpos($goal_lower, 'ít béo') !== false && $fat > 0 && $fat < 10) {
+                $matched_nutrition = 'Ít béo'; $score += 3; break;
+            }
+            if (strpos($goal_lower, 'chay') !== false) {
+                $f_ingr_str = strtolower($f_name . ' ' . $f_ingr . ' ' . $f_tags);
+                if (strpos($f_ingr_str, 'bò') === false && strpos($f_ingr_str, 'thịt') === false && strpos($f_ingr_str, 'gà') === false && strpos($f_ingr_str, 'cá') === false && strpos($f_ingr_str, 'hải sản') === false) {
+                    $matched_nutrition = 'Ăn chay'; $score += 3; break;
+                }
+            }
+        }
+    }
+    
+    $f['matched_nutrition'] = $matched_nutrition;
     $f['ai_score'] = $score;
 }
 unset($f);
@@ -649,7 +703,7 @@ select.input-lux {
                             </select>
                             <label class="label-lux" >Loại hình kỷ niệm</label>
                             <div id="event_img_wrap" style="display:none; margin-top:15px; text-align:center;">
-                                <img id="event_img_preview" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="width:100%; height:140px; object-fit:cover; border-radius:10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--glass-border); display:none;">
+                                <img id="event_img_preview" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="width:100%; height:140px; object-fit:cover; border-radius:10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--glass-border);">
                             </div>
                         </div>
                         <div class="input-group-lux w-100">
@@ -658,7 +712,7 @@ select.input-lux {
                             </select>
                             <label class="label-lux">Gói trang trí</label>
                             <div id="decor_img_wrap" style="display:none; margin-top:15px; text-align:center;">
-                                <img id="decor_img_preview" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="width:100%; height:140px; object-fit:cover; border-radius:10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--glass-border); display:none;">
+                                <img id="decor_img_preview" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="width:100%; height:140px; object-fit:cover; border-radius:10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--glass-border);">
                             </div>
                         </div>
                     </div>
@@ -874,7 +928,7 @@ select.input-lux {
                     <!-- AI Concierge Button -->
                     <div class="mt-2 text-end">
                         <button type="button" id="btn-ai-concierge" class="btn btn-sm" style="background: linear-gradient(135deg, #A88746, #c8933a); color: #fff; font-family: var(--font-sans); font-size: 13px; letter-spacing: 1px; text-transform: uppercase; border-radius: 4px; border: none; padding: 8px 15px; box-shadow: 0 4px 10px rgba(168,135,70,0.3);" onclick="generateAIBespokeMenu()">
-                            <i class="fas fa-magic me-2"></i> Nhờ AI Viết Gợi Ý Thực Đơn
+                            <i class="fas fa-magic me-2"></i> Đề Xuất Dành Riêng
                         </button>
                     </div>
                     
@@ -916,7 +970,13 @@ select.input-lux {
                 <div id="addon-foods-section">
                     <?php if(!empty($grouped_foods)): ?>
                         <p id="addon-foods-label" style="font-size:12px; color:var(--text-muted); margin-bottom:10px; letter-spacing:1px; text-transform:uppercase;">Thực Đơn Chọn Trước (Add-on)</p>
-                        <div style="max-height: 400px; overflow-y: auto; padding-right:10px;">
+                        <style>
+                            .addon-scroll::-webkit-scrollbar { width: 8px; }
+                            .addon-scroll::-webkit-scrollbar-track { background: #f8f9fa; border-radius: 4px; }
+                            .addon-scroll::-webkit-scrollbar-thumb { background: #d4b06a; border-radius: 4px; }
+                            .addon-scroll::-webkit-scrollbar-thumb:hover { background: #b89650; }
+                        </style>
+                        <div class="addon-scroll" style="max-height: 400px; overflow-y: auto; padding-right:10px;">
                             <?php foreach($grouped_foods as $c_name => $t_foods): ?>
                                 <div class="addon-group-block" style="margin-bottom: 20px;">
                                     <h5 style="color:var(--accent-burgundy); font-size:13px; text-transform:uppercase; border-bottom:1px dashed rgba(212,176,106,0.3); padding-bottom:5px; margin-bottom:10px; font-weight:600;"><i class="fas fa-utensils me-2"></i> <?= htmlspecialchars($c_name) ?></h5>
@@ -932,6 +992,7 @@ select.input-lux {
                                           data-desc="<?= htmlspecialchars($fd['description'] ?? '') ?>"
                                           data-chefnote="<?= htmlspecialchars($fd['chef_note'] ?? '') ?>"
                                           data-ingredients="<?= htmlspecialchars(($fd['ingredients'] ?? '') . (!empty($fd['recipe_ingredients']) ? ', ' . $fd['recipe_ingredients'] : '')) ?>"
+                                          data-allergens="<?= htmlspecialchars($fd['allergens'] ?? '') ?>"
                                           data-toppings-raw="<?= htmlspecialchars($fd['list_toppings'] ?? '') ?>"
                                           data-category="<?= htmlspecialchars($fd['cat_name'] ?? 'Món tự chọn') ?>"
                                           data-max-toppings="<?= (int)($fd['max_toppings'] ?? 4) ?>"
@@ -941,23 +1002,26 @@ select.input-lux {
                                              <div style="display:flex; align-items:center; gap:15px; flex-grow: 1;">
                                                  <input type="checkbox" class="menu-checkbox" name="menu_items[]" value="<?= $fd['id'] ?>" <?= $is_out_of_stock ? 'disabled' : '' ?> onchange="togMrow(this,<?= $fd['id'] ?>,<?= (float)$fd['price'] ?>)">
                                                  <div class="food-details-clickable" onclick="<?= $is_out_of_stock ? 'void(0)' : 'openFoodOptionModal(' . $fd['id'] . ')' ?>" style="cursor:<?= $is_out_of_stock ? 'not-allowed' : 'pointer' ?>; flex-grow: 1;">
-                                                     <div style="font-size:14px; display:flex; align-items:center; font-weight: 500;">
+                                                     <div style="font-size:14px; display:flex; flex-wrap: wrap; align-items:center; font-weight: 500;">
                                                          <?= htmlspecialchars($fd['name']) ?>
                                                          <?php 
                                                              $is_hist = isset($user_history_counts[$fd['id']]);
                                                              $flav_score = isset($fd['ai_score']) ? $fd['ai_score'] - ($is_hist ? min(10, $user_history_counts[$fd['id']] * 2) : 0) : 0;
                                                          ?>
                                                          <?php if($is_hist): ?>
-                                                             <span class="badge bg-info text-white ms-2" style="font-size: 10px;"><i class="fas fa-history me-1"></i> Đã từng gọi</span>
+                                                             <span style="color:#17a2b8; font-size:12px; font-weight:500; font-family:var(--font-sans); margin-left:10px;"><i class="fas fa-history"></i> Món quen</span>
                                                          <?php endif; ?>
                                                          <?php if($flav_score > 0): ?>
-                                                             <span class="badge bg-warning text-dark ms-2" style="font-size: 10px; border: 1px solid var(--accent-burgundy);"><i class="fas fa-magic me-1"></i> Gợi ý</span>
+                                                             <span style="color:var(--accent-burgundy); font-size:12px; font-weight:500; font-family:var(--font-sans); margin-left:10px;"><i class="fas fa-star"></i> Gợi ý</span>
                                                          <?php endif; ?>
                                                          <?php if(hasAllergenBooking($fd, $user_allergies)): ?>
-                                                             <span class="badge bg-danger text-white ms-2" style="font-size: 10px;"><i class="fas fa-exclamation-triangle me-1"></i> Dị ứng</span>
+                                                             <span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); margin-left:10px;">* Chứa thành phần dị ứng</span>
+                                                         <?php endif; ?>
+                                                         <?php if(!empty($fd['matched_nutrition'])): ?>
+                                                             <span style="color:#28a745; font-size:12px; font-weight:600; font-family:var(--font-sans); margin-left:10px;"><i class="fas fa-leaf"></i> Phù hợp <?= htmlspecialchars($fd['matched_nutrition']) ?></span>
                                                          <?php endif; ?>
                                                          <?php if ($is_out_of_stock): ?>
-                                                             <span class="badge bg-secondary text-white ms-2" style="font-size: 10px;"><i class="fas fa-ban me-1"></i> Hết món</span>
+                                                             <span style="color:#6c757d; font-size:12px; font-weight:600; font-family:var(--font-sans); margin-left:10px;"><i class="fas fa-ban"></i> Hết món</span>
                                                          <?php endif; ?>
                                                      </div>
                                                      <div style="font-size:12px; color:var(--accent-burgundy); margin-top: 2px;">
@@ -1375,6 +1439,12 @@ select.input-lux {
                 <div id="foodOptChefNote" style="font-size:13px; color:var(--forest); line-height:1.5; font-style:italic;"></div>
               </div>
               
+              <!-- Allergens Wrap -->
+              <div id="allergensWrap" style="margin-bottom:20px; display:none;">
+                <label style="color:var(--accent-burgundy); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:8px;"><i class="fas fa-exclamation-triangle me-1"></i>Chất gây dị ứng:</label>
+                <div id="allergensList" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+              </div>
+              
               <!-- Ingredients List -->
               <div id="ingredientsWrap" style="margin-bottom:20px; display:none;">
                 <label style="color:var(--forest); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:8px;">Thành phần có sẵn:</label>
@@ -1512,7 +1582,7 @@ foreach ($combos_raw as $cb) {
 ?>
 const comboFoods = <?= json_encode($combo_food_map, JSON_UNESCAPED_UNICODE) ?>;
 const comboNames = <?= json_encode($combo_name_map, JSON_UNESCAPED_UNICODE) ?>;
-let comboId = 0, selId=0, selCode='', selPrice=0, selCat='', selComboPr=0, menuPr={};
+let comboId = 0, selId=0, selCode='', selPrice=0, selCat='', selRoom='', selComboPr=0, menuPr={};
 
 function togBespoke(cb) {
     var extra = cb.closest('.menu-item-lux').querySelector('.bespoke-extra');
@@ -1714,6 +1784,7 @@ function openFoodOptionModal(id) {
     var img = row.getAttribute('data-img');
     var desc = row.getAttribute('data-desc');
     var ingredients = row.getAttribute('data-ingredients');
+    var allergens = row.getAttribute('data-allergens');
     var toppingsRaw = row.getAttribute('data-toppings-raw');
     var category = row.getAttribute('data-category');
     var maxToppings = parseInt(row.getAttribute('data-max-toppings') || 4);
@@ -1743,6 +1814,25 @@ function openFoodOptionModal(id) {
     }
 
     document.getElementById('foodOptImg').src = img;
+    
+    // Allergens
+    var algList = document.getElementById('allergensList');
+    algList.innerHTML = '';
+    if (allergens && allergens.trim() !== '') {
+        var algArray = allergens.split(',');
+        algArray.forEach(function(alg) {
+            var trimAlg = alg.trim();
+            if (trimAlg !== '') {
+                var span = document.createElement('span');
+                span.style.cssText = "background:rgba(220, 53, 69, 0.1); color:#dc3545; padding:4px 10px; font-size:12px; font-weight:600; border-radius:4px;";
+                span.textContent = trimAlg;
+                algList.appendChild(span);
+            }
+        });
+        document.getElementById('allergensWrap').style.display = 'block';
+    } else {
+        document.getElementById('allergensWrap').style.display = 'none';
+    }
     
     // Ingredients
     var ingList = document.getElementById('ingredientsList');
@@ -2057,7 +2147,7 @@ function cancelFoodOption() {
             }
             document.querySelectorAll('.seat-lux').forEach(function(x){x.classList.remove('selected');});
             s.classList.add('selected');
-            selId=s.dataset.id; selCode=s.dataset.code; selPrice=parseFloat(s.dataset.price||0); selCat=s.dataset.cat||'';
+            selId=s.dataset.id; selCode=s.dataset.code; selPrice=parseFloat(s.dataset.price||0); selCat=s.dataset.cat||''; selRoom=s.dataset.room||'';
         });
     });
 
@@ -2125,8 +2215,9 @@ function showPill(){
     var p = document.getElementById('selected-seat-display');
     if(p) {
         p.style.display = 'block';
-        document.getElementById('sp-code').textContent = selCode;
-        document.getElementById('sp-price').textContent = selPrice.toLocaleString('vi-VN')+' đ';
+        var roomText = selRoom ? ' <span style="color:#666; font-weight:normal;">- ' + selRoom + '</span>' : '';
+        document.getElementById('sp-code').innerHTML = selCode + roomText;
+        document.getElementById('sp-price').textContent = selPrice > 0 ? '+ ' + selPrice.toLocaleString('vi-VN')+' đ' : '';
     }
     
     var vipSec = document.getElementById('vip-config-section');
@@ -2134,7 +2225,7 @@ function showPill(){
 }
 
 function clrSeat(){
-    selId=''; selCode=''; selPrice=0; selCat='';
+    selId=''; selCode=''; selPrice=0; selCat=''; selRoom='';
     document.getElementById('tid').value='';
     if(document.getElementById('tsel')) document.getElementById('tsel').value='';
     
@@ -2421,8 +2512,8 @@ function us(){
     // Bàn (nếu là Table/Birthday)
     var ss = document.getElementById('ss');
     if (ss) {
-        ss.textContent = selCode || 'Chưa chọn';
-        document.getElementById('sp2').textContent = selPrice.toLocaleString('vi-VN')+' đ';
+        ss.innerHTML = selCode ? selCode + (selRoom ? ' <span style="font-size:13px; font-weight:normal; color:rgba(255,255,255,0.7);">(' + selRoom + ')</span>' : '') : 'Chưa chọn';
+        document.getElementById('sp2').textContent = selPrice > 0 ? '+ ' + selPrice.toLocaleString('vi-VN')+' đ' : '0 đ';
     }
 
     // Tính phí Đầu bếp tại gia dựa trên phí tùy chỉnh của từng đầu bếp

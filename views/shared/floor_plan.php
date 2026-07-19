@@ -481,8 +481,8 @@ $all_tables = array_merge($t_open, $t_room);
             ?>
             <div class="fp-table <?= $st ?> seat-lux" 
                  style="width: <?= $w ?>px; height: <?= $h ?>px; left: <?= $x ?>px; top: <?= $y ?>px; border-radius: <?= $borderRadius ?>; transform: translate(-50%, -50%) <?= !empty($rotate) ? $rotate : '' ?>;"
-                 data-id="<?= $t['id'] ?>" data-price="<?= $t['price'] ?>" data-code="<?= htmlspecialchars($tCode) ?>" data-cat="<?= $cat ?>"
-                 title="<?= htmlspecialchars($tCode) ?> - <?= $st === 'available' ? 'Trống' : 'Đã đặt' ?>">
+                 data-id="<?= $t['id'] ?>" data-price="<?= $t['price'] ?>" data-code="<?= htmlspecialchars($tCode) ?>" data-cat="<?= $cat ?>" data-room="<?= htmlspecialchars($t['room_type'] ?? '') ?>"
+                 title="<?= htmlspecialchars($tCode) ?> (<?= htmlspecialchars($t['room_type'] ?? 'Khu vực chung') ?>) - <?= $st === 'available' ? 'Trống' : 'Đã đặt' ?>">
                 
                 <?php if ($shapeType === 'square_small'): ?>
                     <div class="fp-chair left"></div><div class="fp-chair right"></div>
@@ -531,6 +531,7 @@ $all_tables = array_merge($t_open, $t_room);
         <div class="fp-legend-item"><div class="fp-legend-box" style="background: #ffffff; border: 2px solid #113f36;"></div> TRỐNG</div>
         <div class="fp-legend-item"><div class="fp-legend-box" style="background: #113f36; border: 2px solid #113f36;"></div> ĐANG CHỌN</div>
         <div class="fp-legend-item"><div class="fp-legend-box" style="background: #f5f5f5; border: 2px solid #aaa;"></div> ĐÃ ĐẶT</div>
+        <div class="fp-legend-item"><i class="fas fa-gem" style="color: #A88746; margin-right: 5px;"></i> BÀN CAO CẤP / VIP</div>
     </div>
 </div>
 

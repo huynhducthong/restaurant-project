@@ -110,7 +110,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'hotline'         => $_POST['hotline']         ?? '',
         'address'         => $_POST['address']         ?? '',
         'restaurant_name' => $_POST['restaurant_name'] ?? '',
-        'name_position'   => $_POST['name_position']   ?? 'center',
         'open_time'       => $_POST['open_time']       ?? '09:00 AM - 11:00 PM',
         'open_days'       => $_POST['open_days']       ?? 'Thứ 2 - Chủ Nhật',
         'inv_expiry_days' => $_POST['inv_expiry_days'] ?? '7',
@@ -135,48 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$key, $val]);
     }
 
-    // Validate upload logo - ext + MIME + size
-    if (!empty($_FILES['logo']['name'])) {
-        $allowed_ext  = ['jpg', 'jpeg', 'png', 'webp'];
-        $allowed_mime = ['image/jpeg', 'image/png', 'image/webp'];
-        $max_size     = 2 * 1024 * 1024; // 2MB
-
-        $ext      = strtolower(pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION));
-        $tmp_path = $_FILES['logo']['tmp_name'];
-        $size     = $_FILES['logo']['size'];
-
-        if (!in_array($ext, $allowed_ext)) {
-            $_SESSION['settings_flash'] = ['type' => 'error', 'msg' => 'Logo chỉ chấp nhận: JPG, PNG, WEBP.'];
-            header('Location: settings.php'); exit;
-        }
-        if ($size > $max_size) {
-            $_SESSION['settings_flash'] = ['type' => 'error', 'msg' => 'Logo quá lớn. Tối đa 2MB.'];
-            header('Location: settings.php'); exit;
-        }
-        if (function_exists('finfo_open')) {
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $mime  = finfo_file($finfo, $tmp_path);
-            finfo_close($finfo);
-            if (!in_array($mime, $allowed_mime)) {
-                $_SESSION['settings_flash'] = ['type' => 'error', 'msg' => 'File không phải ảnh hợp lệ.'];
-                header('Location: settings.php'); exit;
-            }
-        }
-
-        $file_name   = 'logo.' . $ext;
-        // ĐÃ FIX: Dùng __DIR__ để thiết lập đường dẫn tuyệt đối khi upload file
-        $target_file = __DIR__ . '/../../public/assets/img/' . $file_name;
-        
-        if (move_uploaded_file($tmp_path, $target_file)) {
-            // ĐÃ FIX: Chỉ lưu đường dẫn tính từ thư mục public vào DB (Ví dụ: assets/img/logo.png)
-            $stmt->execute(['logo_url', 'assets/img/' . $file_name]);
-            // Version chống cache browser
-            $stmt->execute(['logo_ver', (string)time()]);
-        } else {
-            $_SESSION['settings_flash'] = ['type' => 'error', 'msg' => 'Không thể tải ảnh lên. Kiểm tra quyền ghi thư mục.'];
-            header('Location: settings.php'); exit;
-        }
-    }
 
     // Validate upload promo popup
     if (!empty($_FILES['promo_popup_file']['name'])) {
@@ -396,13 +353,6 @@ include '../../public/admin_layout_header.php';
                                             <input type="text" name="restaurant_name" class="form-control"
                                                    value="<?= htmlspecialchars($settings['restaurant_name'] ?? '') ?>">
                                         </div>
-                                        <div class="col-md-6 mb-4">
-                                            <label class="form-label fw-bold">Vị trí chữ Banner</label>
-                                            <select name="name_position" class="form-select">
-                                                <option value="left"   <?= ($settings['name_position'] ?? '') == 'left'   ? 'selected' : '' ?>>Trái</option>
-                                                <option value="center" <?= ($settings['name_position'] ?? '') == 'center' ? 'selected' : '' ?>>Giữa</option>
-                                                <option value="right"  <?= ($settings['name_position'] ?? '') == 'right'  ? 'selected' : '' ?>>Phải</option>
-                                            </select>
                                         </div>
                                     </div>
 
@@ -484,18 +434,7 @@ include '../../public/admin_layout_header.php';
                                         </div>
                                     </div>
 
-                                    <div class="mb-4">
-                                        <label class="form-label fw-bold">Logo hiện tại</label>
-                                        <div class="mb-2">
-                                            <?php if ($logo_src): ?>
-                                                <img src="<?= $logo_src ?>"
-                                                     style="max-height: 60px; background: #333; padding: 5px;"
-                                                     alt="Logo">
-                                            <?php endif; ?>
-                                        </div>
-                                        <input type="file" name="logo" class="form-control" accept=".jpg,.jpeg,.png,.webp">
-                                        <small class="text-muted">Chỉ chấp nhận JPG, PNG, WEBP — tối đa 2MB. Để trống nếu không thay đổi.</small>
-                                    </div>
+
 
                                     <div class="mb-4">
                                         <label class="form-label fw-bold">Bản đồ Google Maps (Footer)</label>

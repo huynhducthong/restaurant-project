@@ -40,7 +40,7 @@ try {
 
     // Xây dựng Prompt cho Gemini
     $prompt = "Bạn là Bếp trưởng điều hành tại nhà hàng Fine Dining Nhã. Khách hàng đang muốn đặt một bữa tiệc Thiết kế riêng (Bespoke Dining).
-    
+
 Thông tin bữa tiệc:
 - Sự kiện: $occasion
 - Số lượng khách: $guests người
@@ -50,14 +50,14 @@ Thông tin bữa tiệc:
 Hồ sơ Ẩm thực (DNA) của khách:
 $dna_str
 
-YÊU CẦU:
-- BẮT BUỘC SÁNG TẠO ĐỘC BẢN: Hãy sáng tạo ra 3-4 món ăn hoàn toàn mới lạ, độc đáo, không được gợi ý các món ăn tiêu chuẩn có sẵn ở nhà hàng (như Beefsteak thông thường, Cá hồi nướng...). Hãy kết hợp nguyên liệu quý hiếm, kỹ thuật chế biến phân tử (molecular gastronomy) hoặc phong cách fusion cực kỳ phá cách mang đậm dấu ấn cá nhân (Bespoke).
-- KHÔNG sử dụng Markdown đậm/nghiêng (** hoặc *) vì kết quả sẽ được điền thẳng vào ô Textarea của form html.
-- Đoạn văn viết theo ngôi thứ nhất (xưng Tôi - Bếp trưởng) và ngôi thứ hai (xưng Bạn - Thực khách).
-- Nêu rõ 1-2 món nổi bật và giải thích vì sao nó phù hợp với DNA của khách hoặc với dịp $occasion.
-- Bắt buộc phải tuân thủ nghiêm ngặt các nguyên liệu dị ứng của khách (nếu có).
-- Kết thúc bằng một câu mời gọi khách hàng gửi yêu cầu này đi.
-- Độ dài vừa phải, không quá dài dòng (tối đa 150-200 chữ).";
+YÊU CẦU ĐẶC BIỆT:
+1. KHÔNG chào hỏi dài dòng, KHÔNG giới thiệu bản thân.
+2. Gợi ý NGẮN GỌN một thực đơn 5 món độc bản (Khai vị, Món chính, Món ăn kèm, Đồ uống, Tráng miệng).
+3. Mỗi món trình bày trên 1 dòng ngắn gọn. Tên món bắt đầu bằng dấu gạch ngang (-). KHÔNG cách dòng giữa các món ăn.
+4. KHÔNG sử dụng Markdown đậm/nghiêng (** hoặc *).
+5. Bắt buộc phải tuân thủ nghiêm ngặt dị ứng của khách.
+6. Thêm 1 câu chốt ngắn gọn mời khách gửi yêu cầu.
+Độ dài tối đa: 80-100 chữ.";
 
     $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=" . $gemini_api_key;
     

@@ -252,11 +252,14 @@ $f_img_3 = !empty($settings["footer_img_3"]) ? safe_url("public/assets/img/" . $
 
 
 <!-- FLOATING GLOBAL CHAT WIDGET -->
-<div class="global-chat-widget">
+<div class="global-chat-widget" onclick="if(window.innerWidth <= 768) openChatModal();">
     <div class="chat-widget-content">
-        <span class="chat-eyebrow">RESTAURANTLY</span>
-        <h3 class="chat-heading">Trải nghiệm fine dining hôm nay</h3>
-        <button onclick="openChatModal()" class="btn-chat-gold">TRÒ CHUYỆN</button>
+        <span class="chat-eyebrow d-none d-md-block">RESTAURANTLY</span>
+        <h3 class="chat-heading d-none d-md-block">Trải nghiệm fine dining hôm nay</h3>
+        <button onclick="openChatModal()" class="btn-chat-gold">
+            <span class="d-none d-md-inline">TRÒ CHUYỆN</span>
+            <i class="fas fa-comment-dots d-inline d-md-none chat-icon-mobile"></i>
+        </button>
     </div>
 </div>
 
@@ -644,20 +647,43 @@ if ($is_logged_in_chat) {
 
     @media (max-width: 768px) {
         .global-chat-widget {
-            width: 150px;
-            padding: 12px;
-            bottom: 15px;
-            right: 15px;
+            width: 55px;
+            height: 55px;
+            padding: 0;
+            bottom: 20px;
+            right: 20px;
+            border-radius: 50%;
+            background-color: #A88746;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-
-        .chat-heading {
-            font-size: 0.9rem;
-            margin-bottom: 10px;
+        
+        .chat-widget-content {
+            border: none;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-chat-gold {
-            font-size: 9px;
-            padding: 6px 10px;
+            background-color: transparent;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+        
+        .chat-icon-mobile {
+            font-size: 24px;
+            color: #fff;
+            margin-top: 2px;
         }
     }
 </style>
