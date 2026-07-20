@@ -24,7 +24,7 @@ if ($fileInput) {
     $target = $dir . $filename;
 
     if (move_uploaded_file($file['tmp_name'], $target)) {
-        $url = '/restaurant-project/public/assets/uploads/about/' . $filename;
+        $url = '/public/assets/uploads/about/' . $filename;
         // TinyMCE expects 'location', CKEditor expects 'url'
         echo json_encode(['location' => $url, 'url' => $url]);
     } else {

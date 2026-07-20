@@ -6,7 +6,7 @@ require '../config/database.php';
 $db = (new Database())->getConnection();
 
 if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'] ?? '', ['admin', 'staff', 'waiter', 'chef', 'cashier', 1, 2])) {
-    header("Location: /restaurant-project/public/login.php?error=access_denied");
+    header("Location: /public/login.php?error=access_denied");
     exit();
 }
 

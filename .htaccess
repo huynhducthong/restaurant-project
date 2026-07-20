@@ -1,6 +1,9 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /restaurant-project/
+    RewriteBase /
+
+    # Chuyển hướng các link cũ còn sót lại
+    RewriteRule ^restaurant-project/(.*)$ /$1 [R=301,L]
 
     # 1. Nếu yêu cầu là file hoặc thư mục có thật (như admin, public, index.php)
     # thì cho phép truy cập trực tiếp, không xử lý gì thêm
@@ -9,7 +12,7 @@
     RewriteRule ^ - [L]
 
     # 2. Làm đẹp đường dẫn (Tùy chọn)
-    # Ví dụ: cho phép truy cập localhost/restaurant-project/menu thay vì menu.php
+    # Ví dụ: cho phép truy cập localhost/menu thay vì menu.php
     RewriteCond %{REQUEST_FILENAME}.php -f
     RewriteRule ^([^\.]+)$ $1.php [NC,L]
 
