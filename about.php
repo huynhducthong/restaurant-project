@@ -331,7 +331,7 @@ include __DIR__ . '/views/client/layouts/header.php';
 </div>
 
 <script>
-const BASE = '<?= rtrim((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']==='on'?'https':'http').'://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']),'/') ?>';
+const BASE = '<?= rtrim((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']==='on'?'https':'http').'://'.$_SERVER['HTTP_HOST'].str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])),'/') ?>';
 
 // Like article action
 function articleLike(id) {
