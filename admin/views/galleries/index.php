@@ -30,7 +30,7 @@ require_once __DIR__ . '/../../../public/admin_layout_header.php';
                     <h5 class="mb-0">Thêm Hình Ảnh Mới</h5>
                 </div>
                 <div class="card-body">
-                    <form action="/restaurant-project/admin/galleries.php?action=store" method="POST" enctype="multipart/form-data">
+                    <form action="/admin/galleries.php?action=store" method="POST" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label class="form-label">Tên hình ảnh (Tùy chọn)</label>
                             <input type="text" name="title" class="form-control" placeholder="Nhập tên ảnh...">
@@ -80,7 +80,7 @@ require_once __DIR__ . '/../../../public/admin_layout_header.php';
                                     <?php foreach ($galleries as $gallery): ?>
                                         <tr>
                                             <td>
-                                                <img src="/restaurant-project/public/assets/img/gallery/<?= htmlspecialchars($gallery['image_url']) ?>" 
+                                                <img src="/public/assets/img/gallery/<?= htmlspecialchars($gallery['image_url']) ?>" 
                                                      alt="Gallery" 
                                                      class="img-thumbnail" 
                                                      style="width: 70px; height: 50px; object-fit: cover;">
@@ -100,10 +100,10 @@ require_once __DIR__ . '/../../../public/admin_layout_header.php';
                                                 <?php endif; ?>
                                             </td>
                                             <td class="text-end">
-                                                <a href="/restaurant-project/admin/galleries.php?action=toggle&id=<?= $gallery['id'] ?>" class="btn btn-sm <?= $gallery['is_active'] ? 'btn-outline-warning' : 'btn-outline-success' ?>" title="<?= $gallery['is_active'] ? 'Ẩn ảnh này' : 'Bật ảnh này' ?>">
+                                                <a href="/admin/galleries.php?action=toggle&id=<?= $gallery['id'] ?>" class="btn btn-sm <?= $gallery['is_active'] ? 'btn-outline-warning' : 'btn-outline-success' ?>" title="<?= $gallery['is_active'] ? 'Ẩn ảnh này' : 'Bật ảnh này' ?>">
                                                     <i class="bi <?= $gallery['is_active'] ? 'bi-eye-slash' : 'bi-eye' ?>"></i>
                                                 </a>
-                                                <a href="/restaurant-project/admin/galleries.php?action=delete&id=<?= $gallery['id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa hình ảnh này không?');" title="Xóa">
+                                                <a href="/admin/galleries.php?action=delete&id=<?= $gallery['id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa hình ảnh này không?');" title="Xóa">
                                                     <i class="bi bi-trash"></i>
                                                 </a>
                                             </td>

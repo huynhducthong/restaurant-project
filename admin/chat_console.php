@@ -211,7 +211,7 @@ function appendAdminMessage(msg) {
     }
     
     if (msg.message_type === 'image') {
-        html += `<img src="/restaurant-project/${msg.content}">`;
+        html += `<img src="/${msg.content}">`;
     } else {
         // Escape HTML
         const textNode = document.createTextNode(msg.content);
@@ -414,7 +414,7 @@ function pollSessions() {
         if (countLbl) {
             countLbl.innerText = data.waiting_count + ' chờ';
             if(data.waiting_count > 0 && !window.lastTingPlayed) {
-                let audio = new Audio('/restaurant-project/public/assets/audio/ting.mp3');
+                let audio = new Audio('/public/assets/audio/ting.mp3');
                 audio.play().catch(e => {});
                 window.lastTingPlayed = true; // prevent spam
             } else if (data.waiting_count === 0) {

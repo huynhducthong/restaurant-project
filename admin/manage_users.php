@@ -216,7 +216,7 @@ $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td class="ps-4">
                                 <div class="d-flex align-items-center gap-3">
                                     <?php if ($emp['avatar_blob']): ?>
-                                        <img src="/restaurant-project/ajax/get_avatar.php?emp_id=<?= $emp['id'] ?>" class="rounded-circle shadow-sm" style="width: 40px; height: 40px; object-fit: cover;" alt="Avatar">
+                                        <img src="/ajax/get_avatar.php?emp_id=<?= $emp['id'] ?>" class="rounded-circle shadow-sm" style="width: 40px; height: 40px; object-fit: cover;" alt="Avatar">
                                     <?php else: ?>
                                         <div class="avatar-placeholder">
                                             <?= strtoupper(mb_substr($emp['full_name'], 0, 1)) ?>
