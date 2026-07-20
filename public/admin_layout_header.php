@@ -4,34 +4,31 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
-// Khai báo $base_url rỗng vì DocumentRoot đã trỏ trực tiếp vào thư mục dự án
-$base_url = '';
-
-// 1. KIá»‚M TRA PHÃ‚N QUYá»€N TRUY Cáº¬P (Cho phÃ©p Admin vÃ  NhÃ¢n viÃªn)
+// 1. KIỂM TRA PHÂN QUYỀN TRUY CẬP (Cho phép Admin và Nhân viên)
 $user_id = $_SESSION['user_id'] ?? null;
 $user_role = $_SESSION['role'] ?? '';
 
-// CÃ¡c vai trÃ² Ä‘Æ°á»£c phÃ©p vÃ o Backend (Admin = 1/'admin', Staff = 2/'staff', etc.)
+// Các vai trò được phép vào Backend (Admin = 1/'admin', Staff = 2/'staff', etc.)
 $allowed_roles = ['admin', 'staff', 'waiter', 'chef', 'cashier', 1, 2];
 
 if (!$user_id || !in_array($user_role, $allowed_roles)) {
-    header("Location: $base_url/public/login.php?error=access_denied");
+    header("Location: /restaurant-project/public/login.php?error=access_denied");
     exit();
 }
 
-// 2. Biáº¿n kiá»ƒm tra Admin Ä‘á»ƒ áº©n/hiá»‡n menu Cáº¥u hÃ¬nh
+// 2. Biến kiểm tra Admin để ẩn/hiện menu Cấu hình
 $is_admin = ($user_role === 'admin' || $user_role == 1);
 
-// 3. Khai bÃ¡o $current_page sá»›m Ä‘á»ƒ dÃ¹ng trong sidebar
+// 3. Khai báo $current_page sớm để dùng trong sidebar
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// HÃ m há»— trá»£ active menu hiá»‡n táº¡i
+// Hàm hỗ trợ active menu hiện tại
 if (!function_exists('isActive')) {
     function isActive($path)
     {
-        // TrÃ¡nh lá»—i match theo chuá»—i con (vd: footer_settings.php chá»©a "settings.php")
-        // - Náº¿u $path lÃ  tÃªn file (khÃ´ng cÃ³ "/") thÃ¬ so khá»›p CHÃNH XÃC theo basename cá»§a URL
-        // - Náº¿u $path lÃ  Ä‘oáº¡n path cÃ³ "/" thÃ¬ cho phÃ©p match theo contains nhÆ° cÅ©
+        // Tránh lỗi match theo chuỗi con (vd: footer_settings.php chứa "settings.php")
+        // - Nếu $path là tên file (không có "/") thì so khớp CHÍNH XÁC theo basename của URL
+        // - Nếu $path là đoạn path có "/" thì cho phép match theo contains như cũ
         $uriPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '';
         if (strpos($path, '/') === false) {
             return (basename($uriPath) === $path) ? 'active' : '';
@@ -40,7 +37,7 @@ if (!function_exists('isActive')) {
     }
 }
 
-// HÃ m kiá»ƒm tra quyá»n hiá»ƒn thá»‹ menu
+// Hàm kiểm tra quyền hiển thị menu
 if (!function_exists('checkMenuAccess')) {
     function checkMenuAccess($user_role, $allowed_roles) {
         if ($user_role === 'admin' || $user_role == 1) return true;
@@ -63,11 +60,11 @@ try {
         $stmt_ps = $db->query("SELECT COUNT(*) FROM service_bookings WHERE status = 'Pending'");
         $pending_services_count = (int)$stmt_ps->fetchColumn();
 
-        // Cáº£nh bÃ¡o tá»“n kho tháº¥p
+        // Cảnh báo tồn kho thấp
         $stmt_low = $db->query("SELECT COUNT(*) FROM inventory i WHERE i.is_active = 1 AND i.min_stock > 0 AND IFNULL((SELECT SUM(s.quantity) FROM inventory_stocks s WHERE s.ingredient_id = i.id AND s.warehouse_id NOT IN (6, 7)), 0) <= i.min_stock");
         $low_stock_count = (int)$stmt_low->fetchColumn();
 
-        // Cáº£nh bÃ¡o háº¿t háº¡n (7 ngÃ y tá»›i)
+        // Cảnh báo hết hạn (7 ngày tới)
         $stmt_exp = $db->query("SELECT COUNT(*) FROM inventory i WHERE i.is_active = 1 AND i.expiry_date IS NOT NULL AND i.expiry_date <= DATE_ADD(CURDATE(), INTERVAL 7 DAY) AND i.expiry_date >= CURDATE() AND IFNULL((SELECT SUM(s.quantity) FROM inventory_stocks s WHERE s.ingredient_id = i.id AND s.warehouse_id NOT IN (6, 7)), 0) > 0");
         $expiry_count = (int)$stmt_exp->fetchColumn();
 
@@ -84,7 +81,7 @@ try {
     <meta charset="UTF-8">
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quáº£n trá»‹ há»‡ thá»‘ng - Restaurantly</title>
+    <title>Quản trị hệ thống - Restaurantly</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -94,7 +91,7 @@ try {
     
     <style>
         :root {
-            --sidebar-bg: #ffffff; /* Tráº¯ng */
+            --sidebar-bg: #ffffff; /* Trắng */
             --sidebar-border: #e8e1d5;
             --topbar-bg: #ffffff;
 
@@ -102,11 +99,11 @@ try {
             --accent-green: #4F5B3A; /* Olive */
             --accent-green-light: #6A7A4E;
             
-            /* DÃ nh cho ná»n sÃ¡ng (Sidebar) */
-            --text-sidebar: #222222; /* XÃ¡m Äen */
+            /* Dành cho nền sáng (Sidebar) */
+            --text-sidebar: #222222; /* Xám Đen */
             --text-sidebar-muted: #666666;
             
-            /* DÃ nh cho ná»n sÃ¡ng (Main Content) */
+            /* Dành cho nền sáng (Main Content) */
             --text-main: #222222;
             --text-muted: #777777;
             
@@ -127,7 +124,7 @@ try {
             color: var(--text-main);
         }
 
-        /* â”€â”€ SIDEBAR â”€â”€ */
+        /* ── SIDEBAR ── */
         .admin-sidebar {
             width: 268px;
             height: 100vh;
@@ -225,12 +222,12 @@ try {
         }
 
         .menu-list li a:hover {
-            background-color: #e3f2fd; /* Xanh nháº¡t */
-            color: #0277bd; /* Chá»¯ xanh nÆ°á»›c biá»ƒn */
+            background-color: #e3f2fd; /* Xanh nhạt */
+            color: #0277bd; /* Chữ xanh nước biển */
         }
 
         .menu-list li.active > a {
-            background: #bbdefb; /* Xanh Ä‘áº­m hÆ¡n chÃºt */
+            background: #bbdefb; /* Xanh đậm hơn chút */
             color: #0277bd;
             font-weight: 600;
             border-left: 3px solid #0277bd;
@@ -269,7 +266,7 @@ try {
             font-size: 10.5px;
             font-weight: 700;
             text-transform: uppercase;
-            color: #7b8364; /* Olive nháº¡t hÆ¡n chÃºt so vá»›i XÃ¡m Ä‘en */
+            color: #7b8364; /* Olive nhạt hơn chút so với Xám đen */
             letter-spacing: 1.4px;
         }
 
@@ -298,7 +295,7 @@ try {
             background: rgba(214, 69, 69, 0.2);
         }
 
-        /* â”€â”€ MAIN WRAPPER â”€â”€ */
+        /* ── MAIN WRAPPER ── */
         .main-wrapper {
             margin-left: 268px;
             min-height: 100vh;
@@ -536,39 +533,39 @@ try {
 
                 <!-- View Homepage -->
                 <li style="list-style:none;">
-                    <a href="<?= $base_url ?>/index.php" target="_blank" class="view-home-btn">
-                        <i class="fas fa-external-link-alt"></i> Xem Trang Chá»§
+                    <a href="/restaurant-project/index.php" target="_blank" class="view-home-btn">
+                        <i class="fas fa-external-link-alt"></i> Xem Trang Chủ
                     </a>
                 </li>
 
-                <!-- MÃ n HÃ¬nh TÃ¡c Nghiá»‡p -->
+                <!-- Màn Hình Tác Nghiệp -->
                 <?php if (checkMenuAccess($user_role, ['admin', 'manager', 'chef', 'cashier'])): ?>
-                <div class="menu-header">MÃ n HÃ¬nh TÃ¡c Nghiá»‡p</div>
+                <div class="menu-header">Màn Hình Tác Nghiệp</div>
                 <?php if (checkMenuAccess($user_role, ['admin', 'manager', 'cashier'])): ?>
                 <li class="<?= isActive('pos.php') ?>">
-                    <a href="<?= $base_url ?>/admin/pos.php" target="_blank" style="color: #10b981; font-weight: 600;">
+                    <a href="/restaurant-project/admin/pos.php" target="_blank" style="color: #10b981; font-weight: 600;">
                         <i class="fas fa-cash-register"></i>
-                        <span>MÃ n HÃ¬nh Thu NgÃ¢n (POS)</span>
+                        <span>Màn Hình Thu Ngân (POS)</span>
                     </a>
                 </li>
                 <?php endif; ?>
                 
                 <?php if (checkMenuAccess($user_role, ['admin', 'manager', 'chef'])): ?>
                 <li class="<?= isActive('kds.php') ?>">
-                    <a href="<?= $base_url ?>/kds.php" target="_blank" style="color: #e0b060; font-weight: 600;">
+                    <a href="/restaurant-project/kds.php" target="_blank" style="color: #e0b060; font-weight: 600;">
                         <i class="fas fa-fire-burner"></i>
-                        <span>MÃ n HÃ¬nh Báº¿p (KDS)</span>
+                        <span>Màn Hình Bếp (KDS)</span>
                     </a>
                 </li>
                 <?php endif; ?>
                 <?php endif; ?>
 
-                <!-- Váº­n hÃ nh NhÃ  hÃ ng -->
-                <div class="menu-header">Váº­n hÃ nh NhÃ  hÃ ng</div>
+                <!-- Vận hành Nhà hàng -->
+                <div class="menu-header">Vận hành Nhà hàng</div>
 
                 <li class="<?= isActive('admin_dashboard.php') ?>">
-                    <a href="<?= $base_url ?>/admin/admin_dashboard.php">
-                        <i class="fas fa-chart-pie"></i> Tá»•ng Quan
+                    <a href="/restaurant-project/admin/admin_dashboard.php">
+                        <i class="fas fa-chart-pie"></i> Tổng Quan
                     </a>
                 </li>
 
@@ -579,7 +576,7 @@ try {
                 <li class="<?= $isFoodMenu ? 'active' : '' ?>">
                     <a href="javascript:void(0)" data-bs-target="#foodSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isFoodMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
                         <div>
-                            <i class="fas fa-utensils"></i> Quáº£n LÃ½ Thá»±c ÄÆ¡n
+                            <i class="fas fa-utensils"></i> Quản Lý Thực Đơn
                         </div>
                         <div>
                             <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: auto;"></i>
@@ -587,22 +584,22 @@ try {
                     </a>
                     <ul class="collapse list-unstyled <?= $isFoodMenu ? 'show' : '' ?>" id="foodSubmenu" style="background: rgba(0,0,0,0.03);">
                         <li class="<?= isActive('manage_themes.php') ?>">
-                            <a href="<?= $base_url ?>/admin/controllers/manage_themes.php" style="padding-left: 42px; font-size: 12.5px;">
-                                <i class="fas fa-layer-group" style="font-size: 12px; margin-right: 6px;"></i> Chá»§ Ä‘á» Thá»±c Ä‘Æ¡n
+                            <a href="/restaurant-project/admin/controllers/manage_themes.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-layer-group" style="font-size: 12px; margin-right: 6px;"></i> Chủ đề Thực đơn
                             </a>
                         </li>
                         <li class="<?= isActive('FoodController.php') ?>">
-                            <a href="<?= $base_url ?>/admin/controllers/FoodController.php" style="padding-left: 42px; font-size: 12.5px;">
-                                <i class="fas fa-concierge-bell" style="font-size: 12px; margin-right: 6px;"></i> MÃ³n Äƒn (MÃ³n tá»± chá»n)
+                            <a href="/restaurant-project/admin/controllers/FoodController.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-concierge-bell" style="font-size: 12px; margin-right: 6px;"></i> Món ăn (Món tự chọn)
                             </a>
                         </li>
                         <li class="<?= isActive('manage_toppings.php') ?>">
-                            <a href="<?= $base_url ?>/admin/controllers/manage_toppings.php" style="padding-left: 42px; font-size: 12.5px;">
-                                <i class="fas fa-cheese" style="font-size: 12px; margin-right: 6px;"></i> Topping / TÃ¹y chá»n
+                            <a href="/restaurant-project/admin/controllers/manage_toppings.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-cheese" style="font-size: 12px; margin-right: 6px;"></i> Topping / Tùy chọn
                             </a>
                         </li>
                         <li class="<?= ($current_page == 'ComboController.php' || $current_page == 'add_combo.php' || $current_page == 'edit_combo.php') ? 'active' : '' ?>">
-                            <a href="<?= $base_url ?>/admin/controllers/ComboController.php" style="padding-left: 42px; font-size: 12.5px;">
+                            <a href="/restaurant-project/admin/controllers/ComboController.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-cubes" style="font-size: 12px; margin-right: 6px;"></i> Set Menu (Combo)
                             </a>
                         </li>
@@ -618,7 +615,7 @@ try {
                     <a href="javascript:void(0)" data-bs-target="#servicesSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isServiceMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
                         <div>
                             <i class="fas fa-concierge-bell"></i>
-                            <span>Quáº£n lÃ½ Dá»‹ch vá»¥</span>
+                            <span>Quản lý Dịch vụ</span>
                         </div>
                         <div>
                             <?php if ($pending_services_count > 0): ?>
@@ -629,28 +626,28 @@ try {
                     </a>
                     <ul class="collapse list-unstyled <?= $isServiceMenu ? 'show' : '' ?>" id="servicesSubmenu" style="background: rgba(0,0,0,0.03);">
                         <li class="<?= isActive('manage_services.php') ?>">
-                            <a href="<?= $base_url ?>/admin/controllers/manage_services.php" style="padding-left: 42px; font-size: 12.5px;">
-                                <i class="fas fa-list-ul" style="font-size: 12px; margin-right: 6px;"></i> Danh sÃ¡ch ÄÆ¡n Ä‘áº·t
+                            <a href="/restaurant-project/admin/controllers/manage_services.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-list-ul" style="font-size: 12px; margin-right: 6px;"></i> Danh sách Đơn đặt
                             </a>
                         </li>
                         <li class="<?= isActive('manage_tables.php') ?>">
-                            <a href="<?= $base_url ?>/admin/controllers/manage_tables.php" style="padding-left: 42px; font-size: 12.5px;">
-                                <i class="fas fa-chair" style="font-size: 12px; margin-right: 6px;"></i> Quáº£n lÃ½ BÃ n
+                            <a href="/restaurant-project/admin/controllers/manage_tables.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-chair" style="font-size: 12px; margin-right: 6px;"></i> Quản lý Bàn
                             </a>
                         </li>
                         <li class="<?= isActive('manage_events.php') ?>">
-                            <a href="<?= $base_url ?>/admin/manage_events.php" style="padding-left: 42px; font-size: 12.5px;">
-                                <i class="fas fa-glass-cheers" style="font-size: 12px; margin-right: 6px;"></i> Loáº¡i hÃ¬nh Sá»± Kiá»‡n
+                            <a href="/restaurant-project/admin/manage_events.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-glass-cheers" style="font-size: 12px; margin-right: 6px;"></i> Loại hình Sự Kiện
                             </a>
                         </li>
                         <li class="<?= isActive('manage_decors.php') ?>">
-                            <a href="<?= $base_url ?>/admin/manage_decors.php" style="padding-left: 42px; font-size: 12.5px;">
-                                <i class="fas fa-gift" style="font-size: 12px; margin-right: 6px;"></i> GÃ³i Trang TrÃ­
+                            <a href="/restaurant-project/admin/manage_decors.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-gift" style="font-size: 12px; margin-right: 6px;"></i> Gói Trang Trí
                             </a>
                         </li>
                         <li class="<?= isActive('manage_bespoke.php') ?>">
-                            <a href="<?= $base_url ?>/admin/manage_bespoke.php" style="padding-left: 42px; font-size: 12.5px;">
-                                <i class="fas fa-cogs" style="font-size: 12px; margin-right: 6px;"></i> Cáº¥u hÃ¬nh Bespoke
+                            <a href="/restaurant-project/admin/manage_bespoke.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-cogs" style="font-size: 12px; margin-right: 6px;"></i> Cấu hình Bespoke
                             </a>
                         </li>
                     </ul>
@@ -659,9 +656,9 @@ try {
 
                 <?php if (checkMenuAccess($user_role, ['chef'])): ?>
                 <li class="<?= ($current_page == 'manage_inventory.php') ? 'active' : isActive('InventoryController.php') ?>">
-                    <a href="<?= $base_url ?>/admin/controllers/InventoryController.php">
+                    <a href="/restaurant-project/admin/controllers/InventoryController.php">
                         <i class="fas fa-warehouse"></i>
-                        <span>Quáº£n lÃ½ Kho</span>
+                        <span>Quản lý Kho</span>
                         <?php if ($pending_transfers_count > 0): ?>
                             <span class="badge-notify"><?= $pending_transfers_count ?></span>
                         <?php endif; ?>
@@ -671,13 +668,13 @@ try {
 
                 <?php if (checkMenuAccess($user_role, ['chef', 'cashier'])): ?>
                 <li class="<?= isActive('ReportController.php') ?>">
-                    <a href="<?= $base_url ?>/admin/controllers/ReportController.php">
-                        <i class="fas fa-chart-line"></i> BÃ¡o cÃ¡o & Thá»‘ng kÃª
+                    <a href="/restaurant-project/admin/controllers/ReportController.php">
+                        <i class="fas fa-chart-line"></i> Báo cáo & Thống kê
                     </a>
                 </li>
                 <li class="<?= isActive('manage_expenses.php') ?>">
-                    <a href="<?= $base_url ?>/admin/manage_expenses.php">
-                        <i class="fas fa-file-invoice-dollar"></i> Quáº£n lÃ½ Chi PhÃ­
+                    <a href="/restaurant-project/admin/manage_expenses.php">
+                        <i class="fas fa-file-invoice-dollar"></i> Quản lý Chi Phí
                     </a>
                 </li>
                 <?php endif; ?>
@@ -690,7 +687,7 @@ try {
                 <li class="<?= $isChefMenu ? 'active' : '' ?> chef-menu-toggle">
                     <a href="javascript:void(0)" data-bs-target="#chefSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isChefMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
                         <div>
-                            <i class="fas fa-users"></i> Quáº£n lÃ½ Äáº§u báº¿p
+                            <i class="fas fa-users"></i> Quản lý Đầu bếp
                         </div>
                         <div>
                             <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: auto;"></i>
@@ -698,13 +695,13 @@ try {
                     </a>
                     <ul class="collapse list-unstyled <?= $isChefMenu ? 'show' : '' ?>" id="chefSubmenu" style="background: rgba(0,0,0,0.03);">
                         <li class="<?= isActive('manage_chefs.php') ?>">
-                            <a href="<?= $base_url ?>/admin/manage_chefs.php" style="padding-left: 42px; font-size: 12.5px;">
-                                <i class="fas fa-users" style="font-size: 12px; margin-right: 6px;"></i> Danh sÃ¡ch Äáº§u báº¿p
+                            <a href="/restaurant-project/admin/manage_chefs.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-users" style="font-size: 12px; margin-right: 6px;"></i> Danh sách Đầu bếp
                             </a>
                         </li>
                         <li class="<?= isActive('manage_chef_reviews.php') ?>">
-                            <a href="<?= $base_url ?>/admin/manage_chef_reviews.php" style="padding-left: 42px; font-size: 12.5px;">
-                                <i class="fas fa-comments" style="font-size: 12px; margin-right: 6px;"></i> ÄÃ¡nh giÃ¡ Äáº§u báº¿p
+                            <a href="/restaurant-project/admin/manage_chef_reviews.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-comments" style="font-size: 12px; margin-right: 6px;"></i> Đánh giá Đầu bếp
                             </a>
                         </li>
                     </ul>
@@ -713,8 +710,8 @@ try {
 
                 <?php if (checkMenuAccess($user_role, ['waiter', 'cashier'])): ?>
                 <li class="<?= isActive('manage_contacts.php') ?>">
-                    <a href="<?= $base_url ?>/admin/manage_contacts.php">
-                        <i class="fas fa-envelope"></i> Quáº£n lÃ½ LiÃªn há»‡
+                    <a href="/restaurant-project/admin/manage_contacts.php">
+                        <i class="fas fa-envelope"></i> Quản lý Liên hệ
                     </a>
                 </li>
                 
@@ -725,7 +722,7 @@ try {
                     <a href="javascript:void(0)" data-bs-target="#chatSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isChatMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
                         <div>
                             <i class="fas fa-comments"></i>
-                            <span>Há»— trá»£ KhÃ¡ch hÃ ng</span>
+                            <span>Hỗ trợ Khách hàng</span>
                         </div>
                         <div>
                             <span class="badge-notify chat-waiting-badge position-static ms-0 me-2" style="display:none;">0</span>
@@ -734,18 +731,18 @@ try {
                     </a>
                     <ul class="collapse list-unstyled <?= $isChatMenu ? 'show' : '' ?>" id="chatSubmenu" style="background: rgba(0,0,0,0.03);">
                         <li class="<?= isActive('chat_console.php') ?>">
-                            <a href="<?= $base_url ?>/admin/chat_console.php" style="padding-left: 42px; font-size: 12.5px;">
-                                <i class="fas fa-headset" style="font-size: 12px; margin-right: 6px;"></i> TrÃ² chuyá»‡n trá»±c tuyáº¿n
+                            <a href="/restaurant-project/admin/chat_console.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-headset" style="font-size: 12px; margin-right: 6px;"></i> Trò chuyện trực tuyến
                             </a>
                         </li>
                         <li class="<?= isActive('bot_training.php') ?>">
-                            <a href="<?= $base_url ?>/admin/bot_training.php" style="padding-left: 42px; font-size: 12.5px;">
-                                <i class="fas fa-robot" style="font-size: 12px; margin-right: 6px;"></i> Quáº£n lÃ½ ká»‹ch báº£n Bot
+                            <a href="/restaurant-project/admin/bot_training.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-robot" style="font-size: 12px; margin-right: 6px;"></i> Quản lý kịch bản Bot
                             </a>
                         </li>
                         <li class="<?= isActive('chat_analytics.php') ?>">
-                            <a href="<?= $base_url ?>/admin/chat_analytics.php" style="padding-left: 42px; font-size: 12.5px;">
-                                <i class="fas fa-chart-bar" style="font-size: 12px; margin-right: 6px;"></i> Thá»‘ng kÃª Chat
+                            <a href="/restaurant-project/admin/chat_analytics.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-chart-bar" style="font-size: 12px; margin-right: 6px;"></i> Thống kê Chat
                             </a>
                         </li>
                     </ul>
@@ -753,32 +750,32 @@ try {
                 <?php endif; ?>
 
                 <?php if ($is_admin): ?>
-                <div class="menu-header">Cáº¥u hÃ¬nh</div>
+                <div class="menu-header">Cấu hình</div>
 
 
 
                 <li class="<?= isActive('manage_users.php') ?>">
-                    <a href="<?= $base_url ?>/admin/manage_users.php">
-                        <i class="fas fa-users-cog"></i> Quáº£n lÃ½ NhÃ¢n sá»±
+                    <a href="/restaurant-project/admin/manage_users.php">
+                        <i class="fas fa-users-cog"></i> Quản lý Nhân sự
                     </a>
                 </li>
 
                 <li class="<?= isActive('manage_banners.php') ?>">
-                    <a href="<?= $base_url ?>/admin/controllers/manage_banners.php">
-                        <i class="fas fa-image"></i> Quáº£n lÃ½ Banner
+                    <a href="/restaurant-project/admin/controllers/manage_banners.php">
+                        <i class="fas fa-image"></i> Quản lý Banner
                     </a>
                 </li>
 
 
 
                 <li class="<?= isActive('manage_about.php') ?>">
-                    <a href="<?= $base_url ?>/admin/manage_about.php">
-                        <i class="fas fa-newspaper"></i> Quáº£n lÃ½ Tin tá»©c                    </a>
+                    <a href="/restaurant-project/admin/manage_about.php">
+                        <i class="fas fa-newspaper"></i> Quản lý Tin tức                    </a>
                 </li>
 
                                 <li class="<?= isActive('settings.php') ?>">
-                    <a href="<?= $base_url ?>/admin/controllers/settings.php">
-                        <i class="fas fa-cog"></i> CÃ i Äáº·t Chung
+                    <a href="/restaurant-project/admin/controllers/settings.php">
+                        <i class="fas fa-cog"></i> Cài Đặt Chung
                     </a>
                 </li>
 
@@ -789,7 +786,7 @@ try {
                 <li class="<?= $isCustomerMenu ? 'active' : '' ?> customer-menu-toggle">
                     <a href="javascript:void(0)" data-bs-target="#customerSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isCustomerMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
                         <div>
-                            <i class="fas fa-users-cog"></i> Quáº£n lÃ½ KhÃ¡ch hÃ ng
+                            <i class="fas fa-users-cog"></i> Quản lý Khách hàng
                         </div>
                         <div>
                             <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: auto;"></i>
@@ -797,13 +794,13 @@ try {
                     </a>
                     <ul class="collapse list-unstyled <?= $isCustomerMenu ? 'show' : '' ?>" id="customerSubmenu" style="background: rgba(0,0,0,0.03);">
                         <li class="<?= isActive('UserController.php') ?>">
-                            <a href="<?= $base_url ?>/admin/controllers/UserController.php" style="padding-left: 42px; font-size: 12.5px;">
-                                <i class="fas fa-users" style="font-size: 12px; margin-right: 6px;"></i> Danh sÃ¡ch KhÃ¡ch hÃ ng
+                            <a href="/restaurant-project/admin/controllers/UserController.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-users" style="font-size: 12px; margin-right: 6px;"></i> Danh sách Khách hàng
                             </a>
                         </li>
                         <li class="<?= isActive('manage_milestones.php') ?>">
-                            <a href="<?= $base_url ?>/admin/manage_milestones.php" style="padding-left: 42px; font-size: 12.5px;">
-                                <i class="fas fa-award" style="font-size: 12px; margin-right: 6px;"></i> Äáº·c quyá»n / Cá»™t má»‘c
+                            <a href="/restaurant-project/admin/manage_milestones.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-award" style="font-size: 12px; margin-right: 6px;"></i> Đặc quyền / Cột mốc
                             </a>
                         </li>
                     </ul>
@@ -816,8 +813,8 @@ try {
 
         <!-- Logout -->
         <div class="logout-area">
-            <a href="<?= $base_url ?>/public/logout.php" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i> ÄÄƒng xuáº¥t
+            <a href="/restaurant-project/public/logout.php" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Đăng xuất
             </a>
         </div>
     </aside>
@@ -832,34 +829,34 @@ try {
                 <h4 class="topbar-title">
                 <?php
                 $page_titles = [
-                    'admin_dashboard.php'     => 'Báº£ng Äiá»u Khiá»ƒn Tá»•ng Quan',
-                    'FoodController.php'      => 'Quáº£n LÃ½ Thá»±c ÄÆ¡n',
-                    'manage_toppings.php'     => 'Quáº£n LÃ½ Topping / TÃ¹y Chá»n',
-                    'ComboController.php'     => 'Quáº£n LÃ½ Set',
-                    'list_combos.php'         => 'Quáº£n LÃ½ Set',
-                    'add_combo.php'           => 'ThÃªm Set',
-                    'edit_combo.php'          => 'Chá»‰nh Sá»­a Set',
-                    'manage_services.php'     => 'Quáº£n LÃ½ Dá»‹ch Vá»¥',
-                    'manage_bespoke.php'      => 'Cáº¥u HÃ¬nh Bespoke',
-                    'InventoryController.php' => 'Quáº£n LÃ½ Kho NguyÃªn Liá»‡u',
-                    'manage_inventory.php'    => 'Quáº£n LÃ½ Kho NguyÃªn Liá»‡u',
-                    'ReportController.php'    => 'BÃ¡o CÃ¡o & Thá»‘ng KÃª Kho',
-                    'manage_chefs.php'        => 'Quáº£n LÃ½ Äáº§u Báº¿p',
-                    'manage_chef_reviews.php' => 'Quáº£n LÃ½ ÄÃ¡nh GiÃ¡ Äáº§u Báº¿p',
-                    'manage_banners.php'      => 'Quáº£n LÃ½ Banner',
-                    'manage_videos.php'       => 'Quáº£n LÃ½ Video',
-                    'settings.php'            => 'CÃ i Äáº·t Há»‡ Thá»‘ng Chung',
-                    'footer_settings.php'     => 'Cáº¥u HÃ¬nh Giao Diá»‡n Footer',
-                    'manage_users.php'        => 'Quáº£n LÃ½ NhÃ¢n Sá»±',
-                    'manage_milestones.php'   => 'Quáº£n LÃ½ Cá»™t Má»‘c Äáº·c Quyá»n',
-                    'manage_about.php'        => 'Quáº£n LÃ½ Tin Tá»©c',
-                    'manage_contacts.php'     => 'Quáº£n LÃ½ LiÃªn Há»‡',
+                    'admin_dashboard.php'     => 'Bảng Điều Khiển Tổng Quan',
+                    'FoodController.php'      => 'Quản Lý Thực Đơn',
+                    'manage_toppings.php'     => 'Quản Lý Topping / Tùy Chọn',
+                    'ComboController.php'     => 'Quản Lý Set',
+                    'list_combos.php'         => 'Quản Lý Set',
+                    'add_combo.php'           => 'Thêm Set',
+                    'edit_combo.php'          => 'Chỉnh Sửa Set',
+                    'manage_services.php'     => 'Quản Lý Dịch Vụ',
+                    'manage_bespoke.php'      => 'Cấu Hình Bespoke',
+                    'InventoryController.php' => 'Quản Lý Kho Nguyên Liệu',
+                    'manage_inventory.php'    => 'Quản Lý Kho Nguyên Liệu',
+                    'ReportController.php'    => 'Báo Cáo & Thống Kê Kho',
+                    'manage_chefs.php'        => 'Quản Lý Đầu Bếp',
+                    'manage_chef_reviews.php' => 'Quản Lý Đánh Giá Đầu Bếp',
+                    'manage_banners.php'      => 'Quản Lý Banner',
+                    'manage_videos.php'       => 'Quản Lý Video',
+                    'settings.php'            => 'Cài Đặt Hệ Thống Chung',
+                    'footer_settings.php'     => 'Cấu Hình Giao Diện Footer',
+                    'manage_users.php'        => 'Quản Lý Nhân Sự',
+                    'manage_milestones.php'   => 'Quản Lý Cột Mốc Đặc Quyền',
+                    'manage_about.php'        => 'Quản Lý Tin Tức',
+                    'manage_contacts.php'     => 'Quản Lý Liên Hệ',
 
-                    'UserController.php'      => 'Quáº£n LÃ½ NgÆ°á»i DÃ¹ng',
-                    'chat_console.php'        => 'TrÃ² Chuyá»‡n Trá»±c Tuyáº¿n',
-                    'chat_analytics.php'      => 'Thá»‘ng KÃª TrÃ² Chuyá»‡n',
+                    'UserController.php'      => 'Quản Lý Người Dùng',
+                    'chat_console.php'        => 'Trò Chuyện Trực Tuyến',
+                    'chat_analytics.php'      => 'Thống Kê Trò Chuyện',
                 ];
-                echo $page_titles[$current_page] ?? 'Khu Vá»±c Quáº£n Trá»‹';
+                echo $page_titles[$current_page] ?? 'Khu Vực Quản Trị';
                 ?>
             </h4>
             </div>
@@ -875,60 +872,60 @@ try {
                     </button>
                     <div class="notification-dropdown shadow-lg" id="notifyDropdown">
                         <div class="notify-header d-flex justify-content-between">
-                            <span>ThÃ´ng bÃ¡o thÃ´ng minh</span>
-                            <span class="badge bg-danger"><?= $total_alerts ?> má»›i</span>
+                            <span>Thông báo thông minh</span>
+                            <span class="badge bg-danger"><?= $total_alerts ?> mới</span>
                         </div>
                         <div class="notify-body">
                             <?php if ($total_alerts == 0): ?>
                                 <div class="p-4 text-center text-muted small">
                                     <i class="fas fa-check-circle fa-2x mb-2 text-success opacity-50"></i>
-                                    <p class="m-0">Tuyá»‡t vá»i! KhÃ´ng cÃ³ cáº£nh bÃ¡o nÃ o.</p>
+                                    <p class="m-0">Tuyệt vời! Không có cảnh báo nào.</p>
                                 </div>
                             <?php else: ?>
                                 <?php if ($pending_transfers_count > 0): ?>
-                                    <a href="<?= $base_url ?>/admin/controllers/InventoryController.php?tab=transfers" class="notify-item">
+                                    <a href="/restaurant-project/admin/controllers/InventoryController.php?tab=transfers" class="notify-item">
                                         <div class="notify-icon bg-warning-subtle text-warning"><i class="fas fa-exchange-alt"></i></div>
                                         <div class="notify-content">
-                                            <div class="notify-title">Chuyá»ƒn kho chá» duyá»‡t</div>
-                                            <div class="notify-desc">CÃ³ <?= $pending_transfers_count ?> lá»‡nh cáº§n báº¡n xÃ¡c nháº­n ngay.</div>
+                                            <div class="notify-title">Chuyển kho chờ duyệt</div>
+                                            <div class="notify-desc">Có <?= $pending_transfers_count ?> lệnh cần bạn xác nhận ngay.</div>
                                         </div>
                                     </a>
                                 <?php endif; ?>
 
                                 <?php if ($low_stock_count > 0): ?>
-                                    <a href="<?= $base_url ?>/admin/controllers/ReportController.php?action=low_stock" class="notify-item">
+                                    <a href="/restaurant-project/admin/controllers/ReportController.php?action=low_stock" class="notify-item">
                                         <div class="notify-icon bg-danger-subtle text-danger"><i class="fas fa-exclamation-triangle"></i></div>
                                         <div class="notify-content">
-                                            <div class="notify-title">Tá»“n kho sáº¯p háº¿t</div>
-                                            <div class="notify-desc"><?= $low_stock_count ?> nguyÃªn liá»‡u dÆ°á»›i Ä‘á»‹nh má»©c tá»‘i thiá»ƒu.</div>
+                                            <div class="notify-title">Tồn kho sắp hết</div>
+                                            <div class="notify-desc"><?= $low_stock_count ?> nguyên liệu dưới định mức tối thiểu.</div>
                                         </div>
                                     </a>
                                 <?php endif; ?>
 
                                 <?php if ($expiry_count > 0): ?>
-                                    <a href="<?= $base_url ?>/admin/controllers/InventoryController.php?tab=all" class="notify-item">
+                                    <a href="/restaurant-project/admin/controllers/InventoryController.php?tab=all" class="notify-item">
                                         <div class="notify-icon bg-info-subtle text-info"><i class="fas fa-clock"></i></div>
                                         <div class="notify-content">
-                                            <div class="notify-title">HÃ ng sáº¯p háº¿t háº¡n</div>
-                                            <div class="notify-desc">CÃ³ <?= $expiry_count ?> máº·t hÃ ng sáº½ háº¿t háº¡n trong 7 ngÃ y tá»›i.</div>
+                                            <div class="notify-title">Hàng sắp hết hạn</div>
+                                            <div class="notify-desc">Có <?= $expiry_count ?> mặt hàng sẽ hết hạn trong 7 ngày tới.</div>
                                         </div>
                                     </a>
                                 <?php endif; ?>
                             <?php endif; ?>
                         </div>
                         <div class="p-2 text-center border-top">
-                            <a href="<?= $base_url ?>/admin/admin_dashboard.php" class="small text-decoration-none fw-bold">Xem táº¥t cáº£ Dashboard</a>
+                            <a href="/restaurant-project/admin/admin_dashboard.php" class="small text-decoration-none fw-bold">Xem tất cả Dashboard</a>
                         </div>
                     </div>
                 </div>
 
                 <div class="user-profile">
                     <div class="user-info">
-                        <strong><?= htmlspecialchars($_SESSION['username'] ?? ($_SESSION['user_name'] ?? 'TÃ i khoáº£n')) ?></strong>
+                        <strong><?= htmlspecialchars($_SESSION['username'] ?? ($_SESSION['user_name'] ?? 'Tài khoản')) ?></strong>
                         <?php if ($is_admin): ?>
-                            <span class="badge-admin">Quáº£n trá»‹ viÃªn</span>
+                            <span class="badge-admin">Quản trị viên</span>
                         <?php else: ?>
-                            <span class="badge-staff">NhÃ¢n viÃªn</span>
+                            <span class="badge-staff">Nhân viên</span>
                         <?php endif; ?>
                     </div>
                     <div class="user-avatar">
@@ -955,7 +952,7 @@ try {
 
                 // Global Chat Alert Polling
                 setInterval(() => {
-                    fetch('<?= $base_url ?>/admin/api/chat_admin_api.php?action=check_alerts')
+                    fetch('/restaurant-project/admin/api/chat_admin_api.php?action=check_alerts')
                     .then(res => res.json())
                     .then(data => {
                         const badges = document.querySelectorAll('.chat-waiting-badge');
@@ -966,11 +963,11 @@ try {
                         
                         const countLbl = document.getElementById('waitingCount');
                         if (countLbl) {
-                            countLbl.innerText = data.waiting_count + ' chá»';
+                            countLbl.innerText = data.waiting_count + ' chờ';
                         }
 
                         if(data.waiting_count > 0 && !window.lastTingPlayed) {
-                            let audio = new Audio('<?= $base_url ?>/public/assets/audio/ting.mp3');
+                            let audio = new Audio('/restaurant-project/public/assets/audio/ting.mp3');
                             audio.play().catch(e => {});
                             window.lastTingPlayed = true; 
                         } else if (data.waiting_count === 0) {
