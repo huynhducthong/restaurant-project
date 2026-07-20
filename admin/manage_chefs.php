@@ -263,7 +263,7 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
                             <td>
                                 <div class="d-flex align-items-center gap-3">
                                     <?php if ($chef['image']): ?>
-                                        <img src="/restaurant-project/public/assets/img/chefs/<?= htmlspecialchars($chef['image']) ?>" class="shadow-sm" style="width: 45px; height: 45px; object-fit: cover; border-radius: 10px;" alt="Avatar">
+                                        <img src="/public/assets/img/chefs/<?= htmlspecialchars($chef['image']) ?>" class="shadow-sm" style="width: 45px; height: 45px; object-fit: cover; border-radius: 10px;" alt="Avatar">
                                     <?php else: ?>
                                         <div class="avatar-placeholder">
                                             <?= strtoupper(mb_substr($chef['name'], 0, 1)) ?>
@@ -666,7 +666,7 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
 
             let preview = document.getElementById('previewImage');
             if(data.image) {
-                preview.src = '/restaurant-project/public/assets/img/chefs/' + data.image;
+                preview.src = '/public/assets/img/chefs/' + data.image;
                 preview.style.display = 'block';
             } else {
                 preview.style.display = 'none';
@@ -738,7 +738,7 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
             card.style.width = '160px';
             card.innerHTML = `
                 <div class="position-relative w-100" style="height: 100px; overflow: hidden; border-radius: 4px;">
-                    <img src="/restaurant-project/public/assets/img/chefs/gallery/${img.image}" style="width: 100%; height: 100%; object-fit: cover;" alt="Gallery">
+                    <img src="/public/assets/img/chefs/gallery/${img.image}" style="width: 100%; height: 100%; object-fit: cover;" alt="Gallery">
                 </div>
                 <div class="d-flex justify-content-between align-items-center w-100 mt-2 gap-1">
                     <input type="number" class="form-control form-control-sm text-center sort-order-input px-1" data-id="${img.id}" value="${img.sort_order}" title="Thứ tự hiển thị" style="width: 60px;">
@@ -911,7 +911,7 @@ $foods = $db->query("SELECT id, name FROM foods WHERE status = 1 ORDER BY name A
             card.style.width = '240px';
             card.innerHTML = `
                 <div class="position-relative w-100 mb-2" style="height: 140px; overflow: hidden; border-radius: 4px; border: 1px solid #ddd; background: #fff;">
-                    <img src="/restaurant-project/public/assets/img/chefs/certificates/${cert.certificate_image}" style="width: 100%; height: 100%; object-fit: contain;" alt="Certificate">
+                    <img src="/public/assets/img/chefs/certificates/${cert.certificate_image}" style="width: 100%; height: 100%; object-fit: contain;" alt="Certificate">
                 </div>
                 <div class="w-100">
                     <div class="fw-bold text-truncate" style="font-size: 13px;" title="${escapeHtml(cert.certificate_name)}">${escapeHtml(cert.certificate_name)}</div>
