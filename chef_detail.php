@@ -204,7 +204,7 @@ include __DIR__ . '/views/client/layouts/header.php';
         <div class="st-gallery-grid">
             <?php foreach ($gallery_images as $g_img): ?>
                 <div class="st-gallery-item" onclick="openLightbox('/public/assets/img/chefs/gallery/<?= htmlspecialchars($g_img['image']) ?>')">
-                    <img src="/public/assets/img/chefs/gallery/<?= htmlspecialchars($g_img['image']) ?>" alt="Gallery Activity Image" loading="lazy">
+                    <img src="<?= BASE_URL ?>/public/assets/img/chefs/gallery/<?= htmlspecialchars($g_img['image']) ?>" alt="Gallery Activity Image" loading="lazy">
                     <div class="st-gallery-hover">
                         <i class="bi bi-zoom-in"></i>
                     </div>

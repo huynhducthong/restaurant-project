@@ -83,7 +83,7 @@ class GalleryController {
                 $_SESSION['settings_flash'] = ['type' => 'error', 'msg' => 'Vui lòng chọn một hình ảnh hợp lệ.'];
             }
 
-            header("Location: /admin/controllers/settings.php?tab=gallery");
+            header("Location: " . BASE_URL . "/admin/controllers/settings.php?tab=gallery");
             exit;
         }
     }
@@ -96,7 +96,7 @@ class GalleryController {
             $stmt->execute([':id' => $id]);
             $_SESSION['settings_flash'] = ['type' => 'success', 'msg' => 'Cập nhật trạng thái thành công!'];
         }
-        header("Location: /admin/controllers/settings.php?tab=gallery");
+        header("Location: " . BASE_URL . "/admin/controllers/settings.php?tab=gallery");
         exit;
     }
 
@@ -120,7 +120,7 @@ class GalleryController {
                 $_SESSION['settings_flash'] = ['type' => 'success', 'msg' => 'Xóa ảnh thành công!'];
             }
         }
-        header("Location: /admin/controllers/settings.php?tab=gallery");
+        header("Location: " . BASE_URL . "/admin/controllers/settings.php?tab=gallery");
         exit;
     }
 }

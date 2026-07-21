@@ -5,6 +5,10 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Dotenv\Dotenv;
 
+if (!defined('BASE_URL')) {
+    define('BASE_URL', (strpos($_SERVER['HTTP_HOST'] ?? '', 'localhost') !== false || strpos($_SERVER['HTTP_HOST'] ?? '', '127.0.0.1') !== false) ? '/restaurant-project' : '');
+}
+
 class Database {
     private $host;
     private $port;

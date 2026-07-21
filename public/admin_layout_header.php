@@ -15,7 +15,7 @@ $user_role = $_SESSION['role'] ?? '';
 $allowed_roles = ['admin', 'staff', 'waiter', 'chef', 'cashier', 1, 2];
 
 if (!$user_id || !in_array($user_role, $allowed_roles)) {
-    header("Location: /public/login.php?error=access_denied");
+    header("Location: " . BASE_URL . "/public/login.php?error=access_denied");
     exit();
 }
 
@@ -536,7 +536,7 @@ try {
 
                 <!-- View Homepage -->
                 <li style="list-style:none;">
-                    <a href="/index.php" target="_blank" class="view-home-btn">
+                    <a href="<?= BASE_URL ?>/index.php" target="_blank" class="view-home-btn">
                         <i class="fas fa-external-link-alt"></i> Xem Trang Chủ
                     </a>
                 </li>
@@ -546,7 +546,7 @@ try {
                 <div class="menu-header">Màn Hình Tác Nghiệp</div>
                 <?php if (checkMenuAccess($user_role, ['admin', 'manager', 'cashier'])): ?>
                 <li class="<?= isActive('pos.php') ?>">
-                    <a href="/admin/pos.php" target="_blank" style="color: #10b981; font-weight: 600;">
+                    <a href="<?= BASE_URL ?>/admin/pos.php" target="_blank" style="color: #10b981; font-weight: 600;">
                         <i class="fas fa-cash-register"></i>
                         <span>Màn Hình Thu Ngân (POS)</span>
                     </a>
@@ -555,7 +555,7 @@ try {
                 
                 <?php if (checkMenuAccess($user_role, ['admin', 'manager', 'chef'])): ?>
                 <li class="<?= isActive('kds.php') ?>">
-                    <a href="/kds.php" target="_blank" style="color: #e0b060; font-weight: 600;">
+                    <a href="<?= BASE_URL ?>/kds.php" target="_blank" style="color: #e0b060; font-weight: 600;">
                         <i class="fas fa-fire-burner"></i>
                         <span>Màn Hình Bếp (KDS)</span>
                     </a>
@@ -567,7 +567,7 @@ try {
                 <div class="menu-header">Vận hành Nhà hàng</div>
 
                 <li class="<?= isActive('admin_dashboard.php') ?>">
-                    <a href="/admin/admin_dashboard.php">
+                    <a href="<?= BASE_URL ?>/admin/admin_dashboard.php">
                         <i class="fas fa-chart-pie"></i> Tổng Quan
                     </a>
                 </li>
@@ -587,22 +587,22 @@ try {
                     </a>
                     <ul class="collapse list-unstyled <?= $isFoodMenu ? 'show' : '' ?>" id="foodSubmenu" style="background: rgba(0,0,0,0.03);">
                         <li class="<?= isActive('manage_themes.php') ?>">
-                            <a href="/admin/controllers/manage_themes.php" style="padding-left: 42px; font-size: 12.5px;">
+                            <a href="<?= BASE_URL ?>/admin/controllers/manage_themes.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-layer-group" style="font-size: 12px; margin-right: 6px;"></i> Chủ đề Thực đơn
                             </a>
                         </li>
                         <li class="<?= isActive('FoodController.php') ?>">
-                            <a href="/admin/controllers/FoodController.php" style="padding-left: 42px; font-size: 12.5px;">
+                            <a href="<?= BASE_URL ?>/admin/controllers/FoodController.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-concierge-bell" style="font-size: 12px; margin-right: 6px;"></i> Món ăn (Món tự chọn)
                             </a>
                         </li>
                         <li class="<?= isActive('manage_toppings.php') ?>">
-                            <a href="/admin/controllers/manage_toppings.php" style="padding-left: 42px; font-size: 12.5px;">
+                            <a href="<?= BASE_URL ?>/admin/controllers/manage_toppings.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-cheese" style="font-size: 12px; margin-right: 6px;"></i> Topping / Tùy chọn
                             </a>
                         </li>
                         <li class="<?= ($current_page == 'ComboController.php' || $current_page == 'add_combo.php' || $current_page == 'edit_combo.php') ? 'active' : '' ?>">
-                            <a href="/admin/controllers/ComboController.php" style="padding-left: 42px; font-size: 12.5px;">
+                            <a href="<?= BASE_URL ?>/admin/controllers/ComboController.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-cubes" style="font-size: 12px; margin-right: 6px;"></i> Set Menu (Combo)
                             </a>
                         </li>
@@ -629,27 +629,27 @@ try {
                     </a>
                     <ul class="collapse list-unstyled <?= $isServiceMenu ? 'show' : '' ?>" id="servicesSubmenu" style="background: rgba(0,0,0,0.03);">
                         <li class="<?= isActive('manage_services.php') ?>">
-                            <a href="/admin/controllers/manage_services.php" style="padding-left: 42px; font-size: 12.5px;">
+                            <a href="<?= BASE_URL ?>/admin/controllers/manage_services.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-list-ul" style="font-size: 12px; margin-right: 6px;"></i> Danh sách Đơn đặt
                             </a>
                         </li>
                         <li class="<?= isActive('manage_tables.php') ?>">
-                            <a href="/admin/controllers/manage_tables.php" style="padding-left: 42px; font-size: 12.5px;">
+                            <a href="<?= BASE_URL ?>/admin/controllers/manage_tables.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-chair" style="font-size: 12px; margin-right: 6px;"></i> Quản lý Bàn
                             </a>
                         </li>
                         <li class="<?= isActive('manage_events.php') ?>">
-                            <a href="/admin/manage_events.php" style="padding-left: 42px; font-size: 12.5px;">
+                            <a href="<?= BASE_URL ?>/admin/manage_events.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-glass-cheers" style="font-size: 12px; margin-right: 6px;"></i> Loại hình Sự Kiện
                             </a>
                         </li>
                         <li class="<?= isActive('manage_decors.php') ?>">
-                            <a href="/admin/manage_decors.php" style="padding-left: 42px; font-size: 12.5px;">
+                            <a href="<?= BASE_URL ?>/admin/manage_decors.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-gift" style="font-size: 12px; margin-right: 6px;"></i> Gói Trang Trí
                             </a>
                         </li>
                         <li class="<?= isActive('manage_bespoke.php') ?>">
-                            <a href="/admin/manage_bespoke.php" style="padding-left: 42px; font-size: 12.5px;">
+                            <a href="<?= BASE_URL ?>/admin/manage_bespoke.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-cogs" style="font-size: 12px; margin-right: 6px;"></i> Cấu hình Bespoke
                             </a>
                         </li>
@@ -659,7 +659,7 @@ try {
 
                 <?php if (checkMenuAccess($user_role, ['chef'])): ?>
                 <li class="<?= ($current_page == 'manage_inventory.php') ? 'active' : isActive('InventoryController.php') ?>">
-                    <a href="/admin/controllers/InventoryController.php">
+                    <a href="<?= BASE_URL ?>/admin/controllers/InventoryController.php">
                         <i class="fas fa-warehouse"></i>
                         <span>Quản lý Kho</span>
                         <?php if ($pending_transfers_count > 0): ?>
@@ -671,12 +671,12 @@ try {
 
                 <?php if (checkMenuAccess($user_role, ['chef', 'cashier'])): ?>
                 <li class="<?= isActive('ReportController.php') ?>">
-                    <a href="/admin/controllers/ReportController.php">
+                    <a href="<?= BASE_URL ?>/admin/controllers/ReportController.php">
                         <i class="fas fa-chart-line"></i> Báo cáo & Thống kê
                     </a>
                 </li>
                 <li class="<?= isActive('manage_expenses.php') ?>">
-                    <a href="/admin/manage_expenses.php">
+                    <a href="<?= BASE_URL ?>/admin/manage_expenses.php">
                         <i class="fas fa-file-invoice-dollar"></i> Quản lý Chi Phí
                     </a>
                 </li>
@@ -698,12 +698,12 @@ try {
                     </a>
                     <ul class="collapse list-unstyled <?= $isChefMenu ? 'show' : '' ?>" id="chefSubmenu" style="background: rgba(0,0,0,0.03);">
                         <li class="<?= isActive('manage_chefs.php') ?>">
-                            <a href="/admin/manage_chefs.php" style="padding-left: 42px; font-size: 12.5px;">
+                            <a href="<?= BASE_URL ?>/admin/manage_chefs.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-users" style="font-size: 12px; margin-right: 6px;"></i> Danh sách Đầu bếp
                             </a>
                         </li>
                         <li class="<?= isActive('manage_chef_reviews.php') ?>">
-                            <a href="/admin/manage_chef_reviews.php" style="padding-left: 42px; font-size: 12.5px;">
+                            <a href="<?= BASE_URL ?>/admin/manage_chef_reviews.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-comments" style="font-size: 12px; margin-right: 6px;"></i> Đánh giá Đầu bếp
                             </a>
                         </li>
@@ -713,7 +713,7 @@ try {
 
                 <?php if (checkMenuAccess($user_role, ['waiter', 'cashier'])): ?>
                 <li class="<?= isActive('manage_contacts.php') ?>">
-                    <a href="/admin/manage_contacts.php">
+                    <a href="<?= BASE_URL ?>/admin/manage_contacts.php">
                         <i class="fas fa-envelope"></i> Quản lý Liên hệ
                     </a>
                 </li>
@@ -734,17 +734,17 @@ try {
                     </a>
                     <ul class="collapse list-unstyled <?= $isChatMenu ? 'show' : '' ?>" id="chatSubmenu" style="background: rgba(0,0,0,0.03);">
                         <li class="<?= isActive('chat_console.php') ?>">
-                            <a href="/admin/chat_console.php" style="padding-left: 42px; font-size: 12.5px;">
+                            <a href="<?= BASE_URL ?>/admin/chat_console.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-headset" style="font-size: 12px; margin-right: 6px;"></i> Trò chuyện trực tuyến
                             </a>
                         </li>
                         <li class="<?= isActive('bot_training.php') ?>">
-                            <a href="/admin/bot_training.php" style="padding-left: 42px; font-size: 12.5px;">
+                            <a href="<?= BASE_URL ?>/admin/bot_training.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-robot" style="font-size: 12px; margin-right: 6px;"></i> Quản lý kịch bản Bot
                             </a>
                         </li>
                         <li class="<?= isActive('chat_analytics.php') ?>">
-                            <a href="/admin/chat_analytics.php" style="padding-left: 42px; font-size: 12.5px;">
+                            <a href="<?= BASE_URL ?>/admin/chat_analytics.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-chart-bar" style="font-size: 12px; margin-right: 6px;"></i> Thống kê Chat
                             </a>
                         </li>
@@ -758,13 +758,13 @@ try {
 
 
                 <li class="<?= isActive('manage_users.php') ?>">
-                    <a href="/admin/manage_users.php">
+                    <a href="<?= BASE_URL ?>/admin/manage_users.php">
                         <i class="fas fa-users-cog"></i> Quản lý Nhân sự
                     </a>
                 </li>
 
                 <li class="<?= isActive('manage_banners.php') ?>">
-                    <a href="/admin/controllers/manage_banners.php">
+                    <a href="<?= BASE_URL ?>/admin/controllers/manage_banners.php">
                         <i class="fas fa-image"></i> Quản lý Banner
                     </a>
                 </li>
@@ -772,12 +772,12 @@ try {
 
 
                 <li class="<?= isActive('manage_about.php') ?>">
-                    <a href="/admin/manage_about.php">
+                    <a href="<?= BASE_URL ?>/admin/manage_about.php">
                         <i class="fas fa-newspaper"></i> Quản lý Tin tức                    </a>
                 </li>
 
                                 <li class="<?= isActive('settings.php') ?>">
-                    <a href="/admin/controllers/settings.php">
+                    <a href="<?= BASE_URL ?>/admin/controllers/settings.php">
                         <i class="fas fa-cog"></i> Cài Đặt Chung
                     </a>
                 </li>
@@ -797,12 +797,12 @@ try {
                     </a>
                     <ul class="collapse list-unstyled <?= $isCustomerMenu ? 'show' : '' ?>" id="customerSubmenu" style="background: rgba(0,0,0,0.03);">
                         <li class="<?= isActive('UserController.php') ?>">
-                            <a href="/admin/controllers/UserController.php" style="padding-left: 42px; font-size: 12.5px;">
+                            <a href="<?= BASE_URL ?>/admin/controllers/UserController.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-users" style="font-size: 12px; margin-right: 6px;"></i> Danh sách Khách hàng
                             </a>
                         </li>
                         <li class="<?= isActive('manage_milestones.php') ?>">
-                            <a href="/admin/manage_milestones.php" style="padding-left: 42px; font-size: 12.5px;">
+                            <a href="<?= BASE_URL ?>/admin/manage_milestones.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-award" style="font-size: 12px; margin-right: 6px;"></i> Đặc quyền / Cột mốc
                             </a>
                         </li>
@@ -816,7 +816,7 @@ try {
 
         <!-- Logout -->
         <div class="logout-area">
-            <a href="/public/logout.php" class="logout-btn">
+            <a href="<?= BASE_URL ?>/public/logout.php" class="logout-btn">
                 <i class="fas fa-sign-out-alt"></i> Đăng xuất
             </a>
         </div>
@@ -886,7 +886,7 @@ try {
                                 </div>
                             <?php else: ?>
                                 <?php if ($pending_transfers_count > 0): ?>
-                                    <a href="/admin/controllers/InventoryController.php?tab=transfers" class="notify-item">
+                                    <a href="<?= BASE_URL ?>/admin/controllers/InventoryController.php?tab=transfers" class="notify-item">
                                         <div class="notify-icon bg-warning-subtle text-warning"><i class="fas fa-exchange-alt"></i></div>
                                         <div class="notify-content">
                                             <div class="notify-title">Chuyển kho chờ duyệt</div>
@@ -896,7 +896,7 @@ try {
                                 <?php endif; ?>
 
                                 <?php if ($low_stock_count > 0): ?>
-                                    <a href="/admin/controllers/ReportController.php?action=low_stock" class="notify-item">
+                                    <a href="<?= BASE_URL ?>/admin/controllers/ReportController.php?action=low_stock" class="notify-item">
                                         <div class="notify-icon bg-danger-subtle text-danger"><i class="fas fa-exclamation-triangle"></i></div>
                                         <div class="notify-content">
                                             <div class="notify-title">Tồn kho sắp hết</div>
@@ -906,7 +906,7 @@ try {
                                 <?php endif; ?>
 
                                 <?php if ($expiry_count > 0): ?>
-                                    <a href="/admin/controllers/InventoryController.php?tab=all" class="notify-item">
+                                    <a href="<?= BASE_URL ?>/admin/controllers/InventoryController.php?tab=all" class="notify-item">
                                         <div class="notify-icon bg-info-subtle text-info"><i class="fas fa-clock"></i></div>
                                         <div class="notify-content">
                                             <div class="notify-title">Hàng sắp hết hạn</div>
@@ -917,7 +917,7 @@ try {
                             <?php endif; ?>
                         </div>
                         <div class="p-2 text-center border-top">
-                            <a href="/admin/admin_dashboard.php" class="small text-decoration-none fw-bold">Xem tất cả Dashboard</a>
+                            <a href="<?= BASE_URL ?>/admin/admin_dashboard.php" class="small text-decoration-none fw-bold">Xem tất cả Dashboard</a>
                         </div>
                     </div>
                 </div>

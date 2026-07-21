@@ -598,7 +598,7 @@ include '../../public/admin_layout_header.php';
                                                     <?php foreach ($galleries as $gallery): ?>
                                                         <tr>
                                                             <td>
-                                                                <img src="/public/assets/img/gallery/<?= htmlspecialchars($gallery['image_url']) ?>" 
+                                                                <img src="<?= BASE_URL ?>/public/assets/img/gallery/<?= htmlspecialchars($gallery['image_url']) ?>" 
                                                                      alt="Gallery" 
                                                                      class="img-thumbnail" 
                                                                      style="width: 70px; height: 50px; object-fit: cover;">
@@ -609,12 +609,12 @@ include '../../public/admin_layout_header.php';
                                                             </td>
                                                             <td class="text-center"><?= $gallery['sort_order'] ?></td>
                                                             <td class="text-center">
-                                                                <a href="/admin/controllers/GalleryController.php?action=toggle&id=<?= $gallery['id'] ?>" class="btn btn-sm <?= $gallery['is_active'] ? 'btn-success' : 'btn-secondary' ?> py-0 px-2" style="font-size:11px;">
+                                                                <a href="<?= BASE_URL ?>/admin/controllers/GalleryController.php?action=toggle&id=<?= $gallery['id'] ?>" class="btn btn-sm <?= $gallery['is_active'] ? 'btn-success' : 'btn-secondary' ?> py-0 px-2" style="font-size:11px;">
                                                                     <?= $gallery['is_active'] ? 'Đang bật' : 'Đã ẩn' ?>
                                                                 </a>
                                                             </td>
                                                             <td class="text-end">
-                                                                <a href="/admin/controllers/GalleryController.php?action=delete&id=<?= $gallery['id'] ?>" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="return confirm('Bạn có chắc chắn muốn xóa hình ảnh này không?');">
+                                                                <a href="<?= BASE_URL ?>/admin/controllers/GalleryController.php?action=delete&id=<?= $gallery['id'] ?>" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="return confirm('Bạn có chắc chắn muốn xóa hình ảnh này không?');">
                                                                     <i class="bi bi-trash"></i> Xóa
                                                                 </a>
                                                             </td>
