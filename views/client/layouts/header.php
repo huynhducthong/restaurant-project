@@ -141,6 +141,8 @@ if (!empty($logo_path)) {
         })();
     </script>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="<?= defined('BASE_URL') ? BASE_URL : '' ?>/public/assets/img/favicon.png">">
     <title>
         <?= htmlspecialchars($settings['restaurant_name']) ?>
     </title>
