@@ -67,18 +67,24 @@ if (!function_exists('safe_url')) {
     function safe_url($url, $prefix = '') {
         if (empty($url)) return '';
         
-        // Remove .php for frontend pages to make URLs clean
         if (strpos($url, 'admin/') === false && strpos($url, 'ajax/') === false && strpos($url, 'public/') === false) {
             if (strpos($url, 'index.php') === 0) {
                 $url = str_replace('index.php', '', $url);
+                if (empty($url)) $url = '/'; // If it was just 'index.php', make it '/'
             } else {
-                $url = preg_replace('/\.php(\?|$)/', '', $url);
+                // Remove .php but keep query strings (using positive lookahead)
+                $url = preg_replace('/\.php(?=\?|$)/', '', $url);
             }
         }
         
         if (preg_match('/^(https?:|\/\/|\/)/i', $url)) {
             return $url;
         }
+        
+        if ($url === '/') {
+            return $prefix ? rtrim($prefix, '/') . '/' : '/';
+        }
+        
         return $prefix . $url;
     }
 }
