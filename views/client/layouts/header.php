@@ -142,7 +142,7 @@ if (!empty($logo_path)) {
     </script>
 
     <!-- Favicon -->
-    <link rel="icon" href="data:,">/public/assets/img/favicon.png">
+    <link rel="icon" href="data:,">
     <title>
         <?= htmlspecialchars($settings['restaurant_name']) ?>
     </title>
