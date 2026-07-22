@@ -2,6 +2,9 @@
     RewriteEngine On
     RewriteBase /
 
+    # Tự động gạch bỏ chữ index.php trên URL
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.php\ HTTP/
+    RewriteRule ^index\.php$ / [R=301,L]
     # Chuyển hướng các link cũ còn sót lại
     RewriteRule ^restaurant-project/(.*)$ /$1 [R=301,L]
 
