@@ -9,10 +9,22 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 }
 
 $path_prefix = $path_prefix ?? "";
-if (!function_exists("safe_url")) {
-    function safe_url($url, $prefix) {
-        if (empty($url)) return "";
-        if (preg_match("/^(https?:|\/\/|\/)/i", $url)) return $url;
+if (!function_exists('safe_url')) {
+    function safe_url($url, $prefix = '') {
+        if (empty($url)) return '';
+        
+        // Remove .php for frontend pages to make URLs clean
+        if (strpos($url, 'admin/') === false && strpos($url, 'ajax/') === false && strpos($url, 'public/') === false) {
+            if (strpos($url, 'index.php') === 0) {
+                $url = str_replace('index.php', '', $url);
+            } else {
+                $url = preg_replace('/\.php(\?|$)/', '', $url);
+            }
+        }
+        
+        if (preg_match('/^(https?:|\/\/|\/)/i', $url)) {
+            return $url;
+        }
         return $prefix . $url;
     }
 }
