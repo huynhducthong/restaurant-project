@@ -77,15 +77,16 @@ if (!function_exists('safe_url')) {
             }
         }
         
-        if (preg_match('/^(https?:|\/\/|\/)/i', $url)) {
-            return $url;
-        }
-        
+        // Handle home route "/" specifically before general regex
         if ($url === '/') {
             if ($prefix) {
                 return rtrim($prefix, '/') . '/';
             }
-            return defined('BASE_URL') ? rtrim(BASE_URL, '/') . '/' : '/';
+            return defined('BASE_URL') && BASE_URL !== '' ? rtrim(BASE_URL, '/') . '/' : '/';
+        }
+
+        if (preg_match('/^(https?:|\/\/|\/)/i', $url)) {
+            return $url;
         }
         
         return $prefix . $url;

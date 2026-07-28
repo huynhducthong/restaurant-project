@@ -6,7 +6,17 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Dotenv\Dotenv;
 
 if (!defined('BASE_URL')) {
-    define('BASE_URL', (strpos($_SERVER['HTTP_HOST'] ?? '', 'localhost') !== false || strpos($_SERVER['HTTP_HOST'] ?? '', '127.0.0.1') !== false) ? '/restaurant-project' : '');
+    $doc_root = str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'] ?? '');
+    $dir = str_replace('\\', '/', dirname(__DIR__));
+    $base = str_replace($doc_root, '', $dir);
+    // Nếu chạy trên VPS (thư mục gốc), $base có thể rỗng hoặc '/', ta chuẩn hóa lại:
+    if ($base === '/' || $base === '\\') $base = '';
+    
+    // Đảm bảo không bị dính base nếu host không phải localhost (để an toàn cho VPS)
+    if (strpos($_SERVER['HTTP_HOST'] ?? '', 'localhost') === false && strpos($_SERVER['HTTP_HOST'] ?? '', '127.0.0.1') === false) {
+        $base = '';
+    }
+    define('BASE_URL', $base);
 }
 
 class Database {
