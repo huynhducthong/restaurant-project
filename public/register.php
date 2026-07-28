@@ -1,6 +1,6 @@
 <?php 
 session_start(); 
-require_once '../config/google_setup.php';
+require_once __DIR__ . '/../config/google_setup.php';
 $login_url = $client->createAuthUrl(); 
 ?>
 <!DOCTYPE html>

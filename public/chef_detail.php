@@ -1,5 +1,5 @@
 <?php
-require_once 'config/database.php';
+require_once __DIR__ . '/../config/database.php';
 $db = (new Database())->getConnection();
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;

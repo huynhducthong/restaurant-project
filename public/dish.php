@@ -1,7 +1,7 @@
 <?php
 session_start();
 $current_page = 'dish.php';
-require_once 'config/database.php';
+require_once __DIR__ . '/../config/database.php';
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 if (!$id) {

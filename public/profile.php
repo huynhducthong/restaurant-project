@@ -216,7 +216,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = "Đã cập nhật Hồ sơ Khẩu vị (Culinary DNA)!";
 
         // Gửi thông báo Telegram cho nhà hàng
-        require_once 'config/notification_helper.php';
+        require_once __DIR__ . '/../config/notification_helper.php';
         $uname = $_SESSION['username'] ?? 'Khách hàng';
         $msg_tele = "<b>🍽 CẬP NHẬT HỒ SƠ ẨM THỰC (DNA)</b>\n\n";
         $msg_tele .= "Khách hàng <b>@{$uname}</b> vừa cập nhật hồ sơ:\n";

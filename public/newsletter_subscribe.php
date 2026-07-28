@@ -1,7 +1,7 @@
 <?php
-require_once 'config/csrf.php';
+require_once __DIR__ . '/../config/csrf.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf()) {
-    require_once 'config/database.php';
+    require_once __DIR__ . '/../config/database.php';
     $db = (new Database())->getConnection();
     $email = filter_var(trim($_POST['email'] ?? ''), FILTER_VALIDATE_EMAIL);
     if ($email) {

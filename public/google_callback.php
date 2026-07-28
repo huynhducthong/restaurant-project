@@ -1,8 +1,8 @@
 <?php
 // public/google_callback.php
 session_start();
-require_once '../config/database.php';
-require_once '../config/google_setup.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/google_setup.php';
 
 $database = new Database();
 $db = $database->getConnection();
@@ -51,7 +51,7 @@ if (isset($_GET['code'])) {
 
             if ($user['role'] == 1 || $user['role'] == 'admin') {
                 // --- THÔNG BÁO BẢO MẬT ĐĂNG NHẬP ADMIN ---
-                require_once '../config/notification_helper.php';
+                require_once __DIR__ . '/../config/notification_helper.php';
                 $ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'Unknown IP';
                 $login_time = date('H:i:s d/m/Y');
                 $admin_name = $user['username'];
