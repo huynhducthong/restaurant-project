@@ -82,7 +82,10 @@ if (!function_exists('safe_url')) {
         }
         
         if ($url === '/') {
-            return $prefix ? rtrim($prefix, '/') . '/' : '/';
+            if ($prefix) {
+                return rtrim($prefix, '/') . '/';
+            }
+            return defined('BASE_URL') ? rtrim(BASE_URL, '/') . '/' : '/';
         }
         
         return $prefix . $url;

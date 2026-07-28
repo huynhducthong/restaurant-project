@@ -235,7 +235,9 @@ $f_img_3 = !empty($settings["footer_img_3"]) ? safe_url("public/assets/img/" . $
         
         <div class="footer-col-center">
             <div class="footer-logo-text notranslate">
-                <?= htmlspecialchars($settings["restaurant_name"] ?? "NHÃ") ?>.
+                <a href="<?= safe_url('index.php', $path_prefix ?? '') ?>" style="text-decoration:none; color:inherit;">
+                    <?= htmlspecialchars($settings["restaurant_name"] ?? "NHÃ") ?>.
+                </a>
             </div>
             <div class="footer-socials">
                 <a href="#"><i class="fab fa-instagram"></i></a>
