@@ -1,12 +1,8 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /
-
-    # Tự động gạch bỏ chữ index.php trên URL
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.php\ HTTP/
-    RewriteRule ^index\.php$ / [R=301,L]
-    # Chuyển hướng các link cũ còn sót lại
-    RewriteRule ^restaurant-project/(.*)$ /$1 [R=301,L]
+    # Tự động gạch bỏ chữ index.php trên URL một cách tương đối
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /+(.*)index\.php [NC]
+    RewriteRule ^(.*)index\.php$ /%1 [R=301,L]
 
     # 1. Nếu yêu cầu là file hoặc thư mục có thật (như admin, public, index.php)
     # thì cho phép truy cập trực tiếp, không xử lý gì thêm
