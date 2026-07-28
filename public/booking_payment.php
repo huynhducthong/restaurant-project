@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'config/database.php';
+require_once __DIR__ . '/../config/database.php';
 $db = (new Database())->getConnection();
 
 if (!isset($_GET['id'])) {
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirm_payment'])) {
     // Lễ tân/Admin sẽ duyệt thủ công trên trang Quản lý.
     
     // Gửi thông báo Telegram
-    require_once 'config/notification_helper.php';
+    require_once __DIR__ . '/../config/notification_helper.php';
     $stmt = $db->prepare("SELECT customer_name, deposit_amount FROM service_bookings WHERE id = ?");
     $stmt->execute([$booking_id]);
     $bk = $stmt->fetch(PDO::FETCH_ASSOC);

@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/../config/database.php';
 $db = (new Database())->getConnection();
 
 $user_id = $_SESSION['user_id'];
@@ -260,7 +260,7 @@ $bookings_stmt = $db->prepare($booking_sql);
 $bookings_stmt->execute([$user_id]);
 $user_bookings = $bookings_stmt->fetchAll();
 
-include __DIR__ . '/views/client/layouts/header.php';
+include __DIR__ . '/../views/client/layouts/header.php';
 
 ?>
 
@@ -1138,4 +1138,4 @@ function openEditAddress(id, type, detail, isDefault) {
 }
 </script>
 
-<?php include __DIR__ . '/views/client/layouts/footer.php'; ?>
+<?php include __DIR__ . '/../views/client/layouts/footer.php'; ?>

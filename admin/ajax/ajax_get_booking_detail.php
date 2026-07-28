@@ -170,6 +170,7 @@ try {
             $stmt_main->execute([$ing['id']]);
             $ing['stock_main'] = (float)($stmt_main->fetchColumn() ?: 0);
             
+            $ing['total_required'] = round($ing['total_required'], 4);
             $ing['is_sufficient'] = ($ing['stock_target'] >= $ing['total_required']);
             $ing['missing_qty'] = max(0, $ing['total_required'] - $ing['stock_target']);
             $ing['can_transfer'] = ($ing['stock_main'] >= $ing['missing_qty']);

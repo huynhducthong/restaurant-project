@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/../config/database.php';
 $database = new Database();
 $db = $database->getConnection();
 
@@ -93,7 +93,7 @@ foreach ($foods as $food) {
 }
 
 // Nhúng Header
-include __DIR__ . '/views/client/layouts/header.php';
+include __DIR__ . '/../views/client/layouts/header.php';
 ?>
 
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -165,4 +165,4 @@ include __DIR__ . '/views/client/layouts/header.php';
   </div>
 </div>
 
-<?php include __DIR__ . '/views/client/layouts/footer.php'; ?>
+<?php include __DIR__ . '/../views/client/layouts/footer.php'; ?>

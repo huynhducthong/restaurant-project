@@ -9,9 +9,9 @@ function sendTelegramNotification($message) {
     $db = (new Database())->getConnection();
 
     // Ưu tiên lấy từ file .env
-    $token   = $_ENV['TELEGRAM_BOT_TOKEN'] ?? '';
-    $chat_id = $_ENV['TELEGRAM_CHAT_ID']   ?? '';
-    $enabled = ($_ENV['ENABLE_TELEGRAM']   ?? '') === '1';
+    $token   = $_ENV['TELEGRAM_BOT_TOKEN'] ?? $_SERVER['TELEGRAM_BOT_TOKEN'] ?? '';
+    $chat_id = $_ENV['TELEGRAM_CHAT_ID']   ?? $_SERVER['TELEGRAM_CHAT_ID'] ?? '';
+    $enabled = ($_ENV['ENABLE_TELEGRAM']   ?? $_SERVER['ENABLE_TELEGRAM'] ?? '') === '1';
 
     // Nếu .env trống, lấy cấu hình từ bảng settings (Admin UI)
     if (!$token || !$chat_id) {
@@ -251,15 +251,15 @@ function sendBookingEmailConfirmation($emailNguoiNhan, $booking_info) {
 
     try {
         $mail->isSMTP();
-        $mail->Host       = $_ENV['MAIL_HOST'] ?? 'smtp.gmail.com';
+        $mail->Host       = $_ENV['MAIL_HOST'] ?? $_SERVER['MAIL_HOST'] ?? 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = $_ENV['MAIL_USERNAME'] ?? ''; 
-        $mail->Password   = $_ENV['MAIL_PASSWORD'] ?? ''; 
-        $mail->SMTPSecure = $_ENV['MAIL_ENCRYPTION'] ?? 'tls';
-        $mail->Port       = $_ENV['MAIL_PORT'] ?? 587;
+        $mail->Username   = $_ENV['MAIL_USERNAME'] ?? $_SERVER['MAIL_USERNAME'] ?? ''; 
+        $mail->Password   = $_ENV['MAIL_PASSWORD'] ?? $_SERVER['MAIL_PASSWORD'] ?? ''; 
+        $mail->SMTPSecure = $_ENV['MAIL_ENCRYPTION'] ?? $_SERVER['MAIL_ENCRYPTION'] ?? 'tls';
+        $mail->Port       = $_ENV['MAIL_PORT'] ?? $_SERVER['MAIL_PORT'] ?? 587;
         $mail->CharSet    = 'UTF-8';
 
-        $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'] ?? 'noreply@restaurantly.com', 'Restaurantly Admin');
+        $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'] ?? $_SERVER['MAIL_FROM_ADDRESS'] ?? 'noreply@restaurantly.com', 'Restaurantly Admin');
         $mail->addAddress($emailNguoiNhan);
 
         $mail->isHTML(true);
@@ -278,31 +278,58 @@ function sendBookingEmailConfirmation($emailNguoiNhan, $booking_info) {
         $name = htmlspecialchars($booking_info['customer_name'] ?? 'Quý khách', ENT_QUOTES);
 
         $mail->Body = "
-            <div style='max-width: 600px; margin: auto; border: 2px solid #A88746; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
-                <div style='background-color: #F9F9F9; padding: 20px; text-align: center;'>
-                    <h1 style='color: #A88746; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
-                    <p style='color: #fff; margin: 5px 0 0; font-size: 14px;'>Fine Dining Experience</p>
+        <div style='background-color: #0b0c10; padding: 40px 20px; font-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif; color: #e0e0e0;'>
+            <div style='max-width: 600px; margin: 0 auto; background-color: #1f2833; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.5);'>
+                <!-- Header -->
+                <div style='background-color: #000000; padding: 40px 20px; text-align: center; border-bottom: 2px solid #c5a880;'>
+                    <h1 style='color: #c5a880; margin: 0; font-family: \"Georgia\", serif; font-size: 32px; letter-spacing: 4px; text-transform: uppercase;'>Restaurantly</h1>
+                    <p style='color: #888; margin: 10px 0 0; font-size: 14px; letter-spacing: 2px; text-transform: uppercase;'>Fine Dining Experience</p>
                 </div>
-                <div style='padding: 30px; background-color: #FFFFFF;'>
-                    <h2 style='color: #2c2c2c; margin-top: 0;'>Kính chào $name,</h2>
-                    <p style='color: #555; line-height: 1.6;'>Cảm ơn quý khách đã tin tưởng và lựa chọn dịch vụ tại Restaurantly. Chúng tôi xin trân trọng xác nhận yêu cầu đặt bàn của quý khách đã được hệ thống ghi nhận thành công.</p>
+                
+                <!-- Body -->
+                <div style='padding: 40px 30px;'>
+                    <h2 style='color: #ffffff; margin-top: 0; font-weight: 300; font-size: 24px;'>Kính chào $name,</h2>
+                    <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>Cảm ơn quý khách đã tin tưởng và lựa chọn dịch vụ tại Restaurantly. Chúng tôi xin trân trọng xác nhận yêu cầu đặt bàn của quý khách đã được hệ thống ghi nhận thành công.</p>
                     
-                    <div style='background-color: #f9f6f0; padding: 20px; border-left: 4px solid #A88746; margin: 25px 0;'>
-                        <h3 style='margin-top: 0; color: #A88746;'>Thông Tin Đặt Bàn (#{$booking_info['id']})</h3>
+                    <!-- Details Card -->
+                    <div style='margin: 35px 0; background: #242f3b; border-radius: 8px; padding: 30px; border-left: 4px solid #c5a880; box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);'>
+                        <h3 style='margin: 0 0 20px 0; color: #c5a880; font-family: \"Georgia\", serif; font-size: 20px; letter-spacing: 1px;'>Thông Tin Đặt Bàn (#{$booking_info['id']})</h3>
+                        
                         <table style='width: 100%; border-collapse: collapse; font-size: 15px;'>
-                            <tr><td style='padding: 8px 0; color: #666; width: 40%;'>Loại dịch vụ:</td><td style='padding: 8px 0; font-weight: bold;'>$svc</td></tr>
-                            <tr><td style='padding: 8px 0; color: #666;'>Thời gian:</td><td style='padding: 8px 0; font-weight: bold; color: #d32f2f;'>$timeStr</td></tr>
-                            <tr><td style='padding: 8px 0; color: #666;'>Số khách:</td><td style='padding: 8px 0; font-weight: bold;'>{$booking_info['guests']} người</td></tr>
-                            <tr><td style='padding: 8px 0; color: #666;'>Tổng dự kiến:</td><td style='padding: 8px 0; font-weight: bold;'>$money VNĐ</td></tr>
-                            <tr><td style='padding: 8px 0; color: #666;'>Tiền cọc (30%):</td><td style='padding: 8px 0; font-weight: bold; color: #f57c00;'>$deposit VNĐ</td></tr>
+                            <tr>
+                                <td style='padding: 12px 0; color: #888; width: 40%; border-bottom: 1px solid rgba(255,255,255,0.05);'>Loại dịch vụ:</td>
+                                <td style='padding: 12px 0; color: #ffffff; font-weight: 500; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);'>$svc</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 12px 0; color: #888; border-bottom: 1px solid rgba(255,255,255,0.05);'>Thời gian:</td>
+                                <td style='padding: 12px 0; color: #c5a880; font-weight: bold; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);'>$timeStr</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 12px 0; color: #888; border-bottom: 1px solid rgba(255,255,255,0.05);'>Số khách:</td>
+                                <td style='padding: 12px 0; color: #ffffff; font-weight: 500; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);'>{$booking_info['guests']} người</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 12px 0; color: #888; border-bottom: 1px solid rgba(255,255,255,0.05);'>Tổng dự kiến:</td>
+                                <td style='padding: 12px 0; color: #ffffff; font-weight: 500; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);'>$money VNĐ</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 12px 0; color: #888;'>Tiền cọc (30%):</td>
+                                <td style='padding: 12px 0; color: #4caf50; font-weight: bold; text-align: right;'>$deposit VNĐ</td>
+                            </tr>
                         </table>
                     </div>
                     
-                    <p style='color: #555; line-height: 1.6;'>Vui lòng có mặt đúng giờ để chúng tôi có thể phục vụ quý khách một cách chu đáo nhất. Mọi thay đổi về lịch trình xin vui lòng liên hệ Hotline: <strong>0123 456 789</strong>.</p>
+                    <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>Vui lòng có mặt đúng giờ để chúng tôi có thể phục vụ quý khách một cách chu đáo nhất. Mọi thay đổi về lịch trình xin vui lòng liên hệ Hotline: <strong style='color: #c5a880;'>0123 456 789</strong>.</p>
                     
-                    <p style='color: #555; line-height: 1.6; margin-bottom: 0;'>Hân hạnh được đón tiếp quý khách!</p>
+                    <p style='color: #ffffff; line-height: 1.8; font-size: 16px; margin-top: 30px; font-style: italic; font-family: \"Georgia\", serif;'>Hân hạnh được đón tiếp quý khách!</p>
                 </div>
-            </div>";
+                
+                <!-- Footer -->
+                <div style='background-color: #11151c; padding: 25px 20px; text-align: center; border-top: 1px solid #2a3644;'>
+                    <p style='color: #666; margin: 0; font-size: 12px;'>&copy; " . date('Y') . " Restaurantly. All rights reserved.</p>
+                </div>
+            </div>
+        </div>";
 
         $mail->send();
         return true;
@@ -398,15 +425,15 @@ function sendBookingCancelEmail($emailNguoiNhan, $booking_info) {
 
     try {
         $mail->isSMTP();
-        $mail->Host       = $_ENV['MAIL_HOST'] ?? 'smtp.gmail.com';
+        $mail->Host       = $_ENV['MAIL_HOST'] ?? $_SERVER['MAIL_HOST'] ?? 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = $_ENV['MAIL_USERNAME'] ?? ''; 
-        $mail->Password   = $_ENV['MAIL_PASSWORD'] ?? ''; 
-        $mail->SMTPSecure = $_ENV['MAIL_ENCRYPTION'] ?? 'tls';
-        $mail->Port       = $_ENV['MAIL_PORT'] ?? 587;
+        $mail->Username   = $_ENV['MAIL_USERNAME'] ?? $_SERVER['MAIL_USERNAME'] ?? ''; 
+        $mail->Password   = $_ENV['MAIL_PASSWORD'] ?? $_SERVER['MAIL_PASSWORD'] ?? ''; 
+        $mail->SMTPSecure = $_ENV['MAIL_ENCRYPTION'] ?? $_SERVER['MAIL_ENCRYPTION'] ?? 'tls';
+        $mail->Port       = $_ENV['MAIL_PORT'] ?? $_SERVER['MAIL_PORT'] ?? 587;
         $mail->CharSet    = 'UTF-8';
 
-        $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'] ?? 'noreply@restaurantly.com', 'Restaurantly Admin');
+        $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'] ?? $_SERVER['MAIL_FROM_ADDRESS'] ?? 'noreply@restaurantly.com', 'Restaurantly Admin');
         $mail->addAddress($emailNguoiNhan);
 
         $mail->isHTML(true);
@@ -466,15 +493,15 @@ function sendVipRegistrationEmail($emailNguoiNhan, $name, $plan_name, $price, $e
 
     try {
         $mail->isSMTP();
-        $mail->Host       = $_ENV['MAIL_HOST'] ?? 'smtp.gmail.com';
+        $mail->Host       = $_ENV['MAIL_HOST'] ?? $_SERVER['MAIL_HOST'] ?? 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = $_ENV['MAIL_USERNAME'] ?? ''; 
-        $mail->Password   = $_ENV['MAIL_PASSWORD'] ?? ''; 
-        $mail->SMTPSecure = $_ENV['MAIL_ENCRYPTION'] ?? 'tls';
-        $mail->Port       = $_ENV['MAIL_PORT'] ?? 587;
+        $mail->Username   = $_ENV['MAIL_USERNAME'] ?? $_SERVER['MAIL_USERNAME'] ?? ''; 
+        $mail->Password   = $_ENV['MAIL_PASSWORD'] ?? $_SERVER['MAIL_PASSWORD'] ?? ''; 
+        $mail->SMTPSecure = $_ENV['MAIL_ENCRYPTION'] ?? $_SERVER['MAIL_ENCRYPTION'] ?? 'tls';
+        $mail->Port       = $_ENV['MAIL_PORT'] ?? $_SERVER['MAIL_PORT'] ?? 587;
         $mail->CharSet    = 'UTF-8';
 
-        $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'] ?? 'noreply@restaurantly.com', 'Restaurantly Admin');
+        $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'] ?? $_SERVER['MAIL_FROM_ADDRESS'] ?? 'noreply@restaurantly.com', 'Restaurantly Admin');
         $mail->addAddress($emailNguoiNhan);
 
         $mail->isHTML(true);
@@ -570,6 +597,85 @@ function sendVipCancellationEmail($emailNguoiNhan, $name) {
                     <p style='color: #555; line-height: 1.6; margin-bottom: 0;'>Trân trọng cảm ơn quý khách!</p>
                 </div>
             </div>";
+
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+
+/**
+ * Gửi Email Cảm ơn sau khi Hoàn thành (Completed)
+ */
+function sendBookingCompleteEmail($emailNguoiNhan, $booking_info) {
+    if (empty($emailNguoiNhan)) return false;
+    
+    if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+        require_once __DIR__ . '/../vendor/autoload.php';
+    }
+
+    $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host       = $_ENV['MAIL_HOST'] ?? $_SERVER['MAIL_HOST'] ?? 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $_ENV['MAIL_USERNAME'] ?? $_SERVER['MAIL_USERNAME'] ?? ''; 
+        $mail->Password   = $_ENV['MAIL_PASSWORD'] ?? $_SERVER['MAIL_PASSWORD'] ?? ''; 
+        $mail->SMTPSecure = $_ENV['MAIL_ENCRYPTION'] ?? $_SERVER['MAIL_ENCRYPTION'] ?? 'tls';
+        $mail->Port       = $_ENV['MAIL_PORT'] ?? $_SERVER['MAIL_PORT'] ?? 587;
+        $mail->CharSet    = 'UTF-8';
+
+        $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'] ?? $_SERVER['MAIL_FROM_ADDRESS'] ?? 'noreply@restaurantly.com', 'Restaurantly Admin');
+        $mail->addAddress($emailNguoiNhan);
+
+        $mail->isHTML(true);
+        $mail->Subject = 'Cảm Ơn Quý Khách Đã Trải Nghiệm - Restaurantly';
+        
+        $svc = htmlspecialchars($booking_info['service_type'] ?? 'Dịch vụ', ENT_QUOTES);
+        if ($svc === 'table') $svc = 'Đặt bàn tiêu chuẩn';
+        if ($svc === 'birthday') $svc = 'Tiệc kỷ niệm / Phòng VIP';
+        if ($svc === 'chef') $svc = 'Đầu bếp tại gia';
+        if ($svc === 'bespoke') $svc = 'Thiết kế riêng';
+
+        $timeStr = date('d/m/Y', strtotime($booking_info['booking_date']));
+        $name = htmlspecialchars($booking_info['customer_name'] ?? 'Quý khách', ENT_QUOTES);
+
+        $mail->Body = "
+        <div style='background-color: #0b0c10; padding: 40px 20px; font-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif; color: #e0e0e0;'>
+            <div style='max-width: 600px; margin: 0 auto; background-color: #1f2833; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.5);'>
+                <!-- Header -->
+                <div style='background-color: #000000; padding: 40px 20px; text-align: center; border-bottom: 2px solid #c5a880;'>
+                    <h1 style='color: #c5a880; margin: 0; font-family: \"Georgia\", serif; font-size: 32px; letter-spacing: 4px; text-transform: uppercase;'>Restaurantly</h1>
+                    <p style='color: #888; margin: 10px 0 0; font-size: 14px; letter-spacing: 2px; text-transform: uppercase;'>Fine Dining Experience</p>
+                </div>
+                
+                <!-- Body -->
+                <div style='padding: 40px 30px;'>
+                    <h2 style='color: #ffffff; margin-top: 0; font-weight: 300; font-size: 24px;'>Kính chào $name,</h2>
+                    <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>Đại diện nhà hàng Restaurantly, chúng tôi xin gửi lời cảm ơn chân thành nhất vì quý khách đã tin tưởng và lựa chọn dịch vụ <strong>$svc</strong> của chúng tôi vào ngày <strong>$timeStr</strong>.</p>
+                    
+                    <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>Hy vọng quý khách đã có một trải nghiệm ẩm thực tuyệt vời và những khoảnh khắc đáng nhớ. Sự hài lòng của quý khách là niềm tự hào và động lực to lớn để Restaurantly không ngừng hoàn thiện mỗi ngày.</p>
+                    
+                    <div style='margin: 35px 0; background: #242f3b; border-radius: 8px; padding: 25px; border-left: 4px solid #c5a880; text-align: center;'>
+                        <h3 style='margin: 0 0 15px 0; color: #c5a880; font-family: \"Georgia\", serif; font-size: 18px;'>Đánh Giá Trải Nghiệm</h3>
+                        <p style='color: #b0b0b0; font-size: 14px; margin-bottom: 20px;'>Xin vui lòng dành vài giây để chia sẻ cảm nhận của quý khách, giúp chúng tôi phục vụ tốt hơn trong tương lai.</p>
+                        <a href='https://restaurantly.com/feedback' style='display: inline-block; padding: 12px 30px; background-color: #c5a880; color: #000000; text-decoration: none; font-weight: bold; border-radius: 4px; text-transform: uppercase; font-size: 13px; letter-spacing: 1px;'>Gửi Đánh Giá Ngay</a>
+                    </div>
+                    
+                    <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>Rất mong được tiếp tục vinh hạnh phục vụ quý khách trong thời gian sớm nhất!</p>
+                    
+                    <p style='color: #ffffff; line-height: 1.8; font-size: 16px; margin-top: 30px; font-style: italic; font-family: \"Georgia\", serif;'>Trân trọng,<br>Ban Quản Trị Restaurantly</p>
+                </div>
+                
+                <!-- Footer -->
+                <div style='background-color: #11151c; padding: 25px 20px; text-align: center; border-top: 1px solid #2a3644;'>
+                    <p style='color: #666; margin: 0; font-size: 12px;'>&copy; " . date('Y') . " Restaurantly. All rights reserved.</p>
+                </div>
+            </div>
+        </div>";
 
         $mail->send();
         return true;

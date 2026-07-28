@@ -45,8 +45,25 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
                 throw new Exception("Đơn hàng này đã được xác nhận và trừ kho từ trước!");
             }
 
-            // 2. Cập nhật trạng thái đơn hàng sang Confirmed
-            $db->prepare("UPDATE service_bookings SET status = 'Confirmed' WHERE id = ?")->execute([$id]);
+            // 2. Cập nhật trạng thái đơn hàng sang Confirmed và tự động gán Ekip
+            $stmt_type = $db->prepare("SELECT service_type FROM service_bookings WHERE id = ?");
+            $stmt_type->execute([$id]);
+            $sv_type = $stmt_type->fetchColumn();
+
+            if ($sv_type === 'chef' || $sv_type === 'bespoke_chef') {
+                // Tìm ekip trống
+                $stmt_ext = $db->query("SELECT id FROM restaurant_tables WHERE category = 'external' AND is_available = 1 LIMIT 1");
+                $ext_table_id = $stmt_ext->fetchColumn();
+                
+                if ($ext_table_id) {
+                    $db->prepare("UPDATE service_bookings SET status = 'Confirmed', table_id = ? WHERE id = ?")->execute([$ext_table_id, $id]);
+                    $db->prepare("UPDATE restaurant_tables SET is_available = 0 WHERE id = ?")->execute([$ext_table_id]);
+                } else {
+                    $db->prepare("UPDATE service_bookings SET status = 'Confirmed' WHERE id = ?")->execute([$id]);
+                }
+            } else {
+                $db->prepare("UPDATE service_bookings SET status = 'Confirmed' WHERE id = ?")->execute([$id]);
+            }
 
             // Lấy thông tin đơn (dùng cho thông báo)
             $stmt_bk = $db->prepare("SELECT sb.id, sb.service_type, sb.customer_name, sb.customer_phone, sb.booking_date, sb.guests, sb.total_amount, sb.deposit_amount, u.email FROM service_bookings sb LEFT JOIN users u ON sb.user_id = u.id WHERE sb.id = ?");
@@ -146,7 +163,7 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
                     $i_unit = strtolower(trim($rcp['i_unit']));
                     
                     $qty_in_stock_unit = convert_to_base_unit($qty_req, $r_unit, $i_unit);
-                    $total_needed = $qty_in_stock_unit * $order_qty;
+                    $total_needed = round($qty_in_stock_unit * $order_qty, 4);
 
                     // NẾU CÓ BẬT TỰ ĐỘNG TRỪ KHO
                     if ($auto_deduct == '1') {
@@ -385,15 +402,17 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     elseif ($action == 'complete') {
         $db->beginTransaction();
         try {
-            $stmt_chk = $db->prepare("SELECT table_id, status FROM service_bookings WHERE id = ?");
+            $stmt_chk = $db->prepare("SELECT sb.*, u.email FROM service_bookings sb LEFT JOIN users u ON sb.user_id = u.id WHERE sb.id = ?");
             $stmt_chk->execute([$id]);
-            $b = $stmt_chk->fetch();
+            $b = $stmt_chk->fetch(PDO::FETCH_ASSOC);
             if ($b && $b['status'] == 'Confirmed') {
                 $db->prepare("UPDATE service_bookings SET status = 'Completed' WHERE id = ?")->execute([$id]);
                 // Giải phóng bàn
                 if ($b['table_id']) {
                     $db->prepare("UPDATE restaurant_tables SET is_available = 1 WHERE id = ?")->execute([$b['table_id']]);
                 }
+                
+                @sendBookingCompleteEmail($b['email'] ?? '', $b);
             }
             $db->commit();
             if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
@@ -471,6 +490,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'reset_table' && isset($_GET['t
 // --- 2. DỮ LIỆU HIỂN THỊ ---
 $tables = $db->query("SELECT * FROM restaurant_tables WHERE category = 'open' ORDER BY id ASC LIMIT 16")->fetchAll(PDO::FETCH_ASSOC);
 $rooms = $db->query("SELECT * FROM restaurant_tables WHERE category = 'room' ORDER BY id ASC LIMIT 6")->fetchAll(PDO::FETCH_ASSOC);
+$externals = $db->query("SELECT * FROM restaurant_tables WHERE category = 'external' ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
 
 // Lấy lịch đặt bàn tiếp theo (trong tương lai hoặc đang diễn ra)
 $upcoming_stmt = $db->query("
@@ -847,6 +867,9 @@ include '../../public/admin_layout_header.php';
                         <?php endforeach; ?>
                         <?php foreach ($rooms as $r): ?>
                             <option value="<?= $r['id'] ?>"><?= $r['table_code'] ?> (Phòng VIP <?= $r['is_available']?'Trống':'Đã đặt' ?>)</option>
+                        <?php endforeach; ?>
+                        <?php foreach ($externals as $e): ?>
+                            <option value="<?= $e['id'] ?>"><?= $e['table_code'] ?> (Ngoại Viện <?= $e['is_available']?'Trống':'Đã bận' ?>)</option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -1521,12 +1544,7 @@ include '../../public/admin_layout_header.php';
                 $('#qe-date').val(dateStr);
                 $('#qe-guests').val(data.guests);
                 $('#qe-table').val(data.table_id || '');
-                
-                if (data.service_type === 'chef') {
-                    $('#qe-table-wrapper').hide();
-                } else {
-                    $('#qe-table-wrapper').show();
-                }
+                $('#qe-table-wrapper').show();
                 
                 const modal = new bootstrap.Modal(document.getElementById('modalQuickEdit'));
                 modal.show();

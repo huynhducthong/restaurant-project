@@ -10,9 +10,7 @@
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
 
-    # 2. Làm đẹp đường dẫn (Tùy chọn)
-    # Ví dụ: cho phép truy cập localhost/menu thay vì menu.php
-    RewriteCond %{REQUEST_FILENAME}.php -f
-    RewriteRule ^([^\.]+)$ $1.php [NC,L]
+    # Đẩy tất cả các truy cập (không trỏ trực tiếp tới file có sẵn) vào index.php để xử lý (Router)
+    RewriteRule ^(.*)$ index.php [QSA,L]
 
 </IfModule>

@@ -36,7 +36,7 @@ $gallery_images = $gallery_stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 $page_title = htmlspecialchars($chef['name']) . " - Đội bếp";
-include __DIR__ . '/views/client/layouts/header.php';
+include __DIR__ . '/../views/client/layouts/header.php';
 ?>
 
 
@@ -581,4 +581,4 @@ function closeLightbox(event) {
 }
 </script>
 
-<?php include __DIR__ . '/views/client/layouts/footer.php'; ?>
+<?php include __DIR__ . '/../views/client/layouts/footer.php'; ?>

@@ -234,8 +234,9 @@ function renderTables(tables) {
     const container = document.getElementById('tables-container');
     container.innerHTML = '';
     
-    const openTables = tables.filter(t => t.category !== 'room');
+    const openTables = tables.filter(t => t.category === 'open');
     const roomTables = tables.filter(t => t.category === 'room');
+    const externalTables = tables.filter(t => t.category === 'external');
     
     const renderGroup = (title, groupTables) => {
         if (groupTables.length === 0) return;
@@ -255,14 +256,16 @@ function renderTables(tables) {
             const statusText = isOccupied ? `${formatMoney(t.total_amount)}` : 'Trống';
             const activeClass = currentTableId == t.id ? 'active' : '';
             
-            const bookingIcon = hasBooking ? `<i class="fas fa-clock text-warning position-absolute shadow-sm" style="top: -5px; right: -5px; font-size: 16px; background: #fff; border-radius: 50%; padding: 2px;" title="Bàn này đã được khách đặt trước trong hôm nay!"></i>` : '';
+            const bookingIcon = hasBooking ? `<i class="fas fa-clock text-warning position-absolute shadow-sm" style="top: -5px; right: -5px; font-size: 16px; background: #fff; border-radius: 50%; padding: 2px;" title="Có lịch đặt trước!"></i>` : '';
+            
+            const tableIcon = t.category === 'external' ? 'fa-home' : 'fa-chair';
             
             const card = document.createElement('div');
             card.className = `table-card ${statusClass} ${activeClass} position-relative`;
             card.onclick = () => selectTable(t.id, t.table_code);
             card.innerHTML = `
                 ${bookingIcon}
-                <div class="table-name"><i class="fas fa-chair me-1 text-muted"></i> ${t.table_code}</div>
+                <div class="table-name"><i class="fas ${tableIcon} me-1 text-muted"></i> ${t.table_code}</div>
                 <div class="table-status">${statusText}</div>
             `;
             grid.appendChild(card);
@@ -273,6 +276,7 @@ function renderTables(tables) {
     
     renderGroup('Khu Phổ Thông', openTables);
     renderGroup('Phòng VIP', roomTables);
+    renderGroup('DỊCH VỤ TẠI GIA', externalTables);
 }
 
 // Select Table

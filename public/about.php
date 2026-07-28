@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/../config/database.php';
 $path_prefix = '';
 if (session_status() === PHP_SESSION_NONE) session_start();
 $database = new Database(); 
@@ -123,7 +123,7 @@ $categories = $cat_stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $recent_posts = array_slice($all_posts, 0, 5);
 
-include __DIR__ . '/views/client/layouts/header.php';
+include __DIR__ . '/../views/client/layouts/header.php';
 ?>
 
 <link href="<?= $path_prefix ?>public/assets/client/css/home.css" rel="stylesheet">
@@ -569,4 +569,4 @@ document.addEventListener('keydown', e => {
 });
 </script>
 
-<?php include __DIR__ . '/views/client/layouts/footer.php'; ?>
+<?php include __DIR__ . '/../views/client/layouts/footer.php'; ?>
