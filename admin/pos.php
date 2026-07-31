@@ -256,7 +256,7 @@ function renderTables(tables) {
             const statusText = isOccupied ? `${formatMoney(t.total_amount)}` : 'Trống';
             const activeClass = currentTableId == t.id ? 'active' : '';
             
-            const bookingIcon = hasBooking ? `<i class="fas fa-clock text-warning" title="Có lịch đặt trước!" style="font-size: 14px;"></i>` : '';
+            const bookingIcon = hasBooking ? `<i class="fas fa-clock text-danger" title="Có lịch đặt trước!" style="font-size: 14px;"></i>` : '';
             
             const tableIcon = t.category === 'external' ? 'fa-home' : 'fa-chair';
             
