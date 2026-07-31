@@ -256,7 +256,7 @@ function renderTables(tables) {
             const statusText = isOccupied ? `${formatMoney(t.total_amount)}` : 'Trống';
             const activeClass = currentTableId == t.id ? 'active' : '';
             
-            const bookingIcon = hasBooking ? `<i class="fas fa-clock text-warning position-absolute shadow-sm" style="top: -5px; right: -5px; font-size: 16px; background: #fff; border-radius: 50%; padding: 2px;" title="Có lịch đặt trước!"></i>` : '';
+            const bookingIcon = hasBooking ? `<i class="fas fa-clock text-warning" title="Có lịch đặt trước!" style="font-size: 14px;"></i>` : '';
             
             const tableIcon = t.category === 'external' ? 'fa-home' : 'fa-chair';
             
@@ -264,9 +264,11 @@ function renderTables(tables) {
             card.className = `table-card ${statusClass} ${activeClass} position-relative`;
             card.onclick = () => selectTable(t.id, t.table_code);
             card.innerHTML = `
-                ${bookingIcon}
                 <div class="table-name"><i class="fas ${tableIcon} me-1 text-muted"></i> ${t.table_code}</div>
-                <div class="table-status">${statusText}</div>
+                <div class="table-status d-flex justify-content-between align-items-center mt-1">
+                    <span>${statusText}</span>
+                    ${bookingIcon}
+                </div>
             `;
             grid.appendChild(card);
         });
