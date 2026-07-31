@@ -15,7 +15,11 @@ try {
         FROM service_bookings sb
         LEFT JOIN restaurant_tables t ON sb.table_id = t.id
         WHERE sb.status = 'Confirmed' 
-          AND sb.booking_date <= DATE_SUB(NOW(), INTERVAL 45 MINUTE)
+          AND (
+              (sb.service_type NOT IN ('chef', 'bespoke_chef') AND sb.booking_date <= DATE_SUB(NOW(), INTERVAL 45 MINUTE))
+              OR 
+              (sb.service_type IN ('chef', 'bespoke_chef') AND sb.booking_date <= DATE_SUB(NOW(), INTERVAL 240 MINUTE))
+          )
     ");
     $noshow_bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
