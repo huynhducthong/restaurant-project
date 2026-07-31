@@ -256,7 +256,8 @@ function renderTables(tables) {
             const statusText = isOccupied ? `${formatMoney(t.total_amount)}` : 'Trống';
             const activeClass = currentTableId == t.id ? 'active' : '';
             
-            const bookingIcon = hasBooking ? `<i class="fas fa-clock text-danger" title="Có lịch đặt trước!" style="font-size: 14px;"></i>` : '';
+            const bookingTime = t.upcoming_booking_time ? t.upcoming_booking_time : '';
+            const bookingIcon = hasBooking ? `<span class="badge bg-danger text-white rounded-pill ms-1" style="font-size: 10px;" title="Khách đặt lúc ${bookingTime}"><i class="fas fa-clock me-1"></i>${bookingTime}</span>` : '';
             
             const tableIcon = t.category === 'external' ? 'fa-home' : 'fa-chair';
             

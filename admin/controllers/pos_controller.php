@@ -47,7 +47,13 @@ try {
                         AND sb.status IN ('Pending', 'Confirmed') 
                         AND DATE(sb.booking_date) = CURDATE()
                         ORDER BY sb.booking_date ASC LIMIT 1
-                       ) as upcoming_booking_id
+                       ) as upcoming_booking_id,
+                       (SELECT TIME_FORMAT(sb.booking_date, '%H:%i') FROM service_bookings sb 
+                        WHERE sb.table_id = t.id 
+                        AND sb.status IN ('Pending', 'Confirmed') 
+                        AND DATE(sb.booking_date) = CURDATE()
+                        ORDER BY sb.booking_date ASC LIMIT 1
+                       ) as upcoming_booking_time
                 FROM restaurant_tables t
                 LEFT JOIN pos_orders o ON t.id = o.table_id AND o.status = 'open'
                 ORDER BY t.category ASC, CAST(t.table_number AS UNSIGNED) ASC
