@@ -668,11 +668,7 @@ include '../../public/admin_layout_header.php';
                                     <?php endif; ?>
 
                                     <?php if ($s['status'] == 'Pending'): ?>
-                                        <?php if ($s['total_amount'] == 0 || !empty($s['chef_requirements'])): ?>
-                                            <button class="btn btn-sm btn-outline-primary btn-quote-price" data-id="<?= $s['id'] ?>" data-name="<?= htmlspecialchars($s['customer_name']) ?>" title="Báo giá cho khách">
-                                                <i class="fas fa-file-invoice-dollar"></i> Báo giá
-                                            </button>
-                                        <?php endif; ?>
+
                                         <button class="btn btn-sm btn-outline-gold btn-confirm-ajax" data-id="<?= $s['id'] ?>"
                                             data-name="<?= htmlspecialchars($s['customer_name']) ?>">
                                             <i class="fas fa-check me-1"></i> Xác nhận
@@ -832,6 +828,9 @@ include '../../public/admin_layout_header.php';
                 </div>
             </div>
             <div class="modal-footer border-top-0 justify-content-center">
+                <button type="button" class="btn btn-outline-primary px-4 rounded-pill btn-quote-price d-none" id="btn-modal-quote" data-id="" data-name="" title="Báo giá cho khách">
+                    <i class="fas fa-file-invoice-dollar"></i> Báo giá
+                </button>
                 <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal">Đóng</button>
                 <a href="#" id="btn-export-pdf" class="btn btn-outline-danger px-4 rounded-pill"><i
                         class="fas fa-file-pdf me-2"></i>Xuất PDF</a>
@@ -1332,6 +1331,13 @@ include '../../public/admin_layout_header.php';
                         }
                     } else {
                         $('#m-inventory-section').hide();
+                    }
+
+                    // --- BÁO GIÁ BUTTON LOGIC ---
+                    if (status === 'Pending' && (parseFloat(data.total_amount) === 0 || (data.chef_requirements && data.chef_requirements.trim() !== ''))) {
+                        $('#btn-modal-quote').removeClass('d-none').data('id', id).data('name', name);
+                    } else {
+                        $('#btn-modal-quote').addClass('d-none');
                     }
 
                     // Milestone Alert Logic
