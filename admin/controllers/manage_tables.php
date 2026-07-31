@@ -136,6 +136,8 @@ include '../../public/admin_layout_header.php';
                         <td>
                             <?php if($t['category'] == 'room'): ?>
                                 <span class="badge bg-warning text-dark"><i class="fas fa-gem me-1"></i>Phòng VIP</span>
+                            <?php elseif($t['category'] == 'external'): ?>
+                                <span class="badge bg-success text-white"><i class="fas fa-motorcycle me-1"></i>Tại gia (EXT)</span>
                             <?php else: ?>
                                 <span class="badge bg-info text-dark">Khu vực chung</span>
                             <?php endif; ?>
