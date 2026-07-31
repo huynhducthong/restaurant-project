@@ -51,13 +51,21 @@ try {
     $stmt->execute([$year_booking]);
     $total_bookings = $stmt->fetchColumn() ?: 0;
     
-    // Revenue from bookings
-    $stmt = $db->prepare("SELECT SUM(total_amount) FROM service_bookings WHERE status != 'Cancelled' AND $where_sql");
+    $where_pos = str_replace('created_at', 'updated_at', $where_sql);
+    
+    // Revenue from bookings (Not settled in POS)
+    $stmt = $db->prepare("
+        SELECT SUM(total_amount) 
+        FROM service_bookings 
+        WHERE status != 'Cancelled' 
+        AND id NOT IN (SELECT booking_id FROM pos_orders WHERE booking_id IS NOT NULL AND status = 'paid')
+        AND $where_sql
+    ");
     $stmt->execute($params);
     $booking_rev = $stmt->fetchColumn() ?: 0;
     
-    // Revenue from walk-in POS
-    $stmt = $db->prepare("SELECT SUM(total_amount) FROM pos_orders WHERE status = 'paid' AND booking_id IS NULL AND $where_sql");
+    // Revenue from ALL Paid POS (Walk-ins + Checked-in Bookings)
+    $stmt = $db->prepare("SELECT SUM(total_amount) FROM pos_orders WHERE status = 'paid' AND $where_pos");
     $stmt->execute($params);
     $pos_rev = $stmt->fetchColumn() ?: 0;
     
@@ -81,11 +89,17 @@ try {
     $selected_expenses = $stmt_expense->fetchColumn() ?: 0;
     
     for ($m = 1; $m <= 12; $m++) {
-        $stmt1 = $db->prepare("SELECT SUM(total_amount) FROM service_bookings WHERE status != 'Cancelled' AND MONTH(created_at)=? AND YEAR(created_at)=?");
+        $stmt1 = $db->prepare("
+            SELECT SUM(total_amount) 
+            FROM service_bookings 
+            WHERE status != 'Cancelled' 
+            AND id NOT IN (SELECT booking_id FROM pos_orders WHERE booking_id IS NOT NULL AND status = 'paid')
+            AND MONTH(created_at)=? AND YEAR(created_at)=?
+        ");
         $stmt1->execute([$m, $year_revenue]);
         $b_rev = (int) $stmt1->fetchColumn();
         
-        $stmt2 = $db->prepare("SELECT SUM(total_amount) FROM pos_orders WHERE status = 'paid' AND booking_id IS NULL AND MONTH(created_at)=? AND YEAR(created_at)=?");
+        $stmt2 = $db->prepare("SELECT SUM(total_amount) FROM pos_orders WHERE status = 'paid' AND MONTH(updated_at)=? AND YEAR(updated_at)=?");
         $stmt2->execute([$m, $year_revenue]);
         $p_rev = (int) $stmt2->fetchColumn();
         

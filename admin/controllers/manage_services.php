@@ -301,10 +301,13 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     elseif ($action == 'delete') {
         $db->beginTransaction();
         try {
-            $stmt_chk = $db->prepare("SELECT sb.id, sb.table_id, sb.status, sb.service_type, sb.customer_name, sb.booking_date, sb.guests, u.email FROM service_bookings sb LEFT JOIN users u ON sb.user_id = u.id WHERE sb.id = ?");
+            $stmt_chk = $db->prepare("SELECT sb.id, sb.table_id, sb.status, sb.service_type, sb.customer_name, sb.booking_date, sb.guests, sb.total_amount, sb.deposit_amount, u.email FROM service_bookings sb LEFT JOIN users u ON sb.user_id = u.id WHERE sb.id = ?");
             $stmt_chk->execute([$id]);
             $b = $stmt_chk->fetch(PDO::FETCH_ASSOC);
             if ($b) {
+                $stmt_items = $db->prepare("SELECT f.name, bd.quantity FROM booking_details bd JOIN foods f ON bd.menu_id = f.id WHERE bd.booking_id = ?");
+                $stmt_items->execute([$id]);
+                $b['foods'] = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
                     // Nếu đơn đã Confirmed → hoàn kho đúng chính xác vị trí đã trừ
                     if ($b['status'] === 'Confirmed') {
                         $stmt_deduct = $db->prepare("SELECT ingredient_id, warehouse_id, quantity FROM booking_inventory_deductions WHERE booking_id = ?");

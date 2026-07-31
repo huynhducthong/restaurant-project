@@ -957,7 +957,7 @@ try {
 
                 // Global Chat Alert Polling
                 setInterval(() => {
-                    fetch('/admin/api/chat_admin_api.php?action=check_alerts')
+                    fetch('<?= BASE_URL ?>/admin/api/chat_admin_api.php?action=check_alerts')
                     .then(res => res.json())
                     .then(data => {
                         const badges = document.querySelectorAll('.chat-waiting-badge');

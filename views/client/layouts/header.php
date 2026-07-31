@@ -321,6 +321,7 @@ if (!empty($logo_path)) {
             font-size: 22px; /* Tăng kích thước chữ */
             font-weight: 600;
             letter-spacing: 1px; /* Thêm khoảng cách giữa các chữ cái cho dễ nhìn */
+            white-space: nowrap;
 
             text-transform: uppercase;
 
@@ -560,6 +561,13 @@ if (!empty($logo_path)) {
         }
         .mobile-only-item { display: none !important; }
         .header-container { padding-left: 8vw; padding-right: 8vw; }
+        
+        @media (max-width: 1300px) {
+            .navbar ul { gap: 20px; }
+            .navbar a { font-size: 18px; letter-spacing: 0.5px; }
+            .header-container { padding-left: 2vw; padding-right: 2vw; }
+        }
+        
         @media (max-width: 991px) {
             #header { top: 0 !important; }
             .navbar { display: none; }

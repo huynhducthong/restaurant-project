@@ -186,7 +186,7 @@ $query = "
     FROM service_bookings sb
     LEFT JOIN users u ON sb.user_id = u.id
     LEFT JOIN combos c ON sb.combo_id = c.id
-    WHERE sb.status = 'Confirmed' AND DATE(sb.booking_date) = CURDATE()
+    WHERE sb.status = 'Confirmed' AND DATE(sb.booking_date) = CURDATE() AND sb.service_type != 'chef'
     ORDER BY sb.booking_date ASC
 ";
 $stmt = $db->query($query);
@@ -238,7 +238,7 @@ $pos_query = "
     JOIN pos_order_items oi ON o.id = oi.pos_order_id
     LEFT JOIN foods f ON oi.item_id = f.id AND oi.item_type = 'food'
     LEFT JOIN combos c ON oi.item_id = c.id AND oi.item_type = 'combo'
-    WHERE oi.status IN ('pending', 'preparing', 'cooking', 'ready') AND o.status != 'completed'
+    WHERE oi.status IN ('pending', 'preparing', 'cooking', 'ready') AND o.status != 'completed' AND t.category != 'external'
     ORDER BY o.created_at ASC
 ";
 $pos_items = $db->query($pos_query)->fetchAll(PDO::FETCH_ASSOC);
@@ -272,33 +272,54 @@ usort($all_orders, function($a, $b) {
     return strtotime($a['booking_date']) - strtotime($b['booking_date']);
 });
 
-// ── KANBAN CATEGORIZATION ──
+// ── KANBAN CATEGORIZATION (SPLIT TICKET LOGIC) ──
 $kanban_todo = [];
 $kanban_inprogress = [];
 $kanban_ready = [];
 
 foreach ($all_orders as $order) {
-    $pending_cnt = 0;
-    $progress_cnt = 0;
-    $ready_cnt = 0;
-    $total_cnt = 0;
+    if (empty($order['foods'])) continue;
+
+    $foods_todo = [];
+    $foods_inprogress = [];
+    $foods_ready = [];
     
-    if (!empty($order['foods'])) {
-        foreach ($order['foods'] as $food) {
-            if (!isset($food['status'])) continue;
-            $total_cnt++;
-            if ($food['status'] === 'pending') $pending_cnt++;
-            if ($food['status'] === 'preparing' || $food['status'] === 'cooking') $progress_cnt++;
-            if ($food['status'] === 'ready' || $food['status'] === 'served') $ready_cnt++;
+    $total_cnt = count($order['foods']);
+    $ready_cnt = 0;
+
+    foreach ($order['foods'] as $food) {
+        if (!isset($food['status'])) continue;
+        
+        if ($food['status'] === 'pending') {
+            $foods_todo[] = $food;
+        } elseif ($food['status'] === 'preparing' || $food['status'] === 'cooking') {
+            $foods_inprogress[] = $food;
+        } elseif ($food['status'] === 'ready' || $food['status'] === 'served') {
+            $foods_ready[] = $food;
+            $ready_cnt++;
         }
     }
     
-    if ($progress_cnt > 0) {
-        $kanban_inprogress[] = $order;
-    } elseif ($total_cnt > 0 && $ready_cnt === $total_cnt) {
-        $kanban_ready[] = $order;
-    } else {
-        $kanban_todo[] = $order;
+    // Pass original counts to determine if the full order is completed
+    $order['original_total'] = $total_cnt;
+    $order['original_ready'] = $ready_cnt;
+    
+    if (!empty($foods_todo)) {
+        $order_todo = $order;
+        $order_todo['foods'] = $foods_todo;
+        $kanban_todo[] = $order_todo;
+    }
+    
+    if (!empty($foods_inprogress)) {
+        $order_inprogress = $order;
+        $order_inprogress['foods'] = $foods_inprogress;
+        $kanban_inprogress[] = $order_inprogress;
+    }
+    
+    if (!empty($foods_ready)) {
+        $order_ready = $order;
+        $order_ready['foods'] = $foods_ready;
+        $kanban_ready[] = $order_ready;
     }
 }
 
@@ -877,8 +898,23 @@ body::before {
   display: flex; justify-content: space-between; align-items: flex-start;
   font-size: 13px; font-weight: 600; color: var(--txt);
   padding-bottom: 6px; border-bottom: 1px dashed var(--border);
+  transition: all 0.2s ease;
 }
-.food-item:last-child { border-bottom: none; padding-bottom: 0; }
+.food-item.status-pending {
+  background-color: rgba(231, 76, 60, 0.06);
+  border: 1px solid rgba(231, 76, 60, 0.4);
+  padding: 8px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+.food-item.status-preparing {
+  background-color: rgba(243, 156, 18, 0.08);
+  border: 1px solid rgba(243, 156, 18, 0.4);
+  padding: 8px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+.food-item:last-child { border-bottom: none; }
 .food-name { flex: 1; }
 .food-qty { font-family: var(--mono); font-weight: 700; color: var(--forest); margin-left: 10px; font-size: 14px; }
 .food-note { display: block; font-size: 11px; font-style: italic; color: #c0392b; background: rgba(192,57,43,0.08); padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; font-weight: 700; letter-spacing: 0.02em; }
@@ -1019,11 +1055,25 @@ body::before {
 .ticket:nth-child(8)  { animation-delay: .32s; }
 .ticket:nth-child(n+9){ animation-delay: .36s; }
 
-@media (max-width: 640px) {
-  .kds-topbar { padding: 0 16px; gap: 12px; }
+@media (max-width: 1024px) {
+  .kanban-board {
+    flex-direction: column !important;
+    height: auto !important;
+    overflow-y: visible !important;
+    padding: 0 16px !important;
+  }
+  .kanban-col {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin-bottom: 24px !important;
+  }
+  .kds-topbar { padding: 0 16px; gap: 12px; flex-wrap: wrap; height: auto; padding-top: 10px; padding-bottom: 10px; }
   .topbar-stats { display: none; }
-  .kds-main { padding: 16px; }
-  .ticket-grid { grid-template-columns: 1fr; gap: 14px; }
+  .kds-main { padding: 16px 0; }
+}
+@media (max-width: 640px) {
+  .kds-topbar { flex-direction: column; align-items: flex-start; }
+  .topbar-right { width: 100%; justify-content: space-between; }
 }
 
 /* Upcoming Orders Widget */
@@ -1185,7 +1235,7 @@ $normalOrders = $totalOrders - $urgentOrders;
               </div>
               <div class="food-list">
                 <?php foreach ($order['foods'] as $f): ?>
-                  <div class="food-item" style="align-items: center;">
+                  <div class="food-item <?= isset($f['status']) ? 'status-'.$f['status'] : '' ?>" style="align-items: center;">
                     <div class="food-name">
                       <span style="font-weight: 700;"><?= htmlspecialchars($f['food_name']) ?></span>
                       <?php if ($f['status'] === 'pending'): ?>
@@ -1265,7 +1315,7 @@ $normalOrders = $totalOrders - $urgentOrders;
                     $itemType = (isset($order['is_pos']) && $order['is_pos']) ? 'pos' : 'booking';
                     foreach ($order['foods'] as $f): 
                     ?>
-                  <div class="food-item" style="display:flex; flex-direction:column; gap:8px;">
+                  <div class="food-item <?= isset($f['status']) ? 'status-'.$f['status'] : '' ?>" style="display:flex; flex-direction:column; gap:8px;">
                     <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                       <div class="food-name">
                         <span style="font-weight: 700;"><?= htmlspecialchars($f['food_name']) ?></span>
@@ -1362,17 +1412,9 @@ $normalOrders = $totalOrders - $urgentOrders;
             </div>
 
             <?php
-            $all_ready = true;
-            if (!empty($order['foods'])) {
-                foreach ($order['foods'] as $f) {
-                    if (!isset($f['status']) || ($f['status'] !== 'ready' && $f['status'] !== 'served')) {
-                        $all_ready = false;
-                        break;
-                    }
-                }
-            }
+            $all_ready = (isset($order['original_total']) && isset($order['original_ready']) && $order['original_total'] > 0 && $order['original_total'] === $order['original_ready']);
             // Nếu đơn không có món nào (lỗi) hoặc chưa xong hết món, thì không hiển thị nút Xong
-            if ($all_ready && !empty($order['foods'])):
+            if ($all_ready):
             ?>
             <!-- Footer -->
             <div class="ticket-foot">
@@ -1391,7 +1433,7 @@ $normalOrders = $totalOrders - $urgentOrders;
     ?>
 
     <!-- Cột 1: MỚI NHẬN -->
-    <div class="kanban-col" style="flex: 1; min-width: 360px; display: flex; flex-direction: column; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 20px;">
+    <div class="kanban-col" style="flex: 1; min-width: 360px; display: flex; flex-direction: column; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 20px; max-height: 100%;">
       <div style="padding: 18px 24px; font-weight: 700; color: var(--forest); border-bottom: 2px solid var(--border-md); background: var(--surface); border-radius: var(--r) var(--r) 0 0; display: flex; justify-content: space-between; align-items: center;">
         <div><i class="fas fa-inbox me-2"></i> MỚI NHẬN</div>
         <span style="background: var(--surface2); padding: 4px 10px; border-radius: 20px; font-size: 12px; color: var(--txt); border: 1px solid var(--border);"><?= count($kanban_todo) ?></span>
@@ -1405,7 +1447,7 @@ $normalOrders = $totalOrders - $urgentOrders;
     </div>
 
     <!-- Cột 2: ĐANG CHẾ BIẾN -->
-    <div class="kanban-col" style="flex: 1; min-width: 360px; display: flex; flex-direction: column; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 20px;">
+    <div class="kanban-col" style="flex: 1; min-width: 360px; display: flex; flex-direction: column; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 20px; max-height: 100%;">
       <div style="padding: 18px 24px; font-weight: 700; color: #d35400; border-bottom: 2px solid var(--border-md); background: var(--surface); border-radius: var(--r) var(--r) 0 0; display: flex; justify-content: space-between; align-items: center;">
         <div><i class="fas fa-fire me-2"></i> ĐANG CHẾ BIẾN</div>
         <span style="background: var(--surface2); padding: 4px 10px; border-radius: 20px; font-size: 12px; color: var(--txt); border: 1px solid var(--border);"><?= count($kanban_inprogress) ?></span>
@@ -1419,7 +1461,7 @@ $normalOrders = $totalOrders - $urgentOrders;
     </div>
 
     <!-- Cột 3: SẴN SÀNG -->
-    <div class="kanban-col" style="flex: 1; min-width: 360px; display: flex; flex-direction: column; background: var(--bg); border: 1px solid var(--green-border); border-radius: var(--r); margin-bottom: 20px; box-shadow: 0 4px 20px rgba(26,122,74,0.05);">
+    <div class="kanban-col" style="flex: 1; min-width: 360px; display: flex; flex-direction: column; background: var(--bg); border: 1px solid var(--green-border); border-radius: var(--r); margin-bottom: 20px; box-shadow: 0 4px 20px rgba(26,122,74,0.05); max-height: 100%;">
       <div style="padding: 18px 24px; font-weight: 700; color: var(--green); border-bottom: 2px solid var(--green-border); background: var(--green-bg); border-radius: var(--r) var(--r) 0 0; display: flex; justify-content: space-between; align-items: center;">
         <div><i class="fas fa-bell me-2"></i> SẴN SÀNG</div>
         <span style="background: #fff; padding: 4px 10px; border-radius: 20px; font-size: 12px; color: var(--green); border: 1px solid var(--green-border);"><?= count($kanban_ready) ?></span>

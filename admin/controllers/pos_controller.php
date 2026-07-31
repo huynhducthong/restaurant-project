@@ -308,6 +308,15 @@ try {
 
             if ($order['booking_id']) {
                 $db->prepare("UPDATE service_bookings SET status = 'Completed' WHERE id = ?")->execute([$order['booking_id']]);
+                
+                // Gửi email thông báo hoàn thành đơn cho khách
+                require_once __DIR__ . '/../../config/notification_helper.php';
+                $stmt_chk = $db->prepare("SELECT sb.*, u.email FROM service_bookings sb LEFT JOIN users u ON sb.user_id = u.id WHERE sb.id = ?");
+                $stmt_chk->execute([$order['booking_id']]);
+                $b = $stmt_chk->fetch(PDO::FETCH_ASSOC);
+                if ($b && !empty($b['email'])) {
+                    @sendBookingCompleteEmail($b['email'], $b);
+                }
             }
 
             if (!empty($order['user_id'])) {

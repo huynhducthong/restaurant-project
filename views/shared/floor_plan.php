@@ -329,6 +329,29 @@ $all_tables = array_merge($t_open, $t_room);
 .fp-legend { margin-top: 20px; font-size: 11px; text-transform: uppercase; font-weight: bold; color: #113f36; background: #fff; padding: 12px 20px; border: 2px solid #113f36; border-radius: 4px; display: flex; gap: 20px; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 .fp-legend-item { display: flex; align-items: center; }
 .fp-legend-box { width: 14px; height: 14px; margin-right: 8px; border-radius: 50%; }
+
+/* Mobile Table List Styles */
+.mobile-table-list-view { display: none; padding: 15px; background: #f8fafc; font-family: 'Source Sans 3', sans-serif; }
+.mobile-table-group-title { font-size: 1.1rem; font-weight: 700; color: #113f36; margin: 20px 0 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; text-transform: uppercase; }
+.mobile-table-group-title:first-child { margin-top: 0; }
+.mobile-table-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.m-table-card { background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; position: relative; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+.m-table-card.available { border-color: #e2e8f0; }
+.m-table-card.booked { border-color: #cbd5e1; opacity: 0.6; pointer-events: none; }
+.m-table-card.booked .m-table-status { color: #64748b; }
+.m-table-card.selected { border-color: #113f36; background: #f0fdfa; box-shadow: 0 4px 12px rgba(17,63,54,0.15); }
+.m-table-card.selected .m-table-code { color: #113f36; }
+.m-table-vip-icon { position: absolute; top: -10px; right: -10px; background: #fff; border-radius: 50%; padding: 5px; color: #A88746; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.m-table-code { font-size: 1.5rem; font-weight: 800; color: #334155; margin-bottom: 5px; }
+.m-table-cap { font-size: 0.85rem; color: #64748b; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+.m-table-status { font-size: 0.8rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; }
+.m-table-card.available .m-table-status { background: #113f36; color: #fff; }
+.m-table-card.booked .m-table-status { background: #e2e8f0; color: #64748b; }
+
+@media (max-width: 991px) {
+    .fp-wrapper { display: none !important; }
+    .mobile-table-list-view { display: block; }
+}
 </style>
 
 <div class="fp-wrapper" style="overflow: hidden; touch-action: none; padding: 20px; background: #e0e0e0; width: 100%; position: relative;">
@@ -534,6 +557,40 @@ $all_tables = array_merge($t_open, $t_room);
         <div class="fp-legend-item"><i class="fas fa-gem" style="color: #A88746; margin-right: 5px;"></i> BÀN CAO CẤP / VIP</div>
     </div>
 </div>
+<!-- Mobile Table List View -->
+<div class="mobile-table-list-view">
+    <?php
+    $groups = [
+        'Khu Phổ Thông' => $t_open,
+        'Phòng VIP' => $t_room
+    ];
+    foreach ($groups as $groupName => $tables): 
+        if (empty($tables)) continue;
+    ?>
+    <div class="mobile-table-group-title"><?= htmlspecialchars($groupName) ?></div>
+    <div class="mobile-table-grid">
+        <?php foreach ($tables as $t): 
+            $st = $t['is_available'] ? 'available' : 'booked';
+            $tCode = $t['table_code'];
+            $cap = (int)($t['capacity'] ?? 2);
+            $cat = $t['category'] ?? 'open';
+            $isVip = (in_array($tCode, ['W1', 'W2', 'W3', 'W4']) || $cat === 'room');
+        ?>
+        <div class="m-table-card <?= $st ?> fp-table-mobile" 
+             data-id="<?= $t['id'] ?>" data-price="<?= $t['price'] ?>" data-code="<?= htmlspecialchars($tCode) ?>" data-cat="<?= $cat ?>" data-room="<?= htmlspecialchars($t['room_type'] ?? '') ?>">
+            
+            <?php if ($isVip): ?>
+                <div class="m-table-vip-icon"><i class="fas fa-gem"></i></div>
+            <?php endif; ?>
+            
+            <div class="m-table-code"><?= htmlspecialchars(str_replace('VIP', 'V', $tCode)) ?></div>
+            <div class="m-table-cap"><i class="fas fa-user-friends"></i> <?= $cap ?> người</div>
+            <div class="m-table-status"><?= $st === 'available' ? 'Trống' : 'Đã đặt' ?></div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+    <?php endforeach; ?>
+</div>
 
 <!-- Thư viện Panzoom cho tính năng Pinch-to-zoom / Drag-to-pan -->
 <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom/dist/panzoom.min.js"></script>
@@ -546,7 +603,7 @@ function initPanzoom() {
     const elem = document.getElementById('floor-plan-canvas');
     if (elem && typeof Panzoom !== 'undefined') {
         const isMobile = window.innerWidth < 992;
-        const initialScale = isMobile ? (window.innerWidth / 1250) : 1; // Fit screen width, assuming 1250 is comfortable bounding width
+        const initialScale = isMobile ? (window.innerWidth / 1250) : 0.8; // Fit screen width on mobile, 80% on desktop
         
         const panzoom = Panzoom(elem, {
             maxScale: 2,
@@ -556,8 +613,11 @@ function initPanzoom() {
             cursor: 'grab'
         });
         
-        // Enable zooming with mouse wheel
-        elem.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
+        // Enable zooming with mouse wheel (reverted to original behavior per user request)
+        elem.parentElement.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            panzoom.zoomWithWheel(e);
+        }, { passive: false });
         
         // Tự động thu nhỏ khi mở Modal trên điện thoại
         document.addEventListener('shown.bs.modal', function (e) {

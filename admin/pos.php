@@ -121,7 +121,83 @@ if (!isset($_SESSION['user_id'])) {
         /* Loader */
         .loader-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center; z-index: 9999; display: none; }
         .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Mobile Responsive */
+        @media (max-width: 991px) {
+            .pos-container { 
+                grid-template-columns: 1fr; 
+                height: calc(100vh - 60px); /* Leave room for bottom nav */
+                overflow: hidden; 
+            }
+            .pane { 
+                display: none; /* Hide all panes by default on mobile */
+                height: 100%;
+            }
+            .pane.active { 
+                display: flex; /* Only show active pane */
+            }
+            .pane-header {
+                padding: 10px 15px;
+            }
+            .tables-grid {
+                grid-template-columns: 1fr;
+            }
+            .menu-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+        
+        /* Mobile Bottom Nav */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: #fff;
+            border-top: 1px solid #e2e8f0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+        @media (max-width: 991px) {
+            .mobile-nav { display: flex; }
+        }
+        .mobile-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #64748b;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .mobile-nav-item.active {
+            color: #3b82f6;
+        }
+        .mobile-nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 3px;
+        }
+        .mobile-nav-item span {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .mobile-nav-badge {
+            position: absolute;
+            top: 5px;
+            right: 50%;
+            margin-right: -20px;
+            background: #ef4444;
+            color: white;
+            font-size: 0.65rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 10px;
+            display: none; /* Hide if 0 */
+        }
     </style>
 </head>
 <body>
@@ -130,7 +206,7 @@ if (!isset($_SESSION['user_id'])) {
 
 <div class="pos-container">
     <!-- Pane 1: Tables -->
-    <div class="pane">
+    <div class="pane active" id="pane-tables">
         <div class="pane-header">
             <span><i class="fas fa-border-all me-2 text-warning"></i> SƠ ĐỒ BÀN</span>
             <a href="admin_dashboard.php" class="btn btn-sm btn-outline-secondary"><i class="fas fa-sign-out-alt"></i> Thoát</a>
@@ -141,7 +217,7 @@ if (!isset($_SESSION['user_id'])) {
     </div>
 
     <!-- Pane 2: Menu -->
-    <div class="pane">
+    <div class="pane" id="pane-menu">
         <div class="pane-header">
             <span><i class="fas fa-utensils me-2 text-warning"></i> THỰC ĐƠN</span>
             <span id="selected-table-label" class="badge bg-dark text-warning px-3 py-2" style="display: none; font-size: 0.9rem; cursor: pointer;" onclick="deselectTable()" title="Bỏ chọn bàn này"></span>
@@ -160,7 +236,7 @@ if (!isset($_SESSION['user_id'])) {
     </div>
 
     <!-- Pane 3: Cart -->
-    <div class="pane">
+    <div class="pane" id="pane-cart">
         <div class="pane-header">
             <span><i class="fas fa-file-invoice-dollar me-2 text-warning"></i> HÓA ĐƠN</span>
             <span id="order-id-label" class="text-muted" style="font-size: 0.85rem;"></span>
@@ -191,12 +267,53 @@ if (!isset($_SESSION['user_id'])) {
     </div>
 </div>
 
+<!-- Mobile Bottom Navigation -->
+<div class="mobile-nav">
+    <div class="mobile-nav-item active" onclick="switchPane('pane-tables', this)">
+        <i class="fas fa-border-all"></i>
+        <span>Bàn</span>
+    </div>
+    <div class="mobile-nav-item" onclick="switchPane('pane-menu', this)">
+        <i class="fas fa-utensils"></i>
+        <span>Thực Đơn</span>
+    </div>
+    <div class="mobile-nav-item" onclick="switchPane('pane-cart', this)">
+        <i class="fas fa-file-invoice-dollar"></i>
+        <span>Hóa Đơn</span>
+        <div class="mobile-nav-badge" id="mobile-cart-badge">0</div>
+    </div>
+</div>
+
 <script>
 let currentTableId = null;
 let currentOrderId = null;
 let globalMenu = { categories: [], foods: [], combos: [] };
 let globalTables = [];
 let currentFilter = 'all';
+
+// Mobile Navigation
+function switchPane(paneId, btnElem) {
+    if (window.innerWidth > 991) return; // Only apply on mobile
+
+    // Hide all panes
+    document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+    // Show selected pane
+    document.getElementById(paneId).classList.add('active');
+
+    // Update nav buttons
+    if (btnElem) {
+        document.querySelectorAll('.mobile-nav-item').forEach(b => b.classList.remove('active'));
+        btnElem.classList.add('active');
+    } else {
+        // If btnElem not provided, find by onclick attribute
+        document.querySelectorAll('.mobile-nav-item').forEach(b => {
+            b.classList.remove('active');
+            if (b.getAttribute('onclick').includes(paneId)) {
+                b.classList.add('active');
+            }
+        });
+    }
+}
 
 // Format currency
 const formatMoney = (amount) => {
@@ -306,6 +423,11 @@ async function selectTable(tableId, tableCode) {
     // Highlight table
     document.querySelectorAll('.table-card').forEach(el => el.classList.remove('active'));
     event.currentTarget.classList.add('active');
+    
+    // On Mobile: auto switch to Menu pane when table selected
+    if (window.innerWidth <= 991) {
+        switchPane('pane-menu');
+    }
     
     await loadOrder();
 }
@@ -498,12 +620,17 @@ function renderCart(data) {
         `;
         checkoutBtn.disabled = true;
         document.getElementById('btn-send-kitchen').style.display = 'none';
+        
+        // Update Mobile Badge
+        document.getElementById('mobile-cart-badge').style.display = 'none';
+        document.getElementById('mobile-cart-badge').innerText = '0';
         return;
     }
     
     checkoutBtn.disabled = false;
     
     let draftCount = 0;
+    let totalItems = data.items.length;
     
     container.innerHTML = data.items.map(item => {
         if (item.status === 'draft') draftCount++;
@@ -543,6 +670,11 @@ function renderCart(data) {
     } else {
         btnSendKitchen.style.display = 'none';
     }
+
+    // Update Mobile Badge
+    const badge = document.getElementById('mobile-cart-badge');
+    badge.innerText = totalItems;
+    badge.style.display = 'block';
 
     let totalHtml = `
         <div class="d-flex justify-content-between mb-2">
@@ -999,16 +1131,16 @@ function addCurrentDetailItem() {
 
 <!-- Modal Chi tiết món -->
 <div class="modal fade" id="itemDetailModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header border-0 pb-0">
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body text-center pt-0">
-        <img id="detail-img" src="" style="width: 100%; height: 220px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; background: #f1f5f9;">
-        <h5 id="detail-name" style="font-weight: 700; color: #1e293b; font-size: 1.25rem; margin-bottom: 5px;">Tên món</h5>
-        <div id="detail-price" style="color: #3b82f6; font-weight: 700; font-size: 1.1rem; margin-bottom: 15px;">0đ</div>
-        <div id="detail-desc" style="color: #475569; font-size: 0.95rem; line-height: 1.6; text-align: justify; padding: 0 10px; max-height: 150px; overflow-y: auto;">Mô tả chi tiết...</div>
+        <img id="detail-img" src="" style="width: 100%; height: 350px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; background: #f1f5f9;">
+        <h5 id="detail-name" style="font-weight: 700; color: #1e293b; font-size: 1.5rem; margin-bottom: 5px;">Tên món</h5>
+        <div id="detail-price" style="color: #3b82f6; font-weight: 700; font-size: 1.25rem; margin-bottom: 15px;">0đ</div>
+        <div id="detail-desc" style="color: #475569; font-size: 1rem; line-height: 1.6; text-align: justify; padding: 0 15px; max-height: 350px; overflow-y: auto;">Mô tả chi tiết...</div>
       </div>
       <div class="modal-footer border-0 d-flex justify-content-center pb-4">
         <button type="button" class="btn btn-primary px-4 py-2" style="border-radius: 20px; font-weight: 600;" onclick="addCurrentDetailItem()">

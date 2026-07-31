@@ -1523,7 +1523,7 @@ select.input-lux {
 
 <?php if ($type !== 'chef'): ?>
 <div class="modal fade" id="mapModal" tabindex="-1">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content dark-lux">
             <div class="modal-header lux">
                 <h5 class="modal-title lux">Sơ Đồ Nhà Hàng</h5>
@@ -2139,13 +2139,13 @@ function cancelFoodOption() {
 }
 
 /* SỰ KIỆN CHỌN BÀN & AJAX KHẢ DỤNG ĐỘNG */
-    document.querySelectorAll('.seat-lux').forEach(function(s){
+    document.querySelectorAll('.seat-lux, .fp-table-mobile').forEach(function(s){
         s.addEventListener('click',function(){
             if(!s.classList.contains('available')) {
-                alert('Bàn này đã được khách hàng khác đặt trong khung giờ bạn chọn. Vui lòng chọn bàn trống (màu trắng).');
+                alert('Bàn này đã được khách hàng khác đặt trong khung giờ bạn chọn. Vui lòng chọn bàn trống (màu xanh/trắng).');
                 return;
             }
-            document.querySelectorAll('.seat-lux').forEach(function(x){x.classList.remove('selected');});
+            document.querySelectorAll('.seat-lux, .fp-table-mobile').forEach(function(x){x.classList.remove('selected');});
             s.classList.add('selected');
             selId=s.dataset.id; selCode=s.dataset.code; selPrice=parseFloat(s.dataset.price||0); selCat=s.dataset.cat||''; selRoom=s.dataset.room||'';
         });
@@ -2169,7 +2169,7 @@ function cancelFoodOption() {
             .then(data => {
                 if (data.success) {
                     var unav = data.unavailable_tables || [];
-                    document.querySelectorAll('.seat-lux').forEach(function(s) {
+                    document.querySelectorAll('.seat-lux, .fp-table-mobile').forEach(function(s) {
                         var id = parseInt(s.dataset.id);
                         if (unav.includes(id)) {
                             s.classList.remove('available');
@@ -2195,9 +2195,8 @@ function fromDrop(sel){
     selCode=opt.dataset.code||opt.text.split('—')[0].trim();
     selCat=opt.dataset.cat||'';
     document.getElementById('tid').value=selId;
-    document.querySelectorAll('.seat-lux').forEach(function(x){x.classList.remove('selected');});
-    var m=document.querySelector('.seat-lux[data-id="'+selId+'"]');
-    if(m) m.classList.add('selected');
+    document.querySelectorAll('.seat-lux, .fp-table-mobile').forEach(function(x){x.classList.remove('selected');});
+    document.querySelectorAll('.seat-lux[data-id="'+selId+'"], .fp-table-mobile[data-id="'+selId+'"]').forEach(function(el){ el.classList.add('selected'); });
     showPill();us();
 }
 
@@ -2238,7 +2237,7 @@ function clrSeat(){
     var vipSec = document.getElementById('vip-config-section');
     if (vipSec) vipSec.style.display = 'none';
     
-    document.querySelectorAll('.seat-lux').forEach(function(x){x.classList.remove('selected');});
+    document.querySelectorAll('.seat-lux, .fp-table-mobile').forEach(function(x){x.classList.remove('selected');});
     us();
 }
 

@@ -282,7 +282,7 @@ function sendBookingEmailConfirmation($emailNguoiNhan, $booking_info) {
             <div style='max-width: 600px; margin: 0 auto; background-color: #1f2833; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.5);'>
                 <!-- Header -->
                 <div style='background-color: #000000; padding: 40px 20px; text-align: center; border-bottom: 2px solid #c5a880;'>
-                    <h1 style='color: #c5a880; margin: 0; font-family: \"Georgia\", serif; font-size: 32px; letter-spacing: 4px; text-transform: uppercase;'>Restaurantly</h1>
+                    <h1 style='color: #c5a880; margin: 0; font-family: \"Times New Roman\", Times, serif; font-size: 32px; letter-spacing: 4px; text-transform: uppercase;'>Restaurantly</h1>
                     <p style='color: #888; margin: 10px 0 0; font-size: 14px; letter-spacing: 2px; text-transform: uppercase;'>Fine Dining Experience</p>
                 </div>
                 
@@ -293,7 +293,7 @@ function sendBookingEmailConfirmation($emailNguoiNhan, $booking_info) {
                     
                     <!-- Details Card -->
                     <div style='margin: 35px 0; background: #242f3b; border-radius: 8px; padding: 30px; border-left: 4px solid #c5a880; box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);'>
-                        <h3 style='margin: 0 0 20px 0; color: #c5a880; font-family: \"Georgia\", serif; font-size: 20px; letter-spacing: 1px;'>Thông Tin Đặt Bàn (#{$booking_info['id']})</h3>
+                        <h3 style='margin: 0 0 20px 0; color: #c5a880; font-family: \"Times New Roman\", Times, serif; font-size: 20px; letter-spacing: 1px;'>Thông Tin Đặt Bàn (#{$booking_info['id']})</h3>
                         
                         <table style='width: 100%; border-collapse: collapse; font-size: 15px;'>
                             <tr>
@@ -321,7 +321,7 @@ function sendBookingEmailConfirmation($emailNguoiNhan, $booking_info) {
                     
                     <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>Vui lòng có mặt đúng giờ để chúng tôi có thể phục vụ quý khách một cách chu đáo nhất. Mọi thay đổi về lịch trình xin vui lòng liên hệ Hotline: <strong style='color: #c5a880;'>0123 456 789</strong>.</p>
                     
-                    <p style='color: #ffffff; line-height: 1.8; font-size: 16px; margin-top: 30px; font-style: italic; font-family: \"Georgia\", serif;'>Hân hạnh được đón tiếp quý khách!</p>
+                    <p style='color: #ffffff; line-height: 1.8; font-size: 16px; margin-top: 30px; font-style: italic; font-family: \"Times New Roman\", Times, serif;'>Hân hạnh được đón tiếp quý khách!</p>
                 </div>
                 
                 <!-- Footer -->
@@ -446,32 +446,73 @@ function sendBookingCancelEmail($emailNguoiNhan, $booking_info) {
         if ($svc === 'bespoke') $svc = 'Thiết kế riêng';
 
         $timeStr = date('H:i - d/m/Y', strtotime($booking_info['booking_date']));
+        $money = number_format((float)($booking_info['total_amount'] ?? 0), 0, ',', '.');
+        $deposit = number_format((float)($booking_info['deposit_amount'] ?? 0), 0, ',', '.');
         $name = htmlspecialchars($booking_info['customer_name'] ?? 'Quý khách', ENT_QUOTES);
 
+        $foodsHtml = "";
+        if (!empty($booking_info['foods']) && is_array($booking_info['foods'])) {
+            $foodsHtml .= "
+                        <div style='margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;'>
+                            <h4 style='color: #ff4d4d; margin: 0 0 15px 0; font-size: 16px;'>Các Món Đã Hủy:</h4>
+                            <ul style='list-style: none; padding: 0; margin: 0; color: #b0b0b0;'>";
+            foreach ($booking_info['foods'] as $food) {
+                $foodsHtml .= "<li style='margin-bottom: 8px;'>- " . htmlspecialchars($food['name']) . " <span style='color: #888;'>(x" . $food['quantity'] . ")</span></li>";
+            }
+            $foodsHtml .= "</ul></div>";
+        }
+
         $mail->Body = "
-            <div style='max-width: 600px; margin: auto; border: 2px solid #A88746; border-radius: 8px; font-family: Arial, sans-serif; overflow: hidden;'>
-                <div style='background-color: #F9F9F9; padding: 20px; text-align: center;'>
-                    <h1 style='color: #A88746; margin: 0; font-family: serif; letter-spacing: 2px;'>RESTAURANTLY</h1>
-                    <p style='color: #fff; margin: 5px 0 0; font-size: 14px;'>Fine Dining Experience</p>
+            <div style='max-width: 600px; margin: 0 auto; background-color: #1f2833; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.5);'>
+                <!-- Header -->
+                <div style='background-color: #000000; padding: 40px 20px; text-align: center; border-bottom: 2px solid #c5a880;'>
+                    <h1 style='color: #c5a880; margin: 0; font-family: \"Times New Roman\", Times, serif; font-size: 32px; letter-spacing: 4px; text-transform: uppercase;'>Restaurantly</h1>
+                    <p style='color: #888; margin: 10px 0 0; font-size: 14px; letter-spacing: 2px; text-transform: uppercase;'>Fine Dining Experience</p>
                 </div>
-                <div style='padding: 30px; background-color: #FFFFFF;'>
-                    <h2 style='color: #d32f2f; margin-top: 0;'>Kính chào $name,</h2>
-                    <p style='color: #555; line-height: 1.6;'>Chúng tôi vô cùng xin lỗi vì sự bất tiện này, nhưng do sự cố khách quan vượt ngoài mong muốn, chúng tôi buộc phải <strong>hủy lịch đặt bàn</strong> của quý khách.</p>
+                
+                <div style='padding: 40px 30px; background-color: #1f2833; font-family: Arial, sans-serif;'>
+                    <h2 style='color: #ff4d4d; margin-top: 0; font-size: 24px; font-weight: 300;'>Kính chào <strong style='color: #ff4d4d;'>$name</strong>,</h2>
+                    <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>Chúng tôi vô cùng xin lỗi vì sự bất tiện này, nhưng do sự cố khách quan vượt ngoài mong muốn, chúng tôi buộc phải <strong style='color: #ff4d4d;'>hủy lịch đặt bàn</strong> của quý khách.</p>
                     
-                    <div style='background-color: #f9f6f0; padding: 20px; border-left: 4px solid #A88746; margin: 25px 0;'>
-                        <h3 style='margin-top: 0; color: #A88746;'>Thông Tin Đặt Bàn Đã Hủy (#{$booking_info['id']})</h3>
+                    <!-- Details Card -->
+                    <div style='margin: 35px 0; background: #242f3b; border-radius: 8px; padding: 30px; border-left: 4px solid #ff4d4d; box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);'>
+                        <h3 style='margin: 0 0 20px 0; color: #ff4d4d; font-family: \"Times New Roman\", Times, serif; font-size: 20px; letter-spacing: 1px;'>Thông Tin Đặt Bàn Đã Hủy (#{$booking_info['id']})</h3>
+                        
                         <table style='width: 100%; border-collapse: collapse; font-size: 15px;'>
-                            <tr><td style='padding: 8px 0; color: #666; width: 40%;'>Thời gian:</td><td style='padding: 8px 0; font-weight: bold;'>$timeStr</td></tr>
-                            <tr><td style='padding: 8px 0; color: #666;'>Dịch vụ:</td><td style='padding: 8px 0; font-weight: bold;'>$svc</td></tr>
-                            <tr><td style='padding: 8px 0; color: #666;'>Số khách:</td><td style='padding: 8px 0; font-weight: bold;'>{$booking_info['guests']} người</td></tr>
+                            <tr>
+                                <td style='padding: 12px 0; color: #888; width: 40%; border-bottom: 1px solid rgba(255,255,255,0.05);'>Loại dịch vụ:</td>
+                                <td style='padding: 12px 0; color: #ffffff; font-weight: 500; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);'>$svc</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 12px 0; color: #888; border-bottom: 1px solid rgba(255,255,255,0.05);'>Thời gian:</td>
+                                <td style='padding: 12px 0; color: #c5a880; font-weight: bold; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);'>$timeStr</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 12px 0; color: #888; border-bottom: 1px solid rgba(255,255,255,0.05);'>Số khách:</td>
+                                <td style='padding: 12px 0; color: #ffffff; font-weight: 500; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);'>{$booking_info['guests']} người</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 12px 0; color: #888; border-bottom: 1px solid rgba(255,255,255,0.05);'>Tổng dự kiến:</td>
+                                <td style='padding: 12px 0; color: #ffffff; font-weight: 500; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);'>$money VNĐ</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 12px 0; color: #888;'>Tiền cọc (đã thanh toán):</td>
+                                <td style='padding: 12px 0; color: #ff4d4d; font-weight: bold; text-align: right;'>$deposit VNĐ</td>
+                            </tr>
                         </table>
+                        $foodsHtml
                     </div>
                     
-                    <p style='color: #555; line-height: 1.6;'>Nếu quý khách đã tiến hành đặt cọc trực tuyến, hệ thống sẽ tự động đối soát và nhà hàng sẽ liên hệ với quý khách để tiến hành <strong>hoàn tiền 100%</strong> trong vòng 24h.</p>
+                    <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>Nếu quý khách đã tiến hành đặt cọc trực tuyến, hệ thống sẽ tự động đối soát và nhà hàng sẽ liên hệ với quý khách để tiến hành <strong style='color: #c5a880;'>hoàn tiền 100%</strong> trong vòng 24h.</p>
                     
-                    <p style='color: #555; line-height: 1.6;'>Quý khách vui lòng liên hệ ngay với quản lý nhà hàng qua Hotline: <strong>0123 456 789</strong> để được hỗ trợ giải quyết nhanh chóng nhất hoặc đặt lại lịch mới với ưu đãi đền bù.</p>
+                    <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>Quý khách vui lòng liên hệ ngay với quản lý nhà hàng qua Hotline: <strong style='color: #c5a880;'>0123 456 789</strong> để được hỗ trợ giải quyết nhanh chóng nhất hoặc đặt lại lịch mới với ưu đãi đền bù.</p>
                     
-                    <p style='color: #555; line-height: 1.6; margin-bottom: 0;'>Một lần nữa xin chân thành cáo lỗi cùng quý khách!</p>
+                    <p style='color: #ffffff; line-height: 1.8; font-size: 16px; margin-top: 30px; font-style: italic; font-family: \"Times New Roman\", Times, serif;'>Một lần nữa xin chân thành cáo lỗi cùng quý khách!<br>Ban Quản Trị Restaurantly</p>
+                </div>
+                
+                <!-- Footer -->
+                <div style='background-color: #11151c; padding: 25px 20px; text-align: center; border-top: 1px solid #2a3644;'>
+                    <p style='color: #666; margin: 0; font-size: 12px;'>&copy; " . date('Y') . " Restaurantly. All rights reserved.</p>
                 </div>
             </div>";
 
@@ -648,7 +689,7 @@ function sendBookingCompleteEmail($emailNguoiNhan, $booking_info) {
             <div style='max-width: 600px; margin: 0 auto; background-color: #1f2833; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.5);'>
                 <!-- Header -->
                 <div style='background-color: #000000; padding: 40px 20px; text-align: center; border-bottom: 2px solid #c5a880;'>
-                    <h1 style='color: #c5a880; margin: 0; font-family: \"Georgia\", serif; font-size: 32px; letter-spacing: 4px; text-transform: uppercase;'>Restaurantly</h1>
+                    <h1 style='color: #c5a880; margin: 0; font-family: \"Times New Roman\", Times, serif; font-size: 32px; letter-spacing: 4px; text-transform: uppercase;'>Restaurantly</h1>
                     <p style='color: #888; margin: 10px 0 0; font-size: 14px; letter-spacing: 2px; text-transform: uppercase;'>Fine Dining Experience</p>
                 </div>
                 
@@ -660,14 +701,14 @@ function sendBookingCompleteEmail($emailNguoiNhan, $booking_info) {
                     <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>Hy vọng quý khách đã có một trải nghiệm ẩm thực tuyệt vời và những khoảnh khắc đáng nhớ. Sự hài lòng của quý khách là niềm tự hào và động lực to lớn để Restaurantly không ngừng hoàn thiện mỗi ngày.</p>
                     
                     <div style='margin: 35px 0; background: #242f3b; border-radius: 8px; padding: 25px; border-left: 4px solid #c5a880; text-align: center;'>
-                        <h3 style='margin: 0 0 15px 0; color: #c5a880; font-family: \"Georgia\", serif; font-size: 18px;'>Đánh Giá Trải Nghiệm</h3>
+                        <h3 style='margin: 0 0 15px 0; color: #c5a880; font-family: \"Times New Roman\", Times, serif; font-size: 18px;'>Đánh Giá Trải Nghiệm</h3>
                         <p style='color: #b0b0b0; font-size: 14px; margin-bottom: 20px;'>Xin vui lòng dành vài giây để chia sẻ cảm nhận của quý khách, giúp chúng tôi phục vụ tốt hơn trong tương lai.</p>
                         <a href='https://restaurantly.com/feedback' style='display: inline-block; padding: 12px 30px; background-color: #c5a880; color: #000000; text-decoration: none; font-weight: bold; border-radius: 4px; text-transform: uppercase; font-size: 13px; letter-spacing: 1px;'>Gửi Đánh Giá Ngay</a>
                     </div>
                     
                     <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>Rất mong được tiếp tục vinh hạnh phục vụ quý khách trong thời gian sớm nhất!</p>
                     
-                    <p style='color: #ffffff; line-height: 1.8; font-size: 16px; margin-top: 30px; font-style: italic; font-family: \"Georgia\", serif;'>Trân trọng,<br>Ban Quản Trị Restaurantly</p>
+                    <p style='color: #ffffff; line-height: 1.8; font-size: 16px; margin-top: 30px; font-style: italic; font-family: \"Times New Roman\", Times, serif;'>Trân trọng,<br>Ban Quản Trị Restaurantly</p>
                 </div>
                 
                 <!-- Footer -->
