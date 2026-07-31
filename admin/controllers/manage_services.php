@@ -55,11 +55,17 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
                 $stmt_ext = $db->query("SELECT id FROM restaurant_tables WHERE category = 'external' AND is_available = 1 LIMIT 1");
                 $ext_table_id = $stmt_ext->fetchColumn();
                 
+                if (!$ext_table_id) {
+                    // Tự động tạo bàn EXT mới nếu hết bàn trống
+                    $count_ext = $db->query("SELECT COUNT(*) FROM restaurant_tables WHERE category = 'external'")->fetchColumn();
+                    $new_ext_code = 'EXT-' . str_pad($count_ext + 1, 2, '0', STR_PAD_LEFT);
+                    $db->prepare("INSERT INTO restaurant_tables (table_code, table_number, category, room_type, capacity, is_available) VALUES (?, ?, 'external', 'Dịch vụ tại gia', 99, 1)")->execute([$new_ext_code, $count_ext + 1]);
+                    $ext_table_id = $db->lastInsertId();
+                }
+                
                 if ($ext_table_id) {
                     $db->prepare("UPDATE service_bookings SET status = 'Confirmed', table_id = ? WHERE id = ?")->execute([$ext_table_id, $id]);
                     $db->prepare("UPDATE restaurant_tables SET is_available = 0 WHERE id = ?")->execute([$ext_table_id]);
-                } else {
-                    $db->prepare("UPDATE service_bookings SET status = 'Confirmed' WHERE id = ?")->execute([$id]);
                 }
             } else {
                 $db->prepare("UPDATE service_bookings SET status = 'Confirmed' WHERE id = ?")->execute([$id]);
