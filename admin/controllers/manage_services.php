@@ -1550,12 +1550,7 @@ include '../../public/admin_layout_header.php';
                 $('#qe-date').val(dateStr);
                 $('#qe-guests').val(data.guests);
                 $('#qe-table').val(data.table_id || '');
-                
-                if (data.service_type === 'chef') {
-                    $('#qe-table-wrapper').hide();
-                } else {
-                    $('#qe-table-wrapper').show();
-                }
+                $('#qe-table-wrapper').show();
                 
                 const modal = new bootstrap.Modal(document.getElementById('modalQuickEdit'));
                 modal.show();

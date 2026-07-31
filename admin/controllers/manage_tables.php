@@ -207,6 +207,7 @@ include '../../public/admin_layout_header.php';
                             <select name="category" class="form-select">
                                 <option value="open">Khu vực chung</option>
                                 <option value="room">Phòng VIP</option>
+                                <option value="external">Dịch vụ tại gia (EXT)</option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
@@ -273,6 +274,7 @@ include '../../public/admin_layout_header.php';
                             <select name="category" id="edit_category" class="form-select">
                                 <option value="open">Khu vực chung</option>
                                 <option value="room">Phòng VIP</option>
+                                <option value="external">Dịch vụ tại gia (EXT)</option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
