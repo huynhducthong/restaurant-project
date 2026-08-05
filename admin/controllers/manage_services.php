@@ -549,6 +549,16 @@ if ($filter == 'all' || $filter == 'pos') {
     });
 }
 
+// PHP Array Pagination
+$total_services = count($services);
+$items_per_page = 15;
+$total_pages = ceil($total_services / $items_per_page);
+$page_num = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+if ($page_num > $total_pages && $total_pages > 0) $page_num = $total_pages;
+
+$offset = ($page_num - 1) * $items_per_page;
+$paginated_services = array_slice($services, $offset, $items_per_page);
+
 include '../../public/admin_layout_header.php';
 ?>
 
@@ -607,7 +617,10 @@ include '../../public/admin_layout_header.php';
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($services as $s): ?>
+                    <?php if (count($paginated_services) === 0): ?>
+                        <tr><td colspan="6" class="text-center text-muted py-4">Không có dịch vụ nào.</td></tr>
+                    <?php endif; ?>
+                    <?php foreach ($paginated_services as $s): ?>
                         <tr>
                             <td>
                                 <div class="d-flex align-items-center gap-3">
@@ -664,49 +677,68 @@ include '../../public/admin_layout_header.php';
                             </td>
                             <td class="text-end">
                                 <?php if (!isset($s['is_pos'])): ?>
-                                    <button class="btn btn-sm btn-outline-secondary btn-view-detail" data-id="<?= $s['id'] ?>"
+                                    <button class="btn btn-sm btn-outline-secondary btn-view-detail rounded-0" data-id="<?= $s['id'] ?>"
                                         data-name="<?= htmlspecialchars($s['customer_name']) ?>"
-                                        data-status="<?= $s['status'] ?>">
+                                        data-status="<?= $s['status'] ?>" title="Xem chi tiết">
                                         <i class="fas fa-eye"></i>
                                     </button>
 
                                     <?php if (in_array($s['status'], ['Pending', 'Confirmed'])): ?>
-                                        <button class="btn btn-sm btn-outline-info btn-edit-service" data-id="<?= $s['id'] ?>" title="Chỉnh sửa đơn">
+                                        <button class="btn btn-sm btn-outline-info btn-edit-service rounded-0" data-id="<?= $s['id'] ?>" title="Chỉnh sửa đơn">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                     <?php endif; ?>
 
                                     <?php if ($s['status'] == 'Pending'): ?>
-
-                                        <button class="btn btn-sm btn-outline-gold btn-confirm-ajax" data-id="<?= $s['id'] ?>"
-                                            data-name="<?= htmlspecialchars($s['customer_name']) ?>">
+                                        <button class="btn btn-sm btn-outline-gold btn-confirm-ajax rounded-0" data-id="<?= $s['id'] ?>"
+                                            data-name="<?= htmlspecialchars($s['customer_name']) ?>" title="Xác nhận">
                                             <i class="fas fa-check me-1"></i> Xác nhận
                                         </button>
                                     <?php elseif ($s['status'] == 'Confirmed'): ?>
-                                        <button class="btn btn-sm btn-outline-success btn-complete-service" data-id="<?= $s['id'] ?>" title="Khách đã dùng bữa xong">
+                                        <button class="btn btn-sm btn-outline-success btn-complete-service rounded-0" data-id="<?= $s['id'] ?>" title="Khách đã dùng bữa xong">
                                             <i class="fas fa-check-double me-1"></i> Hoàn thành
                                         </button>
-                                        <button class="btn btn-sm btn-dark btn-noshow-service" data-id="<?= $s['id'] ?>" title="Khách không đến (No-Show)">
+                                        <button class="btn btn-sm btn-dark btn-noshow-service rounded-0" data-id="<?= $s['id'] ?>" title="Khách không đến (No-Show)">
                                             <i class="fas fa-user-slash"></i>
                                         </button>
                                     <?php endif; ?>
 
-                                    <button class="btn btn-sm btn-outline-danger btn-delete-service" data-id="<?= $s['id'] ?>" title="Lưu trữ (Ẩn khỏi danh sách)">
+                                    <button class="btn btn-sm btn-outline-danger btn-delete-service rounded-0" data-id="<?= $s['id'] ?>" title="Lưu trữ (Ẩn khỏi danh sách)">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 <?php else: ?>
-                                    <button class="btn btn-sm btn-outline-secondary btn-view-detail" data-id="<?= $s['id'] ?>" data-is-pos="1"
+                                    <button class="btn btn-sm btn-outline-secondary btn-view-detail rounded-0" data-id="<?= $s['id'] ?>" data-is-pos="1"
                                         data-name="<?= htmlspecialchars($s['customer_name']) ?>"
                                         data-status="<?= $s['status'] ?>">
                                         <i class="fas fa-eye"></i> Xem chi tiết
                                     </button>
-                                    <span class="badge bg-light text-muted border py-2 px-3 ms-2"><i class="fas fa-receipt me-1"></i> Đơn tại quầy</span>
+                                    <span class="badge bg-light text-muted border py-2 px-3 ms-2 rounded-0"><i class="fas fa-receipt me-1"></i> Đơn tại quầy</span>
                                 <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
+            
+            <?php if ($total_pages > 1): ?>
+            <div class="d-flex justify-content-center mt-4">
+                <nav>
+                    <ul class="pagination mb-0 shadow-sm">
+                        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                            <?php if ($i == $page_num): ?>
+                                <li class="page-item active" style="background-color: #0d6efd !important; border-color: #0d6efd !important;">
+                                    <a class="page-link" style="background-color: #0d6efd !important; color: #ffffff !important; border-color: #0d6efd !important; font-weight: bold !important; padding: 0.5rem 0.75rem;" href="?filter=<?= $filter ?>&page=<?= $i ?>"><?= $i ?></a>
+                                </li>
+                            <?php else: ?>
+                                <li class="page-item">
+                                    <a class="page-link text-dark" style="padding: 0.5rem 0.75rem;" href="?filter=<?= $filter ?>&page=<?= $i ?>"><?= $i ?></a>
+                                </li>
+                            <?php endif; ?>
+                        <?php endfor; ?>
+                    </ul>
+                </nav>
+            </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>
@@ -837,11 +869,11 @@ include '../../public/admin_layout_header.php';
                 </div>
             </div>
             <div class="modal-footer border-top-0 justify-content-center">
-                <button type="button" class="btn btn-outline-primary px-4 rounded-pill btn-quote-price d-none" id="btn-modal-quote" data-id="" data-name="" title="Báo giá cho khách">
+                <button type="button" class="btn btn-outline-primary px-4 rounded-0 btn-quote-price d-none" id="btn-modal-quote" data-id="" data-name="" title="Báo giá cho khách">
                     <i class="fas fa-file-invoice-dollar"></i> Báo giá
                 </button>
-                <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal">Đóng</button>
-                <a href="#" id="btn-export-pdf" class="btn btn-outline-danger px-4 rounded-pill"><i
+                <button type="button" class="btn btn-secondary px-4 rounded-0" data-bs-dismiss="modal">Đóng</button>
+                <a href="#" id="btn-export-pdf" class="btn btn-outline-danger px-4 rounded-0"><i
                         class="fas fa-file-pdf me-2"></i>Xuất PDF</a>
             </div>
         </div>

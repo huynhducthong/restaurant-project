@@ -603,32 +603,40 @@ function initPanzoom() {
     const elem = document.getElementById('floor-plan-canvas');
     if (elem && typeof Panzoom !== 'undefined') {
         const isMobile = window.innerWidth < 992;
-        const initialScale = isMobile ? (window.innerWidth / 1250) : 0.8; // Fit screen width on mobile, 80% on desktop
+        const containerWidth = elem.parentElement.clientWidth || window.innerWidth;
+        const initialScale = isMobile ? (window.innerWidth / 1250) : Math.min(1, containerWidth / 1250);
         
         const panzoom = Panzoom(elem, {
             maxScale: 2,
             minScale: 0.1,
             startScale: initialScale,
             canvas: true,
-            cursor: 'grab'
+            cursor: isMobile ? 'grab' : 'default',
+            disablePan: !isMobile,
+            disableZoom: !isMobile
         });
         
-        // Enable zooming with mouse wheel (reverted to original behavior per user request)
+        // Enable zooming with mouse wheel only on mobile
         elem.parentElement.addEventListener('wheel', function(e) {
-            e.preventDefault();
-            panzoom.zoomWithWheel(e);
+            if (isMobile) {
+                e.preventDefault();
+                panzoom.zoomWithWheel(e);
+            }
         }, { passive: false });
         
         // Tự động thu nhỏ khi mở Modal trên điện thoại
         document.addEventListener('shown.bs.modal', function (e) {
             if (e.target.id === 'mapModal') {
                 const isMobileNow = window.innerWidth < 992;
-                if (isMobileNow) {
-                    panzoom.zoom(window.innerWidth / 1250, { animate: true });
-                } else {
+                if (!isMobileNow) {
+                    panzoom.setOptions({ disableZoom: false, disablePan: false });
                     panzoom.zoom(1, { animate: true });
+                    panzoom.pan(0, 0);
+                    panzoom.setOptions({ disableZoom: true, disablePan: true });
+                } else {
+                    panzoom.zoom(window.innerWidth / 1250, { animate: true });
+                    panzoom.pan(0, 0);
                 }
-                panzoom.pan(0, 0); // Đưa về giữa
             }
         });
     }

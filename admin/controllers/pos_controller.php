@@ -276,6 +276,17 @@ try {
             echo json_encode(['success' => true]);
             break;
 
+        case 'update_notes':
+            $item_id = $_POST['item_id'] ?? 0;
+            $notes = trim($_POST['notes'] ?? '');
+            
+            if ($item_id) {
+                $db->prepare("UPDATE pos_order_items SET notes = ? WHERE id = ?")->execute([$notes, $item_id]);
+            }
+            triggerUpdate();
+            echo json_encode(['success' => true]);
+            break;
+
         case 'send_to_kitchen':
             $order_id = $_POST['order_id'] ?? 0;
             if ($order_id) {

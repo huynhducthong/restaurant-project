@@ -1873,7 +1873,9 @@ include '../../public/admin_layout_header.php';
         if (btn) {
             $(btn).addClass('active');
         } else {
-            $('#filterButtons button[onclick*="\'" + type + "\'"]').addClass('active');
+            $('#filterButtons button').filter(function() {
+                return $(this).attr('onclick') && $(this).attr('onclick').includes("'" + type + "'");
+            }).addClass('active');
         }
 
         // Nếu chọn một cảnh báo cụ thể (low hoặc expiry), tự động chuyển về "Tất cả kho" 
@@ -1944,31 +1946,51 @@ include '../../public/admin_layout_header.php';
 
     function renderPagination() {
         const allRows = document.querySelectorAll('#invBody .inv-row');
-        allRows.forEach(r => r.style.display = 'none'); // Ẩn hết toàn bộ
-
-        const visibleRows = [...allRows].filter(r => r.getAttribute('data-visible') === '1');
-        const t = visibleRows.length;
-        const pgs = Math.ceil(t / PAGE_SIZE) || 1;
-        currentPage = Math.min(currentPage, pgs);
-
-        visibleRows.forEach((r, i) => {
-            if (i >= (currentPage - 1) * PAGE_SIZE && i < currentPage * PAGE_SIZE) r.style.display = '';
+        // Ẩn tất cả trước tiên
+        allRows.forEach(r => {
+            r.style.display = 'none';
         });
 
+        // Lọc ra các dòng hợp lệ
+        const visibleRows = Array.from(allRows).filter(r => r.getAttribute('data-visible') === '1');
+        const t = visibleRows.length;
+        const pgs = Math.ceil(t / PAGE_SIZE) || 1;
+        
+        // Đảm bảo currentPage hợp lệ
+        if (currentPage > pgs) currentPage = pgs;
+        if (currentPage < 1) currentPage = 1;
+
+        // Chỉ hiển thị đúng số lượng trang
+        const startIndex = (currentPage - 1) * PAGE_SIZE;
+        const endIndex = currentPage * PAGE_SIZE;
+
+        visibleRows.forEach((r, i) => {
+            if (i >= startIndex && i < endIndex) {
+                r.style.display = '';
+            } else {
+                r.style.display = 'none'; // Force hide again just in case
+            }
+        });
+
+        // Cập nhật text thông tin
         const paginInfo = document.getElementById('paginInfo');
         if (paginInfo) {
-            paginInfo.textContent = t > 0 ? `Hiển thị ${(currentPage-1)*PAGE_SIZE+1} – ${Math.min(currentPage*PAGE_SIZE, t)} / Tổng ${t}` : 'Không tìm thấy kết quả';
+            paginInfo.textContent = t > 0 ? `Hiển thị ${startIndex + 1} – ${Math.min(endIndex, t)} / Tổng ${t}` : 'Không tìm thấy kết quả';
         }
 
-        let html = `<button class="btn btn-outline-secondary" onclick="goPage(${currentPage-1})" ${currentPage<=1?'disabled':''}>‹</button>`;
-        for (let p = 1; p <= pgs; p++) {
-            if (pgs <= 7 || Math.abs(p - currentPage) <= 1 || p === 1 || p === pgs) {
-                html += `<button class="btn ${p===currentPage?'btn-dark fw-bold text-white shadow-sm':'btn-outline-secondary'}" onclick="goPage(${p})">${p}</button>`;
-            } else if (Math.abs(p - currentPage) === 2) {
-                html += `<button class="btn btn-outline-secondary" disabled>…</button>`;
+        // Tạo nút bấm phân trang
+        let html = '';
+        if (t > 0) {
+            html += `<button class="btn btn-outline-secondary" onclick="goPage(${currentPage-1})" ${currentPage<=1?'disabled':''}>‹</button>`;
+            for (let p = 1; p <= pgs; p++) {
+                if (pgs <= 7 || Math.abs(p - currentPage) <= 1 || p === 1 || p === pgs) {
+                    html += `<button class="btn ${p===currentPage?'btn-dark fw-bold text-white shadow-sm':'btn-outline-secondary'}" onclick="goPage(${p})">${p}</button>`;
+                } else if (Math.abs(p - currentPage) === 2) {
+                    html += `<button class="btn btn-outline-secondary" disabled>…</button>`;
+                }
             }
+            html += `<button class="btn btn-outline-secondary" onclick="goPage(${currentPage+1})" ${currentPage>=pgs?'disabled':''}>›</button>`;
         }
-        html += `<button class="btn btn-outline-secondary" onclick="goPage(${currentPage+1})" ${currentPage>=pgs?'disabled':''}>›</button>`;
         
         const paginBtns = document.getElementById('paginBtns');
         if (paginBtns) {
@@ -2417,7 +2439,9 @@ $(document).ready(function() {
 
         // Khôi phục UI của filter cảnh báo
         $('#filterButtons button').removeClass('active');
-        $('#filterButtons button[onclick*="\'" + activeFilter + "\'"]').addClass('active');
+        $('#filterButtons button').filter(function() {
+            return $(this).attr('onclick') && $(this).attr('onclick').includes("'" + activeFilter + "'");
+        }).addClass('active');
 
         // Khôi phục UI của filter kho
         $('.wh-filter-btn').removeClass('btn-dark fw-bold active-main active-all text-white shadow').addClass('btn-outline-secondary');

@@ -6,7 +6,7 @@ $db = (new Database())->getConnection();
 
 $total_foods = $total_users = $total_bookings = $selected_revenue = 0;
 $chart_revenue = array_fill(0, 12, 0);
-$status_data = [0, 0, 0];
+$status_data = [0, 0];
 
 $start_date = $_GET['start_date'] ?? date('Y-m-01');
 $end_date   = $_GET['end_date'] ?? date('Y-m-t');
@@ -35,7 +35,7 @@ $where_sql = count($conditions) > 0 ? implode(" AND ", $conditions) : "1=1";
 $total_foods    = $total_users = $total_bookings = 0;
 $selected_revenue = $prev_month_revenue = $this_month_rev = 0;
 $chart_revenue  = array_fill(0, 12, 0);
-$status_data    = [0, 0, 0];
+$status_data    = [0, 0];
 $recent_bookings = [];
 $low_stock_count = 0;
 $expiry_warn_count = 0;
@@ -106,7 +106,7 @@ try {
         $chart_revenue[$m - 1] = $b_rev + $p_rev;
     }
     
-    foreach (['Completed', 'Pending', 'Cancelled'] as $i => $st) {
+    foreach (['Completed', 'Cancelled'] as $i => $st) {
         $stmt = $db->prepare("SELECT COUNT(*) FROM service_bookings WHERE status=? AND YEAR(booking_date)=? AND is_archived = 0");
         $stmt->execute([$st, $year_booking]);
         $status_data[$i] = (int) $stmt->fetchColumn();
@@ -214,11 +214,13 @@ try {
 }
 ?>
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
 <style>
 .stat-card {
-    border-radius: 14px; border: none;
+    border-radius: 0; border: none;
     padding: 22px 24px;
     display: flex; align-items: center; gap: 18px;
     box-shadow: 0 2px 12px rgba(0,0,0,.06);
@@ -226,22 +228,27 @@ try {
 }
 .stat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,.1); }
 .stat-icon {
-    width: 54px; height: 54px; border-radius: 12px;
+    width: 54px; height: 54px; border-radius: 0;
     display: flex; align-items: center; justify-content: center;
     font-size: 22px; flex-shrink: 0;
 }
 .stat-val  { font-size: 1.8rem; font-weight: 700; line-height: 1; }
 .stat-label{ font-size: 12px; color: #888; margin-top: 3px; }
-.trend-badge { font-size: 11px; padding: 2px 7px; border-radius: 20px; font-weight: 600; }
-.filter-card { border-radius: 12px; border: none; box-shadow: 0 2px 10px rgba(0,0,0,.05); }
-.chart-card  { border-radius: 14px; border: none; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+.trend-badge { font-size: 11px; padding: 2px 7px; border-radius: 0; font-weight: 600; }
+.filter-card { border-radius: 0; border: none; box-shadow: 0 2px 10px rgba(0,0,0,.05); }
+.chart-card  { border-radius: 0; border: none; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
 .recent-table td { font-size: 13px; vertical-align: middle; }
 .warn-banner {
     background: linear-gradient(135deg,#fff3cd,#ffe69c);
     border-left: 4px solid #ffc107;
-    border-radius: 10px; padding: 12px 18px;
+    border-radius: 0; padding: 12px 18px;
     display: flex; align-items: center; gap: 12px;
     margin-bottom: 20px;
+}
+/* Ép vuông vức cho các thẻ Bootstrap và Flatpickr */
+.card, .btn, .form-control, .badge, .alert, .rounded-3, .rounded-pill, .shadow-sm,
+.flatpickr-calendar, .flatpickr-day {
+    border-radius: 0 !important;
 }
 </style>
 
@@ -289,13 +296,13 @@ try {
         <form method="GET" class="row g-2 align-items-end">
             <div class="col-md-3">
                 <label class="form-label small fw-bold mb-1">Từ ngày</label>
-                <input type="date" name="start_date" class="form-control form-control-sm"
-                       value="<?= htmlspecialchars($start_date) ?>" max="<?= date('Y-m-d') ?>">
+                <input type="text" name="start_date" class="form-control form-control-sm flatpickr-date bg-white"
+                       value="<?= htmlspecialchars($start_date) ?>" placeholder="Chọn ngày...">
             </div>
             <div class="col-md-3">
                 <label class="form-label small fw-bold mb-1">Đến ngày</label>
-                <input type="date" name="end_date" class="form-control form-control-sm"
-                       value="<?= htmlspecialchars($end_date) ?>" max="<?= date('Y-m-d') ?>">
+                <input type="text" name="end_date" class="form-control form-control-sm flatpickr-date bg-white"
+                       value="<?= htmlspecialchars($end_date) ?>" placeholder="Chọn ngày...">
             </div>
             <input type="hidden" name="year_revenue" value="<?= $year_revenue ?>">
             <input type="hidden" name="year_booking" value="<?= $year_booking ?>">
@@ -442,8 +449,7 @@ try {
                     <?php
                     $legend = [
                         ['Hoàn thành', '#28a745', $status_data[0]],
-                        ['Đang chờ',   '#ffc107', $status_data[1]],
-                        ['Đã hủy',     '#dc3545', $status_data[2]],
+                        ['Đã hủy',     '#dc3545', $status_data[1]],
                     ];
                     foreach ($legend as [$lbl, $color, $val]):
                     ?>
@@ -518,7 +524,7 @@ new Chart(document.getElementById('barChart'), {
             backgroundColor: 'rgba(205,164,94,0.7)',
             borderColor: '#cda45e',
             borderWidth: 1,
-            borderRadius: 5,
+            borderRadius: 0,
         }]
     },
     options: {
@@ -540,8 +546,8 @@ new Chart(document.getElementById('barChart'), {
                 ticks: {
                     callback: function (v) {
                         return v >= 1000000
-                            ? (v/1000000).toFixed(1) + 'M'
-                            : v >= 1000 ? (v/1000) + 'K' : v;
+                            ? (v/1000000).toFixed(1) + ' Tr'
+                            : v >= 1000 ? (v/1000) + ' K' : v;
                     }
                 }
             }
@@ -553,10 +559,10 @@ new Chart(document.getElementById('barChart'), {
 new Chart(document.getElementById('pieChart'), {
     type: 'doughnut',
     data: {
-        labels: ['Hoàn thành','Đang chờ','Đã hủy'],
+        labels: ['Hoàn thành','Đã hủy'],
         datasets: [{
             data: statusData,
-            backgroundColor: ['#28a745','#ffc107','#dc3545'],
+            backgroundColor: ['#28a745','#dc3545'],
             borderWidth: 2,
             borderColor: '#fff'
         }]
@@ -568,4 +574,16 @@ new Chart(document.getElementById('pieChart'), {
         plugins: { legend: { display: false } }
     }
 });
+
+// Khởi tạo Flatpickr tiếng Việt
+flatpickr(".flatpickr-date", {
+    locale: "vn",
+    dateFormat: "Y-m-d",
+    maxDate: "today",
+    altInput: true,
+    altFormat: "d/m/Y",
+    allowInput: true
+});
 </script>
+
+<?php include '../public/admin_layout_footer.php'; ?>

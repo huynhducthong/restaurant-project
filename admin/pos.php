@@ -501,16 +501,13 @@ function renderMenuItems() {
             
         const card = document.createElement('div');
         card.className = 'menu-item';
-        card.onclick = () => addItemToOrder(item.type, item.id, item.price);
+        card.onclick = () => showItemDetail(item.id, item.type);
         card.innerHTML = `
             <img src="${imgPath}" class="menu-img" onerror="this.src='../public/assets/img/placeholder.jpg'">
             <div class="menu-info">
                 <div class="menu-name">${item.name}</div>
                 <div class="d-flex justify-content-between align-items-center mt-1">
                     <div class="menu-price">${formatMoney(item.price)}</div>
-                    <button class="btn btn-sm btn-light rounded-circle" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0;" onclick="event.stopPropagation(); showItemDetail(${item.id}, '${item.type}')" title="Xem chi tiết">
-                        <i class="fas fa-info text-warning"></i>
-                    </button>
                 </div>
             </div>
         `;
@@ -648,7 +645,10 @@ function renderCart(data) {
             <div class="cart-item">
                 <img src="${imgPath}" class="cart-item-img" onerror="this.src='../public/assets/img/placeholder.jpg'">
                 <div class="cart-item-info">
-                    <div class="cart-item-name">${item.name}</div>
+                    <div class="cart-item-name">
+                        ${item.name}
+                        ${canEdit ? `<i class="fas fa-edit ms-2 text-primary" style="cursor:pointer;" onclick="updateItemNotes(${item.id}, '${(item.notes || '').replace(/'/g, "\\'")}')" title="Thêm/sửa ghi chú"></i>` : ''}
+                    </div>
                     ${item.notes ? `<div style="font-size: 0.75rem; color: #dc2626; margin-top: 2px;">${item.notes}</div>` : ''}
                     <div class="cart-item-price">${formatMoney(item.price)}</div>
                     <div class="cart-item-status ${statusInfo.class}">${statusInfo.label}</div>
@@ -1106,6 +1106,10 @@ function showItemDetail(id, type) {
 
     document.getElementById('detail-desc').innerHTML = detailHtml;
     
+    // Clear notes input
+    const notesInput = document.getElementById('detail-notes');
+    if (notesInput) notesInput.value = '';
+    
     const modal = new bootstrap.Modal(document.getElementById('itemDetailModal'));
     modal.show();
 }
@@ -1120,10 +1124,15 @@ function addCurrentDetailItem() {
             extraPrice += parseInt(cb.getAttribute('data-price')) || 0;
         });
         
-        let notes = selectedToppings.length > 0 ? "Topping: " + selectedToppings.join(", ") : "";
+        let customNotes = document.getElementById('detail-notes') ? document.getElementById('detail-notes').value.trim() : '';
+        let notesArr = [];
+        if (selectedToppings.length > 0) notesArr.push("Topping: " + selectedToppings.join(", "));
+        if (customNotes) notesArr.push(customNotes);
+        
+        let finalNotes = notesArr.join(" | ");
         let finalPrice = parseInt(currentDetailItem.price) + extraPrice;
         
-        addItemToOrder(currentDetailItem.type, currentDetailItem.id, finalPrice, notes);
+        addItemToOrder(currentDetailItem.type, currentDetailItem.id, finalPrice, finalNotes);
         bootstrap.Modal.getInstance(document.getElementById('itemDetailModal')).hide();
     }
 }
@@ -1141,6 +1150,9 @@ function addCurrentDetailItem() {
         <h5 id="detail-name" style="font-weight: 700; color: #1e293b; font-size: 1.5rem; margin-bottom: 5px;">Tên món</h5>
         <div id="detail-price" style="color: #3b82f6; font-weight: 700; font-size: 1.25rem; margin-bottom: 15px;">0đ</div>
         <div id="detail-desc" style="color: #475569; font-size: 1rem; line-height: 1.6; text-align: justify; padding: 0 15px; max-height: 350px; overflow-y: auto;">Mô tả chi tiết...</div>
+        <div class="mt-3 px-3">
+            <input type="text" id="detail-notes" class="form-control" placeholder="Nhập ghi chú cho món (VD: Ít cay, Không hành...)" style="border-radius: 8px;">
+        </div>
       </div>
       <div class="modal-footer border-0 d-flex justify-content-center pb-4">
         <button type="button" class="btn btn-primary px-4 py-2" style="border-radius: 20px; font-weight: 600;" onclick="addCurrentDetailItem()">
@@ -1250,6 +1262,31 @@ channel.bind('update_data', function(data) {
         loadOrder(false);
     }
 });
+
+function printBill() {
+    if (!currentTableId) return;
+    const printWindow = window.open(`pos_print.php?table_id=${currentTableId}`, '_blank');
+    printWindow.onload = function() {
+        printWindow.print();
+    };
+}
+
+function updateItemNotes(itemId, currentNotes) {
+    let newNotes = prompt("Nhập ghi chú cho món này (VD: Ít cay, Không hành...):", currentNotes || '');
+    if (newNotes !== null) {
+        fetch('controllers/pos_controller.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `action=update_notes&item_id=${itemId}&notes=${encodeURIComponent(newNotes)}`
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                loadOrder();
+            }
+        });
+    }
+}
 </script>
 
 

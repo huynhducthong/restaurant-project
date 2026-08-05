@@ -738,11 +738,81 @@ select.input-lux {
                     <div class="map-btn-lux mb-3" data-bs-toggle="modal" data-bs-target="#mapModal">
                         <i class="fas fa-map-marked-alt me-2"></i> Xem Sơ Đồ Nhà Hàng & Chọn Bàn
                     </div>
-                    <div id="selected-seat-display" class="card-select active" style="display:none; text-align:center;">
-                        <div class="seat-code" id="sp-code"></div>
-                        <div class="seat-info" style="color:var(--accent-burgundy)" id="sp-price"></div>
-                        <button type="button" class="btn-qty mt-2 mx-auto" style="width:25px;height:25px;font-size:10px;" onclick="clrSeat()"><i class="fas fa-times"></i></button>
+                    <style>
+                        .seat-display-hover-box {
+                            position: relative;
+                            display: none;
+                            text-align: center;
+                            padding: 20px;
+                            border: 1px solid var(--glass-border);
+                            border-radius: 0;
+                            background: #fff;
+                            overflow: hidden;
+                            transition: all 0.3s ease;
+                        }
+                        .seat-display-hover-box:hover .seat-overlay-actions {
+                            opacity: 1;
+                            visibility: visible;
+                        }
+                        .seat-overlay-actions {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background: rgba(255,255,255,0.95);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 15px;
+                            opacity: 0;
+                            visibility: hidden;
+                            transition: all 0.2s ease;
+                        }
+                        .seat-overlay-btn {
+                            border: none;
+                            border-radius: 0;
+                            padding: 8px 20px;
+                            font-size: 13px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.2s;
+                        }
+                        .seat-overlay-btn.btn-change {
+                            background: var(--accent-burgundy);
+                            color: #fff;
+                            box-shadow: 0 2px 5px rgba(119,31,40,0.3);
+                        }
+                        .seat-overlay-btn.btn-change:hover {
+                            background: #900020;
+                        }
+                        .seat-overlay-btn.btn-clear {
+                            background: #fef2f2;
+                            color: #ef4444;
+                            border: 1px solid #fecaca;
+                        }
+                        .seat-overlay-btn.btn-clear:hover {
+                            background: #fee2e2;
+                        }
+                    </style>
+                    <div id="selected-seat-display" class="seat-display-hover-box card-select active">
+                        <div class="seat-code" id="sp-code" style="font-size: 1.15rem; color: #333; margin-bottom: 5px;"></div>
+                        <div class="seat-info" style="color:var(--accent-burgundy); font-weight: 600; font-size: 1rem;" id="sp-price"></div>
+                        
+                        <div class="seat-overlay-actions">
+                            <button type="button" class="seat-overlay-btn btn-change" onclick="changeSeat()"><i class="fas fa-exchange-alt me-2"></i>Đổi bàn</button>
+                            <button type="button" class="seat-overlay-btn btn-clear" onclick="clrSeat()"><i class="fas fa-trash-alt me-2"></i>Xóa bàn</button>
+                        </div>
                     </div>
+                    <script>
+                        function changeSeat() {
+                            var mapModalEl = document.getElementById('mapModal');
+                            if (mapModalEl) {
+                                var modal = bootstrap.Modal.getInstance(mapModalEl) || new bootstrap.Modal(mapModalEl);
+                                modal.show();
+                            }
+                        }
+                    </script>
                     <select id="tsel" class="input-lux" style="display:none;" onchange="fromDrop(this)">
                         <option value="" data-price="0"></option>
                         <?php foreach($t_open as $t): ?>
@@ -2214,8 +2284,8 @@ function showPill(){
     var p = document.getElementById('selected-seat-display');
     if(p) {
         p.style.display = 'block';
-        var roomText = selRoom ? ' <span style="color:#666; font-weight:normal;">- ' + selRoom + '</span>' : '';
-        document.getElementById('sp-code').innerHTML = selCode + roomText;
+        var roomText = selRoom ? ' <span style="color:#666; font-size: 0.95rem; font-weight:normal;">- ' + selRoom + '</span>' : '';
+        document.getElementById('sp-code').innerHTML = 'Bàn đã chọn: <strong style="color: var(--accent-burgundy); font-weight: 700;">' + selCode + '</strong>' + roomText;
         document.getElementById('sp-price').textContent = selPrice > 0 ? '+ ' + selPrice.toLocaleString('vi-VN')+' đ' : '';
     }
     
@@ -2593,36 +2663,57 @@ function us(){
                 var totalPrice = itemPrice * qty;
                 var note = document.getElementById('fn' + id).value;
                 
+                var imgSrc = row.getAttribute('data-img') || 'public/assets/img/placeholder.jpg';
+
                 var itemDiv = document.createElement('div');
-                itemDiv.style.cssText = "background: rgba(0,0,0,0.02); padding: 10px; border-left: 3px solid var(--accent-burgundy); font-size: 12px; margin-bottom: 5px;";
+                itemDiv.style.cssText = "background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 0; padding: 12px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); display: flex; gap: 12px; align-items: center; position: relative;";
                 
-                var titleDiv = document.createElement('div');
-                titleDiv.style.cssText = "display: flex; justify-content: space-between; font-weight: 600; color: #000;";
-                titleDiv.innerHTML = '<span>' + name + ' x' + qty + '</span><span>' + totalPrice.toLocaleString('vi-VN') + ' đ</span>';
-                itemDiv.appendChild(titleDiv);
+                var imgHtml = `
+                    <div style="flex-shrink: 0; width: 55px; height: 55px; border-radius: 0; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <img src="${imgSrc}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='public/assets/img/placeholder.jpg'">
+                    </div>
+                `;
+
+                var contentDiv = document.createElement('div');
+                contentDiv.style.cssText = "flex-grow: 1; min-width: 0;";
+                
+                var titleHtml = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px;">
+                        <div style="font-weight: 700; color: #1e293b; font-size: 13px; line-height: 1.3; padding-right: 8px;">${name}</div>
+                        <div style="font-weight: 700; color: var(--accent-burgundy); font-size: 13px; white-space: nowrap;">${totalPrice.toLocaleString('vi-VN')} đ</div>
+                    </div>
+                    <div style="font-size: 11px; color: #64748b; font-weight: 500; margin-bottom: ${note ? '4px' : '0'};">Số lượng: <span style="color: #0f172a; font-weight: 600;">${qty}</span></div>
+                `;
+                contentDiv.innerHTML = titleHtml;
                 
                 if (note && note.trim() !== '') {
                     var noteDiv = document.createElement('div');
-                    noteDiv.style.cssText = "color: rgba(0,0,0,0.7); font-size: 11px; margin-top: 4px; font-style: italic; word-break: break-word;";
-                    noteDiv.textContent = note;
-                    itemDiv.appendChild(noteDiv);
+                    noteDiv.style.cssText = "color: #b45309; font-size: 10.5px; background: #fef3c7; padding: 3px 8px; border-radius: 0; display: inline-block; font-style: italic; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border: 1px solid rgba(245,158,11,0.2);";
+                    noteDiv.innerHTML = '<i class="fas fa-comment-dots me-1"></i>' + note;
+                    contentDiv.appendChild(noteDiv);
                 }
                 
                 var actionDiv = document.createElement('div');
-                actionDiv.style.cssText = "display: flex; gap: 10px; margin-top: 8px; justify-content: flex-end;";
+                actionDiv.style.cssText = "display: flex; gap: 6px; flex-shrink: 0; align-items: center; justify-content: center;";
                 
                 var editBtn = document.createElement('button');
                 editBtn.type = 'button';
-                editBtn.style.cssText = "background: none; border: none; color: var(--accent-burgundy); font-size: 11px; cursor: pointer; padding: 0;";
-                editBtn.innerHTML = '<i class="fas fa-edit me-1"></i>Sửa';
+                editBtn.style.cssText = "background: #f1f5f9; border: 1px solid #e2e8f0; color: #3b82f6; width: 30px; height: 30px; border-radius: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 12px;";
+                editBtn.innerHTML = '<i class="fas fa-pen"></i>';
+                editBtn.title = "Sửa tùy chọn";
+                editBtn.onmouseover = function() { this.style.background = '#e2e8f0'; };
+                editBtn.onmouseout = function() { this.style.background = '#f1f5f9'; };
                 editBtn.onclick = (function(foodId) {
                     return function() { openFoodOptionModal(foodId); };
                 })(id);
                 
                 var deleteBtn = document.createElement('button');
                 deleteBtn.type = 'button';
-                deleteBtn.style.cssText = "background: none; border: none; color: #ff6b6b; font-size: 11px; cursor: pointer; padding: 0;";
-                deleteBtn.innerHTML = '<i class="fas fa-trash me-1"></i>Xóa';
+                deleteBtn.style.cssText = "background: #fef2f2; border: 1px solid #fee2e2; color: #ef4444; width: 30px; height: 30px; border-radius: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 12px;";
+                deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                deleteBtn.title = "Xóa món";
+                deleteBtn.onmouseover = function() { this.style.background = '#fee2e2'; };
+                deleteBtn.onmouseout = function() { this.style.background = '#fef2f2'; };
                 deleteBtn.onclick = (function(foodId) {
                     return function() {
                         var foodRow = document.getElementById('mr' + foodId);
@@ -2636,6 +2727,9 @@ function us(){
                 
                 actionDiv.appendChild(editBtn);
                 actionDiv.appendChild(deleteBtn);
+                
+                itemDiv.innerHTML = imgHtml;
+                itemDiv.appendChild(contentDiv);
                 itemDiv.appendChild(actionDiv);
                 
                 listContainer.appendChild(itemDiv);
