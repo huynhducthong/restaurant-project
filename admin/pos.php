@@ -885,26 +885,32 @@ async function processCheckout() {
             body: formData.toString()
         });
         
-        const json = await res.json();
-        if (json.success) {
-            bootstrap.Modal.getInstance(document.getElementById('checkoutModal')).hide();
-            
-            // Print bill if checked
-            const printChecked = document.getElementById('printBillCheck').checked;
-            if (printChecked && json.data && json.data.order) {
-                printBill(json.data.order, json.data.items);
+        const resText = await res.text();
+        try {
+            const json = JSON.parse(resText);
+            if (json.success) {
+                bootstrap.Modal.getInstance(document.getElementById('checkoutModal')).hide();
+                
+                // Print bill if checked
+                const printChecked = document.getElementById('printBillCheck').checked;
+                if (printChecked && json.data && json.data.order) {
+                    printBill(json.data.order, json.data.items);
+                } else {
+                    alert('Thanh toán thành công!');
+                }
+                
+                deselectTable();
+                loadTables();
             } else {
-                alert('Thanh toán thành công!');
+                alert(json.message);
             }
-            
-            deselectTable();
-            loadTables();
-        } else {
-            alert(json.message);
+        } catch (parseError) {
+            console.error("JSON Parse Error:", parseError);
+            alert('Lỗi phản hồi từ máy chủ: ' + resText);
         }
     } catch (e) {
         console.error(e);
-        alert('Lỗi kết nối khi thanh toán');
+        alert('Lỗi kết nối mạng khi thanh toán');
     } finally {
         hideLoader();
     }
