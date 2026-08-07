@@ -1284,13 +1284,7 @@ channel.bind('update_data', function(data) {
     }
 });
 
-function printBill() {
-    if (!currentTableId) return;
-    const printWindow = window.open(`pos_print.php?table_id=${currentTableId}`, '_blank');
-    printWindow.onload = function() {
-        printWindow.print();
-    };
-}
+
 
 function updateItemNotes(itemId, currentNotes) {
     let newNotes = prompt("Nhập ghi chú cho món này (VD: Ít cay, Không hành...):", currentNotes || '');
