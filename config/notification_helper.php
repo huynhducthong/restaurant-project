@@ -657,7 +657,7 @@ function sendBookingCompleteEmail($emailNguoiNhan, $booking_info) {
         require_once __DIR__ . '/../vendor/autoload.php';
     }
 
-    $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+    $mail = new PHPMailer(true);
 
     try {
         $mail->isSMTP();
