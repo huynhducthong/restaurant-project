@@ -2581,7 +2581,7 @@ function us(){
     // Bàn (nếu là Table/Birthday)
     var ss = document.getElementById('ss');
     if (ss) {
-        ss.innerHTML = selCode ? selCode + (selRoom ? ' <span style="font-size:13px; font-weight:normal; color:rgba(255,255,255,0.7);">(' + selRoom + ')</span>' : '') : 'Chưa chọn';
+        ss.innerHTML = selCode ? selCode + (selRoom ? ' <span style="font-size:13px; font-weight:normal; color:rgba(0,0,0,0.5);">(' + selRoom + ')</span>' : '') : 'Chưa chọn';
         document.getElementById('sp2').textContent = selPrice > 0 ? '+ ' + selPrice.toLocaleString('vi-VN')+' đ' : '0 đ';
     }
 
