@@ -885,7 +885,7 @@ include '../../public/admin_layout_header.php';
     <div class="modal-dialog modal-dialog-centered">
         <form id="formQuickEdit" class="modal-content border-0 shadow">
             <div class="modal-header border-bottom-0 pb-0">
-                <h5 class="modal-title fw-bold text-info"><i class="fas fa-edit me-2"></i>Chỉnh sửa nhanh Đơn #<span id="qe-id-text"></span></h5>
+                <h5 class="modal-title fw-bold" id="modalQuickEditLabel"><i class="fas fa-edit me-2"></i>Chỉnh sửa nhanh Đơn #<span id="qe-id-text"></span> <small class="text-danger">(DB: <?= $db->query("SELECT DATABASE()")->fetchColumn() ?>)</small></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
