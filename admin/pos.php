@@ -886,31 +886,46 @@ async function processCheckout() {
         });
         
         const resText = await res.text();
+        let json;
         try {
-            const json = JSON.parse(resText);
-            if (json.success) {
-                bootstrap.Modal.getInstance(document.getElementById('checkoutModal')).hide();
-                
-                // Print bill if checked
-                const printChecked = document.getElementById('printBillCheck').checked;
-                if (printChecked && json.data && json.data.order) {
-                    printBill(json.data.order, json.data.items);
-                } else {
-                    alert('Thanh toán thành công!');
-                }
-                
-                deselectTable();
-                loadTables();
-            } else {
-                alert(json.message);
-            }
+            json = JSON.parse(resText);
         } catch (parseError) {
             console.error("JSON Parse Error:", parseError);
             alert('Lỗi phản hồi từ máy chủ: ' + resText);
+            hideLoader();
+            return;
+        }
+
+        if (json.success) {
+            const modalEl = document.getElementById('checkoutModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) {
+                modalInstance.hide();
+            } else {
+                // Fallback in case getInstance returns null
+                modalEl.classList.remove('show');
+                modalEl.style.display = 'none';
+                document.body.classList.remove('modal-open');
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) backdrop.remove();
+            }
+            
+            // Print bill if checked
+            const printChecked = document.getElementById('printBillCheck').checked;
+            if (printChecked && json.data && json.data.order) {
+                printBill(json.data.order, json.data.items);
+            } else {
+                alert('Thanh toán thành công!');
+            }
+            
+            deselectTable();
+            loadTables();
+        } else {
+            alert(json.message);
         }
     } catch (e) {
         console.error(e);
-        alert('Lỗi kết nối mạng khi thanh toán');
+        alert('Lỗi hệ thống nội bộ hoặc kết nối: ' + e.message);
     } finally {
         hideLoader();
     }
