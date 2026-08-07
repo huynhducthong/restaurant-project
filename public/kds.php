@@ -42,6 +42,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'complete_pos_order') {
+    $order_id = intval($_POST['order_id']);
+    try {
+        $db->prepare("UPDATE pos_order_items SET status = 'served' WHERE pos_order_id = ?")->execute([$order_id]);
+        triggerUpdate();
+        echo "success";
+    } catch(Exception $e) {
+        echo "error";
+    }
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'complete_pos_item') {
     $item_id = intval($_POST['item_id']);
     $item_type_req = $_POST['item_type'] ?? 'pos';
@@ -1269,9 +1281,21 @@ $normalOrders = $totalOrders - $urgentOrders;
             </div>
             
             <!-- Footer -->
+            <?php
+            $all_ready = (isset($order['original_total']) && isset($order['original_ready']) && $order['original_total'] > 0 && $order['original_total'] === $order['original_ready']);
+            if ($all_ready):
+            ?>
+            <div class="ticket-foot">
+              <button class="btn-done" onclick="completePosOrder(<?= $order['real_order_id'] ?>, this)">
+                <i class="fas fa-check-circle"></i>
+                <span>Giao Khách Xong</span>
+              </button>
+            </div>
+            <?php else: ?>
             <div class="ticket-foot" style="display: flex; justify-content: center; align-items: center; padding: 12px; background: var(--surface2); border-top: 1px solid var(--border); color: var(--txt-muted); font-size: 11px; font-weight: 500; font-family: var(--mono);">
               <i class="fas fa-info-circle" style="margin-right: 6px;"></i> Bấm "XONG" từng món khi hoàn tất
             </div>
+            <?php endif; ?>
           </div>
 
           <?php else: ?>
@@ -1678,29 +1702,38 @@ function completeOrder(id, btn) {
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Đang xử lý...</span>';
 
   $.post('kds.php', { action: 'complete_order', booking_id: id }, function(res) {
-    if (res === 'success') {
-      showToast('Đơn #' + String(id).padStart(4,'0') + ' — Hoàn thành!', 'success');
-      var ticket = document.getElementById('ticket-' + id);
-      if (ticket) {
-        ticket.style.transition = 'all .4s var(--ease)';
-        ticket.style.opacity    = '0';
-        ticket.style.transform  = 'scale(.95) translateY(-10px)';
-        setTimeout(function() {
-          ticket.remove();
-          // Update stats
-          var total = document.querySelectorAll('.ticket').length;
-          if (total === 0) window.location.reload();
-        }, 420);
-      }
+    if (res.trim() === 'success') {
+      $('#ticket-'+id).fadeOut(400, function(){ 
+        $(this).remove(); 
+        checkEmpty();
+      });
+      showToast('Đã báo cáo hoàn thành đơn', 'success');
     } else {
-      showToast('Có lỗi xảy ra! Thử lại.', 'error');
+      showToast('Có lỗi xảy ra', 'error');
       btn.classList.remove('completing');
       btn.innerHTML = '<i class="fas fa-check-circle"></i><span>Chế Biến Xong</span>';
     }
-  }).fail(function() {
-    showToast('Không kết nối được máy chủ!', 'error');
-    btn.classList.remove('completing');
-    btn.innerHTML = '<i class="fas fa-check-circle"></i><span>Chế Biến Xong</span>';
+  });
+}
+
+function completePosOrder(id, btn) {
+  if (!confirm('Xác nhận đã giao toàn bộ món của đơn POS này cho khách/phục vụ?')) return;
+
+  btn.classList.add('completing');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Đang xử lý...</span>';
+
+  $.post('kds.php', { action: 'complete_pos_order', order_id: id }, function(res) {
+    if (res.trim() === 'success') {
+      $('#ticket-pos-'+id).fadeOut(400, function(){ 
+        $(this).remove(); 
+        checkEmpty();
+      });
+      showToast('Đã xóa đơn khỏi KDS', 'success');
+    } else {
+      showToast('Có lỗi xảy ra', 'error');
+      btn.classList.remove('completing');
+      btn.innerHTML = '<i class="fas fa-check-circle"></i><span>Giao Khách Xong</span>';
+    }
   });
 }
 
