@@ -115,10 +115,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $setting_stmt = $db->query("SELECT key_value FROM settings WHERE key_name = 'open_time'");
         $open_time_setting = $setting_stmt->fetchColumn() ?: '09:00 AM - 11:00 PM';
         
-        $error_msg = "Quý khách vui lòng chọn giờ đến sau thời điểm hiện tại ít nhất {$min_hours} tiếng.";
-        if ($type === 'event' || $is_anniversary) $error_msg = "Dịch vụ Tiệc kỷ niệm yêu cầu chuẩn bị chu đáo, quý khách vui lòng đặt trước ít nhất 3 tiếng.";
-        if ($type === 'chef') $error_msg = "Dịch vụ Đầu bếp tại gia cần chọn lọc nguyên liệu riêng, quý khách vui lòng đặt trước ít nhất 24 tiếng.";
-        if ($type === 'bespoke') $error_msg = "Dịch vụ Thiết kế riêng đòi hỏi sự chuẩn bị hoàn mỹ nhất, quý khách vui lòng đặt trước ít nhất 48 tiếng.";
+        $error_msg = "Lỗi giờ (Debug): Bạn chọn " . date('d/m/Y H:i:s', $booking_timestamp) . ", giờ yêu cầu tối thiểu là " . date('d/m/Y H:i:s', $min_timestamp) . " (Giờ máy chủ: " . date('d/m/Y H:i:s') . "). Quý khách vui lòng chọn giờ đến sau thời điểm hiện tại ít nhất {$min_hours} tiếng.";
+        if ($type === 'event' || $is_anniversary) $error_msg = "Lỗi giờ (Debug): Bạn chọn " . date('d/m/Y H:i:s', $booking_timestamp) . " (Server: " . date('d/m/Y H:i:s') . "). Dịch vụ Tiệc kỷ niệm yêu cầu chuẩn bị chu đáo, quý khách vui lòng đặt trước ít nhất 3 tiếng.";
+        if ($type === 'chef') $error_msg = "Lỗi giờ (Debug): Bạn chọn " . date('d/m/Y H:i:s', $booking_timestamp) . " (Server: " . date('d/m/Y H:i:s') . "). Dịch vụ Đầu bếp tại gia cần chọn lọc nguyên liệu riêng, quý khách vui lòng đặt trước ít nhất 24 tiếng.";
+        if ($type === 'bespoke') $error_msg = "Lỗi giờ (Debug): Bạn chọn " . date('d/m/Y H:i:s', $booking_timestamp) . " (Server: " . date('d/m/Y H:i:s') . "). Dịch vụ Thiết kế riêng đòi hỏi sự chuẩn bị hoàn mỹ nhất, quý khách vui lòng đặt trước ít nhất 48 tiếng.";
 
         echo "<script>alert('{$error_msg}'); window.history.back();</script>";
         exit;
