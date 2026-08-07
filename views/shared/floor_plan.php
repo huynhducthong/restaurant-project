@@ -564,12 +564,12 @@ $all_tables = array_merge($t_open, $t_room);
         'Khu Phổ Thông' => $t_open,
         'Phòng VIP' => $t_room
     ];
-    foreach ($groups as $groupName => $tables): 
-        if (empty($tables)) continue;
+    foreach ($groups as $groupName => $groupTables): 
+        if (empty($groupTables)) continue;
     ?>
     <div class="mobile-table-group-title"><?= htmlspecialchars($groupName) ?></div>
     <div class="mobile-table-grid">
-        <?php foreach ($tables as $t): 
+        <?php foreach ($groupTables as $t): 
             $st = $t['is_available'] ? 'available' : 'booked';
             $tCode = $t['table_code'];
             $cap = (int)($t['capacity'] ?? 2);
