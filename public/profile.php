@@ -451,7 +451,8 @@ include __DIR__ . '/../views/client/layouts/header.php';
 <div class="container" style="position: relative; z-index: 1;">
   <?php
   // Kiểm tra xem có đơn nào đang chờ cọc không (Chỉ hiển thị khi đơn đang Pending - tức là Admin chưa Xác nhận)
-  $stmt_pending = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 ORDER BY id DESC LIMIT 1");
+  // Đối với Thiết kế riêng (combo_id = -1), chỉ hiển thị khi khách đã đồng ý thực đơn
+  $stmt_pending = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 AND (combo_id != -1 OR (combo_id = -1 AND chef_requirements LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%')) ORDER BY id DESC LIMIT 1");
   $stmt_pending->execute([$user_id]);
   $pending_deposit = $stmt_pending->fetch(PDO::FETCH_ASSOC);
 

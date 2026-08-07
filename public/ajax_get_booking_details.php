@@ -171,7 +171,11 @@ $total = 0;
                             if (strpos($l, 'Dịp:') === 0 || strpos($l, 'Ngân sách:') === 0 || strpos($l, 'Phong cách:') === 0) {
                                 $parts = explode(':', $l, 2);
                                 if (count($parts) == 2) {
-                                    $formatted_html .= '<div style="margin-bottom:8px; display:flex; align-items:flex-start;"><strong style="color:#222; min-width:100px; display:inline-block;">' . htmlspecialchars(trim($parts[0])) . ':</strong> <span style="color:#555; flex:1;">' . htmlspecialchars(trim($parts[1])) . '</span></div>';
+                                    $val = htmlspecialchars(trim($parts[1]));
+                                    if (strpos($l, 'Ngân sách:') === 0 && isset($booking['total_amount']) && $booking['total_amount'] > 0) {
+                                        $val = '<strong style="color:var(--accent-burgundy);">' . number_format($booking['total_amount']) . 'đ</strong> <span style="font-size:12px; font-style:italic;">(Bếp trưởng đã cập nhật báo giá)</span>';
+                                    }
+                                    $formatted_html .= '<div style="margin-bottom:8px; display:flex; align-items:flex-start;"><strong style="color:#222; min-width:100px; display:inline-block;">' . htmlspecialchars(trim($parts[0])) . ':</strong> <span style="color:#555; flex:1;">' . $val . '</span></div>';
                                 }
                             } elseif (strpos($l, 'Chi tiết:') === 0) {
                                 $in_details = true;
