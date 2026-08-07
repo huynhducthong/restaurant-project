@@ -903,13 +903,13 @@ include '../../public/admin_layout_header.php';
                     <select class="form-select rounded-0" name="table_id" id="qe-table">
                         <option value="">-- Không chọn (Mặc định) --</option>
                         <?php foreach ($tables as $t): ?>
-                            <option value="<?= $t['id'] ?>"><?= $t['table_code'] ?> (Bàn Lẻ <?= $t['is_available']?'Trống':'Đã đặt' ?>)</option>
+                            <option value="<?= $t['id'] ?>"><?= $t['table_code'] ?> (Bàn Lẻ)</option>
                         <?php endforeach; ?>
                         <?php foreach ($rooms as $r): ?>
-                            <option value="<?= $r['id'] ?>"><?= $r['table_code'] ?> (Phòng VIP <?= $r['is_available']?'Trống':'Đã đặt' ?>)</option>
+                            <option value="<?= $r['id'] ?>"><?= $r['table_code'] ?> (Phòng VIP)</option>
                         <?php endforeach; ?>
                         <?php foreach ($externals as $e): ?>
-                            <option value="<?= $e['id'] ?>"><?= $e['table_code'] ?> (Ngoại Viện <?= $e['is_available']?'Trống':'Đã bận' ?>)</option>
+                            <option value="<?= $e['id'] ?>"><?= $e['table_code'] ?> (Ngoại Viện)</option>
                         <?php endforeach; ?>
                     </select>
                 </div>
