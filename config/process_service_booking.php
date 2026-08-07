@@ -293,6 +293,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Đánh dấu cho Admin Panel nhận diện đơn Bespoke
         if ($is_bespoke_menu) {
             $combo_id = -1;
+            $validated_menu_items = []; // Clear any a la carte items if bespoke is selected
         }
 
         // Tính tiền món ăn khách chọn lẻ
