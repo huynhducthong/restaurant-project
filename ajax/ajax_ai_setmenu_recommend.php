@@ -96,7 +96,17 @@ YÊU CẦU BẮT BUỘC:
     curl_close($ch);
 
     if ($httpcode !== 200) {
-        echo json_encode(['status' => 'error', 'message' => 'Lỗi từ API AI.']);
+        $error_msg = 'Lỗi từ API AI (Mã lỗi: ' . $httpcode . ').';
+        $res_data = json_decode($response, true);
+        if (isset($res_data['error']['message'])) {
+            $msg = strtolower($res_data['error']['message']);
+            if (strpos($msg, 'quota') !== false || strpos($msg, 'exceeded') !== false) {
+                $error_msg = 'Hệ thống AI đang quá tải hoặc bạn đã vượt quá giới hạn lượt dùng API miễn phí của Google. Vui lòng thử lại sau ít phút.';
+            } else {
+                $error_msg = 'API AI trả về lỗi: ' . $res_data['error']['message'];
+            }
+        }
+        echo json_encode(['status' => 'error', 'message' => $error_msg]);
         exit;
     }
 
