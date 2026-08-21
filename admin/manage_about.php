@@ -100,7 +100,7 @@ $categories=$db->query("SELECT * FROM about_categories")->fetchAll(PDO::FETCH_AS
               <div class="mb-3"><label class="form-label fw-bold">Slug</label><input type="text" name="slug" class="form-control" value="<?= $edit_data['slug']??'' ?>"></div>
               <div class="mb-3"><label class="form-label fw-bold">Mốc năm (VD: 2024)</label><input type="text" name="milestone_text" class="form-control" value="<?= htmlspecialchars($edit_data['milestone_text']??'') ?>" placeholder="Nếu trống sẽ lấy năm của bài viết"></div>
               <div class="mb-3"><label class="form-label fw-bold">Ảnh</label><input type="file" name="thumbnail" class="form-control">
-                <?php if(!empty($edit_data['thumbnail'])): ?><img src="../public/assets/img/about/<?= $edit_data['thumbnail'] ?>" class="mt-2 img-thumbnail" width="120"><?php endif; ?>
+                <?php if(!empty($edit_data['thumbnail'])): ?><img src="../public/assets/img/about/<?= $edit_data['thumbnail'] ?>" class="mt-2 img-thumbnail" width="120" loading="lazy"><?php endif; ?>
               </div>
               <div class="row">
                 <div class="col-12 mb-3"><label class="form-label fw-bold">Thứ tự</label><input type="number" name="display_order" class="form-control" value="<?= $edit_data['display_order']??0 ?>"></div>
@@ -123,7 +123,7 @@ $categories=$db->query("SELECT * FROM about_categories")->fetchAll(PDO::FETCH_AS
           <tbody><?php foreach($posts as $p): ?>
             <tr>
               
-              <td><?php if($p['thumbnail']): ?><img src="../public/assets/img/about/<?= $p['thumbnail'] ?>" width="55" class="rounded"><?php endif; ?></td>
+              <td><?php if($p['thumbnail']): ?><img src="../public/assets/img/about/<?= $p['thumbnail'] ?>" width="55" class="rounded" loading="lazy"><?php endif; ?></td>
               <td><div class="fw-bold"><?= htmlspecialchars($p['title']) ?></div><small class="text-muted"><?= htmlspecialchars($p['slug']) ?></small></td>
               <td><span class="badge bg-info"><?= htmlspecialchars($p['cat_name']) ?></span></td>
               <td><?= $p['display_order'] ?></td>
