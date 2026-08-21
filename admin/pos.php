@@ -676,9 +676,20 @@ function renderCart(data) {
     badge.innerText = totalItems;
     badge.style.display = 'block';
 
+    let extraHtml = '';
+    if (data.order.booking_fee_extra && parseFloat(data.order.booking_fee_extra) > 0) {
+        extraHtml = `
+        <div class="d-flex justify-content-between mb-2 text-primary">
+            <span>Phí gói DV / Thiết kế riêng:</span>
+            <strong>+ ${formatMoney(parseFloat(data.order.booking_fee_extra))}</strong>
+        </div>
+        `;
+    }
+
     let totalHtml = `
+        ${extraHtml}
         <div class="d-flex justify-content-between mb-2">
-            <span>Tổng tiền món:</span>
+            <span>Tổng cộng (Món + Dịch vụ):</span>
             <strong>${formatMoney(data.order.total_amount)}</strong>
         </div>
     `;
@@ -973,6 +984,11 @@ function printBill(order, items) {
         </table>
         
         <div class="print-table" style="border: none; border-top: 1px dashed #000; padding-top: 10px;">
+            ${(order.booking_fee_extra && parseFloat(order.booking_fee_extra) > 0) ? `
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span>Phí dịch vụ/Thiết kế riêng:</span>
+                <span>${formatMoney(parseFloat(order.booking_fee_extra))}</span>
+            </div>` : ''}
             <div style="display: flex; justify-content: space-between;" class="print-total">
                 <span>TỔNG CỘNG:</span>
                 <span>${formatMoney(order.total_amount)}</span>
