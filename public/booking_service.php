@@ -1347,15 +1347,8 @@ select.input-lux {
     function nextStep(step) {
         if (step === 1 && validateStep1()) {
             showStep(2);
-            // Tự động gợi ý Set Menu khi vừa sang bước 2 (chỉ chạy 1 lần)
-            var isBespoke = document.getElementById('is_bespoke_menu') ? document.getElementById('is_bespoke_menu').value : '0';
-            if (!window.hasAutoRecommended && typeof recommendAISetMenu === 'function' && isBespoke != '1') {
-                window.hasAutoRecommended = true;
-                // Gọi API gợi ý ngầm sau 500ms để hiệu ứng chuyển bước mượt mà hơn
-                setTimeout(function() {
-                    recommendAISetMenu();
-                }, 500);
-            }
+            // Đã bỏ tính năng tự động gợi ý Set Menu để tiết kiệm API Quota. 
+            // Khách hàng sẽ tự bấm nút "Nhờ Bếp Trưởng Chọn Set Menu" nếu có nhu cầu.
         }
         if (step === 2 && validateStep2()) showStep(3);
     }
