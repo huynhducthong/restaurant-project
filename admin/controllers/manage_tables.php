@@ -49,6 +49,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 // Xử lý Xóa Bàn
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
+    
+    // Kiểm tra đơn hàng POS đang mở
+    $check_pos = $db->prepare("SELECT COUNT(*) FROM pos_orders WHERE table_id = ? AND status = 'open'");
+    $check_pos->execute([$id]);
+    if ($check_pos->fetchColumn() > 0) {
+        $_SESSION['flash_error'] = "Không thể xóa bàn vì đang có đơn hàng mở tại bàn này!";
+        header('Location: manage_tables.php'); exit;
+    }
+
+    // Kiểm tra lịch đặt bàn
+    $check_booking = $db->prepare("SELECT COUNT(*) FROM service_bookings WHERE table_id = ? AND status IN ('Pending', 'Confirmed')");
+    $check_booking->execute([$id]);
+    if ($check_booking->fetchColumn() > 0) {
+        $_SESSION['flash_error'] = "Không thể xóa bàn vì bàn này đang có khách đặt trước!";
+        header('Location: manage_tables.php'); exit;
+    }
+
     $db->prepare("DELETE FROM restaurant_tables WHERE id = ?")->execute([$id]);
     
     $_SESSION['flash_success'] = "Xóa bàn thành công!";

@@ -497,8 +497,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'reset_table' && isset($_GET['t
 }
 
 // --- 2. DỮ LIỆU HIỂN THỊ ---
-$tables = $db->query("SELECT * FROM restaurant_tables WHERE category = 'open' ORDER BY id ASC LIMIT 16")->fetchAll(PDO::FETCH_ASSOC);
-$rooms = $db->query("SELECT * FROM restaurant_tables WHERE category = 'room' ORDER BY id ASC LIMIT 6")->fetchAll(PDO::FETCH_ASSOC);
+$tables = $db->query("SELECT * FROM restaurant_tables WHERE category = 'open' ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
+$rooms = $db->query("SELECT * FROM restaurant_tables WHERE category = 'room' ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
 $externals = $db->query("SELECT * FROM restaurant_tables WHERE category = 'external' ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
 
 // Lấy lịch đặt bàn tiếp theo (trong tương lai hoặc đang diễn ra)
