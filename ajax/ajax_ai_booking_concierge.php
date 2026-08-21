@@ -90,7 +90,7 @@ YÊU CẦU ĐẶC BIỆT:
         } elseif ($httpcode == 503) {
             $err_msg = 'Hệ thống AI đang bị quá tải hoặc bảo trì. Vui lòng thử lại sau ít phút.';
         } elseif ($httpcode == 429) {
-            $err_msg = 'Hệ thống AI đã vượt giới hạn truy cập (Rate Limit). Vui lòng thử lại sau.';
+            $err_msg = 'Hệ thống AI đang quá tải hoặc đã vượt quá giới hạn lượt dùng API miễn phí của Google. Vui lòng thử lại sau.';
         }
         echo json_encode(['status' => 'error', 'message' => $err_msg]);
         exit;
