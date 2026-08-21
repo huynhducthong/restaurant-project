@@ -118,22 +118,58 @@ try {
             $booking = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$booking) throw new Exception('Không tìm thấy booking');
 
-            $db->prepare("INSERT INTO pos_orders (table_id, status, booking_id, deposit_amount) VALUES (?, 'open', ?, ?)")
-               ->execute([$table_id, $booking_id, $booking['deposit_amount']]);
-            $pos_order_id = $db->lastInsertId();
-
-            $db->prepare("UPDATE restaurant_tables SET status = 'occupied' WHERE id = ?")->execute([$table_id]);
+            // Calculate booking food and combo total
+            $booking_food_combo_total = 0;
             
-            // Đánh dấu booking đã hoàn tất check-in để không hiển thị lặp lại trên KDS
-            $db->prepare("UPDATE service_bookings SET status = 'Completed' WHERE id = ?")->execute([$booking_id]);
+            // If there's a combo, calculate it and insert it later
+            $c_price = 0;
+            if ($booking['combo_id'] > 0) {
+                $c_stmt = $db->prepare("SELECT price FROM combos WHERE id = ?");
+                $c_stmt->execute([$booking['combo_id']]);
+                $c_price = (float)$c_stmt->fetchColumn();
+                $booking_food_combo_total += $c_price;
+            }
 
             $b_details = $db->prepare("SELECT * FROM booking_details WHERE booking_id = ?");
             $b_details->execute([$booking_id]);
             $details = $b_details->fetchAll(PDO::FETCH_ASSOC);
 
-            // Tự động chuyển các món đã đặt trước sang POS với đúng trạng thái bếp đã nấu
-            $ins_item = $db->prepare("INSERT INTO pos_order_items (pos_order_id, item_type, item_id, quantity, price, status) VALUES (?, 'food', ?, ?, ?, ?)");
+            foreach ($details as $d) {
+                if ($d['item_type'] == 'food') {
+                    $fp = $db->prepare("SELECT price FROM foods WHERE id = ?");
+                    $fp->execute([$d['menu_id']]);
+                    $price = (float)$fp->fetchColumn();
+                    $final_price = $price;
+                    if ($d['toppings_info']) {
+                        $t_ids = explode(',', $d['toppings_info']);
+                        foreach ($t_ids as $tid) {
+                            $tp = $db->prepare("SELECT price FROM toppings WHERE id = ?");
+                            $tp->execute([$tid]);
+                            $final_price += (float)$tp->fetchColumn();
+                        }
+                    }
+                    $booking_food_combo_total += $final_price * $d['quantity'];
+                }
+            }
+
+            $booking_fee_extra = max(0, $booking['total_amount'] - $booking_food_combo_total);
+
+            $db->prepare("INSERT INTO pos_orders (table_id, status, booking_id, deposit_amount, booking_fee_extra) VALUES (?, 'open', ?, ?, ?)")
+               ->execute([$table_id, $booking_id, $booking['deposit_amount'], $booking_fee_extra]);
+            $pos_order_id = $db->lastInsertId();
+
+            $db->prepare("UPDATE restaurant_tables SET status = 'occupied' WHERE id = ?")->execute([$table_id]);
             
+            // Đánh dấu booking đã hoàn tất check-in
+            $db->prepare("UPDATE service_bookings SET status = 'Completed' WHERE id = ?")->execute([$booking_id]);
+
+            // Tự động chuyển các món đã đặt trước sang POS với đúng trạng thái bếp đã nấu
+            $ins_item = $db->prepare("INSERT INTO pos_order_items (pos_order_id, item_type, item_id, quantity, price, status) VALUES (?, ?, ?, ?, ?, ?)");
+            
+            if ($booking['combo_id'] > 0) {
+                $ins_item->execute([$pos_order_id, 'combo', $booking['combo_id'], 1, $c_price, 'served']);
+            }
+
             foreach ($details as $d) {
                 if ($d['item_type'] == 'food') {
                     $fp = $db->prepare("SELECT price FROM foods WHERE id = ?");
@@ -150,11 +186,11 @@ try {
                         }
                     }
                     $status = $d['status'] ?? 'pending';
-                    $ins_item->execute([$pos_order_id, $d['menu_id'], $d['quantity'], $final_price, $status]);
+                    $ins_item->execute([$pos_order_id, 'food', $d['menu_id'], $d['quantity'], $final_price, $status]);
                 }
             }
             
-            $upd = $db->prepare("UPDATE pos_orders SET total_amount = (SELECT SUM(price * quantity) FROM pos_order_items WHERE pos_order_id = ?) WHERE id = ?");
+            $upd = $db->prepare("UPDATE pos_orders SET total_amount = COALESCE((SELECT SUM(price * quantity) FROM pos_order_items WHERE pos_order_id = ?), 0) + booking_fee_extra WHERE id = ?");
             $upd->execute([$pos_order_id, $pos_order_id]);
 
             $db->commit();
@@ -391,5 +427,5 @@ function updateOrderTotal($db, $order_id) {
     $stmt = $db->prepare("SELECT SUM(quantity * price) FROM pos_order_items WHERE pos_order_id = ?");
     $stmt->execute([$order_id]);
     $total = $stmt->fetchColumn() ?: 0;
-    $db->prepare("UPDATE pos_orders SET total_amount = ? WHERE id = ?")->execute([$total, $order_id]);
+    $db->prepare("UPDATE pos_orders SET total_amount = ? + booking_fee_extra WHERE id = ?")->execute([$total, $order_id]);
 }
