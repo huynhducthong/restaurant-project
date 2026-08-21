@@ -167,7 +167,7 @@ try {
             $ins_item = $db->prepare("INSERT INTO pos_order_items (pos_order_id, item_type, item_id, quantity, price, status) VALUES (?, ?, ?, ?, ?, ?)");
             
             if ($booking['combo_id'] > 0) {
-                $ins_item->execute([$pos_order_id, 'combo', $booking['combo_id'], 1, $c_price, 'served']);
+                $ins_item->execute([$pos_order_id, 'combo', $booking['combo_id'], 1, $c_price, 'pending']);
             }
 
             foreach ($details as $d) {
