@@ -448,7 +448,7 @@ include __DIR__ . '/../views/client/layouts/header.php';
         </form>
     </div>
 
-<div class="container" style="position: relative; z-index: 1;">
+<div class="container" style="position: relative; z-index: 1; padding-top: 120px;">
   <?php
   // Kiểm tra xem có đơn nào đang chờ cọc không (Chỉ hiển thị khi đơn đang Pending - tức là Admin chưa Xác nhận)
   // Đối với Thiết kế riêng (combo_id = -1), chỉ hiển thị khi khách đã đồng ý thực đơn
@@ -458,7 +458,7 @@ include __DIR__ . '/../views/client/layouts/header.php';
 
   if ($pending_deposit):
   ?>
-  <div class="alert alert-warning d-flex align-items-center mt-4 mb-0 mx-auto" style="max-width: 900px; border: 1px solid #d4b06a; background-color: #fff9eb; color: #856404; border-radius: 8px; box-shadow: 0 4px 15px rgba(212, 176, 106, 0.15);">
+  <div class="alert alert-warning d-flex align-items-center mb-4 mx-auto" style="max-width: 900px; border: 1px solid #d4b06a; background-color: #fff9eb; color: #856404; border-radius: 8px; box-shadow: 0 4px 15px rgba(212, 176, 106, 0.15);">
       <i class="fas fa-exclamation-circle me-3" style="font-size: 1.5rem; color: #d4b06a;"></i>
       <div>
           <strong>Nhắc nhở:</strong> Bạn có đơn đặt bàn đang chờ thanh toán tiền cọc. 
@@ -475,7 +475,7 @@ include __DIR__ . '/../views/client/layouts/header.php';
 
   if ($quoted_booking):
   ?>
-  <div class="alert alert-info d-flex align-items-center mt-4 mb-0 mx-auto" style="max-width: 900px; border: 1px solid #17a2b8; background-color: #e1f5fe; color: #0c5460; border-radius: 8px; box-shadow: 0 4px 15px rgba(23, 162, 184, 0.15);">
+  <div class="alert alert-info d-flex align-items-center mb-4 mx-auto" style="max-width: 900px; border: 1px solid #17a2b8; background-color: #e1f5fe; color: #0c5460; border-radius: 8px; box-shadow: 0 4px 15px rgba(23, 162, 184, 0.15);">
       <i class="fas fa-bell me-3" style="font-size: 1.5rem; color: #17a2b8;"></i>
       <div>
           <strong>Thông báo mới:</strong> Nhà hàng đã cập nhật Báo Giá cho đơn đặt của quý khách - NHÃ. 
@@ -485,7 +485,7 @@ include __DIR__ . '/../views/client/layouts/header.php';
   <?php endif; ?>
 
   <!-- ══ HERO ACCOUNT ══ -->
-  <div class="hero-account text-center mb-5" style="margin-top: 120px;">
+  <div class="hero-account text-center mb-5">
     <div>
         <div class="mx-auto mb-3 shadow" style="width:140px; height:140px; border-radius:50%; position:relative; border:4px solid #181818; background:#181818;">
            <img src="<?= $my_av ?>" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
