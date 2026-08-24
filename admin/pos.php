@@ -620,6 +620,8 @@ function renderCart(data) {
             <div style="font-weight: 600; color: #0f172a; margin-bottom: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;"><i class="fas fa-gem me-2" style="color: #8b5cf6;"></i>Thông tin Thiết kế riêng</div>
             <div style="font-size: 0.85rem; color: #475569; display: grid; gap: 4px;">
                 <div><b>Khách hàng:</b> ${info.customer_name} - ${info.customer_phone || 'Không có sđt'}</div>
+                <div><b>Thời gian:</b> <span class="fw-bold">${info.booking_date}</span></div>
+                <div><b>Bàn/Phòng:</b> <span class="text-primary fw-bold">${info.table_code || 'Chưa xếp'}</span></div>
                 <div><b>Mã AI Gợi ý:</b> <span style="color: #2563eb; font-weight: bold;">#${aiCode}</span></div>
                 <div><b>Tổng Báo Giá:</b> <span style="color: #059669; font-weight: bold;">${formatMoney(info.booking_total)}</span></div>
                 <div><b>Đã cọc (30%):</b> <span style="color: #d97706; font-weight: bold;">${formatMoney(info.deposit_amount)}</span></div>
