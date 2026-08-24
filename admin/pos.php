@@ -608,7 +608,27 @@ function renderCart(data) {
     totalEl.innerText = formatMoney(data.order.total_amount);
     cancelBtn.disabled = false;
     
-    if (!data.items || data.items.length === 0) {
+    let html = '';
+    
+    if (data.order.booking_info && data.order.booking_info.service_type === 'bespoke') {
+        const info = data.order.booking_info;
+        const aiCodeMatch = info.chef_requirements ? info.chef_requirements.match(/#(\w{8})/) : null;
+        const aiCode = aiCodeMatch ? aiCodeMatch[1] : 'Không có';
+        
+        html += `
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+            <div style="font-weight: 600; color: #0f172a; margin-bottom: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;"><i class="fas fa-gem me-2" style="color: #8b5cf6;"></i>Thông tin Thiết kế riêng</div>
+            <div style="font-size: 0.85rem; color: #475569; display: grid; gap: 4px;">
+                <div><b>Khách hàng:</b> ${info.customer_name} - ${info.customer_phone || 'Không có sđt'}</div>
+                <div><b>Mã AI Gợi ý:</b> <span style="color: #2563eb; font-weight: bold;">#${aiCode}</span></div>
+                <div><b>Tổng Báo Giá:</b> <span style="color: #059669; font-weight: bold;">${formatMoney(info.booking_total)}</span></div>
+                <div><b>Đã cọc (30%):</b> <span style="color: #d97706; font-weight: bold;">${formatMoney(data.order.deposit_amount)}</span></div>
+            </div>
+            ${info.message ? `<div style="font-size: 0.8rem; color: #64748b; margin-top: 6px; font-style: italic;"><i class="fas fa-info-circle me-1"></i>${info.message}</div>` : ''}
+        </div>`;
+    }
+
+    if ((!data.items || data.items.length === 0) && (!data.order.booking_info || data.order.booking_info.service_type !== 'bespoke')) {
         container.innerHTML = `
             <div class="cart-empty">
                 <i class="fas fa-receipt"></i>
@@ -629,7 +649,7 @@ function renderCart(data) {
     let draftCount = 0;
     let totalItems = data.items.length;
     
-    container.innerHTML = data.items.map(item => {
+    container.innerHTML = html + (data.items || []).map(item => {
         if (item.status === 'draft') draftCount++;
         
         const imgPath = item.item_type === 'combo' 
