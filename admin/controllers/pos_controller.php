@@ -233,7 +233,7 @@ try {
 
             // Lấy thông tin booking nếu có
             if (!empty($order['booking_id'])) {
-                $b_stmt = $db->prepare("SELECT sb.service_type, sb.combo_id, sb.customer_name, sb.customer_phone, sb.message, sb.chef_requirements, sb.total_amount as booking_total, sb.deposit_amount, sb.booking_date, t.table_code FROM service_bookings sb LEFT JOIN restaurant_tables t ON sb.table_id = t.id WHERE sb.id = ?");
+                $b_stmt = $db->prepare("SELECT sb.service_type, sb.combo_id, sb.customer_name, sb.customer_phone, sb.message, sb.chef_requirements, sb.ai_suggested_menu, sb.total_amount as booking_total, sb.deposit_amount, sb.booking_date, t.table_code FROM service_bookings sb LEFT JOIN restaurant_tables t ON sb.table_id = t.id WHERE sb.id = ?");
                 $b_stmt->execute([$order['booking_id']]);
                 $order['booking_info'] = $b_stmt->fetch(PDO::FETCH_ASSOC);
             }

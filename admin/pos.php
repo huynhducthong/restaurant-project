@@ -612,8 +612,13 @@ function renderCart(data) {
     
     if (data.order.booking_info && data.order.booking_info.combo_id == -1) {
         const info = data.order.booking_info;
-        const aiCodeMatch = info.chef_requirements ? info.chef_requirements.match(/#(\w{8})/) : null;
-        const aiCode = aiCodeMatch ? aiCodeMatch[1] : 'Không có';
+        
+        let menuDisplay = '';
+        if (info.ai_suggested_menu) {
+            menuDisplay = `<div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #cbd5e1;"><b>Thực đơn Gợi ý (AI):</b><br><div style="white-space: pre-wrap; font-size: 0.8rem; color: #334155; max-height: 150px; overflow-y: auto;">${info.ai_suggested_menu}</div></div>`;
+        } else if (info.chef_requirements && info.chef_requirements.includes('Tuyển chọn riêng')) {
+            menuDisplay = `<div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #cbd5e1;"><b>Yêu cầu Tuyển chọn riêng:</b><br><div style="white-space: pre-wrap; font-size: 0.8rem; color: #334155; max-height: 150px; overflow-y: auto;">${info.chef_requirements}</div></div>`;
+        }
         
         html += `
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
@@ -622,11 +627,11 @@ function renderCart(data) {
                 <div><b>Khách hàng:</b> ${info.customer_name} - ${info.customer_phone || 'Không có sđt'}</div>
                 <div><b>Thời gian:</b> <span class="fw-bold">${info.booking_date}</span></div>
                 <div><b>Bàn/Phòng:</b> <span class="text-primary fw-bold">${info.table_code || 'Chưa xếp'}</span></div>
-                <div><b>Mã AI Gợi ý:</b> <span style="color: #2563eb; font-weight: bold;">#${aiCode}</span></div>
                 <div><b>Tổng Báo Giá:</b> <span style="color: #059669; font-weight: bold;">${formatMoney(info.booking_total)}</span></div>
                 <div><b>Đã cọc (30%):</b> <span style="color: #d97706; font-weight: bold;">${formatMoney(info.deposit_amount)}</span></div>
             </div>
-            ${info.message ? `<div style="font-size: 0.8rem; color: #64748b; margin-top: 6px; font-style: italic;"><i class="fas fa-info-circle me-1"></i>${info.message}</div>` : ''}
+            ${menuDisplay}
+            ${info.message ? `<div style="font-size: 0.8rem; color: #64748b; margin-top: 8px; font-style: italic; border-top: 1px dashed #cbd5e1; padding-top: 8px;"><i class="fas fa-info-circle me-1"></i>${info.message}</div>` : ''}
         </div>`;
     }
 
