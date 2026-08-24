@@ -978,6 +978,28 @@ async function processCheckout() {
 function printBill(order, items) {
     const tableCode = document.getElementById('selected-table-label').innerText.replace('Bàn: ', '').replace(' Bỏ chọn', '').trim();
     
+    let bespokePrintInfo = '';
+    if (order.booking_info && order.booking_info.combo_id == -1) {
+        const info = order.booking_info;
+        let menuDisplay = '';
+        if (info.ai_suggested_menu) {
+            menuDisplay = `<div style="margin-top: 5px;"><b>Thực đơn Gợi ý (AI):</b><br><div style="white-space: pre-wrap;">${info.ai_suggested_menu}</div></div>`;
+        } else if (info.chef_requirements && info.chef_requirements.includes('Tuyển chọn riêng')) {
+            menuDisplay = `<div style="margin-top: 5px;"><b>Yêu cầu Tuyển chọn riêng:</b><br><div style="white-space: pre-wrap;">${info.chef_requirements}</div></div>`;
+        }
+        bespokePrintInfo = `
+        <div style="border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 8px 0; margin-bottom: 10px; font-size: 11px; text-align: left;">
+            <div style="font-weight: bold; text-align: center; margin-bottom: 5px;">--- THÔNG TIN THIẾT KẾ RIÊNG ---</div>
+            <div><b>Khách hàng:</b> ${info.customer_name} - ${info.customer_phone || 'Không có sđt'}</div>
+            <div><b>Thời gian:</b> ${info.booking_date}</div>
+            ${info.service_type !== 'chef' ? `<div><b>Bàn/Phòng:</b> ${info.table_code || 'Chưa xếp'}</div>` : ''}
+            <div><b>Tổng Báo Giá:</b> ${formatMoney(info.booking_total)}</div>
+            <div><b>Đã cọc:</b> ${formatMoney(info.deposit_amount)}</div>
+            ${menuDisplay}
+            ${info.message ? `<div style="margin-top: 5px;"><b>Ghi chú:</b> ${info.message}</div>` : ''}
+        </div>`;
+    }
+    
     let itemsHtml = '';
     items.forEach(i => {
         itemsHtml += `
@@ -1001,6 +1023,8 @@ function printBill(order, items) {
             <div>Ngày: ${new Date().toLocaleString('vi-VN')}</div>
             <div>Thu ngân: Admin</div>
         </div>
+        
+        ${bespokePrintInfo}
         
         <table class="print-table">
             <thead>
