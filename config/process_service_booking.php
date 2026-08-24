@@ -519,6 +519,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $booking_msg .= "👉 Vui lòng duyệt đơn trên Admin.";
 
         @sendTelegramNotification($booking_msg);
+        
+        // --- GỬI EMAIL THÔNG BÁO TIẾP NHẬN ĐƠN CHO KHÁCH HÀNG ---
+        if ($user_id) {
+            $e_stmt = $db->prepare("SELECT email FROM users WHERE id = ?");
+            $e_stmt->execute([$user_id]);
+            $user_email = $e_stmt->fetchColumn();
+            if ($user_email) {
+                $booking_info = [
+                    'service_type' => $type,
+                    'booking_date' => $date,
+                    'customer_name' => $name
+                ];
+                @sendBookingReceivedEmail($user_email, $booking_info);
+            }
+        }
 
         if ($deposit_amount > 0) {
             echo "<script>

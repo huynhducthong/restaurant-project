@@ -339,6 +339,90 @@ function sendBookingEmailConfirmation($emailNguoiNhan, $booking_info) {
 }
 
 /**
+ * Gửi Email Xác nhận Đã Tiếp Nhận Yêu Cầu (Pending) cho Khách hàng
+ */
+function sendBookingReceivedEmail($emailNguoiNhan, $booking_info) {
+    if (empty($emailNguoiNhan)) return false;
+    
+    // Nạp thư viện nếu chưa có
+    if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+        require_once __DIR__ . '/../vendor/autoload.php';
+    }
+
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host       = $_ENV['MAIL_HOST'] ?? $_SERVER['MAIL_HOST'] ?? 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $_ENV['MAIL_USERNAME'] ?? $_SERVER['MAIL_USERNAME'] ?? ''; 
+        $mail->Password   = $_ENV['MAIL_PASSWORD'] ?? $_SERVER['MAIL_PASSWORD'] ?? ''; 
+        $mail->SMTPSecure = $_ENV['MAIL_ENCRYPTION'] ?? $_SERVER['MAIL_ENCRYPTION'] ?? 'tls';
+        $mail->Port       = $_ENV['MAIL_PORT'] ?? $_SERVER['MAIL_PORT'] ?? 587;
+        $mail->CharSet    = 'UTF-8';
+
+        $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'] ?? $_SERVER['MAIL_FROM_ADDRESS'] ?? 'noreply@restaurantly.com', 'Restaurantly Admin');
+        $mail->addAddress($emailNguoiNhan);
+
+        $mail->isHTML(true);
+        $mail->Subject = 'Hệ thống đã tiếp nhận yêu cầu đặt lịch - Restaurantly';
+        
+        $svc = htmlspecialchars($booking_info['service_type'] ?? 'Dịch vụ', ENT_QUOTES);
+        if ($svc === 'table') $svc = 'Đặt bàn tiêu chuẩn';
+        if ($svc === 'birthday') $svc = 'Tiệc kỷ niệm / Phòng VIP';
+        if ($svc === 'chef') $svc = 'Đầu bếp tại gia';
+        if ($svc === 'bespoke') $svc = 'Thiết kế riêng';
+
+        $timeStr = date('H:i - d/m/Y', strtotime($booking_info['booking_date']));
+        $name = htmlspecialchars($booking_info['customer_name'] ?? 'Quý khách', ENT_QUOTES);
+
+        $mail->Body = "
+        <div style='background-color: #0b0c10; padding: 40px 20px; font-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif; color: #e0e0e0;'>
+            <div style='max-width: 600px; margin: 0 auto; background-color: #1f2833; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.5);'>
+                <!-- Header -->
+                <div style='background-color: #000000; padding: 40px 20px; text-align: center; border-bottom: 2px solid #c5a880;'>
+                    <h1 style='color: #c5a880; margin: 0; font-family: \"Times New Roman\", Times, serif; font-size: 32px; letter-spacing: 4px; text-transform: uppercase;'>Restaurantly</h1>
+                    <p style='color: #888; margin: 10px 0 0; font-size: 14px; letter-spacing: 2px; text-transform: uppercase;'>Fine Dining Experience</p>
+                </div>
+                
+                <!-- Body -->
+                <div style='padding: 40px 30px;'>
+                    <h2 style='color: #ffffff; margin-top: 0; font-weight: 300; font-size: 24px;'>Kính chào $name,</h2>
+                    <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>Hệ thống của chúng tôi vừa tiếp nhận thành công yêu cầu đặt lịch <strong>$svc</strong> của quý khách.</p>
+                    
+                    <div style='margin: 30px 0; background: #242f3b; border-radius: 8px; padding: 25px; border-left: 4px solid #c5a880;'>
+                        <h3 style='margin: 0 0 15px 0; color: #c5a880; font-family: \"Times New Roman\", Times, serif; font-size: 18px;'>Thông Tin Yêu Cầu Đang Chờ Xử Lý:</h3>
+                        <table style='width: 100%; border-collapse: collapse; color: #e0e0e0; font-size: 15px;'>
+                            <tr>
+                                <td style='padding: 10px 0; border-bottom: 1px solid #334050; color: #888; width: 40%;'>Loại Dịch Vụ:</td>
+                                <td style='padding: 10px 0; border-bottom: 1px solid #334050; font-weight: bold;'>$svc</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 10px 0; border-bottom: 1px solid #334050; color: #888;'>Thời Gian:</td>
+                                <td style='padding: 10px 0; border-bottom: 1px solid #334050; font-weight: bold;'>$timeStr</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 10px 0; border-bottom: 1px solid #334050; color: #888;'>Trạng Thái:</td>
+                                <td style='padding: 10px 0; border-bottom: 1px solid #334050; font-weight: bold; color: #f39c12;'>Đang chờ duyệt</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>Ban Quản lý nhà hàng sẽ sớm kiểm tra yêu cầu và phản hồi lại cho quý khách (hoặc tiến hành báo giá nếu là dịch vụ thiết kế riêng). Xin quý khách kiên nhẫn chờ đợi.</p>
+                    
+                    <p style='color: #ffffff; line-height: 1.8; font-size: 16px; margin-top: 30px; font-style: italic; font-family: \"Times New Roman\", Times, serif;'>Trân trọng,<br>Ban Quản Trị Restaurantly</p>
+                </div>
+            </div>
+        </div>";
+
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+/**
  * Gửi Email Nhắc Nhở Đặt Bàn (30 Phút) cho Khách hàng
  */
 function sendBookingReminderEmail($emailNguoiNhan, $booking_info) {
