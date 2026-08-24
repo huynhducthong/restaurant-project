@@ -539,7 +539,7 @@ if ($toast_admin) {
             </div>
             <p style="margin: 0; color: #333; font-size: 0.95rem; line-height: 1.5;">
                 Khách hàng <b>' . htmlspecialchars($c_name) . '</b> đã <strong>ĐỒNG Ý</strong> thực đơn Thiết Kế Riêng (Đơn #' . $toast_admin['id'] . ').
-                <a href="/restaurant-project/admin/manage_bespoke.php" style="color: #28a745; font-weight: bold; text-decoration: underline; display: block; margin-top: 8px;">Xem đơn ngay <i class="fas fa-arrow-right ms-1"></i></a>
+                <a href="' . BASE_URL . '/admin/controllers/manage_services.php" style="color: #28a745; font-weight: bold; text-decoration: underline; display: block; margin-top: 8px;">Xem đơn ngay <i class="fas fa-arrow-right ms-1"></i></a>
             </p>
         </div>
     </div>
