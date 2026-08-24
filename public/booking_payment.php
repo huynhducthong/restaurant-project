@@ -28,6 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirm_payment'])) {
         @sendTelegramNotification($msg);
     }
     
+    // Lưu vào session để ẩn thông báo nhắc nhở thanh toán phía người dùng
+    if (!isset($_SESSION['paid_bookings'])) {
+        $_SESSION['paid_bookings'] = [];
+    }
+    $_SESSION['paid_bookings'][$booking_id] = true;
+
     header("Location: booking_success.php?success=1&id=" . $booking_id);
     exit;
 }
