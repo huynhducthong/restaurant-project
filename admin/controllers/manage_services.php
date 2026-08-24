@@ -26,6 +26,15 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
         $price = (float)$_GET['price'];
         $deposit = $price * 0.3; // Cọc 30%
         $db->prepare("UPDATE service_bookings SET total_amount = ?, deposit_amount = ? WHERE id = ?")->execute([$price, $deposit, $id]);
+        
+        // --- THÊM: Gửi email báo giá ---
+        require_once '../../config/notification_helper.php';
+        $stmt_bk = $db->prepare("SELECT sb.*, u.email FROM service_bookings sb LEFT JOIN users u ON sb.user_id = u.id WHERE sb.id = ?");
+        $stmt_bk->execute([$id]);
+        $b = $stmt_bk->fetch(PDO::FETCH_ASSOC);
+        if ($b && !empty($b['email'])) {
+            @sendBookingQuoteEmail($b['email'], $b);
+        }
         header("Location: manage_services.php?msg=price_updated");
         exit;
     }
