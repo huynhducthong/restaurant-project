@@ -518,6 +518,34 @@ try {
 </head>
 
 <body>
+<?php
+// GLOBAL ADMIN TOAST
+if (!isset($db)) {
+    require_once __DIR__ . '/../config/database.php';
+    $db = (new Database())->getConnection();
+}
+$stmt_toast_admin = $db->prepare("SELECT sb.id, u.full_name, u.username FROM service_bookings sb JOIN users u ON sb.user_id = u.id WHERE sb.status = 'Pending' AND sb.combo_id = -1 AND sb.chef_requirements LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%' ORDER BY sb.id DESC LIMIT 1");
+$stmt_toast_admin->execute();
+$toast_admin = $stmt_toast_admin->fetch(PDO::FETCH_ASSOC);
+
+if ($toast_admin) {
+    $c_name = $toast_admin['full_name'] ?: $toast_admin['username'];
+    echo '
+    <div style="position: fixed; top: 80px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 15px;">
+        <div style="background: #fff; border-left: 4px solid #28a745; padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); max-width: 350px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <h6 style="margin: 0; color: #28a745; font-weight: bold; font-size: 1rem;"><i class="fas fa-check-circle me-2"></i>Tin vui từ Khách hàng</h6>
+                <button type="button" onclick="this.parentElement.parentElement.style.display=\'none\';" style="background: none; border: none; color: #666; font-size: 1.2rem; line-height: 1; padding: 0;">&times;</button>
+            </div>
+            <p style="margin: 0; color: #333; font-size: 0.95rem; line-height: 1.5;">
+                Khách hàng <b>' . htmlspecialchars($c_name) . '</b> đã <strong>ĐỒNG Ý</strong> thực đơn Thiết Kế Riêng (Đơn #' . $toast_admin['id'] . ').
+                <a href="/restaurant-project/admin/manage_bespoke.php" style="color: #28a745; font-weight: bold; text-decoration: underline; display: block; margin-top: 8px;">Xem đơn ngay <i class="fas fa-arrow-right ms-1"></i></a>
+            </p>
+        </div>
+    </div>
+    ';
+}
+?>
 
     <!-- SIDEBAR OVERLAY -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
