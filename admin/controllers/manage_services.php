@@ -81,7 +81,7 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
             }
 
             // Lấy thông tin đơn (dùng cho thông báo)
-            $stmt_bk = $db->prepare("SELECT sb.id, sb.service_type, sb.customer_name, sb.customer_phone, sb.booking_date, sb.guests, sb.total_amount, sb.deposit_amount, u.email FROM service_bookings sb LEFT JOIN users u ON sb.user_id = u.id WHERE sb.id = ?");
+            $stmt_bk = $db->prepare("SELECT sb.id, sb.service_type, sb.combo_id, sb.customer_name, sb.customer_phone, sb.booking_date, sb.guests, sb.total_amount, sb.deposit_amount, sb.chef_requirements, sb.ai_suggested_menu, t.table_code, u.email FROM service_bookings sb LEFT JOIN users u ON sb.user_id = u.id LEFT JOIN restaurant_tables t ON sb.table_id = t.id WHERE sb.id = ?");
             $stmt_bk->execute([$id]);
             $booking_info = $stmt_bk->fetch(PDO::FETCH_ASSOC) ?: null;
 

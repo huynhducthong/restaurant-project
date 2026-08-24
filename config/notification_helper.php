@@ -317,7 +317,26 @@ function sendBookingEmailConfirmation($emailNguoiNhan, $booking_info) {
                                 <td style='padding: 12px 0; color: #4caf50; font-weight: bold; text-align: right;'>$deposit VNĐ</td>
                             </tr>
                         </table>
-                    </div>
+                    </div>";
+
+        if (isset($booking_info['combo_id']) && $booking_info['combo_id'] == -1) {
+            $menuHtml = '';
+            if (!empty($booking_info['ai_suggested_menu'])) {
+                $menuHtml = "<div style='color: #ffffff; font-size: 14px; white-space: pre-wrap; font-family: monospace;'>" . htmlspecialchars($booking_info['ai_suggested_menu']) . "</div>";
+            } elseif (!empty($booking_info['chef_requirements']) && strpos($booking_info['chef_requirements'], 'Tuyển chọn riêng') !== false) {
+                $menuHtml = "<div style='color: #ffffff; font-size: 14px; white-space: pre-wrap; font-family: monospace;'>" . htmlspecialchars($booking_info['chef_requirements']) . "</div>";
+            }
+            
+            if (!empty($menuHtml)) {
+                $mail->Body .= "
+                    <div style='margin: 35px 0; background: #242f3b; border-radius: 8px; padding: 30px; border-left: 4px solid #c5a880; box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);'>
+                        <h3 style='margin: 0 0 20px 0; color: #c5a880; font-family: \"Times New Roman\", Times, serif; font-size: 20px; letter-spacing: 1px;'>Thực Đơn Gợi Ý (AI)</h3>
+                        $menuHtml
+                    </div>";
+            }
+        }
+        
+        $mail->Body .= "
                     
                     <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>Vui lòng có mặt đúng giờ để chúng tôi có thể phục vụ quý khách một cách chu đáo nhất. Mọi thay đổi về lịch trình xin vui lòng liên hệ Hotline: <strong style='color: #c5a880;'>0123 456 789</strong>.</p>
                     
