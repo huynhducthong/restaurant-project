@@ -617,7 +617,7 @@ if (isset($_SESSION['user_id'])) {
             </div>
             <p style="margin: 0; color: #ddd; font-size: 0.95rem; line-height: 1.5; font-family: \'Open Sans\', sans-serif;">
                 Nhà hàng đã cập nhật Báo Giá cho đơn đặt của quý khách - NHÃ. 
-                <a href="/restaurant-project/public/profile.php?tab=bookings" style="color: #17a2b8; font-weight: bold; text-decoration: underline; display: block; margin-top: 8px;">Xem & Chốt Thực Đơn <i class="fas fa-arrow-right ms-1"></i></a>
+                <a href="' . safe_url('profile.php?tab=bookings', $path_prefix ?? '') . '" style="color: #17a2b8; font-weight: bold; text-decoration: underline; display: block; margin-top: 8px;">Xem & Chốt Thực Đơn <i class="fas fa-arrow-right ms-1"></i></a>
             </p>
         </div>
         ';
@@ -636,7 +636,7 @@ if (isset($_SESSION['user_id'])) {
             </div>
             <p style="margin: 0; color: #ddd; font-size: 0.95rem; line-height: 1.5; font-family: \'Open Sans\', sans-serif;">
                 Bạn có đơn đặt bàn đang chờ thanh toán tiền cọc. 
-                <a href="/restaurant-project/public/booking_payment.php?id=' . $pending_deposit_g['id'] . '" style="color: #cda45e; font-weight: bold; text-decoration: underline; display: block; margin-top: 8px;">Thanh toán ngay <i class="fas fa-arrow-right ms-1"></i></a>
+                <a href="' . safe_url('booking_payment.php?id=' . $pending_deposit_g['id'], $path_prefix ?? '') . '" style="color: #cda45e; font-weight: bold; text-decoration: underline; display: block; margin-top: 8px;">Thanh toán ngay <i class="fas fa-arrow-right ms-1"></i></a>
             </p>
         </div>
         ';
