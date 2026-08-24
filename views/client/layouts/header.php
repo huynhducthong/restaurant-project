@@ -600,7 +600,27 @@ if (!empty($logo_path)) {
 </head>
 
 <body>
-    
+<?php
+// GLOBAL QUOTE NOTIFICATION
+if (isset($_SESSION['user_id'])) {
+    $stmt_quoted_g = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 AND combo_id = -1 AND (chef_requirements IS NULL OR chef_requirements NOT LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%') ORDER BY id DESC LIMIT 1");
+    $stmt_quoted_g->execute([$_SESSION['user_id']]);
+    if ($stmt_quoted_g->fetch(PDO::FETCH_ASSOC)) {
+        echo '
+        <div style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; background: rgba(0, 0, 0, 0.85); border-left: 4px solid #cda45e; padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 350px; backdrop-filter: blur(10px); border: 1px solid #333;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <h6 style="margin: 0; color: #cda45e; font-weight: bold; font-family: \'Cormorant Garamond\', serif; font-size: 1.2rem;"><i class="fas fa-bell me-2"></i>Thông báo mới</h6>
+                <button type="button" onclick="this.parentElement.parentElement.style.display=\'none\';" style="background: none; border: none; color: #fff; font-size: 1.2rem; line-height: 1; padding: 0;">&times;</button>
+            </div>
+            <p style="margin: 0; color: #ddd; font-size: 0.95rem; line-height: 1.5; font-family: \'Open Sans\', sans-serif;">
+                Nhà hàng đã cập nhật Báo Giá cho đơn đặt của quý khách - NHÃ. 
+                <a href="/restaurant-project/public/profile.php?tab=bookings" style="color: #cda45e; font-weight: bold; text-decoration: underline; display: block; margin-top: 8px;">Xem & Chốt Thực Đơn <i class="fas fa-arrow-right ms-1"></i></a>
+            </p>
+        </div>
+        ';
+    }
+}
+?>
 
     
 
