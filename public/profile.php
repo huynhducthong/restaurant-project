@@ -467,6 +467,23 @@ include __DIR__ . '/../views/client/layouts/header.php';
   </div>
   <?php endif; ?>
 
+  <?php
+  // Kiểm tra xem có đơn Thiết kế riêng nào ĐÃ ĐƯỢC BÁO GIÁ nhưng CHƯA ĐỒNG Ý thực đơn không
+  $stmt_quoted = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 AND combo_id = -1 AND (chef_requirements IS NULL OR chef_requirements NOT LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%') ORDER BY id DESC LIMIT 1");
+  $stmt_quoted->execute([$user_id]);
+  $quoted_booking = $stmt_quoted->fetch(PDO::FETCH_ASSOC);
+
+  if ($quoted_booking):
+  ?>
+  <div class="alert alert-info d-flex align-items-center mt-4 mb-0 mx-auto" style="max-width: 900px; border: 1px solid #17a2b8; background-color: #e1f5fe; color: #0c5460; border-radius: 8px; box-shadow: 0 4px 15px rgba(23, 162, 184, 0.15);">
+      <i class="fas fa-bell me-3" style="font-size: 1.5rem; color: #17a2b8;"></i>
+      <div>
+          <strong>Thông báo mới:</strong> Nhà hàng đã cập nhật Báo Giá cho đơn đặt của quý khách - NHÃ. 
+          <a href="javascript:void(0)" onclick="switchTab('bookings');" class="alert-link" style="color: #0b3d46; text-decoration: underline;">Vui lòng xem chi tiết lịch sử để chốt thực đơn</a>.
+      </div>
+  </div>
+  <?php endif; ?>
+
   <!-- ══ HERO ACCOUNT ══ -->
   <div class="hero-account text-center mb-5" style="margin-top: 120px;">
     <div>
