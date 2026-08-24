@@ -607,7 +607,7 @@ if (isset($_SESSION['user_id'])) {
     $stmt_quoted_g->execute([$_SESSION['user_id']]);
     if ($stmt_quoted_g->fetch(PDO::FETCH_ASSOC)) {
         echo '
-        <div style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; background: rgba(0, 0, 0, 0.85); border-left: 4px solid #cda45e; padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 350px; backdrop-filter: blur(10px); border: 1px solid #333;">
+        <div style="position: fixed; top: 120px; right: 30px; z-index: 9999; background: rgba(0, 0, 0, 0.85); border-left: 4px solid #cda45e; padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 350px; backdrop-filter: blur(10px); border: 1px solid #333;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                 <h6 style="margin: 0; color: #cda45e; font-weight: bold; font-family: \'Cormorant Garamond\', serif; font-size: 1.2rem;"><i class="fas fa-bell me-2"></i>Thông báo mới</h6>
                 <button type="button" onclick="this.parentElement.parentElement.style.display=\'none\';" style="background: none; border: none; color: #fff; font-size: 1.2rem; line-height: 1; padding: 0;">&times;</button>
