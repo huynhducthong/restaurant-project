@@ -448,44 +448,9 @@ include __DIR__ . '/../views/client/layouts/header.php';
         </form>
     </div>
 
-<div class="container" style="position: relative; z-index: 1; padding-top: 120px;">
-  <?php
-  // Kiểm tra xem có đơn nào đang chờ cọc không (Chỉ hiển thị khi đơn đang Pending - tức là Admin chưa Xác nhận)
-  // Đối với Thiết kế riêng (combo_id = -1), chỉ hiển thị khi khách đã đồng ý thực đơn
-  $stmt_pending = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 AND (combo_id != -1 OR (combo_id = -1 AND chef_requirements LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%')) ORDER BY id DESC LIMIT 1");
-  $stmt_pending->execute([$user_id]);
-  $pending_deposit = $stmt_pending->fetch(PDO::FETCH_ASSOC);
-
-  if ($pending_deposit):
-  ?>
-  <div class="alert alert-warning d-flex align-items-center mb-4 mx-auto" style="max-width: 900px; border: 1px solid #d4b06a; background-color: #fff9eb; color: #856404; border-radius: 8px; box-shadow: 0 4px 15px rgba(212, 176, 106, 0.15);">
-      <i class="fas fa-exclamation-circle me-3" style="font-size: 1.5rem; color: #d4b06a;"></i>
-      <div>
-          <strong>Nhắc nhở:</strong> Bạn có đơn đặt bàn đang chờ thanh toán tiền cọc. 
-          <a href="booking_payment.php?id=<?= $pending_deposit['id'] ?>" class="alert-link" style="color: var(--accent-burgundy); text-decoration: underline;">Bấm vào đây để Thanh toán ngay</a>!
-      </div>
-  </div>
-  <?php endif; ?>
-
-  <?php
-  // Kiểm tra xem có đơn Thiết kế riêng nào ĐÃ ĐƯỢC BÁO GIÁ nhưng CHƯA ĐỒNG Ý thực đơn không
-  $stmt_quoted = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 AND combo_id = -1 AND (chef_requirements IS NULL OR chef_requirements NOT LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%') ORDER BY id DESC LIMIT 1");
-  $stmt_quoted->execute([$user_id]);
-  $quoted_booking = $stmt_quoted->fetch(PDO::FETCH_ASSOC);
-
-  if ($quoted_booking):
-  ?>
-  <div class="alert alert-info d-flex align-items-center mb-4 mx-auto" style="max-width: 900px; border: 1px solid #17a2b8; background-color: #e1f5fe; color: #0c5460; border-radius: 8px; box-shadow: 0 4px 15px rgba(23, 162, 184, 0.15);">
-      <i class="fas fa-bell me-3" style="font-size: 1.5rem; color: #17a2b8;"></i>
-      <div>
-          <strong>Thông báo mới:</strong> Nhà hàng đã cập nhật Báo Giá cho đơn đặt của quý khách - NHÃ. 
-          <a href="javascript:void(0)" onclick="switchTab('bookings');" class="alert-link" style="color: #0b3d46; text-decoration: underline;">Vui lòng xem chi tiết lịch sử để chốt thực đơn</a>.
-      </div>
-  </div>
-  <?php endif; ?>
-
+<div class="container" style="position: relative; z-index: 1;">
   <!-- ══ HERO ACCOUNT ══ -->
-  <div class="hero-account text-center mb-5">
+  <div class="hero-account text-center mb-5" style="margin-top: 120px;">
     <div>
         <div class="mx-auto mb-3 shadow" style="width:140px; height:140px; border-radius:50%; position:relative; border:4px solid #181818; background:#181818;">
            <img src="<?= $my_av ?>" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
@@ -513,6 +478,42 @@ include __DIR__ . '/../views/client/layouts/header.php';
     </div>
   </div>
 
+  <?php
+  // Kiểm tra xem có đơn nào đang chờ cọc không (Chỉ hiển thị khi đơn đang Pending - tức là Admin chưa Xác nhận)
+  // Đối với Thiết kế riêng (combo_id = -1), chỉ hiển thị khi khách đã đồng ý thực đơn
+  $stmt_pending = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 AND (combo_id != -1 OR (combo_id = -1 AND chef_requirements LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%')) ORDER BY id DESC LIMIT 1");
+  $stmt_pending->execute([$user_id]);
+  $pending_deposit = $stmt_pending->fetch(PDO::FETCH_ASSOC);
+
+  if ($pending_deposit):
+  ?>
+  <div class="alert alert-warning d-flex align-items-center mt-4 mb-4 mx-auto" style="max-width: 900px; border: 1px solid #d4b06a; background-color: #fff9eb; color: #856404; border-radius: 8px; box-shadow: 0 4px 15px rgba(212, 176, 106, 0.15);">
+      <i class="fas fa-exclamation-circle me-3" style="font-size: 1.5rem; color: #d4b06a;"></i>
+      <div>
+          <strong>Nhắc nhở:</strong> Bạn có đơn đặt bàn đang chờ thanh toán tiền cọc. 
+          <a href="booking_payment.php?id=<?= $pending_deposit['id'] ?>" class="alert-link" style="color: var(--accent-burgundy); text-decoration: underline;">Bấm vào đây để Thanh toán ngay</a>!
+      </div>
+  </div>
+  <?php endif; ?>
+
+  <?php
+  // Kiểm tra xem có đơn Thiết kế riêng nào ĐÃ ĐƯỢC BÁO GIÁ nhưng CHƯA ĐỒNG Ý thực đơn không
+  $stmt_quoted = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 AND combo_id = -1 AND (chef_requirements IS NULL OR chef_requirements NOT LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%') ORDER BY id DESC LIMIT 1");
+  $stmt_quoted->execute([$user_id]);
+  $quoted_booking = $stmt_quoted->fetch(PDO::FETCH_ASSOC);
+
+  if ($quoted_booking):
+  ?>
+  <div class="alert alert-info d-flex align-items-center mt-4 mb-4 mx-auto" style="max-width: 900px; border: 1px solid #17a2b8; background-color: #e1f5fe; color: #0c5460; border-radius: 8px; box-shadow: 0 4px 15px rgba(23, 162, 184, 0.15);">
+      <i class="fas fa-bell me-3" style="font-size: 1.5rem; color: #17a2b8;"></i>
+      <div>
+          <strong>Thông báo mới:</strong> Nhà hàng đã cập nhật Báo Giá cho đơn đặt của quý khách - NHÃ. 
+          <a href="javascript:void(0)" onclick="switchTab('bookings');" class="alert-link" style="color: #0b3d46; text-decoration: underline;">Vui lòng xem chi tiết lịch sử để chốt thực đơn</a>.
+      </div>
+  </div>
+  <?php endif; ?>
+
+  
   <div class="horizontal-tabs d-flex justify-content-center flex-wrap gap-2 gap-md-4 mb-5 border-bottom pb-2">
     <a href="?tab=profile" class="htab <?= $tab=='profile'?'active':'' ?>">Thông tin</a>
     <a href="?tab=bookings" class="htab <?= $tab=='bookings'?'active':'' ?>">Lịch sử Đặt Bàn</a>
