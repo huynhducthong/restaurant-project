@@ -610,7 +610,7 @@ function renderCart(data) {
     
     let html = '';
     
-    if (data.order.booking_info && data.order.booking_info.service_type === 'bespoke') {
+    if (data.order.booking_info && data.order.booking_info.combo_id == -1) {
         const info = data.order.booking_info;
         const aiCodeMatch = info.chef_requirements ? info.chef_requirements.match(/#(\w{8})/) : null;
         const aiCode = aiCodeMatch ? aiCodeMatch[1] : 'Không có';
@@ -622,13 +622,13 @@ function renderCart(data) {
                 <div><b>Khách hàng:</b> ${info.customer_name} - ${info.customer_phone || 'Không có sđt'}</div>
                 <div><b>Mã AI Gợi ý:</b> <span style="color: #2563eb; font-weight: bold;">#${aiCode}</span></div>
                 <div><b>Tổng Báo Giá:</b> <span style="color: #059669; font-weight: bold;">${formatMoney(info.booking_total)}</span></div>
-                <div><b>Đã cọc (30%):</b> <span style="color: #d97706; font-weight: bold;">${formatMoney(data.order.deposit_amount)}</span></div>
+                <div><b>Đã cọc (30%):</b> <span style="color: #d97706; font-weight: bold;">${formatMoney(info.deposit_amount)}</span></div>
             </div>
             ${info.message ? `<div style="font-size: 0.8rem; color: #64748b; margin-top: 6px; font-style: italic;"><i class="fas fa-info-circle me-1"></i>${info.message}</div>` : ''}
         </div>`;
     }
 
-    if ((!data.items || data.items.length === 0) && (!data.order.booking_info || data.order.booking_info.service_type !== 'bespoke')) {
+    if ((!data.items || data.items.length === 0) && (!data.order.booking_info || data.order.booking_info.combo_id != -1)) {
         container.innerHTML = `
             <div class="cart-empty">
                 <i class="fas fa-receipt"></i>
@@ -714,13 +714,19 @@ function renderCart(data) {
         </div>
     `;
 
-    if (data.order.deposit_amount && parseFloat(data.order.deposit_amount) > 0) {
-        const deposit = parseFloat(data.order.deposit_amount);
-        const remain = data.order.total_amount - deposit;
+    let depositVal = 0;
+    if (data.order.booking_info && parseFloat(data.order.booking_info.deposit_amount) > 0) {
+        depositVal = parseFloat(data.order.booking_info.deposit_amount);
+    } else if (data.order.deposit_amount && parseFloat(data.order.deposit_amount) > 0) {
+        depositVal = parseFloat(data.order.deposit_amount);
+    }
+
+    if (depositVal > 0) {
+        const remain = data.order.total_amount - depositVal;
         totalHtml += `
             <div class="d-flex justify-content-between mb-2 text-danger">
                 <span>Đã cọc (B #${data.order.booking_id}):</span>
-                <strong>- ${formatMoney(deposit)}</strong>
+                <strong>- ${formatMoney(depositVal)}</strong>
             </div>
             <div class="d-flex justify-content-between mt-2 pt-2 border-top">
                 <span class="fs-5">Cần thanh toán:</span>

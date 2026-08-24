@@ -540,7 +540,7 @@ if ($filter == 'all' || $filter == 'pos') {
     $stmt_pos = $db->prepare("
         SELECT id, 'pos' as service_type, 'Khách Vãng Lai' as customer_name, '' as customer_phone, created_at as booking_date, created_at, guests, status, total_amount, '' as chef_requirements, '' as message, 1 as is_pos, NULL as combo_id, NULL as chef_name
         FROM pos_orders 
-        WHERE status IN ('paid', 'open')
+        WHERE status IN ('paid', 'open') AND booking_id IS NULL
     ");
     $stmt_pos->execute();
     $pos_orders = $stmt_pos->fetchAll(PDO::FETCH_ASSOC);
@@ -1121,7 +1121,9 @@ include '../../public/admin_layout_header.php';
             $.getJSON(apiUrl, function (data) {
                 if (data) {
                     $('#m-phone').text(data.customer_phone);
-                    $('#m-type').text(data.service_type.toUpperCase());
+                    let typeText = data.service_type.toUpperCase();
+                    if (data.combo_id == -1) typeText += " (Thiết kế riêng)";
+                    $('#m-type').text(typeText);
                     if (data.service_type === 'chef') {
                         $('#row-table').hide();
                     } else {
