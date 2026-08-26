@@ -216,7 +216,7 @@ $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td class="ps-4">
                                 <div class="d-flex align-items-center gap-3">
                                     <?php if ($emp['avatar_blob']): ?>
-                                        <img src="/ajax/get_avatar.php?emp_id=<?= $emp['id'] ?>" class="rounded-circle shadow-sm" style="width: 40px; height: 40px; object-fit: cover;" alt="Avatar">
+                                        <img src="<?= BASE_URL ?>/ajax/get_avatar.php?emp_id=<?= $emp['id'] ?>" class="rounded-circle shadow-sm" style="width: 40px; height: 40px; object-fit: cover;" alt="Avatar">
                                     <?php else: ?>
                                         <div class="avatar-placeholder">
                                             <?= strtoupper(mb_substr($emp['full_name'], 0, 1)) ?>
@@ -248,8 +248,12 @@ $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <?php endif; ?>
                             </td>
                             <td class="text-end pe-4">
+                                <?php
+                                    $emp_data = $emp;
+                                    unset($emp_data['avatar_blob']);
+                                ?>
                                 <button class="btn btn-sm btn-outline-info rounded-circle me-1" title="Chỉnh sửa"
-                                    onclick='openModal("edit", <?= json_encode($emp) ?>)'>
+                                    onclick='openModal("edit", <?= json_encode($emp_data) ?>)'>
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <form method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa nhân viên này? Dữ liệu không thể khôi phục.');">
