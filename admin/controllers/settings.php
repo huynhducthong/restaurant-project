@@ -342,7 +342,7 @@ include '../../public/admin_layout_header.php';
                     <div class="tab-content" id="settings-tabContent">
 
                         <!-- FORM BAO TRÙM CHO CÁC TAB CÀI ĐẶT CHUNG -->
-                        <div class="tab-pane <?= in_array($active_tab, ['general', 'inventory', 'telegram']) ? 'show active' : '' ?>" id="settings-forms-wrapper">
+                        <div class="tab-pane <?= in_array($active_tab, ['general', 'inventory', 'telegram']) ? 'show active' : '' ?>" id="settings-forms-wrapper" style="display: <?= in_array($active_tab, ['general', 'inventory', 'telegram']) ? 'block' : 'none' ?>;">
                             <form action="" method="POST" enctype="multipart/form-data">
 
                                 <!-- TAB GENERAL -->
@@ -758,8 +758,10 @@ document.addEventListener("DOMContentLoaded", function() {
             let formWrapper = document.getElementById('settings-forms-wrapper');
             if(activeTabId === '#gallery' || activeTabId === '#video') {
                 formWrapper.classList.remove('show', 'active');
+                formWrapper.style.display = 'none';
             } else {
                 formWrapper.classList.add('show', 'active');
+                formWrapper.style.display = 'block';
             }
         })
     })
