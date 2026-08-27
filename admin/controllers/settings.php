@@ -340,6 +340,13 @@ include '../../public/admin_layout_header.php';
 
                     <!-- Tab Content -->
                     <div class="tab-content" id="settings-tabContent">
+<style>
+    /* CSS thuần túy đảm bảo form wrapper bị ẩn nếu tab video hoặc gallery được bật */
+    #settings-tabContent:has(#video.active) #settings-forms-wrapper,
+    #settings-tabContent:has(#gallery.active) #settings-forms-wrapper {
+        display: none !important;
+    }
+</style>
 
                         <!-- FORM BAO TRÙM CHO CÁC TAB CÀI ĐẶT CHUNG -->
                         <div class="tab-pane <?= in_array($active_tab, ['general', 'inventory', 'telegram']) ? 'show active' : '' ?>" id="settings-forms-wrapper" style="display: <?= in_array($active_tab, ['general', 'inventory', 'telegram']) ? 'block' : 'none' ?>;">
