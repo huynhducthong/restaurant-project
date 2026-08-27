@@ -105,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_update_video'])) 
     header('Location: settings.php?tab=video'); exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['test_telegram']) && !isset($_POST['test_telegram_eod']) && !isset($_POST['btn_update_video'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fields = [
         'hotline'         => $_POST['hotline']         ?? '',
         'address'         => $_POST['address']         ?? '',
@@ -340,16 +340,10 @@ include '../../public/admin_layout_header.php';
 
                     <!-- Tab Content -->
                     <div class="tab-content" id="settings-tabContent">
-<style>
-    /* CSS thuần túy đảm bảo form wrapper bị ẩn nếu tab video hoặc gallery được bật */
-    #settings-tabContent:has(#video.active) #settings-forms-wrapper,
-    #settings-tabContent:has(#gallery.active) #settings-forms-wrapper {
-        display: none !important;
-    }
-</style>
 
                         <!-- FORM BAO TRÙM CHO CÁC TAB CÀI ĐẶT CHUNG -->
-                        <form action="" method="POST" enctype="multipart/form-data">
+                        <div class="tab-pane <?= in_array($active_tab, ['general', 'inventory', 'telegram']) ? 'show active' : '' ?>" id="settings-forms-wrapper">
+                            <form action="" method="POST" enctype="multipart/form-data">
 
                                 <!-- TAB GENERAL -->
                                 <div class="tab-pane <?= $active_tab === 'general' ? 'show active' : '' ?> pt-2" id="general" role="tabpanel" aria-labelledby="general-tab" tabindex="0">
@@ -468,12 +462,6 @@ include '../../public/admin_layout_header.php';
                                             <?php endfor; ?>
                                         </div>
                                     </div>
-                                    <!-- Nút lưu -->
-                                    <div class="text-center mt-4 border-top pt-4">
-                                        <button type="submit" class="btn btn-save">
-                                            <i class="bi bi-check-circle me-2"></i>LƯU THAY ĐỔI
-                                        </button>
-                                    </div>
                                 </div>
 
                                 <!-- TAB INVENTORY -->
@@ -496,12 +484,6 @@ include '../../public/admin_layout_header.php';
                                                 <option value="0" <?= ($settings['inv_auto_deduct'] ?? '1') == '0' ? 'selected' : '' ?>>Tắt (Thủ công)</option>
                                             </select>
                                         </div>
-                                    </div>
-                                    <!-- Nút lưu -->
-                                    <div class="text-center mt-4 border-top pt-4">
-                                        <button type="submit" class="btn btn-save">
-                                            <i class="bi bi-check-circle me-2"></i>LƯU THAY ĐỔI
-                                        </button>
                                     </div>
                                 </div>
 
@@ -554,16 +536,18 @@ include '../../public/admin_layout_header.php';
                                             <i class="bi bi-graph-up me-1"></i> Gửi thử báo cáo cuối ngày
                                         </button>
                                     </div>
-                                    <!-- Nút lưu -->
-                                    <div class="text-center mt-4 border-top pt-4">
-                                        <button type="submit" class="btn btn-save">
-                                            <i class="bi bi-check-circle me-2"></i>LƯU THAY ĐỔI
-                                        </button>
-                                    </div>
                                 </div>
 
 
+                                <!-- Nút lưu cho các tab trên -->
+                                <div class="text-center mt-4 border-top pt-4">
+                                    <button type="submit" class="btn btn-save">
+                                        <i class="bi bi-check-circle me-2"></i>LƯU THAY ĐỔI
+                                    </button>
+                                </div>
+
                             </form>
+                        </div> <!-- End wrapper form settings -->
 
                         <!-- TAB GALLERY (Không nằm trong form cài đặt chung) -->
                         <div class="tab-pane fade <?= $active_tab === 'gallery' ? 'show active' : '' ?> pt-2" id="gallery" role="tabpanel" aria-labelledby="gallery-tab" tabindex="0">
@@ -764,26 +748,21 @@ include '../../public/admin_layout_header.php';
 <script>
 // Javascript để đồng bộ tabs (Tránh reload về tab mặc định)
 document.addEventListener("DOMContentLoaded", function() {
-    var formWrapper = document.getElementById('settings-forms-wrapper');
-    var videoTab = document.getElementById('video');
-    var galleryTab = document.getElementById('gallery');
-    
-    if (formWrapper && videoTab && galleryTab) {
-        var observer = new MutationObserver(function(mutations) {
-            var isVideo = videoTab.classList.contains('active');
-            var isGallery = galleryTab.classList.contains('active');
-            if (isVideo || isGallery) {
+    var triggerTabList = [].slice.call(document.querySelectorAll('#settings-tabs button'))
+    triggerTabList.forEach(function (triggerEl) {
+        var tabTrigger = new bootstrap.Tab(triggerEl)
+        triggerEl.addEventListener('click', function (event) {
+            tabTrigger.show();
+            // Ẩn form chính nếu tab là gallery hoặc video
+            let activeTabId = event.target.getAttribute('data-bs-target');
+            let formWrapper = document.getElementById('settings-forms-wrapper');
+            if(activeTabId === '#gallery' || activeTabId === '#video') {
                 formWrapper.classList.remove('show', 'active');
-                formWrapper.style.setProperty('display', 'none', 'important');
             } else {
                 formWrapper.classList.add('show', 'active');
-                formWrapper.style.setProperty('display', 'block', 'important');
             }
-        });
-        
-        observer.observe(videoTab, { attributes: true, attributeFilter: ['class'] });
-        observer.observe(galleryTab, { attributes: true, attributeFilter: ['class'] });
-    }
+        })
+    })
 });
 function addLink() {
     const title = $('#linkTitle').val().trim();
