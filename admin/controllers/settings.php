@@ -748,23 +748,26 @@ include '../../public/admin_layout_header.php';
 <script>
 // Javascript để đồng bộ tabs (Tránh reload về tab mặc định)
 document.addEventListener("DOMContentLoaded", function() {
-    var triggerTabList = [].slice.call(document.querySelectorAll('#settings-tabs button'))
-    triggerTabList.forEach(function (triggerEl) {
-        var tabTrigger = new bootstrap.Tab(triggerEl)
-        triggerEl.addEventListener('click', function (event) {
-            tabTrigger.show();
-            // Ẩn form chính nếu tab là gallery hoặc video
-            let activeTabId = triggerEl.getAttribute('data-bs-target');
-            let formWrapper = document.getElementById('settings-forms-wrapper');
-            if(activeTabId === '#gallery' || activeTabId === '#video') {
+    var formWrapper = document.getElementById('settings-forms-wrapper');
+    var videoTab = document.getElementById('video');
+    var galleryTab = document.getElementById('gallery');
+    
+    if (formWrapper && videoTab && galleryTab) {
+        var observer = new MutationObserver(function(mutations) {
+            var isVideo = videoTab.classList.contains('active');
+            var isGallery = galleryTab.classList.contains('active');
+            if (isVideo || isGallery) {
                 formWrapper.classList.remove('show', 'active');
-                formWrapper.style.display = 'none';
+                formWrapper.style.setProperty('display', 'none', 'important');
             } else {
                 formWrapper.classList.add('show', 'active');
-                formWrapper.style.display = 'block';
+                formWrapper.style.setProperty('display', 'block', 'important');
             }
-        })
-    })
+        });
+        
+        observer.observe(videoTab, { attributes: true, attributeFilter: ['class'] });
+        observer.observe(galleryTab, { attributes: true, attributeFilter: ['class'] });
+    }
 });
 function addLink() {
     const title = $('#linkTitle').val().trim();
