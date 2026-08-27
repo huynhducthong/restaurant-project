@@ -36,7 +36,7 @@ switch ($action) {
         if (!$stmt->fetch()) {
             $stmt = $db->prepare("INSERT INTO chat_sessions (session_id, customer_name, customer_phone, status) VALUES (?, ?, ?, 'bot_handling')");
             $stmt->execute([$session_id, $name, $phone]);
-            sendBotMessage($db, $session_id, "Chào $name! Mình là Trợ lý ảo của Restaurantly. Mình có thể giúp gì cho bạn hôm nay?");
+            sendBotMessage($db, $session_id, "Chào $name! Mình là Trợ lý ảo của nhà hàng NHÃ. Mình có thể giúp gì cho bạn hôm nay?");
         }
         triggerChatUpdate($session_id);
         echo json_encode(['status' => 'success']);

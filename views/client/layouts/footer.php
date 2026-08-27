@@ -306,7 +306,7 @@ if ($is_logged_in_chat) {
     <div class="chat-modal-container">
         <div class="chat-header">
             <div>
-                <h5 class="m-0" style="font-family: 'Source Sans 3', sans-serif; color: #C19A5B;">Restaurantly Support
+                <h5 class="m-0" style="font-family: 'Source Sans 3', sans-serif; color: #C19A5B;">NHÃ Support
                 </h5>
                 <small id="chatStatusText" style="color: #bbb;">Trợ lý ảo thông minh</small>
             </div>
