@@ -819,7 +819,7 @@ if (isset($_SESSION['user_id'])) {
                     <li>
                         <a class="<?= ($current_page == 'index.php' && strpos($_SERVER['REQUEST_URI'], '/about') !== false || $current_page == 'about.php') ? 'active' : '' ?>"
                             href="<?= safe_url('about.php', $path_prefix ?? '') ?>">
-                            <?= 'Tin tức' ?>
+                            <?= 'Về chúng tôi' ?>
                         </a>
                     </li>
 
@@ -866,7 +866,7 @@ if (isset($_SESSION['user_id'])) {
                         <div class="oriental-panel" id="orientalPanel">
                             <!-- MOBILE NAVIGATION LINKS -->
                             <a href="<?= safe_url('index.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Trang chủ</a>
-                            <a href="<?= safe_url('about.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Tin tức</a>
+                            <a href="<?= safe_url('about.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Về chúng tôi</a>
                             <a href="<?= safe_url('menu.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Thực đơn</a>
                             <a href="<?= safe_url('chefs.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Đội bếp</a>
                             <a href="<?= safe_url('contact.php', $path_prefix ?? '') ?>" class="oriental-item mobile-only-item">Liên hệ</a>
