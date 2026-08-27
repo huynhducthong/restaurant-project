@@ -1514,7 +1514,7 @@ select.input-lux {
                 <div id="ingredientsList" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
               </div>
               
-              <!-- Doneness Wrap -->
+              <!-- Doneness Wrap (Removed as requested, now handled by toppings)
               <div id="donenessWrap" style="display:none; margin-bottom:20px;">
                 <label style="color:var(--forest); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:8px;">Độ chín thịt (Meat Doneness):</label>
                 <select id="foodOptDoneness" class="form-select form-select-sm" style="border:1px solid var(--glass-border); border-radius:0; font-size:13px; background: #FFFFFF;" onchange="updateModalPrice()">
@@ -1526,6 +1526,7 @@ select.input-lux {
                     <option value="Well Done (Chín kỹ)">Well Done (Chín kỹ)</option>
                 </select>
               </div>
+              -->
               
               <!-- Toppings Wrap -->
               <div id="toppingsWrap" style="margin-bottom:20px;">
@@ -2043,11 +2044,11 @@ function openFoodOptionModal(id) {
     var donenessEl = document.getElementById('foodOptDoneness');
     var foodNameLower = name.toLowerCase();
     if (foodNameLower.includes('bò') || foodNameLower.includes('steak') || foodNameLower.includes('beef') || foodNameLower.includes('cừu') || foodNameLower.includes('lamb') || foodNameLower.includes('vịt') || foodNameLower.includes('duck')) {
-        donenessWrap.style.display = 'block';
+        if (donenessWrap) donenessWrap.style.display = 'block';
         var match = rawNote.match(/Độ chín:\s*([^.]+)\./);
-        donenessEl.value = match ? match[1] : '';
+        if (donenessEl) donenessEl.value = match ? match[1] : '';
     } else {
-        donenessWrap.style.display = 'none';
+        if (donenessWrap) donenessWrap.style.display = 'none';
         if (donenessEl) donenessEl.value = '';
     }
     
