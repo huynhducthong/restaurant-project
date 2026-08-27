@@ -353,7 +353,6 @@ include '../../public/admin_layout_header.php';
                                             <input type="text" name="restaurant_name" class="form-control"
                                                    value="<?= htmlspecialchars($settings['restaurant_name'] ?? '') ?>">
                                         </div>
-                                        </div>
                                     </div>
 
                                     <div class="row">
