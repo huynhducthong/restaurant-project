@@ -754,7 +754,7 @@ document.addEventListener("DOMContentLoaded", function() {
         triggerEl.addEventListener('click', function (event) {
             tabTrigger.show();
             // Ẩn form chính nếu tab là gallery hoặc video
-            let activeTabId = event.target.getAttribute('data-bs-target');
+            let activeTabId = triggerEl.getAttribute('data-bs-target');
             let formWrapper = document.getElementById('settings-forms-wrapper');
             if(activeTabId === '#gallery' || activeTabId === '#video') {
                 formWrapper.classList.remove('show', 'active');
