@@ -311,147 +311,130 @@ if ($is_success) {
             <!-- Right Side: Details Card -->
             <div class="col-lg-7">
                 <div class="lux-success-card">
-                    <h3 class="lux-section-title"><i class="fas fa-info-circle"></i> Chi tiết đặt dịch vụ</h3>
-                    
-                    <div class="lux-detail-grid">
-                        <div class="lux-detail-box">
-                            <div class="lux-detail-label">DỊCH VỤ</div>
-                            <div class="lux-detail-val" style="color: #d4b06a;"><?= htmlspecialchars(strtoupper($booking['service_type'])) ?></div>
-                        </div>
-                        <div class="lux-detail-box">
-                            <div class="lux-detail-label">THỜI GIAN</div>
-                            <div class="lux-detail-val"><?= date('H:i · d/m/Y', strtotime($booking['booking_date'])) ?></div>
-                        </div>
-                        <div class="lux-detail-box">
-                            <div class="lux-detail-label">SỐ KHÁCH</div>
-                            <div class="lux-detail-val"><?= htmlspecialchars($booking['guests']) ?> NGƯỜI</div>
-                        </div>
-                        <?php if ($booking['table_code']): ?>
-                        <div class="lux-detail-box">
-                            <div class="lux-detail-label">VỊ TRÍ</div>
-                            <div class="lux-detail-val" style="color: #d4b06a;"><?= htmlspecialchars($booking['table_code']) ?></div>
-                        </div>
-                        <?php endif; ?>
-                    </div>
+            
+            <h3 class="lux-section-title"><i class="fas fa-info-circle"></i> Chi tiết đặt dịch vụ</h3>
+            
+            <div class="lux-detail-grid">
+                <div class="lux-detail-box">
+                    <div class="lux-detail-label">DỊCH VỤ</div>
+                    <div class="lux-detail-val" style="color: #d4b06a;"><?= htmlspecialchars(strtoupper($booking['service_type'])) ?></div>
+                </div>
+                <div class="lux-detail-box">
+                    <div class="lux-detail-label">THỜI GIAN</div>
+                    <div class="lux-detail-val"><?= date('H:i · d/m/Y', strtotime($booking['booking_date'])) ?></div>
+                </div>
+                <div class="lux-detail-box">
+                    <div class="lux-detail-label">SỐ KHÁCH</div>
+                    <div class="lux-detail-val"><?= htmlspecialchars($booking['guests']) ?> NGƯỜI</div>
+                </div>
+                <?php if ($booking['table_code']): ?>
+                <div class="lux-detail-box">
+                    <div class="lux-detail-label">VỊ TRÍ</div>
+                    <div class="lux-detail-val" style="color: #d4b06a;"><?= htmlspecialchars($booking['table_code']) ?></div>
+                </div>
+                <?php endif; ?>
+            </div>
 
-                    <?php 
-                        $is_custom_music = !empty($booking['music_playlist']) && stripos($booking['music_playlist'], 'Mặc định') === false;
-                        $is_custom_light = !empty($booking['light_tone']) && stripos($booking['light_tone'], 'Mặc định') === false;
-                        $has_bespoke = !empty($booking['has_candle']) || !empty($booking['has_handwritten_card']) || !empty($booking['has_flower']) || !empty($booking['event_type']) || $is_custom_music || $is_custom_light;
-                        
-                        if ($has_bespoke): 
-                    ?>
-                    <h3 class="lux-section-title" style="margin-top: 40px;"><i class="fas fa-magic"></i> Cá Nhân Hóa (Bespoke)</h3>
-                    <div class="bespoke-box">
-                        <div class="bespoke-grid">
-                            <?php if (!empty($booking['event_type'])): ?>
-                                <div>
-                                    <span style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Dịp Đặc Biệt</span>
-                                    <span style="font-size: 15px; font-weight: 500; color: #fff; font-family:'Cormorant Garamond', serif;"><?= htmlspecialchars($booking['event_type']) ?></span>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <?php if (!empty($booking['has_candle'])): ?>
-                                <div>
-                                    <span style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Không Gian</span>
-                                    <span style="font-size: 15px; font-weight: 500; color: #fff; font-family:'Cormorant Garamond', serif;"><i class="fas fa-fire me-1" style="color:#d4b06a"></i> Nến thơm</span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if (!empty($booking['has_handwritten_card'])): ?>
-                                <div>
-                                    <span style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Quà Tặng</span>
-                                    <span style="font-size: 15px; font-weight: 500; color: #fff; font-family:'Cormorant Garamond', serif;"><i class="fas fa-envelope-open-text me-1" style="color:#d4b06a"></i> Thiệp viết tay</span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if (!empty($booking['has_flower'])): ?>
-                                <div>
-                                    <span style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Trang Trí</span>
-                                    <span style="font-size: 15px; font-weight: 500; color: #fff; font-family:'Cormorant Garamond', serif;"><i class="fas fa-fan me-1" style="color:#d4b06a"></i> Hoa tươi để bàn</span>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <?php if ($is_custom_music): ?>
-                                <div>
-                                    <span style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Âm Nhạc</span>
-                                    <span style="font-size: 15px; font-weight: 500; color: #fff; font-family:'Cormorant Garamond', serif;"><i class="fas fa-music me-1" style="color:#d4b06a"></i> <?= htmlspecialchars($booking['music_playlist']) ?></span>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <?php if ($is_custom_light): ?>
-                                <div>
-                                    <span style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Ánh Sáng</span>
-                                    <span style="font-size: 15px; font-weight: 500; color: #fff; font-family:'Cormorant Garamond', serif;"><i class="fas fa-lightbulb me-1" style="color:#d4b06a"></i> <?= htmlspecialchars($booking['light_tone']) ?></span>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-
-                    <?php if (!empty($booking['items'])): ?>
-                    <h3 class="lux-section-title" style="margin-top: 40px;"><i class="fas fa-utensils"></i> Thực Đơn Đã Chọn</h3>
-                    <div style="overflow-x: auto;">
-                        <table class="lux-table">
-                            <thead>
-                                <tr>
-                                    <th style="text-align:left">Món ăn</th>
-                                    <th style="text-align:center">SL</th>
-                                    <th style="text-align:right">Đơn giá</th>
-                                    <th style="text-align:right">Thành tiền</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($booking['items'] as $it): ?>
-                                <tr>
-                                    <td style="font-family:'Cormorant Garamond', serif; font-size:18px;">
-                                        <?= htmlspecialchars($it['food_name']) ?>
-                                        <?php if (!empty($it['toppings_list'])): ?>
-                                            <div style="font-size:13px; color:rgba(255,255,255,0.5); font-family:'Source Sans 3', sans-serif; margin-top:4px;">
-                                                + <?= htmlspecialchars($it['toppings_list']) ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td style="text-align:center; font-family:'Source Sans 3', sans-serif;">x<?= $it['quantity'] ?></td>
-                                    <td style="text-align:right; font-family:'Source Sans 3', sans-serif;"><?= number_format($it['final_unit_price']) ?>đ</td>
-                                    <td style="text-align:right; color:#d4b06a; font-family:'Source Sans 3', sans-serif; font-weight:600;"><?= number_format($it['final_subtotal']) ?>đ</td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                    <?php endif; ?>
-
-                    <div class="lux-total-box">
+            <?php 
+                $is_custom_music = !empty($booking['music_playlist']) && stripos($booking['music_playlist'], 'Mặc định') === false;
+                $is_custom_light = !empty($booking['light_tone']) && stripos($booking['light_tone'], 'Mặc định') === false;
+                $has_bespoke = !empty($booking['has_candle']) || !empty($booking['has_handwritten_card']) || !empty($booking['has_flower']) || !empty($booking['event_type']) || $is_custom_music || $is_custom_light;
+                
+                if ($has_bespoke): 
+            ?>
+            <h3 class="lux-section-title" style="margin-top: 40px;"><i class="fas fa-magic"></i> Trải Nghiệm Cá Nhân Hóa (Bespoke)</h3>
+            <div style="background: rgba(0,0,0,0.2); border: 1px dashed rgba(212,176,106,0.3); border-radius: 12px; padding: 25px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 25px;">
+                    <?php if (!empty($booking['event_type'])): ?>
                         <div>
-                            <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.6); margin-bottom: 5px; font-family:'Source Sans 3', sans-serif;">Tổng Thanh Toán</div>
-                            <div style="font-size: 32px; font-family: 'Cormorant Garamond', serif; color: #d4b06a; font-weight: 600;">
-                                <?= number_format($booking['total_price']) ?> <span style="font-size:20px">VNĐ</span>
-                            </div>
+                            <span style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Dịp Đặc Biệt</span>
+                            <span style="font-size: 15px; font-weight: 500; color: #fff; font-family:'Cormorant Garamond', serif;"><?= htmlspecialchars($booking['event_type']) ?></span>
                         </div>
-                        <div style="text-align: right;">
-                            <span class="badge bg-success" style="font-size: 12px; padding: 8px 15px; border-radius: 0; font-family:'Source Sans 3', sans-serif; font-weight:400; letter-spacing:1px; background-color:#2e7d32!important;">
-                                <i class="fas fa-check-circle me-1"></i> Đã xác nhận
+                    <?php endif; ?>
+                    
+                    <?php if (!empty($booking['has_candle'])): ?>
+                        <div>
+                            <span style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Trang Trí</span>
+                            <span style="font-size: 15px; font-weight: 500; color: #fff; font-family:'Cormorant Garamond', serif;">🕯 Nến thơm nghệ thuật</span>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($booking['has_handwritten_card'])): ?>
+                        <div>
+                            <span style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Thiệp Viết Tay</span>
+                            <span style="font-size: 15px; font-weight: 500; color: #fff; font-family:'Cormorant Garamond', serif;">✉️ <?= htmlspecialchars($booking['card_message'] ?: 'Chúc mừng') ?></span>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($booking['has_flower'])): ?>
+                        <div>
+                            <span style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Hoa Tươi Thiết Kế</span>
+                            <span style="font-size: 15px; font-weight: 500; color: #fff; font-family:'Cormorant Garamond', serif;">💐 <?= htmlspecialchars($booking['flower_preference'] ?: 'Hoa theo mùa') ?></span>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ($is_custom_music || $is_custom_light): ?>
+                        <div>
+                            <span style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Cấu Hình Phòng VIP</span>
+                            <span style="font-size: 15px; font-weight: 500; color: #fff; font-family:'Cormorant Garamond', serif;">
+                                <?php if ($is_custom_music): ?>🎵 <?= htmlspecialchars($booking['music_playlist']) ?><?php endif; ?> 
+                                <?php if ($is_custom_music && $is_custom_light): ?> · <?php endif; ?>
+                                <?php if ($is_custom_light): ?>💡 <?= htmlspecialchars($booking['light_tone']) ?><?php endif; ?>
                             </span>
                         </div>
-                    </div>
-                    
-                    <?php if ($booking['service_type'] == 'chef'): ?>
-                        <p style="font-size: 16px; color: #d4b06a; font-family:'Cormorant Garamond', serif; line-height: 1.6; font-style: italic; margin-top:25px; text-align:center;">
-                            <i class="fas fa-glass-cheers me-2"></i> Đơn đặt bàn đã được xác nhận thanh toán thành công.<br>
-                            Hẹn gặp lại quý khách tại <strong style="font-weight:600;">Restaurantly</strong>.
-                        </p>
-                    <?php else: ?>
-                        <p style="font-size: 15px; color: rgba(255,255,255,0.6); font-family:'Cormorant Garamond', serif; line-height: 1.6; font-style: italic; margin-top:25px; text-align:center;">
-                            Quý khách vui lòng kiểm tra email hoặc điện thoại để nhận thông tin thanh toán.<br>
-                            Cảm ơn quý khách đã tin tưởng lựa chọn <strong style="color:#fff; font-weight:600;">Restaurantly</strong>.
-                        </p>
                     <?php endif; ?>
                 </div>
             </div>
-        </div>
-    </div>
-    <?php else: ?>
+            <?php endif; ?>
+
+            <?php if (!empty($booking_items)): ?>
+            <h3 class="lux-section-title" style="margin-top: 40px;"><i class="fas fa-utensils"></i> Thực Đơn Đã Chọn</h3>
+            <div style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; overflow-x: auto;">
+                <table class="lux-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">Món ăn</th>
+                            <th style="text-align: center;">SL</th>
+                            <th style="text-align: right;">Đơn giá</th>
+                            <th style="text-align: right;">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($booking_items as $it): ?>
+                        <tr>
+                            <td>
+                                <strong style="color: #fff; font-size: 16px; font-family:'Cormorant Garamond', serif;"><?= htmlspecialchars($it['food_name']) ?></strong>
+                                <?php if (!empty($it['toppings_list'])): ?>
+                                    <div style="font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 6px;">
+                                        <i class="fas fa-plus-circle me-1" style="color:#d4b06a;"></i> <?= implode(', ', $it['toppings_list']) ?>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if (!empty($it['notes'])): ?>
+                                    <div style="font-size: 12px; color: #e74c3c; margin-top: 4px; font-style: italic;">
+                                        <i class="fas fa-pen me-1"></i><?= htmlspecialchars($it['notes']) ?>
+                                    </div>
+                                <?php endif; ?>
+                            </td>
+                            <td style="text-align: center; color: rgba(255,255,255,0.7);">x<?= $it['quantity'] ?></td>
+                            <td style="text-align: right; color: rgba(255,255,255,0.7);"><?= number_format($it['final_unit_price']) ?>đ</td>
+                            <td style="text-align: right; font-weight: 600; color: #d4b06a; font-size: 16px;"><?= number_format($it['final_subtotal']) ?>đ</td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php endif; ?>
+
+            <div class="lux-total-box">
+                <div>
+                    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5); margin-bottom: 5px;">Tổng giá trị dịch vụ</div>
+                    <div style="font-size: 1.8rem; font-weight: 600; color: #fff; font-family:'Cormorant Garamond', serif;"><?= number_format($booking['total_amount']) ?>đ</div>
+                </div>
+                <div style="text-align: right;">
+                    <?php if ($booking['status'] === 'Confirmed'): ?>
+                        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #10b981; margin-bottom: 5px;"><i class="fas fa-check-circle me-1"></i>Đã thanh toán cọc</div>
+                        <div style="font-size: 1.8rem; font-weight: 600; color: #10b981; font-family:'Cormorant Garamond', serif;"><?= number_format($booking['deposit_amount']) ?>đ</div>
+                    <?php else: ?>
                         <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5); margin-bottom: 5px;">Tiền cọc cần thanh toán</div>
                         <div style="font-size: 1.8rem; font-weight: 600; color: #ef4444; font-family:'Cormorant Garamond', serif;"><?= number_format($booking['deposit_amount']) ?>đ</div>
                     <?php endif; ?>
@@ -470,6 +453,7 @@ if ($is_success) {
                         Cảm ơn quý khách đã tin tưởng lựa chọn <strong style="color:#fff; font-weight:600;">Restaurantly</strong>.
                     </p>
                 <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>
