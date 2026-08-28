@@ -74,8 +74,7 @@ if ($is_success) {
         position: relative;
         color: #fff;
         padding: 120px 0 100px;
-        display: flex;
-        align-items: center;
+        display: block;
     }
     .bk-page-lux::before {
         content: '';
@@ -457,6 +456,7 @@ if ($is_success) {
             </div>
         </div>
     </div>
+</div>
     <?php else: ?>
     <section class="bk-hero">
         <div class="container" style="position:relative;z-index:1">
