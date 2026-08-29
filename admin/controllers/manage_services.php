@@ -754,7 +754,7 @@ include '../../public/admin_layout_header.php';
 
 <!-- MODAL DETAIL -->
 <div class="modal fade" id="modalDetail" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow">
             <div class="modal-header border-bottom-0 pb-0">
                 <h5 class="modal-title fw-bold" style="color: var(--gold);">Chi tiết dịch vụ</h5>
@@ -768,62 +768,62 @@ include '../../public/admin_layout_header.php';
                 <div id="m-status" class="mb-3"></div>
                 <div id="m-milestone-alert"></div>
 
-                <div class="bg-light rounded p-3 text-start mb-4" style="border: 1px solid var(--border);">
+                <div class="bg-light rounded p-3 text-start mb-3" style="border: 1px solid var(--border);">
                     <div class="row mb-2">
-                        <div class="col-5 text-muted">Loại dịch vụ:</div>
-                        <div class="col-7 fw-bold" id="m-type"></div>
+                        <div class="col-4 text-muted">Loại dịch vụ:</div>
+                        <div class="col-8 fw-bold" id="m-type"></div>
                     </div>
                     <div class="row border-bottom py-2" id="row-table">
-                        <div class="col-5 text-muted" id="lbl-table">Bàn/Phòng:</div>
-                        <div class="col-7 fw-bold" id="m-table"></div>
+                        <div class="col-4 text-muted" id="lbl-table">Bàn/Phòng:</div>
+                        <div class="col-8 fw-bold" id="m-table"></div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-5 text-muted">Thời gian:</div>
-                        <div class="col-7 fw-bold" id="m-date"></div>
+                        <div class="col-4 text-muted">Thời gian:</div>
+                        <div class="col-8 fw-bold" id="m-date"></div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-5 text-muted">Số khách:</div>
-                        <div class="col-7 fw-bold" id="m-guests"></div>
+                        <div class="col-4 text-muted">Số khách:</div>
+                        <div class="col-8 fw-bold" id="m-guests"></div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-5 text-muted">Combo:</div>
-                        <div class="col-7 fw-bold text-dark" id="m-combo"></div>
+                        <div class="col-4 text-muted">Combo:</div>
+                        <div class="col-8 fw-bold text-dark" id="m-combo"></div>
                     </div>
 
                     <!-- BESPOKE SPECIAL FIELDS -->
                     <div id="bespoke-details" style="display:none;" class="mt-2 pt-2 border-top">
                         <h6 class="fw-bold mb-2" style="color:var(--gold); font-size:13px;"><i class="fas fa-magic me-1"></i> Trải nghiệm Cá nhân hóa</h6>
                         <div class="row mb-2" id="row-event-type" style="display:none;">
-                            <div class="col-5 text-muted small">Dịp đặc biệt:</div>
-                            <div class="col-7 fw-bold text-primary" id="m-event-type"></div>
+                            <div class="col-4 text-muted small">Dịp đặc biệt:</div>
+                            <div class="col-8 fw-bold text-primary" id="m-event-type"></div>
                         </div>
                         <div class="row mb-2" id="row-decor" style="display:none;">
-                            <div class="col-5 text-muted small">Gói trang trí:</div>
-                            <div class="col-7 fw-bold" id="m-decor"></div>
+                            <div class="col-4 text-muted small">Gói trang trí:</div>
+                            <div class="col-8 fw-bold" id="m-decor"></div>
                         </div>
                         <div class="row mb-2" id="row-addons" style="display:none;">
-                            <div class="col-5 text-muted small">Dịch vụ thêm:</div>
-                            <div class="col-7" id="m-addons"></div>
+                            <div class="col-4 text-muted small">Dịch vụ thêm:</div>
+                            <div class="col-8" id="m-addons"></div>
                         </div>
                         <div class="row mb-2" id="row-vip" style="display:none;">
-                            <div class="col-5 text-muted small">Cấu hình VIP:</div>
-                            <div class="col-7 fw-bold" id="m-vip"></div>
+                            <div class="col-4 text-muted small">Cấu hình VIP:</div>
+                            <div class="col-8 fw-bold" id="m-vip"></div>
                         </div>
                     </div>
 
                     <div class="row mb-2">
-                        <div class="col-5 text-muted">Món ăn:</div>
-                        <div class="col-7" id="m-foods"></div>
+                        <div class="col-4 text-muted">Món ăn:</div>
+                        <div class="col-8" id="m-foods"></div>
                     </div>
                     <div class="row border-bottom py-2" id="row-chef-req" style="display:none;">
-                        <div class="col-5 text-muted"><i class="fas fa-scroll"></i> Y/c Bếp trưởng:</div>
-                        <div class="col-7">
+                        <div class="col-12 text-muted fw-bold mb-2"><i class="fas fa-scroll"></i> Y/c Bếp trưởng:</div>
+                        <div class="col-12">
                             <div id="m-chef-req" style="font-size: 0.9em; line-height: 1.5; color: #333;"></div>
                         </div>
                     </div>
                     <div class="row border-bottom py-2" id="row-dna" style="display:none;">
-                        <div class="col-5 text-muted fw-bold"><i class="fas fa-dna me-1 text-secondary"></i>HỒ SƠ KHẨU VỊ:</div>
-                        <div class="col-7">
+                        <div class="col-12 text-muted fw-bold mb-2"><i class="fas fa-dna me-1 text-secondary"></i>HỒ SƠ KHẨU VỊ:</div>
+                        <div class="col-12">
                             <div id="m-dna-req" style="font-size: 0.9em; line-height: 1.5; color: #333;"></div>
                         </div>
                     </div>
@@ -850,21 +850,21 @@ include '../../public/admin_layout_header.php';
                     </div>
 
                     <div class="row mb-2">
-                        <div class="col-5 text-muted">Ghi chú:</div>
-                        <div class="col-7" id="m-msg"></div>
+                        <div class="col-4 text-muted">Ghi chú:</div>
+                        <div class="col-8" id="m-msg"></div>
                     </div>
                     <hr class="border-secondary my-2">
                     <div class="row mb-2" id="row-chef-fee" style="display:none;">
-                        <div class="col-5 text-muted">Phí phục vụ (Đầu bếp):</div>
-                        <div class="col-7" id="m-chef-fee"></div>
+                        <div class="col-4 text-muted">Phí phục vụ (Đầu bếp):</div>
+                        <div class="col-8" id="m-chef-fee"></div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-5 text-muted">Tổng ước tính:</div>
-                        <div class="col-7 fw-bold text-success" id="m-total"></div>
+                        <div class="col-4 text-muted">Tổng ước tính:</div>
+                        <div class="col-8 fw-bold text-success" id="m-total"></div>
                     </div>
                     <div class="row" id="row-deposit">
-                        <div class="col-5 text-muted fw-bold">Tiền cọc (30%):</div>
-                        <div class="col-7 fw-bold text-warning fs-5" id="m-deposit"></div>
+                        <div class="col-4 text-muted fw-bold">Tiền cọc (30%):</div>
+                        <div class="col-8 fw-bold text-warning fs-5" id="m-deposit"></div>
                     </div>
                 </div>
 
