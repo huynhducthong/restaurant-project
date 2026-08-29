@@ -115,7 +115,7 @@ THỰC ĐƠN: [Tên thực đơn ngắn gọn]
     
     // Tắt kiểm tra SSL tạm thời (cho môi trường localhost XAMPP)
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
     
     $response = curl_exec($ch);
     $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);

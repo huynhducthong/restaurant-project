@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 24, 2026 at 03:21 PM
+-- Generation Time: Aug 28, 2026 at 03:17 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -68,16 +68,16 @@ CREATE TABLE `about_content` (
 --
 
 INSERT INTO `about_content` (`id`, `category_id`, `title`, `slug`, `content`, `thumbnail`, `display_order`, `status`, `milestone_text`, `created_at`, `publish_date`) VALUES
-(1, 1, 'Khởi Nguồn Đam Mê', 'khoi-nguon-dam-me', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">M</span>ọi câu chuyện vĩ đại đều bắt đầu từ một khoảnh khắc nhỏ bé, và hành trình của Restaurantly cũng không ngoại lệ. Vào một buổi chiều muộn năm 2015, khi ánh hoàng hôn đổ những vệt dài qua khung cửa sổ của một căn bếp nhỏ bé tại Paris, nhóm sáng lập của chúng tôi đã cùng nhau chia sẻ một bữa ăn tự nấu. Đó không phải là một bữa tiệc xa hoa, mà chỉ là những món ăn đơn giản được chuẩn bị bằng cả trái tim, cùng với một chai vang đỏ tuyệt hảo.</p>\n<p>Chính trong không gian ấm cúng và đầy cảm hứng ấy, một ý tưởng táo bạo đã nảy mầm: Tại sao không tạo ra một không gian ẩm thực nơi mọi thực khách đều có thể cảm nhận được sự ấm áp, tinh tế và trọn vẹn như chính bữa ăn này? Một nơi không chỉ phục vụ thức ăn, mà còn kiến tạo những ký ức.</p>\n<blockquote style=\"border-left: 4px solid #cda45e; padding-left: 20px; margin: 30px 0; font-style: italic; color: #cda45e; font-size: 1.2em; font-family: \'Playfair Display\', serif;\">\n\"Ẩm thực thực thụ không chỉ nằm ở hương vị đánh thức vị giác, mà còn ở cách nó chạm đến tận cùng cảm xúc của con người.\"\n</blockquote>\n<p>Từ ý tưởng ban đầu đó, chúng tôi đã dành vô số ngày đêm để lên kế hoạch, nghiên cứu nghệ thuật ẩm thực Pháp và châu Âu, tìm kiếm những nguồn nguyên liệu tinh túy nhất. Chúng tôi khao khát mang đến một trải nghiệm Fine Dining hoàn toàn khác biệt: sang trọng, đẳng cấp nhưng không hề xa cách. Khởi nguồn đam mê ấy chính là ngọn lửa cháy rực rỡ nhất, thắp sáng con đường mà Restaurantly sẽ bước đi trong suốt những năm tháng tiếp theo.</p>', 'journey_2015_1782804583746.png', 0, 1, '2015', '2026-06-30 07:33:04', '2026-06-30'),
-(2, 1, 'Đặt Viên Gạch Đầu Tiên', 'dat-vien-gach-dau-tien', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">N</span>ăm 2016 đánh dấu một cột mốc mang tính bước ngoặt khi Restaurantly chính thức khai trương cơ sở đầu tiên. Vượt qua vô vàn khó khăn của những ngày đầu khởi nghiệp—từ việc thiết kế không gian sao cho toát lên vẻ cổ điển vượt thời gian, đến việc tuyển chọn đội ngũ nhân sự không chỉ giỏi chuyên môn mà còn có chung nhịp đập đam mê.</p>\n<p>Chúng tôi đã chọn một mặt bằng khiêm tốn nhưng đậm chất thơ, nằm ẩn mình yên tĩnh giữa nhịp sống đô thị hối hả. Quá trình cải tạo kéo dài hơn 6 tháng ròng rã. Từng viên gạch ốp lát, từng mảng tường màu tối, cho đến hệ thống đèn chùm vàng ấm áp đều được chăm chút tỉ mỉ, nhằm đảm bảo mỗi góc nhỏ đều toát lên sự sang trọng và ấm cúng.</p>\n<p>Ngày mở cửa đầu tiên, không có những chiến dịch quảng cáo rầm rộ hay những bữa tiệc khai trương ồn ào. Chúng tôi chỉ lặng lẽ mở cửa đón những vị khách đầu tiên bằng nụ cười chân thành và những món ăn được chuẩn bị hoàn hảo nhất. Chính chất lượng vượt trội và dịch vụ tận tâm đã dần tạo nên một làn sóng truyền miệng mạnh mẽ. Viên gạch đầu tiên đã được đặt xuống vô cùng vững chãi, trở thành nền móng kiên cố cho tòa tháp thành công sau này.</p>', 'journey_2016_1782804604959.png', 1, 1, '2016', '2026-06-30 07:33:04', '2026-06-30'),
-(3, 1, 'Món Ăn Signature Ra Đời', 'mon-an-signature-ra-doi', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">Đ</span>ối với bất kỳ nhà hàng Fine Dining nào, việc sở hữu một món ăn \"Signature\" (món ăn biểu tượng) không chỉ là lời khẳng định về đẳng cấp tay nghề, mà còn là linh hồn của thương hiệu. Năm 2017, Bếp trưởng tài năng của chúng tôi đã quyết định tạo ra một kiệt tác ẩm thực thực sự, một món ăn mà bất cứ ai nếm thử một lần sẽ không bao giờ quên.</p>\n<p>Sau hàng trăm lần thử nghiệm thất bại, từ việc điều chỉnh tỷ lệ gia vị, thời gian áp chảo, cho đến việc tìm kiếm nguồn thịt bò Wagyu hảo hạng nhất từ Nhật Bản kết hợp cùng nấm Truffle đen quý hiếm, món Bò Wellington phong cách Restaurantly đã chính thức ra đời.</p>\n<ul style=\"list-style: none; padding-left: 0; margin-top: 20px;\">\n<li style=\"margin-bottom: 10px; display: flex; align-items: flex-start;\"><span style=\"color: #cda45e; margin-right: 10px;\">✦</span> Lớp vỏ bánh ngàn lớp vàng óng, giòn rụm đến mức tan ngay trên đầu lưỡi.</li>\n<li style=\"margin-bottom: 10px; display: flex; align-items: flex-start;\"><span style=\"color: #cda45e; margin-right: 10px;\">✦</span> Lớp nấm Duxelles bùi béo, thơm lừng quyện chặt lấy thớ thịt bò mềm mại, mọng nước.</li>\n<li style=\"margin-bottom: 10px; display: flex; align-items: flex-start;\"><span style=\"color: #cda45e; margin-right: 10px;\">✦</span> Nước sốt vang đỏ cô đặc sóng sánh, tạo nên bản giao hưởng hương vị hoàn hảo.</li>\n</ul>\n<p style=\"margin-top: 20px;\">Sự tinh tế trong từng chi tiết đã biến món ăn này thành một hiện tượng. Món Ăn Signature không chỉ chinh phục được những vị thực khách khó tính nhất, mà còn nhanh chóng đưa tên tuổi của Restaurantly phủ sóng rộng rãi khắp giới mộ điệu ẩm thực.</p>', 'journey_2017_1782804614736.png', 2, 1, '2017', '2026-06-30 07:33:04', '2026-06-30'),
-(4, 1, 'Giải Thưởng Ẩm Thực Đầu Tiên', 'giai-thuong-am-thuc-dau-tien', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">N</span>ăm 2018 là một năm ngập tràn niềm vui và những thành quả ngọt ngào. Những nỗ lực không mệt mỏi của toàn bộ đội ngũ Restaurantly đã chính thức được giới chuyên môn công nhận khi nhà hàng được vinh danh tại lễ trao giải Ẩm Thực Vàng khu vực.</p>\n<p>Đó là một đêm không thể nào quên. Khi tên của Restaurantly được xướng lên ở hạng mục \"Nhà Hàng Fine Dining Có Dịch Vụ Tốt Nhất Năm\", cả khán phòng như vỡ òa trong tiếng vỗ tay. Giải thưởng này không chỉ là một chiếc cúp pha lê lấp lánh để trưng bày trên kệ, mà nó là minh chứng rõ ràng nhất cho triết lý kinh doanh mà chúng tôi luôn theo đuổi: Lấy sự hài lòng tuyệt đối của khách hàng làm trung tâm.</p>\n<blockquote style=\"border-left: 4px solid #cda45e; padding-left: 20px; margin: 30px 0; font-style: italic; color: #cda45e; font-size: 1.2em; font-family: \'Playfair Display\', serif;\">\n\"Vinh quang không làm chúng tôi tự mãn, nó chỉ nhắc nhở chúng tôi rằng: Tiêu chuẩn của ngày hôm nay phải là bước đệm cho sự hoàn hảo của ngày mai.\"\n</blockquote>\n<p>Giải thưởng đầu tiên này đã mở ra những cánh cửa mới, thu hút không chỉ những tín đồ ẩm thực địa phương mà còn cả những thực khách quốc tế. Nó tiếp thêm một nguồn động lực vô cùng to lớn để đội ngũ đầu bếp và nhân viên phục vụ không ngừng hoàn thiện bản thân, vươn tới những đỉnh cao mới.</p>', 'journey_2018_1782804657697.png', 3, 1, '2018', '2026-06-30 07:33:04', '2026-06-30'),
-(5, 1, 'Mở Rộng Không Gian', 'mo-rong-khong-gian', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">S</span>ự bùng nổ về danh tiếng và lượng khách hàng đã đặt Restaurantly trước một bài toán vô cùng nan giải vào năm 2019: Làm sao để phục vụ số lượng thực khách ngày càng đông đảo mà vẫn giữ nguyên được sự tĩnh lặng, riêng tư và chất lượng dịch vụ đẳng cấp?</p>\n<p>Quyết định mở rộng không gian đã được đưa ra. Tuy nhiên, thay vì chỉ đơn thuần là cơi nới hoặc thuê một mặt bằng rộng lớn hơn, chúng tôi chọn cách mua lại không gian liền kề và thực hiện một cuộc đại tu kiến trúc. Từng chi tiết trong khu vực mới đều được thiết kế để liền mạch hoàn hảo với không gian cũ, tạo nên một tổng thể bề thế nhưng vẫn vô cùng duyên dáng.</p>\n<p>Đặc biệt, trong lần mở rộng này, chúng tôi đã bổ sung thêm khu vực <strong>Private Dining Room (Phòng tiệc riêng tư)</strong> dành riêng cho các buổi gặp mặt thượng lưu, những cuộc đàm phán kinh doanh hoặc những bữa tiệc cầu hôn lãng mạn. Hầm rượu vang (Wine Cellar) cũng được nâng cấp đáng kể, quy tụ hàng ngàn chai vang hảo hạng từ các vùng đất trứ danh trên thế giới, sẵn sàng làm hài lòng những vị khách am tường nhất.</p>', 'journey_2019_1782804667920.png', 4, 1, '2019', '2026-06-30 07:33:04', '2026-06-30'),
-(6, 1, 'Vượt Qua Thử Thách', 'vuot-qua-thu-thach', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">K</span>hông có con đường nào trải đầy hoa hồng mà không có chông gai. Năm 2020 ập đến mang theo những biến động toàn cầu chưa từng có tiền lệ. Ngành F&B nói chung và mảng Fine Dining nói riêng phải đối mặt với những thử thách sinh tử.</p>\n<p>Nhà hàng buộc phải tạm đóng cửa để đảm bảo an toàn cho cộng đồng. Đó là những ngày tháng tĩnh lặng đến nao lòng, những bộ bàn ghế phủ khăn, ánh đèn chùm tắt lịm. Nhưng trong chính khoảng thời gian u tối nhất, tinh thần đoàn kết và ý chí kiên cường của gia đình Restaurantly lại tỏa sáng rực rỡ hơn bao giờ hết. Chúng tôi quyết định không ngồi yên chờ đợi.</p>\n<p>Ban lãnh đạo cam kết giữ lại toàn bộ 100% nhân sự. Các bếp trưởng tận dụng thời gian này để nghiên cứu sâu hơn về kỹ thuật lên men, bảo quản thực phẩm và sáng tạo ra những công thức hoàn toàn mới. Chúng tôi cũng khởi xướng mô hình \"Fine Dining Tại Gia\", mang những set menu cao cấp cùng hướng dẫn trình bày chi tiết đến tận bàn ăn của thực khách. Thử thách khắc nghiệt không quật ngã được chúng tôi, ngược lại, nó rèn giũa Restaurantly trở thành một tập thể mạnh mẽ, sắc bén và linh hoạt hơn bao giờ hết.</p>', 'journey_2020_1782804725707.png', 5, 1, '2020', '2026-06-30 07:33:04', '2026-06-30'),
-(7, 1, 'Trở Lại Mạnh Mẽ', 'tro-lai-manh-me', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">N</span>ăm 2021, khi những tia nắng ấm áp của cuộc sống bình thường mới bắt đầu le lói, Restaurantly đã sẵn sàng cho một sự trở lại bùng nổ. Chúng tôi mở cửa đón khách trở lại không chỉ với một diện mạo được làm mới, mà còn mang theo một tinh thần cống hiến mãnh liệt.</p>\n<p>Thực đơn \"Tái Sinh\" (The Renaissance Menu) được ra mắt như một lời tri ân sâu sắc gửi đến những khách hàng đã luôn đồng hành và chờ đợi chúng tôi. Mỗi món ăn trong thực đơn là một câu chuyện về sức sống mãnh liệt của thiên nhiên, sử dụng những nguyên liệu địa phương tươi ngon nhất, kết hợp cùng kỹ thuật chế biến hiện đại của châu Âu.</p>\n<p>Sự trở lại của Restaurantly đã tạo ra một tiếng vang lớn. Hàng ngàn lượt đặt bàn đổ về, những buổi tối kín chỗ kéo dài hàng tháng trời. Hơn cả việc thưởng thức đồ ăn, thực khách đến với chúng tôi để ăn mừng sự sống, ăn mừng những cuộc hội ngộ, và đắm chìm trong thứ cảm giác xa xỉ, bình yên mà họ đã khao khát bấy lâu. Chúng tôi đã trở lại, mạnh mẽ, trưởng thành và rực rỡ hơn bao giờ hết.</p>', 'journey_2021_1782804708461.png', 6, 1, '2021', '2026-06-30 07:33:04', '2026-06-30'),
-(8, 1, 'Vươn Tới Ngôi Sao Michelin', 'vuon-toi-ngoi-sao-michelin', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">Đ</span>ỉnh cao của nghệ thuật ẩm thực thế giới luôn gọi tên những Ngôi sao Michelin danh giá. Từ những ngày đầu tiên thành lập, đó vẫn luôn là một giấc mơ, một ngọn hải đăng soi sáng con đường chúng tôi đi. Và năm 2022, khoảnh khắc lịch sử ấy cuối cùng cũng đã đến.</p>\n<p>Khi thư thông báo chính thức từ cẩm nang Michelin danh giá được gửi tới, cả nhà hàng như chìm trong một sự vỡ òa không thể kìm nén. Ngôi sao Michelin đầu tiên đã được trao cho Restaurantly, đánh dấu sự công nhận ở đẳng cấp cao nhất trên bản đồ ẩm thực quốc tế.</p>\n<blockquote style=\"border-left: 4px solid #cda45e; padding-left: 20px; margin: 30px 0; font-style: italic; color: #cda45e; font-size: 1.2em; font-family: \'Playfair Display\', serif;\">\n\"Ngôi sao này không thuộc về một cá nhân nào. Nó thuộc về tập thể những người đã cống hiến tuổi thanh xuân bên chảo lửa, những người tỉ mỉ lau từng chiếc ly pha lê, và cả những thực khách đã luôn tin tưởng chúng tôi.\"\n</blockquote>\n<p>Ngôi sao Michelin mang theo một áp lực vô hình nhưng vô cùng ngọt ngào. Nó nhắc nhở chúng tôi rằng sự hoàn hảo không phải là đích đến, mà là một hành trình liên tục. Kể từ khoảnh khắc đó, chất lượng món ăn, phong cách phục vụ và sự sáng tạo tại Restaurantly lại tiếp tục được nâng lên một tầm cao hoàn toàn khác biệt.</p>', 'journey_2022_1782804736072.png', 7, 1, '2022', '2026-06-30 07:33:04', '2026-06-30'),
-(9, 1, 'Trải Nghiệm Đẳng Cấp Thượng Lưu', 'trai-nghiem-dang-cap-thuong-luu', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">N</span>ăm 2023, chúng tôi quyết định định nghĩa lại khái niệm về sự xa xỉ trong ẩm thực bằng việc ra mắt dịch vụ <strong>Bespoke Dining</strong> – Trải nghiệm ẩm thực được cá nhân hóa đến mức tuyệt đối. Tại Restaurantly, chúng tôi hiểu rằng giới thượng lưu không chỉ tìm kiếm một bữa ăn ngon, họ tìm kiếm một trải nghiệm độc bản, phản ánh đúng cá tính và đẳng cấp của chính họ.</p>\n<p>Với Bespoke Dining, thực khách có quyền can thiệp vào toàn bộ quá trình thiết kế thực đơn. Bếp trưởng điều hành sẽ có những cuộc gặp gỡ riêng để tìm hiểu về sở thích, dị ứng, và câu chuyện mà thực khách muốn truyền tải qua bữa tiệc. Chúng tôi sẵn sàng nhập khẩu những nguyên liệu hiếm có nhất trên thế giới chỉ trong vòng 48 giờ để phục vụ cho một bàn tiệc duy nhất.</p>\n<p>Từ việc thêu tên khách hàng lên khăn ăn, thiết kế thực đơn bọc da dập nổi mạ vàng, cho đến việc mời các chuyên gia Sommelier đẳng cấp quốc tế trực tiếp tư vấn và ghép nối rượu vang (Wine Pairing)... Mỗi chi tiết đều được thiết kế tỉ mỉ, tạo nên một bản giao hưởng của sự phồn hoa và nghệ thuật hiếu khách đỉnh cao.</p>', 'journey_2023_1782804764540.png', 8, 1, '2023', '2026-06-30 07:33:04', '2026-06-30'),
-(10, 1, 'Tầm Nhìn Quốc Tế', 'tam-nhin-quoc-te', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">G</span>ần một thập kỷ không ngừng vươn lên, Restaurantly giờ đây không chỉ là một nhà hàng, mà đã trở thành một biểu tượng của phong cách sống tinh hoa. Năm 2024, chúng tôi chính thức công bố chiến lược \"Tầm Nhìn Quốc Tế\", mang triết lý ẩm thực độc đáo của mình vượt ra khỏi biên giới.</p>\n<p>Sự thành công vang dội tại thị trường nội địa là bàn đạp vững chắc để chúng tôi tự tin bước ra thế giới. Những kế hoạch nhượng quyền thương hiệu cao cấp, hợp tác cùng các khách sạn 5 sao quốc tế và những chương trình trao đổi đầu bếp toàn cầu đang dần được hiện thực hóa.</p>\n<p>Nhưng dù có phát triển lớn mạnh đến đâu, vươn xa đến phương trời nào, giá trị cốt lõi của Restaurantly vẫn sẽ mãi vẹn nguyên như bữa tối đơn giản của những nhà sáng lập vào năm 2015: <strong>Ẩm thực là sự kết nối chân thành nhất giữa người với người.</strong> Chúng tôi tự hào mang theo di sản ấy, tiếp tục kiến tạo nên những kỳ quan ẩm thực mới, để mỗi thực khách bước qua cánh cửa Restaurantly đều tìm thấy cho mình một trải nghiệm đáng giá đến từng giây phút.</p>', 'journey_2024_1782804776034.png', 9, 1, '2024', '2026-06-30 07:33:04', '2026-06-30');
+(1, 1, 'Khởi Nguồn Đam Mê', 'khoi-nguon-dam-me', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">M</span>ọi câu chuyện vĩ đại đều bắt đầu từ một khoảnh khắc nhỏ bé, và hành trình của Restaurantly cũng không ngoại lệ. Vào một buổi chiều muộn năm 2015, khi ánh hoàng hôn đổ những vệt dài qua khung cửa sổ của một căn bếp nhỏ bé tại Paris, nhóm sáng lập của chúng tôi đã cùng nhau chia sẻ một bữa ăn tự nấu. Đó không phải là một bữa tiệc xa hoa, mà chỉ là những món ăn đơn giản được chuẩn bị bằng cả trái tim, cùng với một chai vang đỏ tuyệt hảo.</p>\n<p>Chính trong không gian ấm cúng và đầy cảm hứng ấy, một ý tưởng táo bạo đã nảy mầm: Tại sao không tạo ra một không gian ẩm thực nơi mọi thực khách đều có thể cảm nhận được sự ấm áp, tinh tế và trọn vẹn như chính bữa ăn này? Một nơi không chỉ phục vụ thức ăn, mà còn kiến tạo những ký ức.</p>\n<blockquote style=\"border-left: 4px solid #cda45e; padding-left: 20px; margin: 30px 0; font-style: italic; color: #cda45e; font-size: 1.2em; font-family: \'Playfair Display\', serif;\">\n\"Ẩm thực thực thụ không chỉ nằm ở hương vị đánh thức vị giác, mà còn ở cách nó chạm đến tận cùng cảm xúc của con người.\"\n</blockquote>\n<p>Từ ý tưởng ban đầu đó, chúng tôi đã dành vô số ngày đêm để lên kế hoạch, nghiên cứu nghệ thuật ẩm thực Pháp và châu Âu, tìm kiếm những nguồn nguyên liệu tinh túy nhất. Chúng tôi khao khát mang đến một trải nghiệm Fine Dining hoàn toàn khác biệt: sang trọng, đẳng cấp nhưng không hề xa cách. Khởi nguồn đam mê ấy chính là ngọn lửa cháy rực rỡ nhất, thắp sáng con đường mà Restaurantly sẽ bước đi trong suốt những năm tháng tiếp theo.</p>\n<p>Hành trình này không chỉ là sự tiếp no��i của những thành công đã qua, mà còn là lời cam kết mạnh mẽ về một tương lai phát triển bền vững. Chúng tôi luôn tâm niệm rằng ẩm thực không chỉ là việc lấp đầy dạ dày, mà là nghệ thuật �ết nối những tâm hồn đồng điệu. Từng nguyên liệu được lựa chọn khá́t khe từ nhễng n4ng trại hữu cơ hàng đầu, từng giọt nước sốt được chắt lọc qua hàng giờ hầm nhừ, tất cả đều hòa quyện tạo gên một trải nghiệm vị giác thăng hoa và khó quên.</p>\n<p>Chúng tôi hiểu rằng, để vươn tới sự hoàn mỹ, không thể thiếu đi sự đồng hành và tin tưởng tuyệt đối từ quý thực khách. Chính những nụ cười hài lòng, những lời động viên chân thành và cả nhễng y� Kiến đóng góp quý báu đã giúp nhà hàng NHÃ không ngừng hoàn thiện. Trong tương lai, chúng tôi sẽ tiếp tục mở rộng quy mô,!nâng cấp dịch vụ và không ngừng đổi mới thực đơn, mang đến nhễng kiệt tác ẩm thực giao thoa giữa truyền thống và hiện đại, xứng tầm với kỳ vọng của mọi khách hàng.</p>\n', 'journey_2015_1782804583746.png', 0, 1, '2015', '2026-06-30 07:33:04', '2026-06-30'),
+(2, 1, 'Đặt Viên Gạch Đầu Tiên', 'dat-vien-gach-dau-tien', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">N</span>ăm 2016 đánh dấu một cột mốc mang tính bước ngoặt khi Restaurantly chính thức khai trương cơ sở đầu tiên. Vượt qua vô vàn khó khăn của những ngày đầu khởi nghiệp—từ việc thiết kế không gian sao cho toát lên vẻ cổ điển vượt thời gian, đến việc tuyển chọn đội ngũ nhân sự không chỉ giỏi chuyên môn mà còn có chung nhịp đập đam mê.</p>\n<p>Chúng tôi đã chọn một mặt bằng khiêm tốn nhưng đậm chất thơ, nằm ẩn mình yên tĩnh giữa nhịp sống đô thị hối hả. Quá trình cải tạo kéo dài hơn 6 tháng ròng rã. Từng viên gạch ốp lát, từng mảng tường màu tối, cho đến hệ thống đèn chùm vàng ấm áp đều được chăm chút tỉ mỉ, nhằm đảm bảo mỗi góc nhỏ đều toát lên sự sang trọng và ấm cúng.</p>\n<p>Ngày mở cửa đầu tiên, không có những chiến dịch quảng cáo rầm rộ hay những bữa tiệc khai trương ồn ào. Chúng tôi chỉ lặng lẽ mở cửa đón những vị khách đầu tiên bằng nụ cười chân thành và những món ăn được chuẩn bị hoàn hảo nhất. Chính chất lượng vượt trội và dịch vụ tận tâm đã dần tạo nên một làn sóng truyền miệng mạnh mẽ. Viên gạch đầu tiên đã được đặt xuống vô cùng vững chãi, trở thành nền móng kiên cố cho tòa tháp thành công sau này.</p>\n<p>Hành trình này không chỉ là sự tiếp no��i của những thành công đã qua, mà còn là lời cam kết mạnh mẽ về một tương lai phát triển bền vững. Chúng tôi luôn tâm niệm rằng ẩm thực không chỉ là việc lấp đầy dạ dày, mà là nghệ thuật �ết nối những tâm hồn đồng điệu. Từng nguyên liệu được lựa chọn khá́t khe từ nhễng n4ng trại hữu cơ hàng đầu, từng giọt nước sốt được chắt lọc qua hàng giờ hầm nhừ, tất cả đều hòa quyện tạo gên một trải nghiệm vị giác thăng hoa và khó quên.</p>\n<p>Chúng tôi hiểu rằng, để vươn tới sự hoàn mỹ, không thể thiếu đi sự đồng hành và tin tưởng tuyệt đối từ quý thực khách. Chính những nụ cười hài lòng, những lời động viên chân thành và cả nhễng y� Kiến đóng góp quý báu đã giúp nhà hàng NHÃ không ngừng hoàn thiện. Trong tương lai, chúng tôi sẽ tiếp tục mở rộng quy mô,!nâng cấp dịch vụ và không ngừng đổi mới thực đơn, mang đến nhễng kiệt tác ẩm thực giao thoa giữa truyền thống và hiện đại, xứng tầm với kỳ vọng của mọi khách hàng.</p>\n', 'journey_2016_1782804604959.png', 1, 1, '2016', '2026-06-30 07:33:04', '2026-06-30'),
+(3, 1, 'Món Ăn Signature Ra Đời', 'mon-an-signature-ra-doi', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">Đ</span>ối với bất kỳ nhà hàng Fine Dining nào, việc sở hữu một món ăn \"Signature\" (món ăn biểu tượng) không chỉ là lời khẳng định về đẳng cấp tay nghề, mà còn là linh hồn của thương hiệu. Năm 2017, Bếp trưởng tài năng của chúng tôi đã quyết định tạo ra một kiệt tác ẩm thực thực sự, một món ăn mà bất cứ ai nếm thử một lần sẽ không bao giờ quên.</p>\n<p>Sau hàng trăm lần thử nghiệm thất bại, từ việc điều chỉnh tỷ lệ gia vị, thời gian áp chảo, cho đến việc tìm kiếm nguồn thịt bò Wagyu hảo hạng nhất từ Nhật Bản kết hợp cùng nấm Truffle đen quý hiếm, món Bò Wellington phong cách Restaurantly đã chính thức ra đời.</p>\n<ul style=\"list-style: none; padding-left: 0; margin-top: 20px;\">\n<li style=\"margin-bottom: 10px; display: flex; align-items: flex-start;\"><span style=\"color: #cda45e; margin-right: 10px;\">✦</span> Lớp vỏ bánh ngàn lớp vàng óng, giòn rụm đến mức tan ngay trên đầu lưỡi.</li>\n<li style=\"margin-bottom: 10px; display: flex; align-items: flex-start;\"><span style=\"color: #cda45e; margin-right: 10px;\">✦</span> Lớp nấm Duxelles bùi béo, thơm lừng quyện chặt lấy thớ thịt bò mềm mại, mọng nước.</li>\n<li style=\"margin-bottom: 10px; display: flex; align-items: flex-start;\"><span style=\"color: #cda45e; margin-right: 10px;\">✦</span> Nước sốt vang đỏ cô đặc sóng sánh, tạo nên bản giao hưởng hương vị hoàn hảo.</li>\n</ul>\n<p style=\"margin-top: 20px;\">Sự tinh tế trong từng chi tiết đã biến món ăn này thành một hiện tượng. Món Ăn Signature không chỉ chinh phục được những vị thực khách khó tính nhất, mà còn nhanh chóng đưa tên tuổi của Restaurantly phủ sóng rộng rãi khắp giới mộ điệu ẩm thực.</p>\n<p>Hành trình này không chỉ là sự tiếp no��i của những thành công đã qua, mà còn là lời cam kết mạnh mẽ về một tương lai phát triển bền vững. Chúng tôi luôn tâm niệm rằng ẩm thực không chỉ là việc lấp đầy dạ dày, mà là nghệ thuật �ết nối những tâm hồn đồng điệu. Từng nguyên liệu được lựa chọn khá́t khe từ nhễng n4ng trại hữu cơ hàng đầu, từng giọt nước sốt được chắt lọc qua hàng giờ hầm nhừ, tất cả đều hòa quyện tạo gên một trải nghiệm vị giác thăng hoa và khó quên.</p>\n<p>Chúng tôi hiểu rằng, để vươn tới sự hoàn mỹ, không thể thiếu đi sự đồng hành và tin tưởng tuyệt đối từ quý thực khách. Chính những nụ cười hài lòng, những lời động viên chân thành và cả nhễng y� Kiến đóng góp quý báu đã giúp nhà hàng NHÃ không ngừng hoàn thiện. Trong tương lai, chúng tôi sẽ tiếp tục mở rộng quy mô,!nâng cấp dịch vụ và không ngừng đổi mới thực đơn, mang đến nhễng kiệt tác ẩm thực giao thoa giữa truyền thống và hiện đại, xứng tầm với kỳ vọng của mọi khách hàng.</p>\n', 'journey_2017_1782804614736.png', 2, 1, '2017', '2026-06-30 07:33:04', '2026-06-30'),
+(4, 1, 'Giải Thưởng Ẩm Thực Đầu Tiên', 'giai-thuong-am-thuc-dau-tien', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">N</span>ăm 2018 là một năm ngập tràn niềm vui và những thành quả ngọt ngào. Những nỗ lực không mệt mỏi của toàn bộ đội ngũ Restaurantly đã chính thức được giới chuyên môn công nhận khi nhà hàng được vinh danh tại lễ trao giải Ẩm Thực Vàng khu vực.</p>\n<p>Đó là một đêm không thể nào quên. Khi tên của Restaurantly được xướng lên ở hạng mục \"Nhà Hàng Fine Dining Có Dịch Vụ Tốt Nhất Năm\", cả khán phòng như vỡ òa trong tiếng vỗ tay. Giải thưởng này không chỉ là một chiếc cúp pha lê lấp lánh để trưng bày trên kệ, mà nó là minh chứng rõ ràng nhất cho triết lý kinh doanh mà chúng tôi luôn theo đuổi: Lấy sự hài lòng tuyệt đối của khách hàng làm trung tâm.</p>\n<blockquote style=\"border-left: 4px solid #cda45e; padding-left: 20px; margin: 30px 0; font-style: italic; color: #cda45e; font-size: 1.2em; font-family: \'Playfair Display\', serif;\">\n\"Vinh quang không làm chúng tôi tự mãn, nó chỉ nhắc nhở chúng tôi rằng: Tiêu chuẩn của ngày hôm nay phải là bước đệm cho sự hoàn hảo của ngày mai.\"\n</blockquote>\n<p>Giải thưởng đầu tiên này đã mở ra những cánh cửa mới, thu hút không chỉ những tín đồ ẩm thực địa phương mà còn cả những thực khách quốc tế. Nó tiếp thêm một nguồn động lực vô cùng to lớn để đội ngũ đầu bếp và nhân viên phục vụ không ngừng hoàn thiện bản thân, vươn tới những đỉnh cao mới.</p>\n<p>Hành trình này không chỉ là sự tiếp no��i của những thành công đã qua, mà còn là lời cam kết mạnh mẽ về một tương lai phát triển bền vững. Chúng tôi luôn tâm niệm rằng ẩm thực không chỉ là việc lấp đầy dạ dày, mà là nghệ thuật �ết nối những tâm hồn đồng điệu. Từng nguyên liệu được lựa chọn khá́t khe từ nhễng n4ng trại hữu cơ hàng đầu, từng giọt nước sốt được chắt lọc qua hàng giờ hầm nhừ, tất cả đều hòa quyện tạo gên một trải nghiệm vị giác thăng hoa và khó quên.</p>\n<p>Chúng tôi hiểu rằng, để vươn tới sự hoàn mỹ, không thể thiếu đi sự đồng hành và tin tưởng tuyệt đối từ quý thực khách. Chính những nụ cười hài lòng, những lời động viên chân thành và cả nhễng y� Kiến đóng góp quý báu đã giúp nhà hàng NHÃ không ngừng hoàn thiện. Trong tương lai, chúng tôi sẽ tiếp tục mở rộng quy mô,!nâng cấp dịch vụ và không ngừng đổi mới thực đơn, mang đến nhễng kiệt tác ẩm thực giao thoa giữa truyền thống và hiện đại, xứng tầm với kỳ vọng của mọi khách hàng.</p>\n', 'journey_2018_1782804657697.png', 3, 1, '2018', '2026-06-30 07:33:04', '2026-06-30'),
+(5, 1, 'Mở Rộng Không Gian', 'mo-rong-khong-gian', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">S</span>ự bùng nổ về danh tiếng và lượng khách hàng đã đặt Restaurantly trước một bài toán vô cùng nan giải vào năm 2019: Làm sao để phục vụ số lượng thực khách ngày càng đông đảo mà vẫn giữ nguyên được sự tĩnh lặng, riêng tư và chất lượng dịch vụ đẳng cấp?</p>\n<p>Quyết định mở rộng không gian đã được đưa ra. Tuy nhiên, thay vì chỉ đơn thuần là cơi nới hoặc thuê một mặt bằng rộng lớn hơn, chúng tôi chọn cách mua lại không gian liền kề và thực hiện một cuộc đại tu kiến trúc. Từng chi tiết trong khu vực mới đều được thiết kế để liền mạch hoàn hảo với không gian cũ, tạo nên một tổng thể bề thế nhưng vẫn vô cùng duyên dáng.</p>\n<p>Đặc biệt, trong lần mở rộng này, chúng tôi đã bổ sung thêm khu vực <strong>Private Dining Room (Phòng tiệc riêng tư)</strong> dành riêng cho các buổi gặp mặt thượng lưu, những cuộc đàm phán kinh doanh hoặc những bữa tiệc cầu hôn lãng mạn. Hầm rượu vang (Wine Cellar) cũng được nâng cấp đáng kể, quy tụ hàng ngàn chai vang hảo hạng từ các vùng đất trứ danh trên thế giới, sẵn sàng làm hài lòng những vị khách am tường nhất.</p>\n<p>Hành trình này không chỉ là sự tiếp no��i của những thành công đã qua, mà còn là lời cam kết mạnh mẽ về một tương lai phát triển bền vững. Chúng tôi luôn tâm niệm rằng ẩm thực không chỉ là việc lấp đầy dạ dày, mà là nghệ thuật �ết nối những tâm hồn đồng điệu. Từng nguyên liệu được lựa chọn khá́t khe từ nhễng n4ng trại hữu cơ hàng đầu, từng giọt nước sốt được chắt lọc qua hàng giờ hầm nhừ, tất cả đều hòa quyện tạo gên một trải nghiệm vị giác thăng hoa và khó quên.</p>\n<p>Chúng tôi hiểu rằng, để vươn tới sự hoàn mỹ, không thể thiếu đi sự đồng hành và tin tưởng tuyệt đối từ quý thực khách. Chính những nụ cười hài lòng, những lời động viên chân thành và cả nhễng y� Kiến đóng góp quý báu đã giúp nhà hàng NHÃ không ngừng hoàn thiện. Trong tương lai, chúng tôi sẽ tiếp tục mở rộng quy mô,!nâng cấp dịch vụ và không ngừng đổi mới thực đơn, mang đến nhễng kiệt tác ẩm thực giao thoa giữa truyền thống và hiện đại, xứng tầm với kỳ vọng của mọi khách hàng.</p>\n', 'journey_2019_1782804667920.png', 4, 1, '2019', '2026-06-30 07:33:04', '2026-06-30'),
+(6, 1, 'Vượt Qua Thử Thách', 'vuot-qua-thu-thach', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">K</span>hông có con đường nào trải đầy hoa hồng mà không có chông gai. Năm 2020 ập đến mang theo những biến động toàn cầu chưa từng có tiền lệ. Ngành F&B nói chung và mảng Fine Dining nói riêng phải đối mặt với những thử thách sinh tử.</p>\n<p>Nhà hàng buộc phải tạm đóng cửa để đảm bảo an toàn cho cộng đồng. Đó là những ngày tháng tĩnh lặng đến nao lòng, những bộ bàn ghế phủ khăn, ánh đèn chùm tắt lịm. Nhưng trong chính khoảng thời gian u tối nhất, tinh thần đoàn kết và ý chí kiên cường của gia đình Restaurantly lại tỏa sáng rực rỡ hơn bao giờ hết. Chúng tôi quyết định không ngồi yên chờ đợi.</p>\n<p>Ban lãnh đạo cam kết giữ lại toàn bộ 100% nhân sự. Các bếp trưởng tận dụng thời gian này để nghiên cứu sâu hơn về kỹ thuật lên men, bảo quản thực phẩm và sáng tạo ra những công thức hoàn toàn mới. Chúng tôi cũng khởi xướng mô hình \"Fine Dining Tại Gia\", mang những set menu cao cấp cùng hướng dẫn trình bày chi tiết đến tận bàn ăn của thực khách. Thử thách khắc nghiệt không quật ngã được chúng tôi, ngược lại, nó rèn giũa Restaurantly trở thành một tập thể mạnh mẽ, sắc bén và linh hoạt hơn bao giờ hết.</p>\n<p>Hành trình này không chỉ là sự tiếp no��i của những thành công đã qua, mà còn là lời cam kết mạnh mẽ về một tương lai phát triển bền vững. Chúng tôi luôn tâm niệm rằng ẩm thực không chỉ là việc lấp đầy dạ dày, mà là nghệ thuật �ết nối những tâm hồn đồng điệu. Từng nguyên liệu được lựa chọn khá́t khe từ nhễng n4ng trại hữu cơ hàng đầu, từng giọt nước sốt được chắt lọc qua hàng giờ hầm nhừ, tất cả đều hòa quyện tạo gên một trải nghiệm vị giác thăng hoa và khó quên.</p>\n<p>Chúng tôi hiểu rằng, để vươn tới sự hoàn mỹ, không thể thiếu đi sự đồng hành và tin tưởng tuyệt đối từ quý thực khách. Chính những nụ cười hài lòng, những lời động viên chân thành và cả nhễng y� Kiến đóng góp quý báu đã giúp nhà hàng NHÃ không ngừng hoàn thiện. Trong tương lai, chúng tôi sẽ tiếp tục mở rộng quy mô,!nâng cấp dịch vụ và không ngừng đổi mới thực đơn, mang đến nhễng kiệt tác ẩm thực giao thoa giữa truyền thống và hiện đại, xứng tầm với kỳ vọng của mọi khách hàng.</p>\n', 'journey_2020_1782804725707.png', 5, 1, '2020', '2026-06-30 07:33:04', '2026-06-30'),
+(7, 1, 'Trở Lại Mạnh Mẽ', 'tro-lai-manh-me', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">N</span>ăm 2021, khi những tia nắng ấm áp của cuộc sống bình thường mới bắt đầu le lói, Restaurantly đã sẵn sàng cho một sự trở lại bùng nổ. Chúng tôi mở cửa đón khách trở lại không chỉ với một diện mạo được làm mới, mà còn mang theo một tinh thần cống hiến mãnh liệt.</p>\n<p>Thực đơn \"Tái Sinh\" (The Renaissance Menu) được ra mắt như một lời tri ân sâu sắc gửi đến những khách hàng đã luôn đồng hành và chờ đợi chúng tôi. Mỗi món ăn trong thực đơn là một câu chuyện về sức sống mãnh liệt của thiên nhiên, sử dụng những nguyên liệu địa phương tươi ngon nhất, kết hợp cùng kỹ thuật chế biến hiện đại của châu Âu.</p>\n<p>Sự trở lại của Restaurantly đã tạo ra một tiếng vang lớn. Hàng ngàn lượt đặt bàn đổ về, những buổi tối kín chỗ kéo dài hàng tháng trời. Hơn cả việc thưởng thức đồ ăn, thực khách đến với chúng tôi để ăn mừng sự sống, ăn mừng những cuộc hội ngộ, và đắm chìm trong thứ cảm giác xa xỉ, bình yên mà họ đã khao khát bấy lâu. Chúng tôi đã trở lại, mạnh mẽ, trưởng thành và rực rỡ hơn bao giờ hết.</p>\n<p>Hành trình này không chỉ là sự tiếp no��i của những thành công đã qua, mà còn là lời cam kết mạnh mẽ về một tương lai phát triển bền vững. Chúng tôi luôn tâm niệm rằng ẩm thực không chỉ là việc lấp đầy dạ dày, mà là nghệ thuật �ết nối những tâm hồn đồng điệu. Từng nguyên liệu được lựa chọn khá́t khe từ nhễng n4ng trại hữu cơ hàng đầu, từng giọt nước sốt được chắt lọc qua hàng giờ hầm nhừ, tất cả đều hòa quyện tạo gên một trải nghiệm vị giác thăng hoa và khó quên.</p>\n<p>Chúng tôi hiểu rằng, để vươn tới sự hoàn mỹ, không thể thiếu đi sự đồng hành và tin tưởng tuyệt đối từ quý thực khách. Chính những nụ cười hài lòng, những lời động viên chân thành và cả nhễng y� Kiến đóng góp quý báu đã giúp nhà hàng NHÃ không ngừng hoàn thiện. Trong tương lai, chúng tôi sẽ tiếp tục mở rộng quy mô,!nâng cấp dịch vụ và không ngừng đổi mới thực đơn, mang đến nhễng kiệt tác ẩm thực giao thoa giữa truyền thống và hiện đại, xứng tầm với kỳ vọng của mọi khách hàng.</p>\n', 'journey_2021_1782804708461.png', 6, 1, '2021', '2026-06-30 07:33:04', '2026-06-30'),
+(8, 1, 'Vươn Tới Ngôi Sao Michelin', 'vuon-toi-ngoi-sao-michelin', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">Đ</span>ỉnh cao của nghệ thuật ẩm thực thế giới luôn gọi tên những Ngôi sao Michelin danh giá. Từ những ngày đầu tiên thành lập, đó vẫn luôn là một giấc mơ, một ngọn hải đăng soi sáng con đường chúng tôi đi. Và năm 2022, khoảnh khắc lịch sử ấy cuối cùng cũng đã đến.</p>\n<p>Khi thư thông báo chính thức từ cẩm nang Michelin danh giá được gửi tới, cả nhà hàng như chìm trong một sự vỡ òa không thể kìm nén. Ngôi sao Michelin đầu tiên đã được trao cho Restaurantly, đánh dấu sự công nhận ở đẳng cấp cao nhất trên bản đồ ẩm thực quốc tế.</p>\n<blockquote style=\"border-left: 4px solid #cda45e; padding-left: 20px; margin: 30px 0; font-style: italic; color: #cda45e; font-size: 1.2em; font-family: \'Playfair Display\', serif;\">\n\"Ngôi sao này không thuộc về một cá nhân nào. Nó thuộc về tập thể những người đã cống hiến tuổi thanh xuân bên chảo lửa, những người tỉ mỉ lau từng chiếc ly pha lê, và cả những thực khách đã luôn tin tưởng chúng tôi.\"\n</blockquote>\n<p>Ngôi sao Michelin mang theo một áp lực vô hình nhưng vô cùng ngọt ngào. Nó nhắc nhở chúng tôi rằng sự hoàn hảo không phải là đích đến, mà là một hành trình liên tục. Kể từ khoảnh khắc đó, chất lượng món ăn, phong cách phục vụ và sự sáng tạo tại Restaurantly lại tiếp tục được nâng lên một tầm cao hoàn toàn khác biệt.</p>\n<p>Hành trình này không chỉ là sự tiếp no��i của những thành công đã qua, mà còn là lời cam kết mạnh mẽ về một tương lai phát triển bền vững. Chúng tôi luôn tâm niệm rằng ẩm thực không chỉ là việc lấp đầy dạ dày, mà là nghệ thuật �ết nối những tâm hồn đồng điệu. Từng nguyên liệu được lựa chọn khá́t khe từ nhễng n4ng trại hữu cơ hàng đầu, từng giọt nước sốt được chắt lọc qua hàng giờ hầm nhừ, tất cả đều hòa quyện tạo gên một trải nghiệm vị giác thăng hoa và khó quên.</p>\n<p>Chúng tôi hiểu rằng, để vươn tới sự hoàn mỹ, không thể thiếu đi sự đồng hành và tin tưởng tuyệt đối từ quý thực khách. Chính những nụ cười hài lòng, những lời động viên chân thành và cả nhễng y� Kiến đóng góp quý báu đã giúp nhà hàng NHÃ không ngừng hoàn thiện. Trong tương lai, chúng tôi sẽ tiếp tục mở rộng quy mô,!nâng cấp dịch vụ và không ngừng đổi mới thực đơn, mang đến nhễng kiệt tác ẩm thực giao thoa giữa truyền thống và hiện đại, xứng tầm với kỳ vọng của mọi khách hàng.</p>\n', 'journey_2022_1782804736072.png', 7, 1, '2022', '2026-06-30 07:33:04', '2026-06-30'),
+(9, 1, 'Trải Nghiệm Đẳng Cấp Thượng Lưu', 'trai-nghiem-dang-cap-thuong-luu', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">N</span>ăm 2023, chúng tôi quyết định định nghĩa lại khái niệm về sự xa xỉ trong ẩm thực bằng việc ra mắt dịch vụ <strong>Bespoke Dining</strong> – Trải nghiệm ẩm thực được cá nhân hóa đến mức tuyệt đối. Tại Restaurantly, chúng tôi hiểu rằng giới thượng lưu không chỉ tìm kiếm một bữa ăn ngon, họ tìm kiếm một trải nghiệm độc bản, phản ánh đúng cá tính và đẳng cấp của chính họ.</p>\n<p>Với Bespoke Dining, thực khách có quyền can thiệp vào toàn bộ quá trình thiết kế thực đơn. Bếp trưởng điều hành sẽ có những cuộc gặp gỡ riêng để tìm hiểu về sở thích, dị ứng, và câu chuyện mà thực khách muốn truyền tải qua bữa tiệc. Chúng tôi sẵn sàng nhập khẩu những nguyên liệu hiếm có nhất trên thế giới chỉ trong vòng 48 giờ để phục vụ cho một bàn tiệc duy nhất.</p>\n<p>Từ việc thêu tên khách hàng lên khăn ăn, thiết kế thực đơn bọc da dập nổi mạ vàng, cho đến việc mời các chuyên gia Sommelier đẳng cấp quốc tế trực tiếp tư vấn và ghép nối rượu vang (Wine Pairing)... Mỗi chi tiết đều được thiết kế tỉ mỉ, tạo nên một bản giao hưởng của sự phồn hoa và nghệ thuật hiếu khách đỉnh cao.</p>\n<p>Hành trình này không chỉ là sự tiếp no��i của những thành công đã qua, mà còn là lời cam kết mạnh mẽ về một tương lai phát triển bền vững. Chúng tôi luôn tâm niệm rằng ẩm thực không chỉ là việc lấp đầy dạ dày, mà là nghệ thuật �ết nối những tâm hồn đồng điệu. Từng nguyên liệu được lựa chọn khá́t khe từ nhễng n4ng trại hữu cơ hàng đầu, từng giọt nước sốt được chắt lọc qua hàng giờ hầm nhừ, tất cả đều hòa quyện tạo gên một trải nghiệm vị giác thăng hoa và khó quên.</p>\n<p>Chúng tôi hiểu rằng, để vươn tới sự hoàn mỹ, không thể thiếu đi sự đồng hành và tin tưởng tuyệt đối từ quý thực khách. Chính những nụ cười hài lòng, những lời động viên chân thành và cả nhễng y� Kiến đóng góp quý báu đã giúp nhà hàng NHÃ không ngừng hoàn thiện. Trong tương lai, chúng tôi sẽ tiếp tục mở rộng quy mô,!nâng cấp dịch vụ và không ngừng đổi mới thực đơn, mang đến nhễng kiệt tác ẩm thực giao thoa giữa truyền thống và hiện đại, xứng tầm với kỳ vọng của mọi khách hàng.</p>\n', 'journey_2023_1782804764540.png', 8, 1, '2023', '2026-06-30 07:33:04', '2026-06-30'),
+(10, 1, 'Tầm Nhìn Quốc Tế', 'tam-nhin-quoc-te', '<p><span style=\"font-size: 2.5em; float: left; margin-top: -0.1em; margin-right: 0.1em; color: #cda45e; font-family: \'Playfair Display\', serif; line-height: 1;\">G</span>ần một thập kỷ không ngừng vươn lên, Restaurantly giờ đây không chỉ là một nhà hàng, mà đã trở thành một biểu tượng của phong cách sống tinh hoa. Năm 2024, chúng tôi chính thức công bố chiến lược \"Tầm Nhìn Quốc Tế\", mang triết lý ẩm thực độc đáo của mình vượt ra khỏi biên giới.</p>\n<p>Sự thành công vang dội tại thị trường nội địa là bàn đạp vững chắc để chúng tôi tự tin bước ra thế giới. Những kế hoạch nhượng quyền thương hiệu cao cấp, hợp tác cùng các khách sạn 5 sao quốc tế và những chương trình trao đổi đầu bếp toàn cầu đang dần được hiện thực hóa.</p>\n<p>Nhưng dù có phát triển lớn mạnh đến đâu, vươn xa đến phương trời nào, giá trị cốt lõi của Restaurantly vẫn sẽ mãi vẹn nguyên như bữa tối đơn giản của những nhà sáng lập vào năm 2015: <strong>Ẩm thực là sự kết nối chân thành nhất giữa người với người.</strong> Chúng tôi tự hào mang theo di sản ấy, tiếp tục kiến tạo nên những kỳ quan ẩm thực mới, để mỗi thực khách bước qua cánh cửa Restaurantly đều tìm thấy cho mình một trải nghiệm đáng giá đến từng giây phút.</p>\n<p>Hành trình này không chỉ là sự tiếp no��i của những thành công đã qua, mà còn là lời cam kết mạnh mẽ về một tương lai phát triển bền vững. Chúng tôi luôn tâm niệm rằng ẩm thực không chỉ là việc lấp đầy dạ dày, mà là nghệ thuật �ết nối những tâm hồn đồng điệu. Từng nguyên liệu được lựa chọn khá́t khe từ nhễng n4ng trại hữu cơ hàng đầu, từng giọt nước sốt được chắt lọc qua hàng giờ hầm nhừ, tất cả đều hòa quyện tạo gên một trải nghiệm vị giác thăng hoa và khó quên.</p>\n<p>Chúng tôi hiểu rằng, để vươn tới sự hoàn mỹ, không thể thiếu đi sự đồng hành và tin tưởng tuyệt đối từ quý thực khách. Chính những nụ cười hài lòng, những lời động viên chân thành và cả nhễng y� Kiến đóng góp quý báu đã giúp nhà hàng NHÃ không ngừng hoàn thiện. Trong tương lai, chúng tôi sẽ tiếp tục mở rộng quy mô,!nâng cấp dịch vụ và không ngừng đổi mới thực đơn, mang đến nhễng kiệt tác ẩm thực giao thoa giữa truyền thống và hiện đại, xứng tầm với kỳ vọng của mọi khách hàng.</p>\n', 'journey_2024_1782804776034.png', 9, 1, '2024', '2026-06-30 07:33:04', '2026-06-30');
 
 -- --------------------------------------------------------
 
@@ -383,7 +383,9 @@ INSERT INTO `booking_details` (`id`, `booking_id`, `menu_id`, `excluded_combo_it
 (1158, 1155, 24, NULL, NULL, 'food', 1, '', 0.00, '2026-08-05 12:08:14', 'pending'),
 (1159, 1157, 25, NULL, NULL, 'food', 1, '', 0.00, '2026-08-05 12:19:53', 'pending'),
 (1160, 1159, 24, NULL, NULL, 'food', 1, '', 0.00, '2026-08-07 15:45:58', 'pending'),
-(1161, 1160, 24, NULL, NULL, 'food', 1, '', 0.00, '2026-08-07 16:46:37', 'pending');
+(1161, 1160, 24, NULL, NULL, 'food', 1, '', 0.00, '2026-08-07 16:46:37', 'pending'),
+(1162, 1165, 16, NULL, NULL, 'food', 1, '', 0.00, '2026-08-28 12:37:14', 'pending'),
+(1163, 1166, 16, NULL, NULL, 'food', 1, '', 0.00, '2026-08-28 13:02:08', 'pending');
 
 -- --------------------------------------------------------
 
@@ -977,7 +979,15 @@ INSERT INTO `booking_inventory_deductions` (`id`, `booking_id`, `ingredient_id`,
 (1346, 1157, 64, 2, 0.01, '2026-08-05 12:20:02'),
 (1347, 1157, 102, 2, 0.50, '2026-08-05 12:20:02'),
 (1348, 1157, 107, 2, 0.02, '2026-08-05 12:20:02'),
-(1349, 1157, 3, 2, 0.01, '2026-08-05 12:20:02');
+(1349, 1157, 3, 2, 0.01, '2026-08-05 12:20:02'),
+(1350, 1165, 126, 4, 0.15, '2026-08-28 13:15:59'),
+(1351, 1165, 127, 4, 0.01, '2026-08-28 13:15:59'),
+(1352, 1165, 191, 4, 0.01, '2026-08-28 13:15:59'),
+(1353, 1165, 112, 2, 0.02, '2026-08-28 13:15:59'),
+(1354, 1165, 128, 2, 0.01, '2026-08-28 13:15:59'),
+(1355, 1165, 142, 2, 0.00, '2026-08-28 13:15:59'),
+(1356, 1165, 35, 2, 1.00, '2026-08-28 13:15:59'),
+(1357, 1165, 12, 2, 0.00, '2026-08-28 13:15:59');
 
 -- --------------------------------------------------------
 
@@ -1009,7 +1019,10 @@ INSERT INTO `bot_context_logs` (`id`, `keyword_searched`, `created_at`) VALUES
 (10, 'chào bạn', '2026-06-26 14:51:20'),
 (11, 'tôi muốn đặt bàn', '2026-07-01 12:18:06'),
 (12, 'hi', '2026-07-01 12:18:09'),
-(13, 'hi', '2026-07-02 00:53:19');
+(13, 'hi', '2026-07-02 00:53:19'),
+(14, 'tôi muốn đặt bàn', '2026-08-27 12:22:02'),
+(15, 'tôi muốn đặt bàn', '2026-08-27 12:24:06'),
+(16, 'tôi muốn đặt bàn', '2026-08-27 12:24:26');
 
 -- --------------------------------------------------------
 
@@ -1033,7 +1046,7 @@ INSERT INTO `bot_responses` (`id`, `keywords`, `answer`) VALUES
 (2, 'địa chỉ,ở đâu,vị trí,địa điểm,nơi tổ chức', 'Nhà hàng Restaurantly nằm tại số 123 Đường ABC, Quận XYZ, TP. HCM bạn nhé.'),
 (3, 'giờ mở cửa,thời gian,mấy giờ', 'Nhà hàng mở cửa từ 8:00 sáng đến 22:00 tối các ngày trong tuần ạ.'),
 (4, 'thực đơn, menu, món ăn, đồ ăn, bán gì', 'Nhà hàng phục vụ các món Âu và Á cao cấp. Bạn có thể tham khảo Menu trực tuyến trên trang web ở mục \"Khám Phá Menu\", bao gồm các món Signature, Bespoke Menu và đồ uống bạn nhé.'),
-(5, 'đặt bàn, book bàn, reserve, giữ chỗ, muốn đặt bàn', 'Bạn có thể tự đặt bàn nhanh chóng qua mục \"Đặt Bàn\" trên website. Hệ thống sẽ tự động xác nhận và giữ chỗ cho bạn. Cần hỗ trợ thêm, bạn cứ nhắn nhé!'),
+(5, 'đặt bàn, book bàn, reserve, giữ chỗ, muốn đặt bàn, Tôi muốn đặt bàn', 'Bạn có thể tự đặt bàn nhanh chóng qua mục \"Đặt Bàn\" trên website. Hệ thống sẽ tự động xác nhận và giữ chỗ cho bạn. Cần hỗ trợ thêm, bạn cứ nhắn nhé!'),
 (6, 'giá, bao nhiêu tiền, chi phí, bảng giá', 'Mức giá các món lẻ dao động từ 150k - 800k. Các Set Combo có giá từ 400k - 2.500k. Đối với tiệc Bespoke thì sẽ tùy thuộc vào thiết kế thực đơn riêng bạn nhé.'),
 (7, 'thanh toán, trả tiền, chuyển khoản, tiền mặt, quẹt thẻ', 'Nhà hàng hỗ trợ thanh toán bằng Tiền mặt, Chuyển khoản ngân hàng (quét mã QR) và Quẹt thẻ tín dụng/ghi nợ (Visa, Mastercard, JCB).'),
 (8, 'đầu bếp tại gia, bespoke, thuê đầu bếp, đầu bếp tới nhà, nấu tại nhà', 'Dịch vụ \"Đầu Bếp Tại Gia (Bespoke Dining)\" mang không gian nhà hàng cao cấp về tận nhà bạn! Bếp trưởng sẽ thiết kế thực đơn riêng và trực tiếp đến phục vụ. Bạn chọn mục \"Đầu Bếp Tại Gia\" ở trang Đặt Bàn nhé.'),
@@ -1136,7 +1149,15 @@ INSERT INTO `chat_messages` (`id`, `session_id`, `sender_type`, `message_type`, 
 (48, 'sess_1781954337712_976', 'customer', 'text', 'hi', 1, '2026-07-01 12:18:09', 0),
 (49, 'sess_1781954337712_976', 'bot', 'text', 'Chào bạn! Mình có thể giúp gì cho bạn?', 0, '2026-07-01 12:18:09', 0),
 (50, 'sess_1781954337712_976', 'customer', 'text', 'hi', 0, '2026-07-02 00:53:19', 0),
-(51, 'sess_1781954337712_976', 'bot', 'text', 'Chào bạn! Mình có thể giúp gì cho bạn?', 0, '2026-07-02 00:53:19', 0);
+(51, 'sess_1781954337712_976', 'bot', 'text', 'Chào bạn! Mình có thể giúp gì cho bạn?', 0, '2026-07-02 00:53:19', 0),
+(52, 'sess_1787833144803_262', 'bot', 'text', 'Chào Quản trị viên! Mình là Trợ lý ảo của Restaurantly. Mình có thể giúp gì cho bạn hôm nay?', 0, '2026-08-27 12:19:04', 0),
+(53, 'sess_1787833144803_262', 'customer', 'text', 'Tôi muốn đặt bàn', 1, '2026-08-27 12:22:02', 0),
+(54, 'sess_1787833144803_262', 'bot', 'text', 'Để kiểm tra tình trạng bàn chính xác, bạn vui lòng chọn phần Đặt bàn trên Website hoặc nhắn \'gặp nhân viên\' để được hỗ trợ kiểm tra ngay nhé.', 0, '2026-08-27 12:22:02', 0),
+(55, 'sess_1787833144803_262', 'customer', 'text', 'Tôi muốn đặt bàn', 0, '2026-08-27 12:24:06', 0),
+(56, 'sess_1787833144803_262', 'bot', 'text', 'Để kiểm tra tình trạng bàn chính xác, bạn vui lòng chọn phần Đặt bàn trên Website hoặc nhắn \'gặp nhân viên\' để được hỗ trợ kiểm tra ngay nhé.', 0, '2026-08-27 12:24:06', 0),
+(57, 'sess_1787833144803_262', 'customer', 'text', 'Tôi muốn đặt bàn', 0, '2026-08-27 12:24:26', 0),
+(58, 'sess_1787833144803_262', 'bot', 'text', 'Để kiểm tra tình trạng bàn chính xác, bạn vui lòng chọn phần Đặt bàn trên Website hoặc nhắn \'gặp nhân viên\' để được hỗ trợ kiểm tra ngay nhé.', 0, '2026-08-27 12:24:26', 0),
+(59, 'sess_1787833591349_292', 'bot', 'text', 'Chào Quản trị viên! Mình là Trợ lý ảo của nhà hàng NHÃ. Mình có thể giúp gì cho bạn hôm nay?', 0, '2026-08-27 12:26:31', 0);
 
 -- --------------------------------------------------------
 
@@ -1162,7 +1183,9 @@ CREATE TABLE `chat_sessions` (
 INSERT INTO `chat_sessions` (`session_id`, `customer_name`, `customer_phone`, `status`, `created_at`, `first_response_at`, `closed_at`) VALUES
 ('sess_1781954337712_976', 'Quản trị viên', '0000000000', 'bot_handling', '2026-06-20 11:18:57', '2026-06-20 11:19:34', '2026-06-23 11:17:10'),
 ('sess_1782207829541_780', 'Vương Tuấn Anh', '0956789012', 'bot_handling', '2026-06-23 09:43:49', NULL, NULL),
-('sess_1782485470645_973', 'Quản trị viên', '0000000000', 'bot_handling', '2026-06-26 14:51:10', NULL, NULL);
+('sess_1782485470645_973', 'Quản trị viên', '0000000000', 'bot_handling', '2026-06-26 14:51:10', NULL, NULL),
+('sess_1787833144803_262', 'Quản trị viên', '0000000000', 'bot_handling', '2026-08-27 12:19:04', NULL, NULL),
+('sess_1787833591349_292', 'Quản trị viên', '0000000000', 'bot_handling', '2026-08-27 12:26:31', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -2537,7 +2560,7 @@ INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `cost_price
 (124, 'Bột hạnh nhân', 'Khác', 'kg', 50000.00, 1, NULL, '2028-07-12', 0.00, '2026-07-13 12:30:39', 0, 1, 'Kho lạnh', 'Khô thoáng (25°C)', ''),
 (125, 'Đường bột', 'Gia vị', 'kg', 50000.00, 1, NULL, '2028-07-12', 0.00, '2026-07-13 12:30:39', 0, 1, 'Kho lạnh', 'Khô thoáng (25°C)', ''),
 (126, 'Cà chua Heirloom', 'Rau củ', 'kg', 50000.00, 1, NULL, '2026-09-21', 0.00, '2026-08-21 11:53:46', 0, 1, 'Kho khô', 'Tủ mát (2-5°C)', ''),
-(127, 'Lá húng quế', 'Rau củ', 'kg', 50000.00, 1, NULL, '2026-09-21', 0.00, '2026-08-21 11:53:46', 0, 1, 'Kho khô', 'Tủ mát (2-5°C)', ''),
+(127, 'Lá húng quế', 'Rau củ', 'kg', 50000.00, 1, NULL, '2026-08-29', 0.00, '2026-08-28 13:15:59', 0, 1, 'Kho khô', 'Tủ mát (2-5°C)', ''),
 (128, 'Giấm Balsamic', 'Gia vị', 'lít', 50000.00, 1, NULL, '2026-09-21', 0.00, '2026-08-21 11:53:46', 0, 1, 'Kho khô', 'Khô thoáng (25°C)', ''),
 (129, 'Dầu olive', 'Gia vị', 'lít', 50000.00, 1, NULL, '2028-07-12', 0.00, '2026-07-13 12:30:39', 0, 1, 'Kho khô', 'Khô thoáng (25°C)', ''),
 (130, 'Bột chiên xù', 'Khác', 'kg', 50000.00, 1, NULL, '2028-07-12', 0.00, '2026-07-13 12:30:39', 0, 1, 'Kho khô', 'Khô thoáng (25°C)', ''),
@@ -2590,7 +2613,7 @@ INSERT INTO `inventory` (`id`, `item_name`, `category`, `unit_name`, `cost_price
 (186, 'Lòng trắng trứng', 'Thực phẩm', 'cái', 50000.00, 1, NULL, '2027-07-13', 0.00, '2026-07-13 12:30:39', 0, 1, 'Kho khô', 'Thường (25°C)', ''),
 (187, 'Đường cát trắng', 'Gia vị', 'kg', 50000.00, 1, NULL, '2027-01-09', 0.00, '2026-07-13 12:30:39', 0, 1, 'Kho khô', 'Cấp đông (-18°C)', ''),
 (188, 'Bơ nhạt', 'Thực phẩm', 'kg', 50000.00, 1, NULL, '2027-07-13', 0.00, '2026-07-13 12:30:39', 0, 1, 'Kho khô', 'Thường (25°C)', ''),
-(190, 'Kem ganache', 'Khác', 'kg', 50000.00, 1, NULL, '2026-09-02', 0.00, '2026-07-13 13:06:50', 0, 1, 'Kho khô', 'Mát (15-20°C)', ''),
+(190, 'Kem ganache', 'Khác', 'kg', 50000.00, 1, NULL, '2026-10-02', 0.00, '2026-08-26 11:47:03', 0, 1, 'Kho khô', 'Mát (15-20°C)', ''),
 (191, 'Microgreens', 'Rau củ', 'kg', 50000.00, 1, NULL, '2026-09-21', 0.00, '2026-08-21 11:53:46', 0, 1, 'Kho khô', 'Tủ mát (2-5°C)', ''),
 (192, 'Bourbon Whiskey', 'Đồ uống', 'chai', 50000.00, 1, NULL, '2029-07-12', 0.00, '2026-07-13 12:30:39', 0, 1, 'Kho khô', 'Mát (15-20°C)', ''),
 (193, 'Honey Syrup', 'Gia vị', 'chai', 50000.00, 1, NULL, '2028-07-12', 0.00, '2026-07-13 12:30:39', 0, 1, 'Kho khô', 'Khô thoáng (25°C)', ''),
@@ -2786,7 +2809,7 @@ INSERT INTO `inventory_batches` (`id`, `ingredient_id`, `warehouse_id`, `batch_c
 (106, 21, 9, 'BATCH-AUTO-20260618-193014-253', 1.000, '2027-06-04', 7500.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-253'),
 (108, 21, 2, 'BATCH-AUTO-20260618-193014-352', 8.986, '2027-06-04', 7500.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-352'),
 (109, 2, 2, 'BATCH-AUTO-20260618-193014-912', 0.000, '2026-09-21', 150000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-912'),
-(110, 12, 2, 'BATCH-AUTO-20260618-193014-410', 0.951, '2027-06-03', 180000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-410'),
+(110, 12, 2, 'BATCH-AUTO-20260618-193014-410', 0.950, '2027-06-03', 180000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-410'),
 (111, 3, 2, 'BATCH-AUTO-20260618-193014-398', 0.000, '2026-09-21', 50000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-398'),
 (112, 2, 6, 'BATCH-AUTO-20260618-193014-264', 0.310, '2026-09-21', 150000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-264'),
 (113, 14, 6, 'BATCH-AUTO-20260618-193014-511', 3.350, '2026-11-30', 350000.00, 'Nhiệt độ phòng (20°C)', '2026-06-18 12:30:14', 'BATCH-AUTO-20260618-193014-511'),
@@ -2901,7 +2924,7 @@ INSERT INTO `inventory_batches` (`id`, `ingredient_id`, `warehouse_id`, `batch_c
 (256, 104, 2, 'PO-20260713-104', 100.000, '2026-09-27', 50000.00, 'Mát (15-20°C)', '2026-07-13 12:23:27', 'SUP-104'),
 (259, 107, 2, 'PO-20260713-107', 99.630, '2026-09-21', 50000.00, 'Mát (15-20°C)', '2026-07-13 12:23:27', 'SUP-107'),
 (261, 109, 2, 'PO-20260713-109', 100.000, '2026-09-21', 50000.00, 'Mát (15-20°C)', '2026-07-13 12:23:27', 'SUP-109'),
-(264, 112, 2, 'PO-20260713-112', 99.880, '2028-07-12', 50000.00, 'Khô thoáng (25°C)', '2026-07-13 12:23:27', 'SUP-112'),
+(264, 112, 2, 'PO-20260713-112', 99.865, '2028-07-12', 50000.00, 'Khô thoáng (25°C)', '2026-07-13 12:23:27', 'SUP-112'),
 (265, 113, 2, 'PO-20260713-113', 99.760, '2026-09-27', 50000.00, 'Tủ mát (2-5°C)', '2026-07-13 12:23:27', 'SUP-113'),
 (266, 114, 2, 'PO-20260713-114', 100.000, '2026-09-21', 50000.00, 'Mát (15-20°C)', '2026-07-13 12:23:27', 'SUP-114'),
 (267, 115, 2, 'PO-20260713-115', 70.000, '2027-01-09', 50000.00, 'Cấp đông (-18°C)', '2026-07-13 12:23:27', 'SUP-115'),
@@ -2915,7 +2938,7 @@ INSERT INTO `inventory_batches` (`id`, `ingredient_id`, `warehouse_id`, `batch_c
 (277, 125, 2, 'PO-20260713-125', 100.000, '2028-07-12', 50000.00, 'Khô thoáng (25°C)', '2026-07-13 12:23:27', 'SUP-125'),
 (278, 126, 2, 'PO-20260713-126', 70.000, '2026-09-26', 50000.00, 'Tủ mát (2-5°C)', '2026-07-13 12:23:27', 'SUP-126'),
 (279, 127, 2, 'PO-20260713-127', 70.000, '2026-08-29', 50000.00, 'Tủ mát (2-5°C)', '2026-07-13 12:23:27', 'SUP-127'),
-(280, 128, 2, 'PO-20260713-128', 99.920, '2028-07-12', 50000.00, 'Khô thoáng (25°C)', '2026-07-13 12:23:27', 'SUP-128'),
+(280, 128, 2, 'PO-20260713-128', 99.910, '2028-07-12', 50000.00, 'Khô thoáng (25°C)', '2026-07-13 12:23:27', 'SUP-128'),
 (281, 129, 2, 'PO-20260713-129', 100.000, '2028-07-12', 50000.00, 'Khô thoáng (25°C)', '2026-07-13 12:23:27', 'SUP-129'),
 (282, 130, 2, 'PO-20260713-130', 100.000, '2028-07-12', 50000.00, 'Khô thoáng (25°C)', '2026-07-13 12:23:27', 'SUP-130'),
 (283, 131, 2, 'PO-20260713-131', 100.000, '2028-07-12', 50000.00, 'Khô thoáng (25°C)', '2026-07-13 12:23:27', 'SUP-131'),
@@ -2929,7 +2952,7 @@ INSERT INTO `inventory_batches` (`id`, `ingredient_id`, `warehouse_id`, `batch_c
 (291, 139, 2, 'PO-20260713-139', 100.000, '2026-09-25', 50000.00, 'Tủ mát (2-5°C)', '2026-07-13 12:23:27', 'SUP-139'),
 (292, 140, 2, 'PO-20260713-140', 100.000, '2027-07-13', 50000.00, 'Thường (25°C)', '2026-07-13 12:23:27', 'SUP-140'),
 (293, 141, 2, 'PO-20260713-141', 99.460, '2026-09-28', 50000.00, 'Mát (15-20°C)', '2026-07-13 12:23:27', 'SUP-141'),
-(294, 142, 2, 'PO-20260713-142', 99.966, '2028-07-12', 50000.00, 'Khô thoáng (25°C)', '2026-07-13 12:23:27', 'SUP-142'),
+(294, 142, 2, 'PO-20260713-142', 99.964, '2028-07-12', 50000.00, 'Khô thoáng (25°C)', '2026-07-13 12:23:27', 'SUP-142'),
 (295, 143, 2, 'PO-20260713-143', 70.000, '2026-09-21', 50000.00, 'Tủ mát (2-5°C)', '2026-07-13 12:23:27', 'SUP-143'),
 (296, 144, 2, 'PO-20260713-144', 99.820, '2026-09-23', 50000.00, 'Tủ mát (2-5°C)', '2026-07-13 12:23:27', 'SUP-144'),
 (297, 145, 2, 'PO-20260713-145', 99.680, '2026-08-29', 50000.00, 'Tủ mát (2-5°C)', '2026-07-13 12:23:27', 'SUP-145'),
@@ -4675,7 +4698,15 @@ INSERT INTO `inventory_history` (`id`, `ingredient_id`, `warehouse_id`, `type`, 
 (2252, 64, 2, 'export', 0.0107, '2026-08-05 12:20:02', 'POS (Xác nhận Món & Topping #1157)'),
 (2253, 102, 2, 'export', 0.5000, '2026-08-05 12:20:02', 'POS (Xác nhận Món & Topping #1157)'),
 (2254, 107, 2, 'export', 0.0200, '2026-08-05 12:20:02', 'POS (Xác nhận Món & Topping #1157)'),
-(2255, 3, 2, 'export', 0.0060, '2026-08-05 12:20:02', 'POS (Xác nhận Món & Topping #1157)');
+(2255, 3, 2, 'export', 0.0060, '2026-08-05 12:20:02', 'POS (Xác nhận Món & Topping #1157)'),
+(2256, 126, 4, 'export', 0.1500, '2026-08-28 13:15:59', 'POS (Xác nhận Món & Topping #1165)'),
+(2257, 127, 4, 'export', 0.0080, '2026-08-28 13:15:59', 'POS (Xác nhận Món & Topping #1165)'),
+(2258, 191, 4, 'export', 0.0050, '2026-08-28 13:15:59', 'POS (Xác nhận Món & Topping #1165)'),
+(2259, 112, 2, 'export', 0.0150, '2026-08-28 13:15:59', 'POS (Xác nhận Món & Topping #1165)'),
+(2260, 128, 2, 'export', 0.0100, '2026-08-28 13:15:59', 'POS (Xác nhận Món & Topping #1165)'),
+(2261, 142, 2, 'export', 0.0020, '2026-08-28 13:15:59', 'POS (Xác nhận Món & Topping #1165)'),
+(2262, 35, 2, 'export', 1.0000, '2026-08-28 13:15:59', 'POS (Xác nhận Món & Topping #1165)'),
+(2263, 12, 2, 'export', 0.0010, '2026-08-28 13:15:59', 'POS (Xác nhận Món & Topping #1165)');
 
 -- --------------------------------------------------------
 
@@ -4761,13 +4792,13 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 (61, 2, 21, 108.9860, '2026-07-28 21:08:37'),
 (64, 2, 1, 96.0000, '2026-06-13 09:13:29'),
 (67, 2, 2, 106.5400, '2026-07-28 21:08:37'),
-(71, 2, 12, 100.9460, '2026-08-05 19:08:26'),
+(71, 2, 12, 100.9450, '2026-08-28 20:15:59'),
 (79, 2, 3, 101.8630, '2026-08-05 19:20:02'),
 (88, 2, 15, 2.8200, '2026-06-05 08:34:31'),
 (89, 6, 21, 0.0140, '2026-07-28 21:08:37'),
 (90, 6, 1, 4.0000, '2026-06-06 14:54:29'),
 (91, 6, 2, 0.9200, '2026-07-28 21:08:37'),
-(92, 6, 12, 0.0460, '2026-08-05 19:08:26'),
+(92, 6, 12, 0.0470, '2026-08-28 20:15:59'),
 (93, 6, 14, 8.5400, '2026-07-31 20:10:47'),
 (96, 6, 3, 0.2310, '2026-08-05 19:20:02'),
 (97, 6, 15, 0.1800, '2026-06-05 08:34:31'),
@@ -4801,7 +4832,7 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 (218, 2, 40, 108.0000, '2026-07-28 21:08:11'),
 (220, 2, 36, 108.0000, '2026-07-28 21:08:11'),
 (222, 2, 19, 105.0000, '2026-07-28 21:08:11'),
-(223, 2, 35, 96.0000, '2026-07-31 20:28:55'),
+(223, 2, 35, 95.0000, '2026-08-28 20:15:59'),
 (225, 2, 41, 108.0000, '2026-07-28 21:08:11'),
 (227, 9, 6, 0.0000, '2026-06-15 09:47:56'),
 (228, 2, 37, 108.0000, '2026-07-28 21:08:11'),
@@ -4871,7 +4902,7 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 (358, 1, 81, 512.0000, '2026-07-28 21:08:11'),
 (359, 1, 82, 512.0000, '2026-07-28 21:08:11'),
 (360, 1, 83, 512.0000, '2026-07-28 21:08:11'),
-(365, 6, 35, 10.8000, '2026-07-31 20:10:47'),
+(365, 6, 35, 11.8000, '2026-08-28 20:15:59'),
 (371, 6, 6, 0.0000, '2026-06-17 20:24:42'),
 (372, 6, 11, 0.2300, '2026-07-28 21:08:37'),
 (377, 6, 29, 1.6000, '2026-07-28 21:08:37'),
@@ -4950,7 +4981,7 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 (703, 2, 104, 200.0000, '2026-07-28 21:08:11'),
 (706, 2, 107, 199.5800, '2026-08-05 19:20:02'),
 (708, 2, 109, 200.0000, '2026-07-28 21:08:11'),
-(711, 2, 112, 199.8650, '2026-07-31 20:28:55'),
+(711, 2, 112, 199.8500, '2026-08-28 20:15:59'),
 (712, 2, 113, 199.7600, '2026-07-28 21:08:37'),
 (713, 2, 114, 200.0000, '2026-07-28 21:08:11'),
 (714, 2, 115, 170.0000, '2026-07-28 21:08:11'),
@@ -4964,7 +4995,7 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 (724, 2, 125, 200.0000, '2026-07-28 21:08:11'),
 (725, 2, 126, 169.8500, '2026-07-31 20:28:55'),
 (726, 2, 127, 169.9920, '2026-07-31 20:28:55'),
-(727, 2, 128, 199.9100, '2026-07-31 20:28:55'),
+(727, 2, 128, 199.9000, '2026-08-28 20:15:59'),
 (728, 2, 129, 200.0000, '2026-07-28 21:08:11'),
 (729, 2, 130, 200.0000, '2026-07-28 21:08:11'),
 (730, 2, 131, 200.0000, '2026-07-28 21:08:11'),
@@ -4978,7 +5009,7 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 (738, 2, 139, 200.0000, '2026-07-28 21:08:11'),
 (739, 2, 140, 200.0000, '2026-07-28 21:08:11'),
 (740, 2, 141, 199.5200, '2026-08-05 19:18:29'),
-(741, 2, 142, 199.9620, '2026-08-05 19:08:26'),
+(741, 2, 142, 199.9600, '2026-08-28 20:15:59'),
 (742, 2, 143, 169.8800, '2026-07-31 20:29:12'),
 (743, 2, 144, 199.8200, '2026-07-28 21:08:37'),
 (744, 2, 145, 199.6800, '2026-07-28 21:08:37'),
@@ -5054,7 +5085,7 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 (816, 2, 226, 200.0000, '2026-07-28 21:08:11'),
 (817, 2, 227, 200.0000, '2026-07-28 21:08:11'),
 (819, 6, 100, 0.8400, '2026-08-05 19:18:29'),
-(820, 6, 142, 0.0340, '2026-08-05 19:08:26'),
+(820, 6, 142, 0.0360, '2026-08-28 20:15:59'),
 (821, 6, 141, 0.4200, '2026-08-05 19:18:29'),
 (822, 6, 101, 0.2100, '2026-08-05 19:18:29'),
 (824, 6, 132, 0.1100, '2026-07-31 20:10:47'),
@@ -5072,9 +5103,9 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 (893, 4, 152, 99.9000, '2026-07-31 20:10:47'),
 (894, 4, 115, 98.0000, '2026-07-31 20:10:47'),
 (895, 4, 38, 99.8000, '2026-07-31 20:10:47'),
-(896, 4, 126, 99.5500, '2026-07-31 20:10:47'),
-(897, 4, 127, 99.9760, '2026-07-31 20:10:47'),
-(898, 4, 191, 99.9850, '2026-07-31 20:10:47'),
+(896, 4, 126, 99.4000, '2026-08-28 20:15:59'),
+(897, 4, 127, 99.9680, '2026-08-28 20:15:59'),
+(898, 4, 191, 99.9800, '2026-08-28 20:15:59'),
 (899, 4, 143, 99.6400, '2026-08-05 19:20:02'),
 (900, 4, 133, 99.9800, '2026-08-05 19:20:02'),
 (901, 4, 70, 99.9900, '2026-07-31 20:10:47'),
@@ -5087,11 +5118,11 @@ INSERT INTO `inventory_stocks` (`id`, `warehouse_id`, `ingredient_id`, `quantity
 (908, 6, 152, 0.3500, '2026-07-31 20:10:47'),
 (909, 6, 115, 7.0000, '2026-07-31 20:10:47'),
 (913, 6, 151, 1.2600, '2026-07-31 20:10:47'),
-(914, 6, 126, 1.2000, '2026-07-31 20:10:47'),
-(915, 6, 127, 0.0640, '2026-07-31 20:10:47'),
-(916, 6, 191, 0.0400, '2026-07-31 20:10:47'),
-(917, 6, 112, 0.1200, '2026-07-31 20:10:47'),
-(918, 6, 128, 0.0800, '2026-07-31 20:10:47'),
+(914, 6, 126, 1.3500, '2026-08-28 20:15:59'),
+(915, 6, 127, 0.0720, '2026-08-28 20:15:59'),
+(916, 6, 191, 0.0450, '2026-08-28 20:15:59'),
+(917, 6, 112, 0.1350, '2026-08-28 20:15:59'),
+(918, 6, 128, 0.0900, '2026-08-28 20:15:59'),
 (922, 6, 143, 0.9600, '2026-08-05 19:20:02'),
 (923, 6, 133, 0.0500, '2026-08-05 19:20:02'),
 (924, 6, 64, 0.1057, '2026-08-05 19:20:02'),
@@ -6049,7 +6080,8 @@ INSERT INTO `pos_orders` (`id`, `table_id`, `status`, `total_amount`, `created_a
 (1047, 4, 'cancelled', 0.00, '2026-08-05 11:37:54', '2026-08-05 11:40:50', 'cash', NULL, 0.00, 1, 0.00),
 (1048, 28, 'cancelled', 0.00, '2026-08-05 12:20:34', '2026-08-05 12:20:52', 'cash', 1157, 150000.00, 1, 0.00),
 (1049, 14, 'cancelled', 0.00, '2026-08-24 11:36:22', '2026-08-24 11:53:48', 'cash', 1162, 360000.00, 1, 1200000.00),
-(1050, 14, 'paid', 2000000.00, '2026-08-24 12:47:01', '2026-08-24 13:09:29', 'transfer', 1164, 600000.00, 1, 2000000.00);
+(1050, 14, 'paid', 2000000.00, '2026-08-24 12:47:01', '2026-08-24 13:09:29', 'transfer', 1164, 600000.00, 1, 2000000.00),
+(1051, 4, 'paid', 48781500.00, '2026-08-27 12:14:30', '2026-08-27 12:14:30', 'transfer', NULL, 0.00, 1, 0.00);
 
 -- --------------------------------------------------------
 
@@ -6573,7 +6605,7 @@ INSERT INTO `restaurant_tables` (`id`, `table_code`, `table_number`, `room_type`
 (11, 'W2', '11', 'Khu vực chung', 'open', 4, 0.00, 'available', 1, 720, 380),
 (12, 'W3', '12', 'Khu vực chung', 'open', 4, 0.00, 'available', 1, 500, 580),
 (13, 'W4', '13', 'Khu vực chung', 'open', 6, 0.00, 'available', 1, 320, 200),
-(14, 'W5', '14', 'Khu vực chung', 'open', 6, 0.00, 'available', 1, 130, 270),
+(14, 'W5', '14', 'Khu vực chung', 'open', 6, 0.00, 'available', 0, 130, 270),
 (15, 'W6', '15', 'Khu vực chung', 'open', 6, 0.00, 'available', 1, 130, 460),
 (17, 'V1', '101', 'Khu vực chung', 'open', 8, 0.00, 'available', 1, 125, 675),
 (18, 'V2', '102', 'Khu vực chung', 'open', 8, 0.00, 'available', 1, 1000, 100),
@@ -6814,7 +6846,9 @@ INSERT INTO `service_bookings` (`id`, `user_id`, `customer_name`, `customer_phon
 (1161, 2, 'Huỳnh Đức Thông', '0901 234 567', '2026-08-27 19:25:00', 'table', 14, NULL, -1, 2, '\n[Hệ thống: Khách tự hủy từ trang cá nhân]', 1200000.00, 0.00, 360000.00, 'Cancelled', '', NULL, 0, 0, 0, '2026-08-24 11:13:43', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Dịp: Kỷ niệm\r\nNgân sách: Thỏa thuận sau khi thiết kế thực đơn\r\nPhong cách: Tùy Bếp trưởng đề xuất\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: Cá', 0, 0, 'THỰC ĐƠN: Dạ Khúc Kỷ Niệm\n1. Khai vị (Appetizer): Gỏi bò tơ bóp thấu - Thịt bò tơ mềm ngọt kết hợp rau thơm đậm đà vị miền Nam.\n2. Món chính (Main Course): Thăn nội bò Wagyu áp chảo - Thăn nội bò Wagyu chín medium mọng nước dùng kèm sốt tiêu đen đậm vị.\n3. Món ăn kèm (Side Dish): Khoai tây nghiền nấm truffle - Khoai tây nghiền nhuyễn mịn hòa quyện hương thơm nồng nàn của nấm truffle đen.\n4. Đồ uống (Drink): Vang đỏ Cabernet Sauvignon - Rượu vang đỏ đậm đà cấu trúc tannin vững chắc tôn lên vị ngọt của thịt bò.\n5. Tráng miệng (Dessert): Bánh mousse sô cô la đen - Sô cô la đen nguyên chất đậm vị kết hợp mâm xôi chua ngọt thanh tao.'),
 (1162, 2, 'Huỳnh Đức Thông', '0901 234 567', '2026-08-24 19:25:00', 'table', 14, NULL, -1, 2, '', 1200000.00, 0.00, 360000.00, 'Completed', '', NULL, 0, 0, 0, '2026-08-24 11:25:31', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Dịp: Kỷ niệm\r\nNgân sách: Thỏa thuận sau khi thiết kế thực đơn\r\nPhong cách: Ẩm thực Việt Nam Đương Đại \n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: Cá\n\n[Phản hồi từ khách lúc 24/08/2026 18:34]:\n[Khách hàng ĐÃ ĐỒNG Ý thực đơn]', 0, 0, 'THỰC ĐƠN: Dạ Khúc Kỷ Niệm\n1. Khai vị (Appetizer): Gỏi Bò Hoàng Đế - Thịt bò mềm áp chảo hòa quyện cùng rau rừng tươi và nước sốt me chua ngọt đậm đà.\n2. Món chính (Main Course): Thăn Bò Wagyu Nướng Than - Thăn bò wagyu chín medium thơm lừng kết hợp sốt tiêu đen đậm đà và nấm cục.\n3. Món ăn kèm (Side Dish): Xôi Cốm Hạt Sen - Xôi cốm dẻo thơm nấu cùng nước cốt dừa béo ngậy và hạt sen ngọt bùi.\n4. Đồ uống (Drink): Rượu Vang Đỏ Kết Nối - Dòng vang đỏ đậm vị tannin tôn lên trọn vẹn hương vị thăn bò nướng cao cấp.\n5. Tráng miệng (Dessert): Bánh Mousse Socola Đen - Socola đen nguyên chất kết hợp vị chua nhẹ của thanh long đỏ tạo điểm nhấn thăng hoa.'),
 (1163, 2, 'Quản trị viên', '0901 234 567', '2026-08-26 19:25:00', 'table', 14, NULL, -1, 2, '', 2000000.00, 0.00, 600000.00, 'Cancelled', '', NULL, 0, 0, 1, '2026-08-24 11:54:16', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Dịp: Kỷ niệm\r\nNgân sách: Thỏa thuận sau khi thiết kế thực đơn\r\nPhong cách: Ẩm thực Việt Nam Cổ Điển (Traditional Vietnamese)\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: Cá', 0, 0, 'THỰC ĐƠN: Dạ Yến Tôn Vinh\n1. Khai vị (Appetizer): Gỏi Bò Hoàng Gia - Thịt bò mềm tái chanh quyện cùng rau thơm và sốt mè rang đậm đà.\n2. Món chính (Main Course): Bò Wagyu Nướng Ống Tre - Thăn nội bò chín vừa mềm mọng thấm đẫm gia vị truyền thống đậm đà.\n3. Món ăn kèm (Side Dish): Xôi Cốm Sen Hạt - Xôi cốm dẻo thơm kết hợp hạt sen bùi béo kích thích vị giác.\n4. Đồ uống (Drink): Trà Sen Phố Hội - Thức uống thanh tao từ trà ô long ướp hoa sen cung đình Huế.\n5. Tráng miệng (Dessert): Chè Hạt Sen Long Nhãn - Thanh ngọt tự nhiên từ long nhãn lồng và hạt sen Huế đậm hương vị hoài niệm.'),
-(1164, 2, 'Quản trị viên', '0901 234 567', '2026-08-24 20:25:00', 'table', 14, NULL, -1, 2, '', 2000000.00, 0.00, 600000.00, 'Completed', '', NULL, 0, 0, 0, '2026-08-24 12:28:01', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Dịp: Kỷ niệm\r\nNgân sách: Thỏa thuận sau khi thiết kế thực đơn\r\nPhong cách: Tùy Bếp trưởng đề xuất\r\nChi tiết: - Khai vị: Gan ngỗng áp chảo sốt anh đào đậm đà.\r\n- Món chính: Thăn bò Wagyu nướng than hoa với sốt nấm Truffle đen.\r\n- Món ăn kèm: Khoai tây nghiền phô mai Comté mịn màng béo ngậy.\r\n- Đồ uống: Vang đỏ Cabernet Sauvignon niên vụ lâu năm cấu trúc mạnh mẽ.\r\n- Tráng miệng: Bánh sô-cô-la đen nguyên chất kết hợp muối hồng Himalaya.\r\nMời anh chị gửi yêu cầu để chúng ta hoàn thiện trải nghiệm này.\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: Cá\n\n[Phản hồi từ khách lúc 24/08/2026 19:38]:\n[Khách hàng ĐÃ ĐỒNG Ý thực đơn]', 0, 0, 'THỰC ĐƠN: Dạ Khúc Kỷ Niệm\n1. Khai vị (Appetizer): Gan Ngỗng Anh Đào - Gan ngỗng béo ngậy áp chảo hòa quyện cùng sốt anh đào đậm đà.\n2. Món chính (Main Course): Thăn Bò Wagyu Nướng Truffle - Thăn bò Wagyu chín medium thơm lừng mùi than hoa quyện sốt nấm truffle đen.\n3. Món ăn kèm (Side Dish): Khoai Tây Comté Mịn Màng - Khoai tây nghiền nhuyễn mịn béo ngậy đậm đà hương vị phô mai Comté lâu năm.\n4. Đồ uống (Drink): Cabernet Sauvignon Reserve - Vang đỏ niên vụ lâu năm cấu trúc mạnh mẽ tôn lên vị ngọt thịt bò.\n5. Tráng miệng (Dessert): Sô-cô-la Đen Muối Hồng - Bánh sô-cô-la đen nguyên chất đắng ngọt sâu lắng điểm chút muối hồng Himalaya tinh tế.');
+(1164, 2, 'Quản trị viên', '0901 234 567', '2026-08-24 20:25:00', 'table', 14, NULL, -1, 2, '', 2000000.00, 0.00, 600000.00, 'Completed', '', NULL, 0, 0, 0, '2026-08-24 12:28:01', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', 'Dịp: Kỷ niệm\r\nNgân sách: Thỏa thuận sau khi thiết kế thực đơn\r\nPhong cách: Tùy Bếp trưởng đề xuất\r\nChi tiết: - Khai vị: Gan ngỗng áp chảo sốt anh đào đậm đà.\r\n- Món chính: Thăn bò Wagyu nướng than hoa với sốt nấm Truffle đen.\r\n- Món ăn kèm: Khoai tây nghiền phô mai Comté mịn màng béo ngậy.\r\n- Đồ uống: Vang đỏ Cabernet Sauvignon niên vụ lâu năm cấu trúc mạnh mẽ.\r\n- Tráng miệng: Bánh sô-cô-la đen nguyên chất kết hợp muối hồng Himalaya.\r\nMời anh chị gửi yêu cầu để chúng ta hoàn thiện trải nghiệm này.\n\n--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: Cá\n\n[Phản hồi từ khách lúc 24/08/2026 19:38]:\n[Khách hàng ĐÃ ĐỒNG Ý thực đơn]', 0, 0, 'THỰC ĐƠN: Dạ Khúc Kỷ Niệm\n1. Khai vị (Appetizer): Gan Ngỗng Anh Đào - Gan ngỗng béo ngậy áp chảo hòa quyện cùng sốt anh đào đậm đà.\n2. Món chính (Main Course): Thăn Bò Wagyu Nướng Truffle - Thăn bò Wagyu chín medium thơm lừng mùi than hoa quyện sốt nấm truffle đen.\n3. Món ăn kèm (Side Dish): Khoai Tây Comté Mịn Màng - Khoai tây nghiền nhuyễn mịn béo ngậy đậm đà hương vị phô mai Comté lâu năm.\n4. Đồ uống (Drink): Cabernet Sauvignon Reserve - Vang đỏ niên vụ lâu năm cấu trúc mạnh mẽ tôn lên vị ngọt thịt bò.\n5. Tráng miệng (Dessert): Sô-cô-la Đen Muối Hồng - Bánh sô-cô-la đen nguyên chất đắng ngọt sâu lắng điểm chút muối hồng Himalaya tinh tế.'),
+(1165, 2, 'Huỳnh Đức Thông', '0901 234 567', '2026-08-29 20:25:00', 'table', 14, NULL, 0, 2, '', 350000.00, 0.00, 105000.00, 'Confirmed', '', NULL, 0, 0, 0, '2026-08-28 12:37:14', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: Cá', 0, 0, NULL),
+(1166, 2, 'Huỳnh Đức Thông', '1234567890', '2026-08-29 20:25:00', 'table', 4, NULL, 0, 2, '', 350000.00, 0.00, 105000.00, 'Pending', '', NULL, 0, 0, 0, '2026-08-28 13:02:08', 0, 0, '', '', 'Mặc định nhà hàng', 'Mặc định', '--- HỒ SƠ KHẨU VỊ (CULINARY DNA) ---\n- Độ chín: Medium\n- Hương vị: Đậm vị (Bold/Rich)\n- Yêu thích: Bò\n- DỊ ỨNG: Cá', 0, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -6848,8 +6882,8 @@ INSERT INTO `settings` (`key_name`, `key_value`) VALUES
 ('inv_expiry_warning_days', '30'),
 ('inv_low_stock', '5'),
 ('inv_low_stock_threshold', '5'),
-('last_telegram_alert_date', '2026-08-24'),
-('last_telegram_eod_date', '2026-08-24'),
+('last_telegram_alert_date', '2026-08-28'),
+('last_telegram_eod_date', '2026-08-28'),
 ('logo_url', 'assets/img/logo.png'),
 ('logo_ver', '1783568271'),
 ('maps_embed', ''),
@@ -8044,19 +8078,19 @@ ALTER TABLE `bespoke_styles`
 -- AUTO_INCREMENT for table `booking_details`
 --
 ALTER TABLE `booking_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1162;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1164;
 
 --
 -- AUTO_INCREMENT for table `booking_inventory_deductions`
 --
 ALTER TABLE `booking_inventory_deductions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1350;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1358;
 
 --
 -- AUTO_INCREMENT for table `bot_context_logs`
 --
 ALTER TABLE `bot_context_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `bot_responses`
@@ -8074,7 +8108,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `chat_messages`
 --
 ALTER TABLE `chat_messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT for table `chefs`
@@ -8200,7 +8234,7 @@ ALTER TABLE `inventory_categories`
 -- AUTO_INCREMENT for table `inventory_history`
 --
 ALTER TABLE `inventory_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2256;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2264;
 
 --
 -- AUTO_INCREMENT for table `inventory_receipts`
@@ -8212,7 +8246,7 @@ ALTER TABLE `inventory_receipts`
 -- AUTO_INCREMENT for table `inventory_stocks`
 --
 ALTER TABLE `inventory_stocks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2677;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2685;
 
 --
 -- AUTO_INCREMENT for table `inventory_transfers`
@@ -8266,7 +8300,7 @@ ALTER TABLE `positions`
 -- AUTO_INCREMENT for table `pos_orders`
 --
 ALTER TABLE `pos_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1051;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1052;
 
 --
 -- AUTO_INCREMENT for table `pos_order_items`
@@ -8314,7 +8348,7 @@ ALTER TABLE `services`
 -- AUTO_INCREMENT for table `service_bookings`
 --
 ALTER TABLE `service_bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1165;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1167;
 
 --
 -- AUTO_INCREMENT for table `suppliers`
