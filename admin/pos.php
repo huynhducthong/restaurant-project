@@ -1014,7 +1014,7 @@ function printBill(order, items) {
     
     const printHtml = `
         <div class="print-header">
-            <h2>NHÀ HÀNG CAO CẤP</h2>
+            <h2>RESTAURANT NHÃ</h2>
             <div>123 Đường ABC, Quận XYZ, TP.HCM</div>
             <div>SĐT: 0123.456.789</div>
             <br>
