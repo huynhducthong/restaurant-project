@@ -606,7 +606,7 @@ if (isset($_SESSION['user_id'])) {
     echo '<div style="position: fixed; top: 120px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 15px;">';
 
     // 1. QUOTE NOTIFICATION
-    $stmt_quoted_g = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 AND combo_id = -1 AND (chef_requirements IS NULL OR chef_requirements NOT LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%') ORDER BY id DESC LIMIT 1");
+    $stmt_quoted_g = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND ai_suggested_menu IS NOT NULL AND ai_suggested_menu != '' AND combo_id = -1 AND (chef_requirements IS NULL OR chef_requirements NOT LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%') ORDER BY id DESC LIMIT 1");
     $stmt_quoted_g->execute([$_SESSION['user_id']]);
     if ($stmt_quoted_g->fetch(PDO::FETCH_ASSOC)) {
         echo '
