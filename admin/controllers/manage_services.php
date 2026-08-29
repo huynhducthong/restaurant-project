@@ -524,13 +524,13 @@ $services = [];
 
 if ($filter != 'pos') {
     if ($filter == 'all') {
-        $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name, u.avatar FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id LEFT JOIN users u ON sb.user_id = u.id WHERE sb.is_archived = 0 ORDER BY sb.created_at DESC");
+        $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name, u.avatar, (u.avatar_blob IS NOT NULL AND LENGTH(u.avatar_blob) > 0) AS has_avatar_blob FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id LEFT JOIN users u ON sb.user_id = u.id WHERE sb.is_archived = 0 ORDER BY sb.created_at DESC");
         $stmt->execute();
     } elseif ($filter == 'bespoke') {
-        $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name, u.avatar FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id LEFT JOIN users u ON sb.user_id = u.id WHERE sb.combo_id = -1 AND sb.is_archived = 0 ORDER BY sb.created_at DESC");
+        $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name, u.avatar, (u.avatar_blob IS NOT NULL AND LENGTH(u.avatar_blob) > 0) AS has_avatar_blob FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id LEFT JOIN users u ON sb.user_id = u.id WHERE sb.combo_id = -1 AND sb.is_archived = 0 ORDER BY sb.created_at DESC");
         $stmt->execute();
     } else {
-        $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name, u.avatar FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id LEFT JOIN users u ON sb.user_id = u.id WHERE sb.service_type = :type AND sb.is_archived = 0 ORDER BY sb.created_at DESC");
+        $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name, u.avatar, (u.avatar_blob IS NOT NULL AND LENGTH(u.avatar_blob) > 0) AS has_avatar_blob FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id LEFT JOIN users u ON sb.user_id = u.id WHERE sb.service_type = :type AND sb.is_archived = 0 ORDER BY sb.created_at DESC");
         $stmt->execute([':type' => $filter]);
     }
     $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -629,12 +629,19 @@ include '../../public/admin_layout_header.php';
                     <?php if (count($paginated_services) === 0): ?>
                         <tr><td colspan="6" class="text-center text-muted py-4">Không có dịch vụ nào.</td></tr>
                     <?php endif; ?>
-                    <?php foreach ($paginated_services as $s): ?>
+                    <?php foreach ($paginated_services as $s): 
+                        $avatar_url = '';
+                        if (!empty($s['has_avatar_blob'])) {
+                            $avatar_url = "../../ajax/get_avatar.php?user_id=" . $s['user_id'];
+                        } elseif (!empty($s['avatar'])) {
+                            $avatar_url = (strpos($s['avatar'], 'http') === 0) ? $s['avatar'] : "../../" . $s['avatar'];
+                        }
+                    ?>
                         <tr>
                             <td>
                                 <div class="d-flex align-items-center gap-3">
-                                    <?php if (!empty($s['avatar'])): ?>
-                                        <img src="../../<?= htmlspecialchars($s['avatar']) ?>" class="rounded-circle shadow-sm" style="width:45px; height:45px; object-fit:cover; border: 2px solid #fff;" alt="Avatar">
+                                    <?php if ($avatar_url): ?>
+                                        <img src="<?= htmlspecialchars($avatar_url) ?>" class="rounded-circle shadow-sm" style="width:45px; height:45px; object-fit:cover; border: 2px solid #fff;" alt="Avatar">
                                     <?php else: ?>
                                         <div class="avatar-circle">
                                             <?= htmlspecialchars(strtoupper(substr($s['customer_name'] ?? 'U', 0, 1))) ?>
@@ -691,7 +698,7 @@ include '../../public/admin_layout_header.php';
                             <td class="text-end">
                                 <?php if (!isset($s['is_pos'])): ?>
                                     <button class="btn btn-sm btn-outline-secondary btn-view-detail rounded-0" data-id="<?= $s['id'] ?>"
-                                        data-name="<?= htmlspecialchars($s['customer_name']) ?>" data-avatar="<?= htmlspecialchars($s['avatar'] ?? '') ?>"
+                                        data-name="<?= htmlspecialchars($s['customer_name']) ?>" data-avatar="<?= htmlspecialchars($avatar_url) ?>"
                                         data-status="<?= $s['status'] ?>" title="Xem chi tiết">
                                         <i class="fas fa-eye"></i>
                                     </button>
@@ -704,7 +711,7 @@ include '../../public/admin_layout_header.php';
 
                                     <?php if ($s['status'] == 'Pending'): ?>
                                         <button class="btn btn-sm btn-outline-gold btn-confirm-ajax rounded-0" data-id="<?= $s['id'] ?>"
-                                            data-name="<?= htmlspecialchars($s['customer_name']) ?>" data-avatar="<?= htmlspecialchars($s['avatar'] ?? '') ?>" title="Xác nhận">
+                                            data-name="<?= htmlspecialchars($s['customer_name']) ?>" data-avatar="<?= htmlspecialchars($avatar_url) ?>" title="Xác nhận">
                                             <i class="fas fa-check me-1"></i> Xác nhận
                                         </button>
                                     <?php elseif ($s['status'] == 'Confirmed'): ?>
@@ -721,7 +728,7 @@ include '../../public/admin_layout_header.php';
                                     </button>
                                 <?php else: ?>
                                     <button class="btn btn-sm btn-outline-secondary btn-view-detail rounded-0" data-id="<?= $s['id'] ?>" data-is-pos="1"
-                                        data-name="<?= htmlspecialchars($s['customer_name']) ?>" data-avatar="<?= htmlspecialchars($s['avatar'] ?? '') ?>"
+                                        data-name="<?= htmlspecialchars($s['customer_name']) ?>" data-avatar="<?= htmlspecialchars($avatar_url) ?>"
                                         data-status="<?= $s['status'] ?>">
                                         <i class="fas fa-eye"></i> Xem chi tiết
                                     </button>
@@ -1116,7 +1123,7 @@ include '../../public/admin_layout_header.php';
 
             $('#m-name').text(name);
             if (avatar) {
-                $('#m-avatar').html(`<img src="../../${avatar}" class="rounded-circle shadow-sm" style="width:100%; height:100%; object-fit:cover; border:3px solid #fff;" alt="Avatar">`);
+                $('#m-avatar').html(`<img src="${avatar}" class="rounded-circle shadow-sm" style="width:100%; height:100%; object-fit:cover; border:3px solid #fff;" alt="Avatar">`);
             } else {
                 $('#m-avatar').text(name.charAt(0).toUpperCase());
             }
