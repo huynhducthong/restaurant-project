@@ -453,11 +453,15 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 
         $db->beginTransaction();
         try {
-            $stmt_old = $db->prepare("SELECT table_id, status FROM service_bookings WHERE id = ?");
+            $stmt_old = $db->prepare("SELECT table_id, status, service_type FROM service_bookings WHERE id = ?");
             $stmt_old->execute([$id]);
             $old_data = $stmt_old->fetch();
 
             if ($old_data) {
+                if (in_array($old_data['service_type'], ['chef', 'bespoke_chef']) && !$edit_table) {
+                    $edit_table = $old_data['table_id'];
+                }
+
                 // Giải phóng bàn cũ nếu đổi bàn (chỉ khi đơn đã confirm và đang giữ bàn cũ)
                 if ($old_data['table_id'] && $old_data['table_id'] != $edit_table && $old_data['status'] === 'Confirmed') {
                     $db->prepare("UPDATE restaurant_tables SET is_available = 1 WHERE id = ?")->execute([$old_data['table_id']]);
