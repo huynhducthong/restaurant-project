@@ -194,10 +194,12 @@ $query = "
         sb.id, sb.customer_name, sb.guests, sb.booking_date, sb.service_type, 
         sb.chef_requirements, sb.message, sb.combo_id,
         u.allergies, u.doneness, u.flavor_profile,
-        c.name as combo_name
+        c.name as combo_name,
+        rt.table_code as table_name
     FROM service_bookings sb
     LEFT JOIN users u ON sb.user_id = u.id
     LEFT JOIN combos c ON sb.combo_id = c.id
+    LEFT JOIN restaurant_tables rt ON sb.table_id = rt.id
     WHERE sb.status = 'Confirmed' AND DATE(sb.booking_date) = CURDATE() AND sb.service_type != 'chef'
     ORDER BY sb.booking_date ASC
 ";
@@ -340,10 +342,12 @@ $upcoming_query = "
     SELECT 
         sb.id, sb.customer_name, sb.guests, sb.booking_date, sb.service_type, sb.chef_requirements, sb.message,
         c.name as combo_name,
-        u.allergies, u.doneness, u.flavor_profile
+        u.allergies, u.doneness, u.flavor_profile,
+        rt.table_code as table_name
     FROM service_bookings sb
     LEFT JOIN combos c ON sb.combo_id = c.id
     LEFT JOIN users u ON sb.user_id = u.id
+    LEFT JOIN restaurant_tables rt ON sb.table_id = rt.id
     WHERE sb.status = 'Confirmed' AND DATE(sb.booking_date) > CURDATE()
     ORDER BY sb.booking_date ASC
     LIMIT 15
@@ -1321,6 +1325,11 @@ $normalOrders = $totalOrders - $urgentOrders;
                 <span class="meta-chip svc">
                   <i class="fas fa-concierge-bell"></i> <?= htmlspecialchars($order['service_type']) ?>
                 </span>
+                <?php if (!empty($order['table_name'])): ?>
+                <span class="meta-chip" style="background: var(--blue-bg); border-color: var(--blue-border); color: var(--blue);">
+                  <i class="fas fa-chair"></i> Bàn <?= htmlspecialchars($order['table_name']) ?>
+                </span>
+                <?php endif; ?>
               </div>
 
               <?php if (!empty($order['combo_name'])): ?>
@@ -1522,6 +1531,7 @@ $normalOrders = $totalOrders - $urgentOrders;
               <?php 
                 if ($up['combo_name']) echo "<div style='margin-bottom:8px;'><strong style='color:var(--txt)'>Combo Tasting:</strong> " . htmlspecialchars($up['combo_name']) . "</div>";
                 if ($up['service_type'] !== 'table') echo "<div style='margin-bottom:8px;'><strong style='color:var(--txt)'>Dịch vụ:</strong> " . htmlspecialchars($up['service_type']) . "</div>";
+                if (!empty($up['table_name'])) echo "<div style='margin-bottom:8px;'><strong style='color:var(--txt)'>Bàn:</strong> " . htmlspecialchars($up['table_name']) . "</div>";
               ?>
               
               <?php if (!empty($up['foods'])): ?>
