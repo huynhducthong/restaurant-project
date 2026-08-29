@@ -524,13 +524,13 @@ $services = [];
 
 if ($filter != 'pos') {
     if ($filter == 'all') {
-        $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id WHERE sb.is_archived = 0 ORDER BY sb.created_at DESC");
+        $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name, u.avatar FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id LEFT JOIN users u ON sb.user_id = u.id WHERE sb.is_archived = 0 ORDER BY sb.created_at DESC");
         $stmt->execute();
     } elseif ($filter == 'bespoke') {
-        $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id WHERE sb.combo_id = -1 AND sb.is_archived = 0 ORDER BY sb.created_at DESC");
+        $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name, u.avatar FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id LEFT JOIN users u ON sb.user_id = u.id WHERE sb.combo_id = -1 AND sb.is_archived = 0 ORDER BY sb.created_at DESC");
         $stmt->execute();
     } else {
-        $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id WHERE sb.service_type = :type AND sb.is_archived = 0 ORDER BY sb.created_at DESC");
+        $stmt = $db->prepare("SELECT sb.*, c.name AS chef_name, u.avatar FROM service_bookings sb LEFT JOIN chefs c ON sb.chef_id = c.id LEFT JOIN users u ON sb.user_id = u.id WHERE sb.service_type = :type AND sb.is_archived = 0 ORDER BY sb.created_at DESC");
         $stmt->execute([':type' => $filter]);
     }
     $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -633,9 +633,13 @@ include '../../public/admin_layout_header.php';
                         <tr>
                             <td>
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="avatar-circle">
-                                        <?= htmlspecialchars(strtoupper(substr($s['customer_name'], 0, 1))) ?>
-                                    </div>
+                                    <?php if (!empty($s['avatar'])): ?>
+                                        <img src="../../<?= htmlspecialchars($s['avatar']) ?>" class="rounded-circle shadow-sm" style="width:45px; height:45px; object-fit:cover; border: 2px solid #fff;" alt="Avatar">
+                                    <?php else: ?>
+                                        <div class="avatar-circle">
+                                            <?= htmlspecialchars(strtoupper(substr($s['customer_name'] ?? 'U', 0, 1))) ?>
+                                        </div>
+                                    <?php endif; ?>
                                     <div>
                                         <strong><?= htmlspecialchars($s['customer_name']) ?></strong>
                                         <?php if (strpos($s['chef_requirements'] ?? '', '[Phản hồi từ khách lúc') !== false && $s['status'] === 'Pending'): ?>
@@ -687,7 +691,7 @@ include '../../public/admin_layout_header.php';
                             <td class="text-end">
                                 <?php if (!isset($s['is_pos'])): ?>
                                     <button class="btn btn-sm btn-outline-secondary btn-view-detail rounded-0" data-id="<?= $s['id'] ?>"
-                                        data-name="<?= htmlspecialchars($s['customer_name']) ?>"
+                                        data-name="<?= htmlspecialchars($s['customer_name']) ?>" data-avatar="<?= htmlspecialchars($s['avatar'] ?? '') ?>"
                                         data-status="<?= $s['status'] ?>" title="Xem chi tiết">
                                         <i class="fas fa-eye"></i>
                                     </button>
@@ -700,7 +704,7 @@ include '../../public/admin_layout_header.php';
 
                                     <?php if ($s['status'] == 'Pending'): ?>
                                         <button class="btn btn-sm btn-outline-gold btn-confirm-ajax rounded-0" data-id="<?= $s['id'] ?>"
-                                            data-name="<?= htmlspecialchars($s['customer_name']) ?>" title="Xác nhận">
+                                            data-name="<?= htmlspecialchars($s['customer_name']) ?>" data-avatar="<?= htmlspecialchars($s['avatar'] ?? '') ?>" title="Xác nhận">
                                             <i class="fas fa-check me-1"></i> Xác nhận
                                         </button>
                                     <?php elseif ($s['status'] == 'Confirmed'): ?>
@@ -717,7 +721,7 @@ include '../../public/admin_layout_header.php';
                                     </button>
                                 <?php else: ?>
                                     <button class="btn btn-sm btn-outline-secondary btn-view-detail rounded-0" data-id="<?= $s['id'] ?>" data-is-pos="1"
-                                        data-name="<?= htmlspecialchars($s['customer_name']) ?>"
+                                        data-name="<?= htmlspecialchars($s['customer_name']) ?>" data-avatar="<?= htmlspecialchars($s['avatar'] ?? '') ?>"
                                         data-status="<?= $s['status'] ?>">
                                         <i class="fas fa-eye"></i> Xem chi tiết
                                     </button>
@@ -1105,12 +1109,17 @@ include '../../public/admin_layout_header.php';
         // --- XEM CHI TIẾT (AJAX lấy thông tin) ---
         $(document).on('click', '.btn-view-detail', function () {
             const id = $(this).data('id');
-            const name = $(this).data('name');
+            const name = $(this).data('name') || 'U';
             const status = $(this).data('status');
             const isPos = $(this).data('is-pos') == 1;
+            const avatar = $(this).data('avatar');
 
             $('#m-name').text(name);
-            $('#m-avatar').text(name.charAt(0).toUpperCase());
+            if (avatar) {
+                $('#m-avatar').html(`<img src="../../${avatar}" class="rounded-circle shadow-sm" style="width:100%; height:100%; object-fit:cover; border:3px solid #fff;" alt="Avatar">`);
+            } else {
+                $('#m-avatar').text(name.charAt(0).toUpperCase());
+            }
             $('#m-status').html(status === 'Pending'
                 ? '<span class="badge bg-warning text-dark">Chờ duyệt</span>'
                 : '<span class="badge bg-success">Đã hoàn thành</span>');
