@@ -786,11 +786,11 @@ body::before {
   display: flex; gap: 8px; flex-wrap: wrap;
 }
 .meta-chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 12px;
-  border-radius: 50px;
-  font-size: 12px;
-  font-weight: 500;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px;
+  border-radius: 0;
+  font-size: 14px;
+  font-weight: 600;
   border: 1px solid;
 }
 .meta-chip.guests {
@@ -803,7 +803,7 @@ body::before {
   border-color: var(--accent-burgundy-border);
   color: var(--accent-burgundy);
 }
-.meta-chip i { font-size: 10px; }
+.meta-chip i { font-size: 13px; }
 
 /* Course / combo */
 .course-block {
@@ -1321,9 +1321,6 @@ $normalOrders = $totalOrders - $urgentOrders;
               <div class="meta-row">
                 <span class="meta-chip guests">
                   <i class="fas fa-user-friends"></i> <?= $order['guests'] ?> Khách
-                </span>
-                <span class="meta-chip svc">
-                  <i class="fas fa-concierge-bell"></i> <?= htmlspecialchars($order['service_type']) ?>
                 </span>
                 <?php if (!empty($order['table_name'])): ?>
                 <span class="meta-chip" style="background: var(--blue-bg); border-color: var(--blue-border); color: var(--blue);">
