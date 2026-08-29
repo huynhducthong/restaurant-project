@@ -45,7 +45,7 @@ try {
     $timestamp = date('d/m/Y H:i');
     $new_req = $current_req . "\n\n[Phản hồi từ khách lúc $timestamp]:\n" . $reply_text;
 
-    $stmt_update = $db->prepare("UPDATE service_bookings SET chef_requirements = ? WHERE id = ?");
+    $stmt_update = $db->prepare("UPDATE service_bookings SET chef_requirements = ?, is_waiting_customer = 0 WHERE id = ?");
     $stmt_update->execute([$new_req, $booking_id]);
     
     echo json_encode(['status' => 'success']);

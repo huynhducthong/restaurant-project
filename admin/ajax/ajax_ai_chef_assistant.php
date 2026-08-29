@@ -153,7 +153,7 @@ THỰC ĐƠN: [Tên thực đơn ngắn gọn]
     $generated_menu = $res_data['candidates'][0]['content']['parts'][0]['text'];
 
     // 5. Lưu vào Database
-    $update = $db->prepare("UPDATE service_bookings SET ai_suggested_menu = ? WHERE id = ?");
+    $update = $db->prepare("UPDATE service_bookings SET ai_suggested_menu = ?, is_waiting_customer = 1 WHERE id = ?");
     $update->execute([$generated_menu, $booking_id]);
 
     echo json_encode(['status' => 'success', 'data' => $generated_menu]);

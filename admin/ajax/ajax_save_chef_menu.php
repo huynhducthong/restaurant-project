@@ -21,7 +21,7 @@ $menu_content = trim($_POST['menu']);
 $db = (new Database())->getConnection();
 
 try {
-    $stmt = $db->prepare("UPDATE service_bookings SET ai_suggested_menu = ? WHERE id = ?");
+    $stmt = $db->prepare("UPDATE service_bookings SET ai_suggested_menu = ?, is_waiting_customer = 1 WHERE id = ?");
     $stmt->execute([$menu_content, $booking_id]);
     
     echo json_encode(['status' => 'success']);
