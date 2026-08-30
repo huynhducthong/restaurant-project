@@ -240,7 +240,7 @@ include __DIR__ . '/../views/client/layouts/header.php';
                             content: ''; 
                             position: absolute; 
                             inset: 0; 
-                            background: rgba(12, 11, 9, 0.85); 
+                            background: rgba(12, 11, 9, 0.65);
                             z-index: 0; 
                         } 
                         .about > .container { 
