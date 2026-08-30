@@ -483,23 +483,19 @@ include '../../public/admin_layout_header.php';
                                         <div class="row">
                                             <?php 
                                             $banners = [
-                                                'banner_about' => 'Trang Về Chúng Tôi',
-                                                'banner_menu' => 'Trang Thực Đơn',
-                                                'banner_chefs' => 'Trang Đội Bếp',
-                                                'banner_contact' => 'Trang Liên Hệ'
+                                                'banner_about' => ['label' => 'Trang Về Chúng Tôi', 'default' => 'assets/img/bg_timeline.png'],
+                                                'banner_menu' => ['label' => 'Trang Thực Đơn', 'default' => 'assets/img/hero-bg.jpg'],
+                                                'banner_chefs' => ['label' => 'Trang Đội Bếp', 'default' => 'assets/img/about-bg.jpg'],
+                                                'banner_contact' => ['label' => 'Trang Liên Hệ', 'default' => 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80']
                                             ];
-                                            foreach($banners as $key => $label): 
+                                            foreach($banners as $key => $data): 
+                                                $img_src = !empty($settings[$key]) ? $settings[$key] : $data['default'];
+                                                $render_src = strpos($img_src, 'http') === 0 ? $img_src : '../../public/' . $img_src;
                                             ?>
                                                 <div class="col-md-3 text-center mb-3">
-                                                    <label class="form-label fw-bold"><?= $label ?></label>
+                                                    <label class="form-label fw-bold"><?= $data['label'] ?></label>
                                                     <div class="mb-2">
-                                                        <?php if (!empty($settings[$key])): ?>
-                                                            <img src="../../public/<?= htmlspecialchars($settings[$key]) ?>" class="img-thumbnail" style="height: 100px; object-fit: cover; width: 100%;">
-                                                        <?php else: ?>
-                                                            <div class="bg-light d-flex align-items-center justify-content-center border" style="height: 100px; width: 100%;">
-                                                                <span class="text-muted small">Chưa có ảnh</span>
-                                                            </div>
-                                                        <?php endif; ?>
+                                                        <img src="<?= htmlspecialchars($render_src) ?>" class="img-thumbnail" style="height: 100px; object-fit: cover; width: 100%;">
                                                     </div>
                                                     <input type="file" name="<?= $key ?>" class="form-control form-control-sm" accept=".jpg,.jpeg,.png,.webp">
                                                 </div>
