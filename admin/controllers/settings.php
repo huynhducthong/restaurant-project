@@ -203,6 +203,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // Upload banners cho cac trang
+    $banner_keys = ['banner_about', 'banner_menu', 'banner_chefs', 'banner_contact'];
+    foreach ($banner_keys as $bkey) {
+        if (!empty($_FILES[$bkey]['name'])) {
+            $allowed_ext  = ['jpg', 'jpeg', 'png', 'webp'];
+            $ext      = strtolower(pathinfo($_FILES[$bkey]['name'], PATHINFO_EXTENSION));
+            $tmp_path = $_FILES[$bkey]['tmp_name'];
+            if (in_array($ext, $allowed_ext)) {
+                $file_name   = $bkey . '_' . time() . '.' . $ext;
+                $target_file = __DIR__ . '/../../public/assets/img/' . $file_name;
+                if (move_uploaded_file($tmp_path, $target_file)) {
+                    $stmt->execute([$bkey, 'assets/img/' . $file_name]);
+                }
+            }
+        }
+    }
+
     // Flash session + redirect HTTP
     $_SESSION['settings_flash'] = ['type' => 'success', 'msg' => 'Cập nhật cấu hình thành công!'];
     
@@ -459,6 +476,34 @@ include '../../public/admin_layout_header.php';
                                                     <input type="file" name="<?= $key ?>" class="form-control form-control-sm" accept=".jpg,.jpeg,.png,.webp">
                                                 </div>
                                             <?php endfor; ?>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 border-top pt-4">
+                                        <h5 class="fw-bold mb-3"><i class="bi bi-images me-2"></i> Ảnh Banner Các Trang</h5>
+                                        <div class="row">
+                                            <?php 
+                                            $banners = [
+                                                'banner_about' => 'Trang Về Chúng Tôi',
+                                                'banner_menu' => 'Trang Thực Đơn',
+                                                'banner_chefs' => 'Trang Đội Bếp',
+                                                'banner_contact' => 'Trang Liên Hệ'
+                                            ];
+                                            foreach($banners as $key => $label): 
+                                            ?>
+                                                <div class="col-md-3 text-center mb-3">
+                                                    <label class="form-label fw-bold"><?= $label ?></label>
+                                                    <div class="mb-2">
+                                                        <?php if (!empty($settings[$key])): ?>
+                                                            <img src="../../public/<?= htmlspecialchars($settings[$key]) ?>" class="img-thumbnail" style="height: 100px; object-fit: cover; width: 100%;">
+                                                        <?php else: ?>
+                                                            <div class="bg-light d-flex align-items-center justify-content-center border" style="height: 100px; width: 100%;">
+                                                                <span class="text-muted small">Chưa có ảnh</span>
+                                                            </div>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <input type="file" name="<?= $key ?>" class="form-control form-control-sm" accept=".jpg,.jpeg,.png,.webp">
+                                                </div>
+                                            <?php endforeach; ?>
                                         </div>
                                     </div>
                                 </div>

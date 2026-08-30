@@ -96,7 +96,7 @@ include 'views/client/layouts/header.php';
         padding: 180px 0 100px;
         text-align: center;
         position: relative;
-        background: url('https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+        background: url('<?php echo !empty($settings['banner_contact']) ? 'public/' . htmlspecialchars($settings['banner_contact']) : 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80'; ?>') center/cover no-repeat;
         border-bottom: 1px solid var(--border-light);
     }
     

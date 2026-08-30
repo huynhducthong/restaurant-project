@@ -232,7 +232,7 @@ include __DIR__ . '/../views/client/layouts/header.php';
                     <?php else: ?>
                         <style>
                         .about { 
-                            background: url('public/assets/img/bg_timeline.png') no-repeat center center fixed; 
+                            background: url('<?php echo !empty($settings['banner_about']) ? 'public/' . htmlspecialchars($settings['banner_about']) : 'public/assets/img/bg_timeline.png'; ?>') no-repeat center center fixed;
                             background-size: cover; 
                             position: relative; 
                         } 

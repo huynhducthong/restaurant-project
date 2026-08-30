@@ -200,7 +200,7 @@ include __DIR__ . '/../views/client/layouts/header.php';
 
 <!-- Hero Section -->
 <section class="editorial-hero">
-   <div class="editorial-hero-bg"></div>
+   <div class="editorial-hero-bg" <?php if(!empty($settings['banner_menu'])) echo 'style="background-image: url(\'public/'.$settings['banner_menu'].'\') !important;"'; ?>></div>
    <div class="editorial-hero-overlay"></div>
    <div class="editorial-hero-content">
        <span class="eyebrow">Gastronomy Collection</span>

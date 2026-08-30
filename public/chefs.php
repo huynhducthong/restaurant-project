@@ -927,7 +927,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Sourc
   content: '';
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
-  background: url('public/assets/img/about-bg.jpg') center/cover no-repeat;
+  background: url('<?php echo !empty($settings['banner_chefs']) ? 'public/' . htmlspecialchars($settings['banner_chefs']) : 'public/assets/img/about-bg.jpg'; ?>') center/cover no-repeat;
   opacity: 0.8;
   z-index: 0;
 }
