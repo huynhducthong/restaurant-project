@@ -874,6 +874,10 @@ include __DIR__ . '/../views/client/layouts/header.php';
             <button type="button" onclick="openReviewModal(<?= $b['id'] ?>, <?= !empty($b['chef_id']) ? $b['chef_id'] : 'null' ?>)" class="btn-out" style="font-size:12px;padding:7px 14px; color:#A88746; border-color:#A88746">
               <i class="bi bi-star"></i> Đánh giá
             </button>
+            <?php elseif($status_filter=='completed' && !empty($b['is_reviewed'])): ?>
+            <button type="button" onclick="openEditReviewModal(<?= $b['id'] ?>, <?= !empty($b['chef_id']) ? $b['chef_id'] : 'null' ?>)" class="btn-out" style="font-size:12px;padding:7px 14px; color:#fff; border-color:#555; background: #333;">
+              <i class="bi bi-star-fill" style="color:#A88746;"></i> Xem / Sửa Đánh Giá
+            </button>
             <?php endif; ?>
           </div>
         </div>
@@ -1148,6 +1152,34 @@ function openEditAddress(id, type, detail, isDefault) {
     document.getElementById('edit_address_detail').value = detail;
     document.getElementById('edit_is_default').checked = isDefault === 1;
     new bootstrap.Modal(document.getElementById('editAddressModal')).show();
+}
+
+function openEditReviewModal(bookingId, chefId) {
+    document.getElementById('btnSubmitReview').innerHTML = 'Đang tải...';
+    document.getElementById('btnSubmitReview').disabled = true;
+    
+    // Reset basic UI first
+    openReviewModal(bookingId, chefId);
+    
+    // Fetch review data
+    fetch('ajax/ajax_get_post_dining_review.php?booking_id=' + bookingId)
+    .then(r => r.json())
+    .then(data => {
+        if (data.success && data.review) {
+            selectReviewStar(data.review.rating);
+            document.getElementById('review_comment').value = data.review.comment;
+            if (data.review.images && data.review.images.length > 0) {
+                document.getElementById('review_images_text').innerText = 'Đã tải lên ' + data.review.images.length + ' ảnh trước đó. Tải ảnh mới sẽ ghi đè.';
+                document.getElementById('review_images_text').style.color = '#c8933a';
+            }
+        }
+        document.getElementById('btnSubmitReview').innerHTML = 'Cập Nhật Đánh Giá';
+        document.getElementById('btnSubmitReview').disabled = false;
+    })
+    .catch(err => {
+        console.error(err);
+        document.getElementById('btnSubmitReview').innerHTML = 'Lỗi Tải Dữ Liệu';
+    });
 }
 
 function openReviewModal(bookingId, chefId) {
