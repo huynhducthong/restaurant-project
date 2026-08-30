@@ -869,6 +869,12 @@ include __DIR__ . '/../views/client/layouts/header.php';
               </button>
             </form>
             <?php endif; ?>
+
+            <?php if($status_filter=='completed' && empty($b['is_reviewed'])): ?>
+            <button type="button" onclick="openReviewModal(<?= $b['id'] ?>, <?= !empty($b['chef_id']) ? $b['chef_id'] : 'null' ?>)" class="btn-out" style="font-size:12px;padding:7px 14px; color:#A88746; border-color:#A88746">
+              <i class="bi bi-star"></i> Đánh giá
+            </button>
+            <?php endif; ?>
           </div>
         </div>
         <?php endforeach; ?>
@@ -1143,6 +1149,136 @@ function openEditAddress(id, type, detail, isDefault) {
     document.getElementById('edit_is_default').checked = isDefault === 1;
     new bootstrap.Modal(document.getElementById('editAddressModal')).show();
 }
+
+function openReviewModal(bookingId, chefId) {
+    document.getElementById('review_booking_id').value = bookingId;
+    document.getElementById('review_chef_id').value = chefId || '';
+    document.getElementById('review_rating').value = 5;
+    
+    // Reset stars UI
+    const stars = document.querySelectorAll('.review-star');
+    stars.forEach(s => {
+        s.classList.remove('bi-star');
+        s.classList.add('bi-star-fill');
+        s.style.color = '#A88746';
+    });
+    
+    document.getElementById('review_comment').value = '';
+    
+    // Show/hide chef info in modal based on if it's a bespoke chef booking
+    const chefInfo = document.getElementById('review_chef_info');
+    if (chefId) {
+        chefInfo.style.display = 'block';
+    } else {
+        chefInfo.style.display = 'none';
+    }
+    
+    new bootstrap.Modal(document.getElementById('reviewModal')).show();
+}
+
+function selectReviewStar(val) {
+    document.getElementById('review_rating').value = val;
+    const stars = document.querySelectorAll('.review-star');
+    stars.forEach(s => {
+        const sVal = parseInt(s.getAttribute('data-val'));
+        if (sVal <= val) {
+            s.classList.remove('bi-star');
+            s.classList.add('bi-star-fill');
+            s.style.color = '#A88746';
+        } else {
+            s.classList.remove('bi-star-fill');
+            s.classList.add('bi-star');
+            s.style.color = '#ccc';
+        }
+    });
+}
+
+function submitReview() {
+    const bookingId = document.getElementById('review_booking_id').value;
+    const chefId = document.getElementById('review_chef_id').value;
+    const rating = document.getElementById('review_rating').value;
+    const comment = document.getElementById('review_comment').value;
+    const btn = document.getElementById('btnSubmitReview');
+    
+    if (!comment.trim()) {
+        alert('Vui lòng nhập nhận xét của bạn.');
+        return;
+    }
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+    
+    const formData = new FormData();
+    formData.append('booking_id', bookingId);
+    if (chefId) formData.append('chef_id', chefId);
+    formData.append('rating', rating);
+    formData.append('comment', comment);
+    
+    fetch('ajax/submit_post_dining_review.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert('Cảm ơn bạn đã gửi đánh giá!');
+            location.reload();
+        } else {
+            alert('Lỗi: ' + (data.message || 'Không thể gửi đánh giá.'));
+            btn.disabled = false;
+            btn.innerHTML = 'Gửi đánh giá';
+        }
+    })
+    .catch(err => {
+        alert('Lỗi kết nối.');
+        btn.disabled = false;
+        btn.innerHTML = 'Gửi đánh giá';
+    });
+}
 </script>
+
+<!-- Modal Review -->
+<div class="modal fade" id="reviewModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-0" style="background:#1a1814; border:1px solid #333; color:#fff;">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title section-title-lux" style="font-size:1.5rem; margin:0; border:none;">ĐÁNH GIÁ BỮA ĂN</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body pt-0">
+        <input type="hidden" id="review_booking_id">
+        <input type="hidden" id="review_chef_id">
+        <input type="hidden" id="review_rating" value="5">
+        
+        <p class="text-muted mb-3" style="font-size:0.9rem;">
+          Đánh giá của bạn giúp chúng tôi cải thiện và cá nhân hóa trải nghiệm cho những lần phục vụ sau.
+        </p>
+        
+        <div id="review_chef_info" style="display:none;" class="mb-3 p-3 rounded" style="background:#222; border:1px dashed #A88746;">
+          <small class="text-muted d-block mb-1"><i class="bi bi-info-circle"></i> Đánh giá này cũng sẽ được ghi nhận cho Đầu bếp đã phục vụ bạn.</small>
+        </div>
+        
+        <div class="text-center mb-4">
+          <div class="d-flex justify-content-center gap-2" style="font-size:2rem; cursor:pointer;">
+            <i class="bi bi-star-fill review-star" data-val="1" onclick="selectReviewStar(1)" style="color:#A88746"></i>
+            <i class="bi bi-star-fill review-star" data-val="2" onclick="selectReviewStar(2)" style="color:#A88746"></i>
+            <i class="bi bi-star-fill review-star" data-val="3" onclick="selectReviewStar(3)" style="color:#A88746"></i>
+            <i class="bi bi-star-fill review-star" data-val="4" onclick="selectReviewStar(4)" style="color:#A88746"></i>
+            <i class="bi bi-star-fill review-star" data-val="5" onclick="selectReviewStar(5)" style="color:#A88746"></i>
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label text-muted">Nhận xét của bạn</label>
+          <textarea id="review_comment" class="form-control rounded-0" rows="4" style="background:#222; color:#fff; border:1px solid #333;" placeholder="Món ăn, không gian, phong cách phục vụ..."></textarea>
+        </div>
+        
+        <button type="button" id="btnSubmitReview" onclick="submitReview()" class="btn-lux w-100 mt-2">
+          Gửi đánh giá
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <?php include __DIR__ . '/../views/client/layouts/footer.php'; ?>
