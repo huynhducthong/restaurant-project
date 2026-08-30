@@ -231,21 +231,11 @@ include __DIR__ . '/../views/client/layouts/header.php';
                         </div>
                     <?php else: ?>
                         <style>
-                        .about { 
-                            background: url('<?php echo !empty($settings['banner_about']) ? 'public/' . htmlspecialchars($settings['banner_about']) : 'public/assets/img/bg_timeline.png'; ?>') no-repeat center center fixed;
-                            background-size: cover; 
-                            position: relative; 
+                        .news-page-wrap { 
+                            background: url('<?php echo !empty($settings['banner_about']) ? 'public/' . htmlspecialchars($settings['banner_about']) : 'public/assets/img/about_bg_premium.jpg'; ?>') center/cover no-repeat fixed !important;
                         } 
-                        .about::before { 
-                            content: ''; 
-                            position: absolute; 
-                            inset: 0; 
-                            background: rgba(12, 11, 9, 0.65);
-                            z-index: 0; 
-                        } 
-                        .about > .container { 
-                            position: relative; 
-                            z-index: 1; 
+                        .news-page-wrap::before { 
+                            background: rgba(12, 11, 9, 0.65) !important;
                         } 
                         /* Timeline Styles cho danh sách */
                         .gia-timeline-list { position: relative; max-width: 1200px; margin: 40px auto; padding: 20px 0; overflow: hidden; }

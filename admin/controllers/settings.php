@@ -483,7 +483,7 @@ include '../../public/admin_layout_header.php';
                                         <div class="row">
                                             <?php 
                                             $banners = [
-                                                'banner_about' => ['label' => 'Trang Về Chúng Tôi', 'default' => 'assets/img/bg_timeline.png'],
+                                                'banner_about' => ['label' => 'Trang Về Chúng Tôi', 'default' => 'assets/img/about_bg_premium.jpg'],
                                                 'banner_menu' => ['label' => 'Trang Thực Đơn', 'default' => 'assets/img/about-bg.jpg'],
                                                 'banner_chefs' => ['label' => 'Trang Đội Bếp', 'default' => 'assets/img/about-bg.jpg'],
                                                 'banner_contact' => ['label' => 'Trang Liên Hệ', 'default' => 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80']
