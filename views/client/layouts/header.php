@@ -61,7 +61,22 @@ $settings['logo_ver']        = $settings['logo_ver'] ?? '1';
    PAGE
 ========================================================= */
 
-$current_page = basename($_SERVER['PHP_SELF']);
+$req_uri = $_SERVER['REQUEST_URI'] ?? '';
+$req_path = strtok($req_uri, '?');
+if (defined('BASE_URL') && BASE_URL !== '') {
+    if (strpos($req_path, BASE_URL) === 0) {
+        $req_path = substr($req_path, strlen(BASE_URL));
+    }
+}
+$req_path = trim($req_path, '/');
+if (preg_match('/\.php$/', $req_path)) {
+    $req_path = preg_replace('/\.php$/', '', $req_path);
+}
+if ($req_path === '' || $req_path === 'index' || $req_path === 'home') {
+    $current_page = 'index.php';
+} else {
+    $current_page = basename($req_path) . '.php';
+}
 
 if (!function_exists('safe_url')) {
     function safe_url($url, $prefix = '') {
