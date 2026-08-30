@@ -642,7 +642,7 @@ if ($toast_admin) {
 
                 <?php if (checkMenuAccess($user_role, ['waiter', 'cashier'])): ?>
                 <?php 
-                    $isServiceMenu = isActive('manage_services.php') || isActive('manage_events.php') || isActive('manage_decors.php') || isActive('manage_bespoke.php') || isActive('manage_tables.php');
+                    $isServiceMenu = isActive('manage_services.php') || isActive('manage_events.php') || isActive('manage_decors.php') || isActive('manage_bespoke.php') || isActive('manage_tables.php') || isActive('manage_chef_reviews.php');
                 ?>
                 <li class="<?= $isServiceMenu ? 'active' : '' ?>">
                     <a href="javascript:void(0)" data-bs-target="#servicesSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isServiceMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
@@ -661,6 +661,11 @@ if ($toast_admin) {
                         <li class="<?= isActive('manage_services.php') ?>">
                             <a href="<?= BASE_URL ?>/admin/controllers/manage_services.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-list-ul" style="font-size: 12px; margin-right: 6px;"></i> Danh sách Đơn đặt
+                            </a>
+                        </li>
+                        <li class="<?= isActive('manage_chef_reviews.php') ?>">
+                            <a href="<?= BASE_URL ?>/admin/manage_chef_reviews.php" style="padding-left: 42px; font-size: 12.5px;">
+                                <i class="fas fa-star" style="font-size: 12px; margin-right: 6px;"></i> Đánh giá Khách hàng
                             </a>
                         </li>
                         <li class="<?= isActive('manage_tables.php') ?>">
@@ -715,7 +720,7 @@ if ($toast_admin) {
 
                 <?php if (checkMenuAccess($user_role, ['chef'])): ?>
                 <?php 
-                    $isChefMenu = isActive('manage_chefs.php') || isActive('manage_chef_reviews.php');
+                    $isChefMenu = isActive('manage_chefs.php');
                 ?>
                 <li class="<?= $isChefMenu ? 'active' : '' ?> chef-menu-toggle">
                     <a href="javascript:void(0)" data-bs-target="#chefSubmenu" data-bs-toggle="collapse" aria-expanded="<?= $isChefMenu ? 'true' : 'false' ?>" class="d-flex align-items-center justify-content-between">
@@ -730,11 +735,6 @@ if ($toast_admin) {
                         <li class="<?= isActive('manage_chefs.php') ?>">
                             <a href="<?= BASE_URL ?>/admin/manage_chefs.php" style="padding-left: 42px; font-size: 12.5px;">
                                 <i class="fas fa-users" style="font-size: 12px; margin-right: 6px;"></i> Danh sách Đầu bếp
-                            </a>
-                        </li>
-                        <li class="<?= isActive('manage_chef_reviews.php') ?>">
-                            <a href="<?= BASE_URL ?>/admin/manage_chef_reviews.php" style="padding-left: 42px; font-size: 12.5px;">
-                                <i class="fas fa-comments" style="font-size: 12px; margin-right: 6px;"></i> Đánh giá Đầu bếp
                             </a>
                         </li>
                     </ul>
@@ -875,7 +875,7 @@ if ($toast_admin) {
                     'manage_inventory.php'    => 'Quản Lý Kho Nguyên Liệu',
                     'ReportController.php'    => 'Báo Cáo & Thống Kê Kho',
                     'manage_chefs.php'        => 'Quản Lý Đầu Bếp',
-                    'manage_chef_reviews.php' => 'Quản Lý Đánh Giá Đầu Bếp',
+                    'manage_chef_reviews.php' => 'Quản Lý Đánh Giá Khách Hàng',
                     'manage_banners.php'      => 'Quản Lý Banner',
                     'manage_videos.php'       => 'Quản Lý Video',
                     'settings.php'            => 'Cài Đặt Hệ Thống Chung',
