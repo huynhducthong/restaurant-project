@@ -1,6 +1,6 @@
-﻿<?php
+<?php
 session_start();
-require_once "../../config/database.php";
+require_once __DIR__ . "/../../config/database.php";
 
 header("Content-Type: application/json");
 
@@ -50,7 +50,7 @@ try {
     // Upload ảnh
     $uploaded_images = [];
     if (isset($_FILES["images"]) && !empty($_FILES["images"]["name"][0])) {
-        $upload_dir = "../../uploads/reviews/";
+        $upload_dir = __DIR__ . "/../../uploads/reviews/";
         if (!is_dir($upload_dir)) {
             mkdir($upload_dir, 0777, true);
         }
