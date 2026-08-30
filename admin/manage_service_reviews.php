@@ -71,7 +71,7 @@ $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $limit = 15;
 $offset = ($page - 1) * $limit;
 
-$where = ["(r.booking_id IS NULL OR r.booking_id = 0)"];
+$where = ["r.booking_id > 0"];
 $params = [];
 
 if ($chef_filter > 0) {
@@ -123,9 +123,9 @@ $chefs = $db->query("SELECT id, name FROM chefs ORDER BY name ASC")->fetchAll(PD
 
 <div class="container-fluid py-4 min-vh-100">
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-        <h4 class="fw-bold m-0"><i class="fas fa-comments me-2 text-primary"></i> Quản lý Đánh giá Đầu bếp</h4>
-        <a href="manage_chefs.php" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-2"></i> Quay lại Đầu Bếp
+        <h4 class="fw-bold m-0"><i class="fas fa-comments me-2 text-primary"></i> Quản lý Đánh giá Khách hàng</h4>
+        <a href="controllers/manage_services.php" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Quay lại Dịch vụ
         </a>
     </div>
 
@@ -184,7 +184,7 @@ $chefs = $db->query("SELECT id, name FROM chefs ORDER BY name ASC")->fetchAll(PD
             <table class="table table-hover align-middle mb-0 text-dark">
                 <thead class="bg-light text-muted" style="font-size: 0.85rem; text-transform: uppercase;">
                     <tr>
-                        <th class="ps-4" style="width: 15%;">Đầu bếp</th>
+                        <th class="ps-4" style="width: 15%;">Dịch vụ</th>
                         <th style="width: 15%;">Người gửi</th>
                         <th style="width: 12%;">Đánh giá</th>
                         <th>Nội dung bình luận</th>
@@ -206,7 +206,10 @@ $chefs = $db->query("SELECT id, name FROM chefs ORDER BY name ASC")->fetchAll(PD
                     <?php foreach ($reviews as $rev): ?>
                         <tr>
                             <td class="ps-4">
-                                <div class="fw-bold text-dark"><?= htmlspecialchars($rev['chef_name'] ?? 'Đã xóa') ?></div>
+                                <div class="fw-bold text-dark"><?= htmlspecialchars($rev['chef_name'] ?? 'Nhà hàng') ?></div>
+                                <?php if (!empty($rev['experience_type'])): ?>
+                                    <div class="small text-muted"><?= htmlspecialchars($rev['experience_type']) ?></div>
+                                <?php endif; ?>
                             </td>
                             <td>
                                 <div class="fw-medium text-dark"><?= htmlspecialchars($rev['author_name']) ?></div>
