@@ -194,7 +194,7 @@ try {
     }
     // 6. Fetch review if exists
     $review = null;
-    $stmt_rev = $db->prepare("SELECT author_name, rating, comment, created_at FROM chef_reviews WHERE booking_id = ?");
+    $stmt_rev = $db->prepare("SELECT author_name, rating, comment, images, created_at FROM chef_reviews WHERE booking_id = ?");
     $stmt_rev->execute([$booking['id']]);
     if ($rev = $stmt_rev->fetch(PDO::FETCH_ASSOC)) {
         $review = $rev;

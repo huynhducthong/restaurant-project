@@ -1214,6 +1214,13 @@ function submitReview() {
     formData.append('rating', rating);
     formData.append('comment', comment);
     
+    const fileInput = document.getElementById('review_images');
+    if (fileInput && fileInput.files.length > 0) {
+        for (let i = 0; i < fileInput.files.length; i++) {
+            formData.append('images[]', fileInput.files[i]);
+        }
+    }
+    
     fetch('ajax/submit_post_dining_review.php', {
         method: 'POST',
         body: formData
@@ -1240,9 +1247,9 @@ function submitReview() {
 <!-- Modal Review -->
 <div class="modal fade" id="reviewModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-0" style="background:#1a1814; border:1px solid #333; color:#fff;">
+    <div class="modal-content rounded-0" style="background:#1a1814; border:1px solid #A88746; color:#fff;">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title section-title-lux" style="font-size:1.5rem; margin:0; border:none;">ĐÁNH GIÁ BỮA ĂN</h5>
+        <h5 class="modal-title section-title-lux" style="font-size:1.5rem; margin:0; border:none; color:#A88746;">ĐÁNH GIÁ BỮA ĂN</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body pt-0">
@@ -1250,12 +1257,12 @@ function submitReview() {
         <input type="hidden" id="review_chef_id">
         <input type="hidden" id="review_rating" value="5">
         
-        <p class="text-muted mb-3" style="font-size:0.9rem;">
+        <p class="mb-3" style="font-size:0.9rem; color:#ddd;">
           Đánh giá của bạn giúp chúng tôi cải thiện và cá nhân hóa trải nghiệm cho những lần phục vụ sau.
         </p>
         
         <div id="review_chef_info" style="display:none;" class="mb-3 p-3 rounded" style="background:#222; border:1px dashed #A88746;">
-          <small class="text-muted d-block mb-1"><i class="bi bi-info-circle"></i> Đánh giá này cũng sẽ được ghi nhận cho Đầu bếp đã phục vụ bạn.</small>
+          <small class="d-block mb-1" style="color:#ddd;"><i class="bi bi-info-circle"></i> Đánh giá này cũng sẽ được ghi nhận cho Đầu bếp đã phục vụ bạn.</small>
         </div>
         
         <div class="text-center mb-4">
@@ -1269,8 +1276,14 @@ function submitReview() {
         </div>
         
         <div class="mb-3">
-          <label class="form-label text-muted">Nhận xét của bạn</label>
+          <label class="form-label" style="color:#ddd;">Nhận xét của bạn</label>
           <textarea id="review_comment" class="form-control rounded-0" rows="4" style="background:#222; color:#fff; border:1px solid #333;" placeholder="Món ăn, không gian, phong cách phục vụ..."></textarea>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label" style="color:#ddd;"><i class="bi bi-camera"></i> Đính kèm hình ảnh (Tùy chọn)</label>
+          <input type="file" id="review_images" name="images[]" multiple accept="image/*" class="form-control rounded-0" style="background:#222; color:#fff; border:1px solid #333;">
+          <small style="color:#aaa;">Có thể chọn nhiều ảnh</small>
         </div>
         
         <button type="button" id="btnSubmitReview" onclick="submitReview()" class="btn-lux w-100 mt-2">

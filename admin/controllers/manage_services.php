@@ -890,6 +890,7 @@ include '../../public/admin_layout_header.php';
                         <div class="mb-1" id="m-review-stars" style="color:var(--gold); font-size:1.1rem;"></div>
                         <div class="small fw-bold text-dark mb-1" id="m-review-author"></div>
                         <div class="small text-muted fst-italic mt-2" id="m-review-comment"></div>
+                        <div class="mt-2 d-flex gap-2 flex-wrap" id="m-review-images"></div>
                     </div>
                 </div>
 
@@ -1451,6 +1452,20 @@ include '../../public/admin_layout_header.php';
                         $('#m-review-stars').html(stars);
                         $('#m-review-author').text(data.review.author_name + " (" + data.review.created_at + ")");
                         $('#m-review-comment').text('"' + data.review.comment + '"');
+                        
+                        $('#m-review-images').empty();
+                        if (data.review.images) {
+                            try {
+                                let imgs = JSON.parse(data.review.images);
+                                if (Array.isArray(imgs) && imgs.length > 0) {
+                                    let imgHtml = '';
+                                    imgs.forEach(img => {
+                                        imgHtml += `<a href="../${img}" target="_blank"><img src="../${img}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;"></a>`;
+                                    });
+                                    $('#m-review-images').html(imgHtml);
+                                }
+                            } catch (e) {}
+                        }
                     } else {
                         $('#m-review-section').hide();
                     }
