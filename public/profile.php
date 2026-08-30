@@ -1244,50 +1244,140 @@ function submitReview() {
 }
 </script>
 
+<style>
+/* Custom Review Modal Styles */
+#reviewModal .modal-content {
+    background: #151310 !important;
+    border: 1px solid #c8933a !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    color: #e1d5c1;
+}
+#reviewModal .modal-header {
+    border-bottom: 1px dashed rgba(200,147,58,0.3) !important;
+    padding: 1.5rem 1.5rem 1rem;
+}
+#reviewModal .modal-title {
+    color: #c8933a !important;
+    font-family: "Playfair Display", serif;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+#reviewModal .modal-body {
+    padding: 1.5rem;
+}
+#reviewModal .review-star {
+    font-size: 2.2rem;
+    cursor: pointer;
+    transition: transform 0.2s, color 0.2s;
+    color: #444; /* Default gray */
+}
+#reviewModal .review-star:hover {
+    transform: scale(1.1);
+}
+#reviewModal .review-star.active {
+    color: #c8933a !important;
+    text-shadow: 0 0 10px rgba(200,147,58,0.4);
+}
+#reviewModal .form-control {
+    background-color: rgba(255,255,255,0.03) !important;
+    border: 1px solid rgba(200,147,58,0.3) !important;
+    color: #e1d5c1 !important;
+    border-radius: 6px !important;
+}
+#reviewModal .form-control:focus {
+    border-color: #c8933a !important;
+    box-shadow: 0 0 0 0.25rem rgba(200,147,58,0.25) !important;
+}
+#reviewModal .form-control::placeholder {
+    color: rgba(225,213,193,0.4) !important;
+}
+#reviewModal .custom-file-upload {
+    border: 1px dashed rgba(200,147,58,0.4);
+    background: rgba(255,255,255,0.02);
+    padding: 12px;
+    border-radius: 6px;
+    text-align: center;
+    transition: background 0.3s;
+    position: relative;
+}
+#reviewModal .custom-file-upload:hover {
+    background: rgba(200,147,58,0.05);
+}
+#reviewModal .custom-file-upload input[type="file"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+#btnSubmitReview {
+    background: linear-gradient(135deg, #A88746, #c8933a);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 12px;
+    border-radius: 6px;
+    transition: opacity 0.3s;
+}
+#btnSubmitReview:hover {
+    opacity: 0.9;
+}
+</style>
+
 <!-- Modal Review -->
 <div class="modal fade" id="reviewModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-0" style="background:#1a1814; border:1px solid #A88746; color:#fff;">
-      <div class="modal-header border-bottom-0">
-        <h5 class="modal-title section-title-lux" style="font-size:1.5rem; margin:0; border:none; color:#A88746;">ĐÁNH GIÁ BỮA ĂN</h5>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-chat-right-quote-fill me-2"></i> ĐÁNH GIÁ BỮA ĂN</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body pt-0">
+      <div class="modal-body">
         <input type="hidden" id="review_booking_id">
         <input type="hidden" id="review_chef_id">
         <input type="hidden" id="review_rating" value="5">
         
-        <p class="mb-3" style="font-size:0.9rem; color:#ddd;">
-          Đánh giá của bạn giúp chúng tôi cải thiện và cá nhân hóa trải nghiệm cho những lần phục vụ sau.
+        <p class="mb-4 text-center" style="font-size:0.95rem; color:#aaa; font-style: italic;">
+          Đánh giá của bạn giúp chúng tôi cải thiện và cá nhân hóa trải nghiệm.
         </p>
         
-        <div id="review_chef_info" style="display:none;" class="mb-3 p-3 rounded" style="background:#222; border:1px dashed #A88746;">
-          <small class="d-block mb-1" style="color:#ddd;"><i class="bi bi-info-circle"></i> Đánh giá này cũng sẽ được ghi nhận cho Đầu bếp đã phục vụ bạn.</small>
+        <div id="review_chef_info" style="display:none;" class="mb-4 p-3 rounded text-center" style="background:rgba(200,147,58,0.05); border:1px dashed #A88746;">
+          <small style="color:#d4b06a;"><i class="bi bi-info-circle me-1"></i> Đánh giá này cũng sẽ được ghi nhận cho Đầu bếp của bạn.</small>
         </div>
         
         <div class="text-center mb-4">
-          <div class="d-flex justify-content-center gap-2" style="font-size:2rem; cursor:pointer;">
-            <i class="bi bi-star-fill review-star" data-val="1" onclick="selectReviewStar(1)" style="color:#A88746"></i>
-            <i class="bi bi-star-fill review-star" data-val="2" onclick="selectReviewStar(2)" style="color:#A88746"></i>
-            <i class="bi bi-star-fill review-star" data-val="3" onclick="selectReviewStar(3)" style="color:#A88746"></i>
-            <i class="bi bi-star-fill review-star" data-val="4" onclick="selectReviewStar(4)" style="color:#A88746"></i>
-            <i class="bi bi-star-fill review-star" data-val="5" onclick="selectReviewStar(5)" style="color:#A88746"></i>
+          <div class="d-flex justify-content-center gap-3">
+            <i class="bi bi-star-fill review-star active" data-val="1" onclick="selectReviewStar(1)"></i>
+            <i class="bi bi-star-fill review-star active" data-val="2" onclick="selectReviewStar(2)"></i>
+            <i class="bi bi-star-fill review-star active" data-val="3" onclick="selectReviewStar(3)"></i>
+            <i class="bi bi-star-fill review-star active" data-val="4" onclick="selectReviewStar(4)"></i>
+            <i class="bi bi-star-fill review-star active" data-val="5" onclick="selectReviewStar(5)"></i>
           </div>
         </div>
         
-        <div class="mb-3">
-          <label class="form-label" style="color:#ddd;">Nhận xét của bạn</label>
-          <textarea id="review_comment" class="form-control rounded-0" rows="4" style="background:#222; color:#fff; border:1px solid #333;" placeholder="Món ăn, không gian, phong cách phục vụ..."></textarea>
+        <div class="mb-4">
+          <label class="form-label fw-bold" style="color:#c8933a;">Nhận xét của bạn</label>
+          <textarea id="review_comment" class="form-control" rows="4" placeholder="Món ăn, không gian, phong cách phục vụ..."></textarea>
         </div>
         
-        <div class="mb-3">
-          <label class="form-label" style="color:#ddd;"><i class="bi bi-camera"></i> Đính kèm hình ảnh (Tùy chọn)</label>
-          <input type="file" id="review_images" name="images[]" multiple accept="image/*" class="form-control rounded-0" style="background:#222; color:#fff; border:1px solid #333;">
-          <small style="color:#aaa;">Có thể chọn nhiều ảnh</small>
+        <div class="mb-4">
+          <label class="form-label fw-bold" style="color:#c8933a;"><i class="bi bi-camera"></i> Đính kèm hình ảnh <small class="text-muted fw-normal">(Tùy chọn)</small></label>
+          <div class="custom-file-upload">
+              <input type="file" id="review_images" name="images[]" multiple accept="image/*" onchange="document.getElementById('review_images_text').innerText = this.files.length > 0 ? 'Đã chọn ' + this.files.length + ' ảnh' : 'Nhấn hoặc Kéo thả ảnh vào đây'; document.getElementById('review_images_text').style.color = this.files.length > 0 ? '#c8933a' : '#e1d5c1';">
+              <div id="review_images_label" style="pointer-events: none;">
+                  <i class="bi bi-cloud-arrow-up fs-4 d-block mb-1" style="color:#A88746;"></i>
+                  <span style="color:#e1d5c1; font-weight: 500;" id="review_images_text">Nhấn hoặc Kéo thả ảnh vào đây</span><br>
+                  <small style="color:#888;">Có thể chọn nhiều ảnh</small>
+              </div>
+          </div>
         </div>
         
-        <button type="button" id="btnSubmitReview" onclick="submitReview()" class="btn-lux w-100 mt-2">
-          Gửi đánh giá
+        <button type="button" id="btnSubmitReview" onclick="submitReview()" class="w-100 mt-2">
+          Gửi Đánh Giá
         </button>
       </div>
     </div>
