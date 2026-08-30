@@ -883,6 +883,16 @@ include '../../public/admin_layout_header.php';
                     </div>
                 </div>
 
+                <!-- NEW: REVIEW SECTION -->
+                <div id="m-review-section" class="mt-3 p-3 rounded" style="display:none; background: #fdfbf7; border: 1px solid #e1d5c1;">
+                    <h6 class="fw-bold mb-2" style="font-size: 13px; color: var(--gold);"><i class="fas fa-star me-1"></i> Đánh giá của khách hàng</h6>
+                    <div class="text-start">
+                        <div class="mb-1" id="m-review-stars" style="color:var(--gold); font-size:1.1rem;"></div>
+                        <div class="small fw-bold text-dark mb-1" id="m-review-author"></div>
+                        <div class="small text-muted fst-italic mt-2" id="m-review-comment"></div>
+                    </div>
+                </div>
+
                 <!-- NEW: INVENTORY CHECK SECTION -->
                 <div id="m-inventory-section" class="mt-3 p-3 rounded" style="display:none; background: #fff9f0; border: 1px solid #ffeeba;">
                     <h6 class="fw-bold mb-2 text-warning" style="font-size: 13px;"><i class="fas fa-exclamation-triangle me-1"></i> Kiểm tra tồn kho nguyên liệu</h6>
@@ -1425,6 +1435,24 @@ include '../../public/admin_layout_header.php';
                         $('#m-milestone-alert').html(msHtml);
                     } else {
                         $('#m-milestone-alert').empty();
+                    }
+
+                    // Review Logic
+                    if (data.review) {
+                        $('#m-review-section').show();
+                        let stars = '';
+                        for(let i = 1; i <= 5; i++) {
+                            if (i <= parseInt(data.review.rating)) {
+                                stars += '<i class="fas fa-star"></i>';
+                            } else {
+                                stars += '<i class="far fa-star"></i>';
+                            }
+                        }
+                        $('#m-review-stars').html(stars);
+                        $('#m-review-author').text(data.review.author_name + " (" + data.review.created_at + ")");
+                        $('#m-review-comment').text('"' + data.review.comment + '"');
+                    } else {
+                        $('#m-review-section').hide();
                     }
                 }
             });

@@ -192,7 +192,15 @@ try {
         $stmt_um->execute([$booking['user_id']]);
         $unredeemed = $stmt_um->fetchAll(PDO::FETCH_ASSOC);
     }
-    $booking['unredeemed_milestones'] = $unredeemed;
+    // 6. Fetch review if exists
+    $review = null;
+    $stmt_rev = $db->prepare("SELECT author_name, rating, comment, created_at FROM chef_reviews WHERE booking_id = ?");
+    $stmt_rev->execute([$booking['id']]);
+    if ($rev = $stmt_rev->fetch(PDO::FETCH_ASSOC)) {
+        $review = $rev;
+    }
+    $booking['review'] = $review;
+
     echo json_encode($booking);
 
 } catch (Exception $e) {
