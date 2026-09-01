@@ -156,4 +156,8 @@ function getFoodInventory($db, $food_id) {
 
     return (int)max(0, $min_stock);
 }
+
+function syncInventoryBatchesWithStock($db, $ingredient_id) {
+    $db->prepare('DELETE FROM inventory_batches WHERE ingredient_id = ? AND quantity <= 0')->execute([$ingredient_id]);
+}
 ?>
