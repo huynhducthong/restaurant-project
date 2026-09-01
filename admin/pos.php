@@ -615,7 +615,7 @@ function renderCart(data) {
         
         let menuDisplay = '';
         if (info.ai_suggested_menu) {
-            menuDisplay = `<div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #cbd5e1;"><b>Thực đơn Gợi ý (AI):</b><br><div style="white-space: pre-wrap; font-size: 0.8rem; color: #334155; max-height: 150px; overflow-y: auto;">${info.ai_suggested_menu}</div></div>`;
+            menuDisplay = `<div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #cbd5e1;"><b>Thực đơn Gợi ý:</b><br><div style="white-space: pre-wrap; font-size: 0.8rem; color: #334155; max-height: 150px; overflow-y: auto;">${info.ai_suggested_menu}</div></div>`;
         } else if (info.chef_requirements && info.chef_requirements.includes('Tuyển chọn riêng')) {
             menuDisplay = `<div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #cbd5e1;"><b>Yêu cầu Tuyển chọn riêng:</b><br><div style="white-space: pre-wrap; font-size: 0.8rem; color: #334155; max-height: 150px; overflow-y: auto;">${info.chef_requirements}</div></div>`;
         }
@@ -983,7 +983,7 @@ function printBill(order, items) {
         const info = order.booking_info;
         let menuDisplay = '';
         if (info.ai_suggested_menu) {
-            menuDisplay = `<div style="margin-top: 5px;"><b>Thực đơn Gợi ý (AI):</b><br><div style="white-space: pre-wrap;">${info.ai_suggested_menu}</div></div>`;
+            menuDisplay = `<div style="margin-top: 5px;"><b>Thực đơn Gợi ý:</b><br><div style="white-space: pre-wrap;">${info.ai_suggested_menu}</div></div>`;
         } else if (info.chef_requirements && info.chef_requirements.includes('Tuyển chọn riêng')) {
             menuDisplay = `<div style="margin-top: 5px;"><b>Yêu cầu Tuyển chọn riêng:</b><br><div style="white-space: pre-wrap;">${info.chef_requirements}</div></div>`;
         }
