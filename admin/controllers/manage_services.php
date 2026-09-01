@@ -847,19 +847,36 @@ include '../../public/admin_layout_header.php';
                     <div class="row border-bottom py-2" id="row-ai-chef" style="display:none; background: #fffcf5; border-radius: 8px; margin: 10px 0; border: 1px solid #c8933a;">
                         <div class="col-12 text-start">
                             <h6 class="fw-bold mb-2" style="color:var(--gold); font-size:13px;"><i class="fas fa-magic me-1"></i> AI Chef Assistant (Tạo thực đơn tự động)</h6>
-                            <p class="small text-muted mb-2">Sử dụng AI phân tích DNA Ẩm thực của khách hàng này để lên thực đơn Tasting Menu cá nhân hóa hoàn toàn.</p>
-                            <button type="button" id="btn-ai-suggest" class="btn btn-sm w-100 fw-bold mb-2" style="background-color: var(--gold); color: #fff; border: none;" data-booking-id="">
-                                <i class="fas fa-robot me-1"></i> Bắt đầu phân tích & Tạo thực đơn
-                            </button>
+                            <p class="small text-muted mb-2">Sử dụng AI phân tích DNA Ẩm thực của khách hàng này để lên thực đơn Tasting Menu cá nhân hóa hoàn toàn. Nếu không dùng AI, Bếp trưởng có thể tự viết đề xuất.</p>
+                            
+                            <div class="d-flex gap-2 mb-2">
+                                <button type="button" id="btn-ai-suggest" class="btn btn-sm flex-grow-1 fw-bold" style="background-color: var(--gold); color: #fff; border: none;" data-booking-id="">
+                                    <i class="fas fa-robot me-1"></i> Bắt đầu phân tích & Tạo thực đơn
+                                </button>
+                                <button type="button" id="btn-manual-menu" class="btn btn-sm btn-outline-secondary fw-bold" title="Tự viết đề xuất" data-booking-id="">
+                                    <i class="fas fa-edit"></i> Viết thủ công
+                                </button>
+                            </div>
+
                             <div id="ai-loading" style="display:none; text-align:center; padding: 10px;">
                                 <div class="spinner-border spinner-border-sm" style="color: var(--gold);" role="status"></div>
                                 <span class="small ms-2" style="color: var(--gold);">Đang phân tích DNA Ẩm thực...</span>
                             </div>
+
                             <div id="ai-response-container" style="display:none; margin-top:10px;">
-                                <textarea id="ai-response" class="form-control" style="font-size: 0.9em; padding: 15px; border: 1px solid #e8e2d9; border-radius: 5px; height: 350px;" placeholder="Nhập thực đơn đề xuất hoặc phản hồi cho khách hàng..."></textarea>
-                                <button type="button" id="btn-save-chef-menu" class="btn btn-sm btn-success w-100 fw-bold mt-2" data-booking-id="">
-                                    <i class="fas fa-save me-1"></i> Lưu Thực Đơn & Phản Hồi Cho Khách
-                                </button>
+                                <textarea id="ai-response" class="form-control mb-2" style="font-size: 0.9em; padding: 15px; border: 1px solid #e8e2d9; border-radius: 5px; height: 350px;" placeholder="Nhập thực đơn đề xuất của Bếp trưởng ở đây..."></textarea>
+                                
+                                <div class="d-flex gap-2">
+                                    <button type="button" id="btn-save-chef-menu" class="btn btn-sm btn-success flex-grow-1 fw-bold" data-booking-id="">
+                                        <i class="fas fa-save me-1"></i> Lưu Thực Đơn
+                                    </button>
+                                    <button type="button" id="btn-ai-regenerate" class="btn btn-sm btn-outline-warning fw-bold" title="Thay đổi gợi ý khác">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                    <button type="button" id="btn-ai-clear" class="btn btn-sm btn-outline-danger fw-bold" title="Loại bỏ">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1548,18 +1565,45 @@ include '../../public/admin_layout_header.php';
                 data: { booking_id: bookingId, menu: menuContent },
                 dataType: 'json',
                 success: function(res) {
-                    btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Lưu Thực Đơn & Phản Hồi Cho Khách');
+                    btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Lưu Thực Đơn');
                     if (res.status === 'success') {
-                        alert('Đã lưu và gửi phản hồi thành công! Khách hàng sẽ thấy nội dung này khi xem chi tiết.');
+                        if (menuContent.trim() === '') {
+                            alert('Đã xóa đề xuất thành công!');
+                            $('#ai-response-container').slideUp();
+                        } else {
+                            alert('Đã lưu đề xuất thành công! Nội dung này sẽ hiển thị ở PDF và POS.');
+                        }
                     } else {
                         alert('Lỗi: ' + res.message);
                     }
                 },
                 error: function() {
-                    btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Lưu Thực Đơn & Phản Hồi Cho Khách');
+                    btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Lưu Thực Đơn');
                     alert('Lỗi kết nối khi lưu thực đơn.');
                 }
             });
+        });
+
+        // --- CÁC NÚT BỔ SUNG CHO AI CHEF ---
+        $(document).on('click', '#btn-manual-menu', function() {
+            const bookingId = $(this).data('booking-id') || $('#btn-ai-suggest').data('booking-id');
+            if (!bookingId) return;
+            $('#ai-response-container').slideDown();
+            $('#ai-response').focus();
+            $('#btn-save-chef-menu').data('booking-id', bookingId);
+        });
+
+        $(document).on('click', '#btn-ai-regenerate', function() {
+            if(confirm('Tạo lại đề xuất mới sẽ xóa đề xuất hiện tại. Bạn có muốn tiếp tục?')) {
+                $('#btn-ai-suggest').click();
+            }
+        });
+
+        $(document).on('click', '#btn-ai-clear', function() {
+            if(confirm('Bạn có chắc chắn muốn xóa bỏ đề xuất này không?')) {
+                $('#ai-response').val('');
+                $('#btn-save-chef-menu').click(); 
+            }
         });
 
         // --- XỬ LÝ CHUYỂN KHO NHANH ---
