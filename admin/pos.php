@@ -371,7 +371,7 @@ function renderTables(tables) {
             const isOccupied = t.order_status === 'open';
             const hasBooking = t.upcoming_booking_id !== null;
             const statusClass = isOccupied ? 'occupied' : (hasBooking ? 'booked' : 'available');
-            const statusText = isOccupied ? `${formatMoney(t.total_amount)}` : (hasBooking ? 'Đã đặt' : 'Trống');
+            const statusText = isOccupied ? `${formatMoney(t.total_amount)}` : (hasBooking ? 'Chuẩn bị' : 'Trống');
             const activeClass = currentTableId == t.id ? 'active' : '';
             
             const bookingTime = t.upcoming_booking_time ? t.upcoming_booking_time : '';
