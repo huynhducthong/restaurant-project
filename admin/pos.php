@@ -760,6 +760,12 @@ async function addItemToOrder(item_type, item_id, price, notes = '') {
         return;
     }
     
+    const tableData = globalTables.find(t => t.id == currentTableId);
+    if (tableData && tableData.category === 'external') {
+        alert('Dịch vụ tại gia không cho phép thêm/sửa món trực tiếp tại POS thu ngân!');
+        return;
+    }
+    
     showLoader();
     try {
         const formData = new URLSearchParams();
@@ -839,6 +845,11 @@ async function markServed(itemId) {
 }
 
 async function updateQty(item_id, new_qty) {
+    const tableData = globalTables.find(t => t.id == currentTableId);
+    if (tableData && tableData.category === 'external') {
+        alert('Dịch vụ tại gia không cho phép thêm/sửa món trực tiếp tại POS thu ngân!');
+        return;
+    }
     showLoader();
     try {
         const formData = new URLSearchParams();
