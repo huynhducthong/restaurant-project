@@ -236,6 +236,12 @@ $user = $db->prepare("SELECT * FROM users WHERE id = ?");
 $user->execute([$user_id]);
 $current_user = $user->fetch();
 
+if (!$current_user) {
+    session_destroy();
+    header("Location: login.php");
+    exit;
+}
+
 $addresses = $db->prepare("SELECT * FROM user_addresses WHERE user_id = ? ORDER BY is_default DESC");
 $addresses->execute([$user_id]);
 $user_addresses = $addresses->fetchAll();
