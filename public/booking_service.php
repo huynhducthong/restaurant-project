@@ -825,10 +825,10 @@ select.input-lux {
                 <?php else: ?>
                     <!-- Chọn Bếp trưởng -->
                     <div class="input-group-lux mb-4">
-                        <select id="selected_chef" class="input-lux" onchange="updateChefReq(); us();">
+                        <select id="selected_chef" name="chef_id" class="input-lux" onchange="updateChefReq(); us();">
                             <option value="">-- Nhà hàng tự sắp xếp --</option>
                             <?php foreach ($chefs as $c): ?>
-                                <option value="<?= htmlspecialchars($c['name']) ?>" data-fee="<?= (int)($c['service_fee'] ?? 0) ?>" <?= ($autofilled_chef_name === $c['name']) ? 'selected' : '' ?>>Chef <?= htmlspecialchars($c['name']) ?></option>
+                                <option value="<?= $c['id'] ?>" data-name="<?= htmlspecialchars($c['name']) ?>" data-fee="<?= (int)($c['service_fee'] ?? 0) ?>" <?= ($autofilled_chef_name === $c['name']) ? 'selected' : '' ?>>Chef <?= htmlspecialchars($c['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
                         <label class="label-lux" >Bếp trưởng chỉ định</label>
@@ -1780,7 +1780,8 @@ function updateChefReq() {
     var style = document.getElementById('chef_style') ? document.getElementById('chef_style').value : '';
     var occasion = document.getElementById('chef_occasion') ? document.getElementById('chef_occasion').value : '';
     var detail = document.getElementById('creq_detail') ? document.getElementById('creq_detail').value : '';
-    var chef = document.getElementById('selected_chef') ? document.getElementById('selected_chef').value : '';
+    var chefSelect = document.getElementById('selected_chef');
+    var chef = (chefSelect && chefSelect.selectedIndex > 0) ? chefSelect.options[chefSelect.selectedIndex].getAttribute('data-name') : '';
 
     var address = '';
     if (select) {
