@@ -648,7 +648,8 @@ if (isset($_SESSION['user_id'])) {
     $stmt_pending_g = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 AND (combo_id != -1 OR (combo_id = -1 AND chef_requirements LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%')) AND id NOT IN ($paid_ids_str) ORDER BY id DESC LIMIT 1");
     $stmt_pending_g->execute([$_SESSION['user_id']]);
     $pending_deposit_g = $stmt_pending_g->fetch(PDO::FETCH_ASSOC);
-    if ($pending_deposit_g) {
+    $current_payment_id = (basename($_SERVER['PHP_SELF']) == 'booking_payment.php' && isset($_GET['id'])) ? (int)$_GET['id'] : 0;
+    if ($pending_deposit_g && $current_payment_id !== (int)$pending_deposit_g['id']) {
         echo '
         <div style="background: rgba(0, 0, 0, 0.85); border-left: 4px solid #cda45e; padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 350px; backdrop-filter: blur(10px); border-top: 1px solid #333; border-right: 1px solid #333; border-bottom: 1px solid #333;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
