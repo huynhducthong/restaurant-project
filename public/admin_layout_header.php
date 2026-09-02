@@ -640,7 +640,7 @@ if ($toast_admin) {
                 </li>
                 <?php endif; ?>
 
-                <?php if (checkMenuAccess($user_role, ['waiter', 'cashier'])): ?>
+                <?php if (checkMenuAccess($user_role, ['waiter', 'cashier', 'chef', 'staff', 2])): ?>
                 <?php 
                     $isServiceMenu = isActive('manage_services.php') || isActive('manage_events.php') || isActive('manage_decors.php') || isActive('manage_bespoke.php') || isActive('manage_tables.php') || isActive('manage_service_reviews.php');
                 ?>
@@ -746,7 +746,7 @@ if ($toast_admin) {
                 </li>
                 <?php endif; ?>
 
-                <?php if (checkMenuAccess($user_role, ['waiter', 'cashier'])): ?>
+                <?php if (checkMenuAccess($user_role, ['waiter', 'cashier', 'chef', 'staff', 2])): ?>
                 <li class="<?= isActive('manage_contacts.php') ?>">
                     <a href="<?= BASE_URL ?>/admin/manage_contacts.php">
                         <i class="fas fa-envelope"></i> Quản lý Liên hệ
