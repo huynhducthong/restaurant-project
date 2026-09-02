@@ -672,7 +672,7 @@ select.input-lux {
                 </div>
                 <div class="row-lux">
                     <div class="input-group-lux">
-                        <input type="datetime-local" name="booking_date" id="bd" class="input-lux" placeholder=" " required onchange="us()">
+                        <input type="datetime-local" name="booking_date" id="bd" class="input-lux" placeholder=" " required onchange="updateChefReq(); us()">
                         <label class="label-lux">Ngày & Giờ <?= $type==='chef' ? 'phục vụ' : 'đến' ?> *</label>
                     </div>
                     <div class="input-group-lux">
@@ -1803,6 +1803,24 @@ function updateChefReq() {
 
     if (reqInput) {
         reqInput.value = parts.join("\n");
+    }
+
+    var chefId = (chefSelect && chefSelect.selectedIndex > 0) ? chefSelect.value : 0;
+    var bd = document.getElementById('bd') ? document.getElementById('bd').value : '';
+    if (chefId > 0 && bd !== '') {
+        var formData = new FormData();
+        formData.append('chef_id', chefId);
+        formData.append('booking_date', bd);
+        fetch('ajax_check_chef_availability.php', { method: 'POST', body: formData })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.available) {
+                alert(data.message);
+                chefSelect.selectedIndex = 0;
+                updateChefReq();
+                us();
+            }
+        });
     }
 }
 function togMrow(cb, id, pr) {
