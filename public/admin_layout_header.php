@@ -602,7 +602,7 @@ if ($toast_admin) {
                     </a>
                 </li>
 
-                <?php if (checkMenuAccess($user_role, ['chef', 'waiter', 'cashier'])): ?>
+                <?php if (checkMenuAccess($user_role, ['chef', 'waiter', 'cashier', 'staff', 2])): ?>
                 <?php 
                     $isFoodMenu = isActive('manage_themes.php') || isActive('FoodController.php') || isActive('manage_toppings.php') || ($current_page == 'ComboController.php' || $current_page == 'add_combo.php' || $current_page == 'edit_combo.php');
                 ?>
