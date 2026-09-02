@@ -832,6 +832,7 @@ select.input-lux {
                             <?php endforeach; ?>
                         </select>
                         <label class="label-lux" >Bếp trưởng chỉ định</label>
+                        <div id="chef_error_msg" style="display:none; color: #ef4444; font-size: 13px; margin-top: 5px; font-weight: 500;"><i class="fas fa-exclamation-triangle me-1"></i><span></span></div>
                     </div>
 
                     <!-- Địa điểm phục vụ (Địa chỉ) -->
@@ -1814,11 +1815,17 @@ function updateChefReq() {
         fetch('ajax_check_chef_availability.php', { method: 'POST', body: formData })
         .then(response => response.json())
         .then(data => {
+            var errMsg = document.getElementById('chef_error_msg');
             if (!data.available) {
-                alert(data.message);
+                if(errMsg) {
+                    errMsg.querySelector('span').textContent = data.message;
+                    errMsg.style.display = 'block';
+                }
                 chefSelect.selectedIndex = 0;
                 updateChefReq();
                 us();
+            } else {
+                if(errMsg) errMsg.style.display = 'none';
             }
         });
     }
