@@ -357,6 +357,9 @@ include 'views/client/layouts/header.php';
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
 <style>
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* === MINIMALIST TOKENS === */
 :root {
   --bg-cream: #F9F9F9;
@@ -1487,7 +1490,7 @@ select.input-lux {
           <div class="col-md-5" style="position:relative; min-height:350px; background:#F9F9F9;">
             <img id="foodOptImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;" alt="Food Image" onerror="this.onerror=null; this.src='https://placehold.co/800x600/262629/A88746?text=No+Image'">
           </div>
-          <div class="col-md-7" style="padding: 40px; display:flex; flex-direction:column; justify-content:space-between; background: #FFFFFF; max-height: 85vh; overflow-y: auto;">
+          <div class="col-md-7 hide-scrollbar" style="padding: 40px; display:flex; flex-direction:column; justify-content:space-between; background: #FFFFFF; max-height: 85vh; overflow-y: auto;">
             <div>
               <div style="font-size:10px; font-family:var(--font-sans); letter-spacing:2px; text-transform:uppercase; color:var(--accent-burgundy); margin-bottom:5px;">Chi tiết món ăn</div>
               <h4 id="foodOptName" style="color:var(--forest); font-family:'Cormorant Garamond', serif; font-size:1.8rem; font-weight:600; margin-bottom:5px;">Tên món</h4>
