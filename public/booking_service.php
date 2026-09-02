@@ -357,7 +357,7 @@ include 'views/client/layouts/header.php';
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
 <style>
-.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar::-webkit-scrollbar { width: 0px; background: transparent; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* === MINIMALIST TOKENS === */
