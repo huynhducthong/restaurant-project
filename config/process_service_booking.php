@@ -188,7 +188,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // TÍNH NĂNG ĐỒNG BỘ: CHỐNG TRÙNG LỊCH ĐẦU BẾP TẠI GIA (Luồng 3)
     if ($type === 'chef' && $chef_id_val) {
-        $four_hours = 4 * 3600;
+        $four_hours = 8 * 3600;
         $check_chef_stmt = $db->prepare("
             SELECT id FROM service_bookings 
             WHERE chef_id = ? 
@@ -197,7 +197,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ");
         $check_chef_stmt->execute([$chef_id_val, $date, $four_hours]);
         if ($check_chef_stmt->rowCount() > 0) {
-            echo "<script>alert('Bếp trưởng đã có lịch trình vào khung giờ này. Vui lòng chọn thời gian khác cách ít nhất 4 tiếng, hoặc chọn Đầu bếp khác!'); window.history.back();</script>";
+            echo "<script>alert('Bếp trưởng đã có lịch trình vào khung giờ này. Vui lòng chọn thời gian khác cách ít nhất 8 tiếng, hoặc chọn Đầu bếp khác!'); window.history.back();</script>";
             exit;
         }
     }
