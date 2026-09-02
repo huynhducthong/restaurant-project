@@ -36,6 +36,7 @@ if (!isset($_SESSION['user_id'])) {
         .table-card.active { border-color: #3b82f6; background: #eff6ff; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
         .table-card.occupied { border-left: 4px solid #ef4444; }
         .table-card.available { border-left: 4px solid #10b981; }
+        .table-card.booked { border-left: 4px solid #f59e0b; }
         .table-name { font-weight: 600; font-size: 1.1rem; color: #1e293b; }
         .table-status { font-size: 0.8rem; color: #64748b; margin-top: 5px; }
         
@@ -369,8 +370,8 @@ function renderTables(tables) {
         groupTables.forEach(t => {
             const isOccupied = t.order_status === 'open';
             const hasBooking = t.upcoming_booking_id !== null;
-            const statusClass = isOccupied ? 'occupied' : 'available';
-            const statusText = isOccupied ? `${formatMoney(t.total_amount)}` : 'Trống';
+            const statusClass = isOccupied ? 'occupied' : (hasBooking ? 'booked' : 'available');
+            const statusText = isOccupied ? `${formatMoney(t.total_amount)}` : (hasBooking ? 'Đã đặt' : 'Trống');
             const activeClass = currentTableId == t.id ? 'active' : '';
             
             const bookingTime = t.upcoming_booking_time ? t.upcoming_booking_time : '';
