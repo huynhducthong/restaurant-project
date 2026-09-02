@@ -1,1 +1,0 @@
-<?php require 'config/database.php'; \ = (new Database())->getConnection(); \ = \->query('SELECT id, service_type FROM service_bookings ORDER BY id DESC LIMIT 5'); print_r(\->fetchAll(PDO::FETCH_ASSOC));
