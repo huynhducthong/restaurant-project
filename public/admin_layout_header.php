@@ -572,9 +572,9 @@ if ($toast_admin) {
                 </li>
 
                 <!-- Màn Hình Tác Nghiệp -->
-                <?php if (checkMenuAccess($user_role, ['admin', 'manager', 'chef', 'cashier'])): ?>
+                <?php if (checkMenuAccess($user_role, ['admin', 'manager', 'chef', 'cashier', 'staff', 2])): ?>
                 <div class="menu-header">Màn Hình Tác Nghiệp</div>
-                <?php if (checkMenuAccess($user_role, ['admin', 'manager', 'cashier'])): ?>
+                <?php if (checkMenuAccess($user_role, ['admin', 'manager', 'cashier', 'staff', 2])): ?>
                 <li class="<?= isActive('pos.php') ?>">
                     <a href="<?= BASE_URL ?>/admin/pos.php" target="_blank" style="color: #10b981; font-weight: 600;">
                         <i class="fas fa-cash-register"></i>
