@@ -621,7 +621,7 @@ if (isset($_SESSION['user_id'])) {
     echo '<div style="position: fixed; top: 120px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 15px;">';
 
     // 1. QUOTE NOTIFICATION
-    $stmt_quoted_g = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND ai_suggested_menu IS NOT NULL AND ai_suggested_menu != '' AND combo_id = -1 AND is_waiting_customer = 1 AND (deposit_amount IS NULL OR deposit_amount = 0) ORDER BY id DESC LIMIT 1");
+    $stmt_quoted_g = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND ai_suggested_menu IS NOT NULL AND ai_suggested_menu != '' AND combo_id = -1 AND is_waiting_customer = 1 AND (chef_requirements NOT LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%') ORDER BY id DESC LIMIT 1");
     $stmt_quoted_g->execute([$_SESSION['user_id']]);
     if ($stmt_quoted_g->fetch(PDO::FETCH_ASSOC)) {
         echo '
@@ -645,7 +645,7 @@ if (isset($_SESSION['user_id'])) {
     }
     $paid_ids_str = implode(',', $paid_ids);
     
-    $stmt_pending_g = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 AND id NOT IN ($paid_ids_str) ORDER BY id DESC LIMIT 1");
+    $stmt_pending_g = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 AND (combo_id != -1 OR (combo_id = -1 AND chef_requirements LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%')) AND id NOT IN ($paid_ids_str) ORDER BY id DESC LIMIT 1");
     $stmt_pending_g->execute([$_SESSION['user_id']]);
     $pending_deposit_g = $stmt_pending_g->fetch(PDO::FETCH_ASSOC);
     $current_payment_id = (basename($_SERVER['PHP_SELF']) == 'booking_payment.php' && isset($_GET['id'])) ? (int)$_GET['id'] : 0;
