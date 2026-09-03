@@ -631,7 +631,7 @@ if (isset($_SESSION['user_id'])) {
                 <button type="button" onclick="this.parentElement.parentElement.style.display=\'none\';" style="background: none; border: none; color: #fff; font-size: 1.2rem; line-height: 1; padding: 0;">&times;</button>
             </div>
             <p style="margin: 0; color: #ddd; font-size: 0.95rem; line-height: 1.5; font-family: \'Open Sans\', sans-serif;">
-                Nhà hàng đã cập nhật Báo Giá cho đơn đặt của quý khách - NHÃ. 
+                Nhà hàng đã đề xuất <b>Thực Đơn Tùy Chỉnh</b> cho đơn đặt của quý khách.
                 <a href="' . safe_url('profile.php?tab=bookings', $path_prefix ?? '') . '" style="color: #17a2b8; font-weight: bold; text-decoration: underline; display: block; margin-top: 8px;">Xem & Chốt Thực Đơn <i class="fas fa-arrow-right ms-1"></i></a>
             </p>
         </div>
