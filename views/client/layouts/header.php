@@ -640,15 +640,20 @@ if (isset($_SESSION['user_id'])) {
     }
 
     // 2. PENDING DEPOSIT NOTIFICATION
-    $paid_ids = [0];
-    if (isset($_SESSION['paid_bookings']) && is_array($_SESSION['paid_bookings'])) {
-        $paid_ids = array_merge($paid_ids, array_map('intval', array_keys($_SESSION['paid_bookings'])));
-    }
-    $paid_ids_str = implode(',', $paid_ids);
-    
-    $stmt_pending_g = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 AND (combo_id != -1 OR (combo_id = -1 AND chef_requirements LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%')) AND id NOT IN ($paid_ids_str) ORDER BY id DESC LIMIT 1");
+    $stmt_pending_g = $db->prepare("SELECT id, deposit_amount FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 AND (combo_id != -1 OR (combo_id = -1 AND chef_requirements LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%')) ORDER BY id DESC");
     $stmt_pending_g->execute([$_SESSION['user_id']]);
-    $pending_deposit_g = $stmt_pending_g->fetch(PDO::FETCH_ASSOC);
+    $all_pending_g = $stmt_pending_g->fetchAll(PDO::FETCH_ASSOC);
+    
+    $pending_deposit_g = null;
+    foreach ($all_pending_g as $bk) {
+        $bk_id = $bk['id'];
+        $bk_deposit = (float)$bk['deposit_amount'];
+        if (!isset($_SESSION['notified_payments'][$bk_id]) || $_SESSION['notified_payments'][$bk_id] != $bk_deposit) {
+            $pending_deposit_g = $bk;
+            break;
+        }
+    }
+
     $current_payment_id = (basename($_SERVER['PHP_SELF']) == 'booking_payment.php' && isset($_GET['id'])) ? (int)$_GET['id'] : 0;
     if ($pending_deposit_g && $current_payment_id !== (int)$pending_deposit_g['id']) {
         echo '

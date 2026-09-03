@@ -29,10 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirm_payment'])) {
     }
     
     // Lưu vào session để ẩn thông báo nhắc nhở thanh toán phía người dùng
-    if (!isset($_SESSION['paid_bookings'])) {
-        $_SESSION['paid_bookings'] = [];
+    if (!isset($_SESSION['notified_payments'])) {
+        $_SESSION['notified_payments'] = [];
     }
-    $_SESSION['paid_bookings'][$booking_id] = true;
+    $_SESSION['notified_payments'][$booking_id] = (float)$bk['deposit_amount'];
 
     header("Location: booking_success.php?success=1&id=" . $booking_id);
     exit;

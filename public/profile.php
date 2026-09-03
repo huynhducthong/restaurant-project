@@ -458,15 +458,19 @@ include __DIR__ . '/../views/client/layouts/header.php';
   <?php
   // Kiểm tra xem có đơn nào đang chờ cọc không (Chỉ hiển thị khi đơn đang Pending - tức là Admin chưa Xác nhận)
   // Đối với Thiết kế riêng (combo_id = -1), chỉ hiển thị khi khách đã đồng ý thực đơn
-  $paid_ids = [0];
-  if (isset($_SESSION['paid_bookings']) && is_array($_SESSION['paid_bookings'])) {
-      $paid_ids = array_merge($paid_ids, array_map('intval', array_keys($_SESSION['paid_bookings'])));
-  }
-  $paid_ids_str = implode(',', $paid_ids);
-  
-  $stmt_pending = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 AND (combo_id != -1 OR (combo_id = -1 AND chef_requirements LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%')) AND id NOT IN ($paid_ids_str) ORDER BY id DESC LIMIT 1");
+  $stmt_pending = $db->prepare("SELECT id, deposit_amount FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND deposit_amount > 0 AND (combo_id != -1 OR (combo_id = -1 AND chef_requirements LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%')) ORDER BY id DESC");
   $stmt_pending->execute([$user_id]);
-  $pending_deposit = $stmt_pending->fetch(PDO::FETCH_ASSOC);
+  $all_pending = $stmt_pending->fetchAll(PDO::FETCH_ASSOC);
+  
+  $pending_deposit = null;
+  foreach ($all_pending as $bk) {
+      $bk_id = $bk['id'];
+      $bk_deposit = (float)$bk['deposit_amount'];
+      if (!isset($_SESSION['notified_payments'][$bk_id]) || $_SESSION['notified_payments'][$bk_id] != $bk_deposit) {
+          $pending_deposit = $bk;
+          break;
+      }
+  }
 
   if ($pending_deposit):
   ?>
