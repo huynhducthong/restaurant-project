@@ -795,44 +795,45 @@ function sendBookingCompleteEmail($emailNguoiNhan, $booking_info) {
     }
 }
 
+
 function sendBespokeMenuEmail($emailNguoiNhan, $booking_info) {
     if (empty($emailNguoiNhan)) return false;
     
-    if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
-        require_once __DIR__ . '/../vendor/autoload.php';
+    if (!class_exists("PHPMailer\PHPMailer\PHPMailer")) {
+        require_once __DIR__ . "/../vendor/autoload.php";
     }
 
     $mail = new PHPMailer\PHPMailer\PHPMailer(true);
 
     try {
         $mail->isSMTP();
-        $mail->Host       = $_ENV['MAIL_HOST'] ?? $_SERVER['MAIL_HOST'] ?? 'smtp.gmail.com';
+        $mail->Host       = $_ENV["MAIL_HOST"] ?? $_SERVER["MAIL_HOST"] ?? "smtp.gmail.com";
         $mail->SMTPAuth   = true;
-        $mail->Username   = $_ENV['MAIL_USERNAME'] ?? $_SERVER['MAIL_USERNAME'] ?? ''; 
-        $mail->Password   = $_ENV['MAIL_PASSWORD'] ?? $_SERVER['MAIL_PASSWORD'] ?? ''; 
-        $mail->SMTPSecure = $_ENV['MAIL_ENCRYPTION'] ?? $_SERVER['MAIL_ENCRYPTION'] ?? 'tls';
-        $mail->Port       = $_ENV['MAIL_PORT'] ?? $_SERVER['MAIL_PORT'] ?? 587;
-        $mail->CharSet    = 'UTF-8';
+        $mail->Username   = $_ENV["MAIL_USERNAME"] ?? $_SERVER["MAIL_USERNAME"] ?? ""; 
+        $mail->Password   = $_ENV["MAIL_PASSWORD"] ?? $_SERVER["MAIL_PASSWORD"] ?? ""; 
+        $mail->SMTPSecure = $_ENV["MAIL_ENCRYPTION"] ?? $_SERVER["MAIL_ENCRYPTION"] ?? "tls";
+        $mail->Port       = $_ENV["MAIL_PORT"] ?? $_SERVER["MAIL_PORT"] ?? 587;
+        $mail->CharSet    = "UTF-8";
 
-        $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'] ?? $_SERVER['MAIL_FROM_ADDRESS'] ?? 'noreply@restaurantly.com', 'Restaurantly Admin');
+        $mail->setFrom($_ENV["MAIL_FROM_ADDRESS"] ?? $_SERVER["MAIL_FROM_ADDRESS"] ?? "noreply@restaurantly.com", "Restaurantly Admin");
         $mail->addAddress($emailNguoiNhan);
 
         $mail->isHTML(true);
-        $mail->Subject = 'Nh� h�ng d� d? xu?t Th?c �on T�y Ch?nh cho qu� kh�ch - Restaurantly';
+        $mail->Subject = "Nhà hàng đã đề xuất Thực Đơn Tùy Chỉnh cho quý khách - Restaurantly";
         
-        $name = htmlspecialchars($booking_info['customer_name'] ?? 'Qu� kh�ch', ENT_QUOTES);
-        $timeStr = date('H:i - d/m/Y', strtotime($booking_info['booking_date'] ?? ''));
+        $name = htmlspecialchars($booking_info["customer_name"] ?? "Quý khách", ENT_QUOTES);
+        $timeStr = date("H:i - d/m/Y", strtotime($booking_info["booking_date"] ?? ""));
 
         $mail->Body = "
-        <div style='background-color: #0b0c10; padding: 40px 20px; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #e0e0e0;'>
+        <div style='background-color: #0b0c10; padding: 40px 20px; font-family: sans-serif; color: #e0e0e0;'>
             <div style='max-width: 600px; margin: 0 auto; background-color: #1f2833; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.5);'>
                 <div style='background-color: #000000; padding: 40px 20px; text-align: center; border-bottom: 2px solid #c5a880;'>
-                    <h1 style='color: #c5a880; margin: 0; font-family: "Times New Roman", Times, serif; font-size: 32px; letter-spacing: 4px; text-transform: uppercase;'>Restaurantly</h1>
+                    <h1 style='color: #c5a880; margin: 0; font-size: 32px; letter-spacing: 4px; text-transform: uppercase;'>Restaurantly</h1>
                 </div>
                 <div style='padding: 40px 30px;'>
-                    <h2 style='color: #ffffff; margin-top: 0; font-weight: 300; font-size: 24px;'>K�nh ch�o $name,</h2>
-                    <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>B?p tru?ng c?a ch�ng t�i d� thi?t k? v� g?i <strong>�? Xu?t Th?c �on</strong> cho b?a ti?c l�c <strong>$timeStr</strong> c?a qu� kh�ch.</p>
-                    <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>Vui l�ng dang nh?p v�o website d? xem chi ti?t v� <strong>Ch?t Th?c �on</strong> tru?c khi ch�ng t�i ti?n h�nh g?i B�o gi� ch�nh th?c.</p>
+                    <h2 style='color: #ffffff; margin-top: 0; font-weight: 300; font-size: 24px;'>Kính chào $name,</h2>
+                    <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>Bếp trưởng của chúng tôi đã thiết kế và gửi <strong>Đề Xuất Thực Đơn</strong> cho bữa tiệc lúc <strong>$timeStr</strong> của quý khách.</p>
+                    <p style='color: #b0b0b0; line-height: 1.8; font-size: 15px;'>Vui lòng đăng nhập vào website để xem chi tiết và <strong>Chốt Thực Đơn</strong> trước khi chúng tôi tiến hành gửi Báo giá chính thức.</p>
                 </div>
             </div>
         </div>";
@@ -843,4 +844,3 @@ function sendBespokeMenuEmail($emailNguoiNhan, $booking_info) {
         return false;
     }
 }
-
