@@ -549,6 +549,49 @@ include __DIR__ . '/../views/client/layouts/header.php';
 </div>
   <img id="hoverImageTooltip" class="menu-hover-tooltip" src="" alt="">
 <style>
+  @media (max-width: 768px) {
+      .category-image-wrap { display: none !important; }
+      .menu-category { display: block !important; margin-bottom: 40px; }
+      .category-content-wrap { padding: 0 10px !important; }
+      .menu-item {
+          display: grid;
+          grid-template-columns: 80px 1fr;
+          grid-template-rows: auto auto;
+          gap: 5px 15px;
+          padding: 15px 0;
+          border-bottom: 1px solid rgba(168,135,70,0.2);
+          align-items: center;
+      }
+      .mobile-item-img {
+          display: block !important;
+          grid-column: 1;
+          grid-row: 1 / span 2;
+          width: 80px;
+          height: 80px;
+          border-radius: 8px;
+          object-fit: cover;
+      }
+      .menu-item-header {
+          grid-column: 2;
+          grid-row: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          margin-bottom: 0;
+      }
+      .menu-item-desc {
+          grid-column: 2;
+          grid-row: 2;
+          font-size: 1rem;
+          margin-bottom: 0;
+          max-width: 100%;
+      }
+      .menu-item-dots { display: none; }
+      .menu-item-name { padding: 0; font-size: 1.3rem; background: transparent; }
+      .menu-item-price { padding: 0; background: transparent; margin-top: 5px; }
+      .menu-list .menu-item:last-child { border-bottom: none; }
+  }
+
 .menu-hover-tooltip {
     position: absolute;
     width: 200px;
@@ -722,6 +765,18 @@ document.addEventListener('keydown', function(e) {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+    if (window.innerWidth <= 768) {
+        document.querySelectorAll('.menu-item').forEach(item => {
+            let imgSrc = item.getAttribute('data-img');
+            if (imgSrc) {
+                let img = document.createElement('img');
+                img.src = imgSrc;
+                img.className = 'mobile-item-img';
+                item.insertBefore(img, item.firstChild);
+            }
+        });
+    }
+
     const loadingEl = document.getElementById('ai-rec-loading');
     const contentEl = document.getElementById('ai-rec-content');
     
