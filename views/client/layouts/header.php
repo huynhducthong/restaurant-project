@@ -623,7 +623,8 @@ if (isset($_SESSION['user_id'])) {
     // 1. QUOTE NOTIFICATION
     $stmt_quoted_g = $db->prepare("SELECT id FROM service_bookings WHERE user_id = ? AND status = 'Pending' AND ai_suggested_menu IS NOT NULL AND ai_suggested_menu != '' AND combo_id = -1 AND is_waiting_customer = 1 AND (chef_requirements NOT LIKE '%[Khách hàng ĐÃ ĐỒNG Ý thực đơn]%') ORDER BY id DESC LIMIT 1");
     $stmt_quoted_g->execute([$_SESSION['user_id']]);
-    if ($stmt_quoted_g->fetch(PDO::FETCH_ASSOC)) {
+    $blue_booking = $stmt_quoted_g->fetch(PDO::FETCH_ASSOC);
+    if ($blue_booking) {
         echo '
         <div style="background: rgba(0, 0, 0, 0.85); border-left: 4px solid #17a2b8; padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 350px; backdrop-filter: blur(10px); border-top: 1px solid #333; border-right: 1px solid #333; border-bottom: 1px solid #333;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
@@ -631,7 +632,7 @@ if (isset($_SESSION['user_id'])) {
                 <button type="button" onclick="this.parentElement.parentElement.style.display=\'none\';" style="background: none; border: none; color: #fff; font-size: 1.2rem; line-height: 1; padding: 0;">&times;</button>
             </div>
             <p style="margin: 0; color: #ddd; font-size: 0.95rem; line-height: 1.5; font-family: \'Open Sans\', sans-serif;">
-                Nhà hàng đã đề xuất <b>Thực Đơn Tùy Chỉnh</b> cho đơn đặt của quý khách.
+                Nhà hàng đã đề xuất <b>Thực Đơn Tùy Chỉnh</b> cho đơn đặt <b style="color:#17a2b8;">#BK-'.$blue_booking['id'].'</b> của quý khách.
                 <a href="' . safe_url('profile.php?tab=bookings', $path_prefix ?? '') . '" style="color: #17a2b8; font-weight: bold; text-decoration: underline; display: block; margin-top: 8px;">Xem & Chốt Thực Đơn <i class="fas fa-arrow-right ms-1"></i></a>
             </p>
         </div>
@@ -657,7 +658,7 @@ if (isset($_SESSION['user_id'])) {
                 <button type="button" onclick="this.parentElement.parentElement.style.display=\'none\';" style="background: none; border: none; color: #fff; font-size: 1.2rem; line-height: 1; padding: 0;">&times;</button>
             </div>
             <p style="margin: 0; color: #ddd; font-size: 0.95rem; line-height: 1.5; font-family: \'Open Sans\', sans-serif;">
-                Bạn có đơn đặt bàn đang chờ thanh toán tiền cọc. 
+                Bạn có đơn đặt bàn <b style="color:#cda45e;">#BK-'.$pending_deposit_g['id'].'</b> đang chờ thanh toán tiền cọc. 
                 <a href="' . safe_url('booking_payment.php?id=' . $pending_deposit_g['id'], $path_prefix ?? '') . '" style="color: #cda45e; font-weight: bold; text-decoration: underline; display: block; margin-top: 8px;">Thanh toán ngay <i class="fas fa-arrow-right ms-1"></i></a>
             </p>
         </div>
