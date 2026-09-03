@@ -299,7 +299,7 @@ include __DIR__ . '/../views/client/layouts/header.php';
                                         <p class="menu-item-desc">
                                             <?= htmlspecialchars($f['description']) ?>
                                         </p>
-                                        <div style="margin-top:5px; display: flex; flex-wrap: wrap; align-items: center;">
+                                        <div class="menu-item-tags" style="margin-top:5px; display: flex; flex-wrap: wrap; align-items: center;">
                                             <?php if($has_al): ?>
                                             <span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block;">* Chứa thành phần dị ứng với bạn</span>
                                             <?php elseif($has_dl): ?>
@@ -401,7 +401,7 @@ include __DIR__ . '/../views/client/layouts/header.php';
                         <p class="menu-item-desc">
                             <?= htmlspecialchars($f['description']) ?>
                         </p>
-                        <div style="margin-top:5px; display: flex; flex-wrap: wrap; align-items: center;">
+                        <div class="menu-item-tags" style="margin-top:5px; display: flex; flex-wrap: wrap; align-items: center;">
                             <?php if($has_al): ?>
                             <span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block; margin-right: 12px; margin-top: 4px;">* Chứa thành phần dị ứng với bạn</span>
                             <?php elseif($has_dl): ?>
@@ -462,7 +462,8 @@ include __DIR__ . '/../views/client/layouts/header.php';
                             'allergens' => $f['allergens'] ?? ''
                         ]));
                     ?>
-                    <div class="menu-item <?= $has_al ? 'allergy-item' : '' ?>" 
+                    <div class="menu-item menu-hover-trigger <?= $has_al ? 'allergy-item' : '' ?>" 
+                         data-img="public/assets/img/menu/<?= htmlspecialchars($f['image'] ?: 'default-food.jpg') ?>"
                          onmouseenter="changeFeaturedImage('cat-img-<?= $cat['id'] ?>', 'public/assets/img/menu/<?= htmlspecialchars($f['image'] ?: 'default.jpg') ?>')"
                          onclick="window.location.href='dish.php?id=<?= $f['id'] ?>'">
                         <div class="menu-item-header">
@@ -473,7 +474,7 @@ include __DIR__ . '/../views/client/layouts/header.php';
                         <p class="menu-item-desc">
                             <?= htmlspecialchars($f['description']) ?>
                         </p>
-                        <div style="margin-top:5px; display: flex; flex-wrap: wrap; align-items: center;">
+                        <div class="menu-item-tags" style="margin-top:5px; display: flex; flex-wrap: wrap; align-items: center;">
                             <?php if($has_al): ?>
                             <span style="color:#d64545; font-size:12px; font-weight:600; font-family:var(--font-sans); font-style:normal; display:inline-block; margin-right: 12px; margin-top: 4px;">* Chứa thành phần dị ứng với bạn</span>
                             <?php elseif($has_dl): ?>
@@ -585,6 +586,11 @@ include __DIR__ . '/../views/client/layouts/header.php';
           font-size: 1rem;
           margin-bottom: 0;
           max-width: 100%;
+      }
+      .menu-item-tags {
+          grid-column: 2;
+          grid-row: 3;
+          margin-top: 5px;
       }
       .menu-item-dots { display: none; }
       .menu-item-name { padding: 0; font-size: 1.3rem; background: transparent; }
